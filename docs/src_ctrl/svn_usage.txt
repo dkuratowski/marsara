@@ -1,0 +1,35 @@
+PROJECT BACKUP DIRECTORIES:
+===========================
+.../branch_backup/trunk/HEAD_R<n>_<date>
+--> Backup of the HEAD revision on the trunk.
+		- n: the number of the revision
+		- date: the date when the backup is created
+		
+.../branch_backups/<branch-name>/HEAD_R<n>_<date>
+--> Backup of the HEAD revision on a branch.
+		- branch-name: the name of the branch
+		- n: the number of the revision
+		- date: the date when the backup is created
+		
+.../tag_backups/<tag-name>
+--> Backup of a tag
+		- tag-name: the name of the tag
+		
+.../marsara_<date>.zip
+--> Backup of the full repository at the given date.
+		- date: the date when the backup is created
+
+.../marsara_merge_<source-branch>_R<source-revision>_<target-branch>_<date>.zip
+--> Backup of the full repository before merge at the given date.
+		- source-branch: the source branch of the merge operation
+		- source-revision: the revision on the source branch to be merged
+		- target-branch: the target branch of the merge operation
+		- date: the date when the backup is created
+
+COMMAND LINE FOR DUMPING/RESTORING THE REPOSITORY:
+==================================================
+SVN-dump: svnadmin dump https://server-url/repository-name > /path/repository-name.dump
+SVN-restore: svnadmin load https://server-url/repository-name < /path/repository-name.dump
+
+Note: Before restoring you have to create an empty SVN repository as the target, where empty
+	  means that not even the "trunk", "branches" and "tags" folders exist.
