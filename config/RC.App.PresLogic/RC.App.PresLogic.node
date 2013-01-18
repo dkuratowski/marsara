@@ -1,0 +1,11 @@
+<configNode>
+  <configObjects>
+    <configObject namespace="RC.App.PresLogic" name="TraceConfig">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.TraceConfigLoader</class>
+      </loader>
+      <contents>RC.App.PresLogic.TraceConfig.xml</contents>
+    </configObject>
+  </configObjects>
+</configNode>

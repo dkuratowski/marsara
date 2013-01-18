@@ -1,0 +1,10 @@
+<traceConfig>
+  <activateTraceFilters pattern="RC.Engine.*" />
+
+  <registerTrace>
+    <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+    <class>RC.Common.Diagnostics.ConsoleTrace</class>
+    <ctorParam type="STRING">RC.Engine.ConsoleTrace</ctorParam>
+  </registerTrace>
+
+  </traceConfig>

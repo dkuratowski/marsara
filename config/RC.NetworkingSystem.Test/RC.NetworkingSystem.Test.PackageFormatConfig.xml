@@ -1,0 +1,8 @@
+<packageFormatConfig>
+
+  <packageFormat namespace="RC.NetworkingSystem.Test" name="TestFormat">
+    <description>A test package format.</description>
+    <field type="STRING">The contents of the package.</field>
+  </packageFormat>
+
+</packageFormatConfig>

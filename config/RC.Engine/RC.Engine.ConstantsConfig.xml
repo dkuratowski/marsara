@@ -1,0 +1,3 @@
+<constantsConfig>
+  <constant namespace="RC.Engine" name="TestConstant" type="INT">10</constant>
+</constantsConfig>

@@ -1,0 +1,4 @@
+<constantsConfig>
+  <!-- TODO: this flag is turned off just for debugging -->
+  <constant namespace="RC.NetworkingSystem" name="ConnectionPingNotIgnored" type="BOOL">false</constant>
+</constantsConfig>

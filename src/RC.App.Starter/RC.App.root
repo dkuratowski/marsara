@@ -1,0 +1,27 @@
+<configNode>
+  <configNodeReferences>
+    <configNodeReference>./config/RC.UI.XnaPlugin/RC.UI.XnaPlugin.node</configNodeReference>
+    <configNodeReference>./config/RC.UI/RC.UI.node</configNodeReference>
+    <configNodeReference>./config/RC.Engine/RC.Engine.node</configNodeReference>
+    <configNodeReference>./config/RC.App.PresLogic/RC.App.PresLogic.node</configNodeReference>
+    <configNodeReference>./config/RC.App.BizLogic/RC.App.BizLogic.node</configNodeReference>
+  </configNodeReferences>
+
+  <configObjects>
+    <configObject namespace="RC.App" name="TraceConfig">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.TraceConfigLoader</class>
+      </loader>
+      <contents>RC.App.TraceConfig.xml</contents>
+    </configObject>
+
+    <configObject namespace="RC.App" name="CommonResources">
+      <loader>
+        <assembly>RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.UI.UIResourceFileLoader</class>
+      </loader>
+      <contents>./config/RC.App.CommonResources.xml</contents>
+    </configObject>
+  </configObjects>
+</configNode>

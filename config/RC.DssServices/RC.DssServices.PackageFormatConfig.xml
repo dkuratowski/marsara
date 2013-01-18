@@ -1,0 +1,89 @@
+<packageFormatConfig>
+
+  <packageFormat namespace="RC.DssServices" name="DssCtrlConnectionRequest">
+    <description>Connection request sent from a guest to the host.</description>
+    <field type="INT">Major version.</field>
+    <field type="INT">Minor version.</field>
+    <field type="INT">Build.</field>
+    <field type="INT">Revision.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssCtrlConnectionAcknowledge">
+    <description>Connection acknowledge sent from the host to a connecting guest.</description>
+    <field type="INT">Major version.</field>
+    <field type="INT">Minor version.</field>
+    <field type="INT">Build.</field>
+    <field type="INT">Revision.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssCtrlConnectionReject">
+    <description>Connection reject message sent from the host to a connecting guest.</description>
+    <field type="STRING">Reason of the connection reject.</field>
+    <field type="BYTE_ARRAY">Custom data (not used in the current version).</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssCtrlSetupStepRqBegin">
+    <description>Indicates the start of a setup step request sequence.</description>
+    <field type="INT">Step ID.</field>
+    <field type="INT_ARRAY">List of the guests that left the DSS since the last setup step request.</field>
+    <field type="INT_ARRAY">List of the guests that the host lost connection with since the last setup step request.</field>
+    <field type="BYTE_ARRAY">List of the current state of the DSS-channels.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssCtrlSetupStepAwBegin">
+    <description>Indicates the start of a setup step answer sequence.</description>
+    <field type="INT">Step ID.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssCtrlSetupStepMsgEnd">
+    <description>Indicates the end of a setup step request/answer sequence.</description>
+    <field type="INT">Step ID.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssCtrlStartSimulation">
+    <description>Indicates the start of the simulation stage.</description>
+    <field type="INT_ARRAY">List of the guests that left the DSS since the last setup step request.</field>
+    <field type="INT_ARRAY">List of the guests that the host lost connection with since the last setup step request.</field>
+    <field type="BYTE_ARRAY">List of the current state of the DSS-channels.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssCtrlDropGuest">
+    <description>Indicates dropping a guest out of the DSS during setup stage.</description>
+    <field type="STRING">Reason of the drop.</field>
+    <field type="BYTE_ARRAY">Custom data (not used in the current version).</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssSimulationError">
+    <description>Indicates an error during the simulation stage.</description>
+    <field type="STRING">Error description.</field>
+    <field type="BYTE_ARRAY">Custom data (not used in the current version).</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssCommit">
+    <description>Simulation round commit message.</description>
+    <field type="SHORT">Local AFT measured by the sender (in ms).</field>
+    <field type="SHORT">The highest APT measured by the sender (in ms).</field>
+    <field type="INT">Round index.</field>
+    <field type="INT">Commit answer ticket.</field>
+    <field type="BYTE_ARRAY">State hash.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssCommitAnswer">
+    <description>Answer to a simulation round commit message.</description>
+    <field type="INT">Commit answer ticket.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssLeave">
+    <description>Indicates leaving the DSS.</description>
+    <field type="STRING">Reason of leaving the DSS.</field>
+    <field type="BYTE_ARRAY">Custom data (not used in the current version).</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.DssServices" name="DssCommand">
+    <description>Command package during simulation stage.</description>
+    <field type="INT">Round index of the command.</field>
+    <field type="INT">Frame index of the command.</field>
+    <field type="BYTE_ARRAY">The command itself.</field>
+  </packageFormat>
+
+</packageFormatConfig>

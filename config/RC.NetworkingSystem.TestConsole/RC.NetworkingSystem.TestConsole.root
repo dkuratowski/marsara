@@ -1,0 +1,15 @@
+<configNode>
+  <configNodeReferences>
+    <configNodeReference>../RC.NetworkingSystem/RC.NetworkingSystem.node</configNodeReference>
+  </configNodeReferences>
+
+  <configObjects>
+    <configObject namespace="RC.NetworkingSystem.TestConsole" name="TraceConfig">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.TraceConfigLoader</class>
+      </loader>
+      <contents>RC.NetworkingSystem.TestConsole.TraceConfig.xml</contents>
+    </configObject>
+  </configObjects>
+</configNode>

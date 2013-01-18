@@ -1,0 +1,126 @@
+PiPs [
+]
+
+TiPs [
+]
+
+Places [ 
+1 'CALL_MUTEX' (48,308) 1 1 0 0
+1 'STP_FAILED' (448,179) 0 0 0 0
+1 'STOPPED' (744,337) 1 1 0 0
+1 'TIMEDOUT' (1142,480) 0 0 0 0
+1 'RUNNING' (722,467) 0 0 0 0
+1 'STP_SUCCESS' (449,117) 0 0 0 0
+1 'STOPPING' (899,417) 0 0 0 0
+1 'TIMINGOUT' (902,560) 0 0 0 0
+1 'STP_PROC' (218,204) 0 0 0 0
+1 'STP_SUCCING' (901,220) 0 0 0 0
+1 'STP_FAILING' (901,315) 0 0 0 0
+1 'CALL_BLCKD' (902,479) 0 0 0 0
+1 'STARTING1' (600,504) 0 0 0 0
+1 'STRT_PROC' (220,463) 0 0 0 0
+1 'STRT_OK' (457,575) 0 0 0 0
+1 'STRT_ERR' (454,526) 0 0 0 0
+1 'STARTING2' (685,564) 0 0 0 0
+]
+
+TimedTrans [ 
+]
+
+ImmedTrans [ 
+3 'stop' (117,205) 1 1 0
+3 'stop_evt' (811,418) 1 1 0
+3 'timeout' (813,560) 1 1 0
+3 'stop_handled' (1042,352) 1 1 0
+3 'timeout_hndled' (1039,426) 1 1 0
+3 'willstop' (810,244) 1 1 0
+3 'willfail' (812,330) 1 1 0
+3 'timeout2' (813,488) 1 1 0
+3 'timeout_hndld2' (1036,500) 1 1 0
+3 'strt_ok2' (331,465) 0 1 0
+3 'strt_ok1' (329,424) 0 1 0
+3 'stp_re_succ' (325,95) 0 1 0
+3 'stp_re_fail' (327,133) 0 1 0
+3 'stp_fail2' (325,235) 0 1 0
+3 'stp_fail1' (326,190) 0 1 0
+3 'start' (124,462) 1 1 0
+3 'strt_re_ok' (332,593) 0 1 0
+3 'strt_re_err' (332,557) 0 1 0
+3 'strt_begin' (586,550) 1 1 0
+3 'strt_err' (331,500) 0 1 0
+3 'strt_end' (579,608) 0 1 0
+]
+
+Subnets [ 
+]
+
+Edges [ 
+'strt_ok2' to 'STARTING1' 1 [  ]
+'strt_ok1' to 'STARTING1' 1 [  ]
+'stp_fail1' to 'STOPPED' 1 [  ]
+'stp_fail2' to 'TIMEDOUT' 1 [  ]
+'TIMEDOUT' to 'stp_fail2' 1 [  ]
+'STOPPED' to 'stp_fail1' 1 [  ]
+'stp_fail1' to 'STP_FAILED' 1 [  ]
+'STP_PROC' to 'stp_fail1' 1 [  ]
+'stp_fail2' to 'STP_FAILED' 1 [  ]
+'STP_PROC' to 'stp_fail2' 1 [  ]
+'stp_re_fail' to 'CALL_MUTEX' 1 [ (62,143)  ]
+'stp_re_succ' to 'CALL_MUTEX' 1 [ (48,106)  ]
+'TIMEDOUT' to 'strt_ok1' 1 [  ]
+'stop_evt' to 'STP_PROC' 1 [  ]
+'timeout' to 'STP_PROC' 1 [  ]
+'STP_PROC' to 'timeout' 1 [  ]
+'STP_PROC' to 'stop_evt' 1 [  ]
+'timeout_hndld2' to 'TIMEDOUT' 1 [  ]
+'TIMINGOUT' to 'timeout_hndld2' 1 [  ]
+'CALL_BLCKD' to 'timeout_hndld2' 1 [  ]
+'timeout2' to 'TIMINGOUT' 1 [  ]
+'timeout2' to 'CALL_BLCKD' 1 [  ]
+'RUNNING' to 'timeout2' 1 [  ]
+'timeout_hndled' to 'STP_FAILED' 1 [  ]
+'STP_FAILING' to 'timeout_hndled' 1 [  ]
+'stop_handled' to 'STP_SUCCESS' 1 [  ]
+'STP_SUCCING' to 'stop_handled' 1 [  ]
+'willfail' to 'STP_FAILING' 1 [  ]
+'willstop' to 'STP_SUCCING' 1 [  ]
+'STP_PROC' to 'willfail' 1 [  ]
+'willfail' to 'TIMINGOUT' 1 [  ]
+'willstop' to 'STOPPING' 1 [  ]
+'TIMINGOUT' to 'willfail' 1 [  ]
+'STOPPING' to 'willstop' 1 [  ]
+'STP_PROC' to 'willstop' 1 [  ]
+'stop' to 'STP_PROC' 1 [  ]
+'timeout_hndled' to 'TIMEDOUT' 1 [  ]
+'TIMINGOUT' to 'timeout_hndled' 1 [  ]
+'timeout' to 'TIMINGOUT' 1 [  ]
+'stop_handled' to 'STOPPED' 1 [  ]
+'STOPPING' to 'stop_handled' 1 [  ]
+'stop_evt' to 'STOPPING' 1 [  ]
+'CALL_MUTEX' to 'stop' 1 [  ]
+'RUNNING' to 'stop_evt' 1 [  ]
+'RUNNING' to 'timeout' 1 [  ]
+'CALL_MUTEX' to 'start' 1 [  ]
+'start' to 'STRT_PROC' 1 [  ]
+'STOPPED' to 'strt_ok2' 1 [  ]
+'STRT_PROC' to 'strt_ok2' 1 [  ]
+'STRT_PROC' to 'strt_ok1' 1 [  ]
+'STRT_OK' to 'strt_re_ok' 1 [  ]
+'strt_re_ok' to 'CALL_MUTEX' 1 [ (107,539)  ]
+'STRT_ERR' to 'strt_re_err' 1 [  ]
+'strt_re_err' to 'CALL_MUTEX' 1 [ (120,514)  ]
+'STARTING1' to 'strt_begin' 1 [  ]
+'RUNNING' to 'strt_err' 1 [  ]
+'strt_err' to 'RUNNING' 1 [  ]
+'strt_err' to 'STRT_ERR' 1 [  ]
+'STRT_PROC' to 'strt_err' 1 [  ]
+'CALL_MUTEX' to 'timeout2' 1 [ (84,632) (749,629)  ]
+'timeout_hndld2' to 'CALL_MUTEX' 1 [ (1034,654) (70,655)  ]
+'STP_FAILED' to 'stp_re_fail' 1 [  ]
+'STP_SUCCESS' to 'stp_re_succ' 1 [  ]
+'strt_begin' to 'STARTING2' 1 [  ]
+'STARTING2' to 'strt_end' 1 [  ]
+'strt_end' to 'STRT_OK' 1 [  ]
+'strt_end' to 'RUNNING' 1 [ (728,594)  ]
+]
+

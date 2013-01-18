@@ -1,0 +1,4 @@
+<traceConfig>
+  <registerTraceFilter namespace="RC.Common.SMC" name="Info" />
+  <registerTraceFilter namespace="RC.Common.ComponentMgr" name="Info" />
+</traceConfig>

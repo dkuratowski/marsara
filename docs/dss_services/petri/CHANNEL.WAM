@@ -1,0 +1,49 @@
+PiPs [
+'CH_CLSED' 
+'CH_OPNED' 
+'CH_CONNED' 
+'CTRL' 
+]
+
+TiPs [
+]
+
+Places [ 
+1 'CH_CLSED' (398,227) 0 0 0 1
+1 'CH_OPNED' (535,225) 0 1 0 1
+1 'CH_CONNED' (670,227) 0 0 0 1
+1 'CTRL' (813,293) 0 0 0 1
+]
+
+TimedTrans [ 
+]
+
+ImmedTrans [ 
+3 'cls_ch' (361,392) 0 1 0
+3 'opn_ch' (477,392) 0 1 0
+3 'drpcl_ch' (589,391) 0 1 0
+3 'drpopn_ch' (698,393) 0 1 0
+]
+
+Subnets [ 
+]
+
+Edges [ 
+'cls_ch' to 'CTRL' 1 [  ]
+'opn_ch' to 'CTRL' 1 [  ]
+'drpcl_ch' to 'CTRL' 1 [  ]
+'drpopn_ch' to 'CTRL' 1 [  ]
+'CH_OPNED' to 'cls_ch' 1 [  ]
+'cls_ch' to 'CH_CLSED' 1 [  ]
+'CH_CLSED' to 'opn_ch' 1 [  ]
+'opn_ch' to 'CH_OPNED' 1 [  ]
+'CH_CONNED' to 'drpcl_ch' 1 [  ]
+'drpcl_ch' to 'CH_CLSED' 1 [  ]
+'CH_CONNED' to 'drpopn_ch' 1 [  ]
+'drpopn_ch' to 'CH_OPNED' 1 [  ]
+'CTRL' to 'cls_ch' 1 [  ]
+'CTRL' to 'opn_ch' 1 [  ]
+'CTRL' to 'drpcl_ch' 1 [  ]
+'CTRL' to 'drpopn_ch' 1 [  ]
+]
+

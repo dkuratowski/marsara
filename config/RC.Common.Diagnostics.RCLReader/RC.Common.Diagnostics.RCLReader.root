@@ -1,0 +1,5 @@
+<configNode>
+  <configNodeReferences>
+    <configNodeReference>../RC.Common/RC.Common.node</configNodeReference>
+  </configNodeReferences>
+</configNode>

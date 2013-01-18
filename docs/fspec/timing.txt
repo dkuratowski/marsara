@@ -1,0 +1,41 @@
+Slowest:
+14*cooldown --> 175 sec
+1*cooldown --> 12.5 sec
+75 frame --> 12.5 sec
+6 frame/sec
+
+Slower:
+14*cooldown --> 117 sec
+1*cooldown --> 8.3571 sec
+75 frame --> 8.3571 sec
+9 frame/sec
+
+Slow:
+14*cooldown --> 88 sec
+1*cooldown --> 6.2857 sec
+75 frame --> 6.2857 sec
+12 frame/sec
+
+Normal:
+14*cooldown --> 70 sec
+1*cooldown --> 5 sec
+75 frame --> 5 sec
+15 frame/sec
+
+Fast:
+14*cooldown --> 58.3 sec
+1*cooldown --> 4.16 sec
+75 frame --> 4.16 sec
+18 frame/sec
+
+Faster:
+14*cooldown --> 50 sec
+1*cooldown --> 3.5714 sec
+75 frame --> 3.5714 sec
+21 frame/sec
+
+Fastest:
+14*cooldown --> 44 sec
+1*cooldown --> 3.1428 sec
+75 frame --> 3.1428 sec
+24 frame/sec

@@ -1,0 +1,33 @@
+T invariants:
+
+1 0 1 1 1 0    (main.stop) 
+0 0 1 0 0 0    (main.stop_evt) 
+1 0 0 0 0 0    (main.timeout) 
+0 0 1 0 0 0    (main.stop_handled) 
+1 0 0 0 0 0    (main.timeout_hndled) 
+0 0 1 0 0 0    (main.willstop) 
+1 0 0 0 0 0    (main.willfail) 
+0 1 0 0 0 0    (main.timeout2) 
+0 1 0 0 0 0    (main.timeout_hndld2) 
+0 0 1 0 0 0    (main.strt_ok2) 
+1 1 0 0 0 0    (main.strt_ok1) 
+0 0 1 0 0 0    (main.stp_re_succ) 
+1 0 0 1 1 0    (main.stp_re_fail) 
+0 0 0 1 0 0    (main.stp_fail2) 
+0 0 0 0 1 0    (main.stp_fail1) 
+1 1 1 0 0 1    (main.start) 
+1 1 1 0 0 0    (main.strt_re_ok) 
+0 0 0 0 0 1    (main.strt_re_err) 
+1 1 1 0 0 0    (main.strt_finished) 
+0 0 0 0 0 1    (main.strt_err) 
+
+ie.
+
+main.stop ; main.timeout ; main.timeout_hndled ; main.willfail ; main.strt_ok1 ; main.stp_re_fail ; main.start ; main.strt_re_ok ; main.strt_finished
+main.timeout2 ; main.timeout_hndld2 ; main.strt_ok1 ; main.start ; main.strt_re_ok ; main.strt_finished
+main.stop ; main.stop_evt ; main.stop_handled ; main.willstop ; main.strt_ok2 ; main.stp_re_succ ; main.start ; main.strt_re_ok ; main.strt_finished
+main.stop ; main.stp_re_fail ; main.stp_fail2
+main.stop ; main.stp_re_fail ; main.stp_fail1
+main.start ; main.strt_re_err ; main.strt_err
+
+All transitions are covered by T-invariants.

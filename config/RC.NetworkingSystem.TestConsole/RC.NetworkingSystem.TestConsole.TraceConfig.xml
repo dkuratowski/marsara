@@ -1,0 +1,13 @@
+<traceConfig>
+  <registerTraceFilter namespace="RC.NetworkingSystem.TestConsole" name="Info" />
+
+  <activateTraceFilters pattern="RC.NetworkingSystem.Info" />
+  <activateTraceFilters pattern="RC.NetworkingSystem.TestConsole.Info" />
+
+  <registerTrace>
+    <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+    <class>RC.Common.Diagnostics.LogfileTrace</class>
+    <ctorParam type="STRING">RC.NetworkingSystem.LogfileTrace</ctorParam>
+    <ctorParam type="STRING">RC.NetworkingSystem</ctorParam>
+  </registerTrace>
+</traceConfig>

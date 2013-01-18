@@ -1,0 +1,31 @@
+<configNode>
+  <configNodeReferences>
+    <configNodeReference>../RC.Common/RC.Common.node</configNodeReference>
+  </configNodeReferences>
+
+  <configObjects>
+    <configObject namespace="RC.NetworkingSystem" name="PackageFormats">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.RCPackageFormatLoader</class>
+      </loader>
+      <contents>RC.NetworkingSystem.PackageFormatConfig.xml</contents>
+    </configObject>
+
+    <configObject namespace="RC.NetworkingSystem" name="Constants">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.ConstantsLoader</class>
+      </loader>
+      <contents>RC.NetworkingSystem.ConstantsConfig.xml</contents>
+    </configObject>
+
+    <configObject namespace="RC.NetworkingSystem" name="TraceConfig">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.TraceConfigLoader</class>
+      </loader>
+      <contents>RC.NetworkingSystem.TraceConfig.xml</contents>
+    </configObject>
+  </configObjects>
+</configNode>

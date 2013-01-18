@@ -1,0 +1,25 @@
+<traceConfig>
+  <registerTraceFilter namespace="RC.DssServices.Test" name="Info" />
+
+  <activateTraceFilters pattern="RC.DssServices.*" />
+  <deactivateTraceFilters pattern="RC.DssServices.AlarmClockManagerInfo" />
+  <deactivateTraceFilters pattern="RC.DssServices.EventQueueInfo" />
+  <deactivateTraceFilters pattern="RC.DssServices.SimulationInfo" />
+  <!--activateTraceFilters pattern="RC.NetworkingSystem.Info" /-->
+  <activateTraceFilters pattern="RC.Common.SMC.Info" />
+  <activateTraceFilters pattern="RC.Common.ComponentMgr.Info" />
+
+  <registerTrace>
+    <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+    <class>RC.Common.Diagnostics.RCLogTrace</class>
+    <ctorParam type="STRING">RC.DssServices.RCLogTrace</ctorParam>
+    <ctorParam type="STRING">RC.DssServices</ctorParam>
+  </registerTrace>
+
+  <!--registerTrace>
+    <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+    <class>RC.Common.Diagnostics.LogfileTrace</class>
+    <ctorParam type="STRING">RC.DssServices.LogfileTrace</ctorParam>
+    <ctorParam type="STRING">RC.DssServices</ctorParam>
+  </registerTrace-->
+</traceConfig>

@@ -1,0 +1,6 @@
+<animation>
+  <animationPhase duration="500" sprite="RC.App.Sprites.MainMenuTitle0" />
+  <animationPhase duration="500" sprite="RC.App.Sprites.MainMenuTitle1" />
+  <animationPhase duration="500" sprite="RC.App.Sprites.MainMenuTitle2" />
+  <animationPhase duration="500" sprite="RC.App.Sprites.MainMenuTitleAll" />
+</animation>

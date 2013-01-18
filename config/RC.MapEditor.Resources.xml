@@ -1,0 +1,36 @@
+<resourceFile>
+  <loader name="SpriteLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UISpriteLoader" />
+  <loader name="FontLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UIFontLoader" />
+  <loader name="AnimationLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UIAnimationLoader" />
+
+  <resourceGroup namespace="RC.MapEditor" name="Resources">
+    <resource namespace="RC.MapEditor.Sprites" name="Font6Sprite" loader="SpriteLoader">
+      <path name="imageFile">../fonts/font6.png</path>
+    </resource>
+    <resource namespace="RC.MapEditor.Sprites" name="Font9BSprite" loader="SpriteLoader">
+      <path name="imageFile">../fonts/font9b.png</path>
+    </resource>
+    <resource namespace="RC.MapEditor.Sprites" name="MenuPointerSprite" loader="SpriteLoader">
+      <path name="imageFile">../sprites/pointers/menu_pointer.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="ScrollbarHorz" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/scrollbar_horz.png</path>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="ScrollbarVert" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/scrollbar_vert.png</path>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+
+    <resource namespace="RC.MapEditor.Fonts" name="Font6" loader="FontLoader">
+      <path name="mappingFile">../fonts/font6.xml</path>
+      <parameter name="fontSprite">RC.MapEditor.Sprites.Font6Sprite</parameter>
+    </resource>
+    <resource namespace="RC.MapEditor.Fonts" name="Font9B" loader="FontLoader">
+      <path name="mappingFile">../fonts/font9b.xml</path>
+      <parameter name="fontSprite">RC.MapEditor.Sprites.Font9BSprite</parameter>
+    </resource>
+  </resourceGroup>
+</resourceFile>

@@ -1,0 +1,9 @@
+IsoTile:
+- Izometrikus csempe, amelyhez 8 GridTile van hozzárendelve.
+- Meghatározza a szomszédos IsoTile-ok lehetséges típusait.
+- Meghatározza, hogy melyik TerrainObject típusok és hogyan illeszkednek rá.
+- Meghatározza, hogy a hozzárendelt GridTile-okból melyik NavTile-ok tartoznak hozzá.
+- Különbözõ tulajdonságokat definiál, amelyeket a hozzátartozó GridTile-ok valamint NavTile-ok örökölnek.
+
+GridTile:
+- Grid-csempe, amely 4x4 NavTile-t tartalmaz

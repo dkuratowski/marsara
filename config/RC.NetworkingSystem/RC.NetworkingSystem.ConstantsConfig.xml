@@ -1,0 +1,21 @@
+<constantsConfig>
+  <constant namespace="RC.NetworkingSystem" name="ServerTaskFifoCapacity" type="INT">1024</constant>
+  <constant namespace="RC.NetworkingSystem" name="ServerConnectionManagerCycleTime" type="INT">30</constant>
+  <constant namespace="RC.NetworkingSystem" name="ClientConnectionManagerCycleTime" type="INT">30</constant>
+  <constant namespace="RC.NetworkingSystem" name="ConnectionAcceptFrequency" type="INT">1000</constant>
+  
+  <constant namespace="RC.NetworkingSystem" name="LobbyInfoTimeout" type="INT">5000</constant>
+  <constant namespace="RC.NetworkingSystem" name="LobbyInfoReceiveFrequency" type="INT">500</constant>
+
+  <constant namespace="RC.NetworkingSystem" name="DisconnectAckTimeout" type="INT">5000</constant>
+  <constant namespace="RC.NetworkingSystem" name="ConnectAckTimeout" type="INT">5000</constant>
+  <constant namespace="RC.NetworkingSystem" name="ConnectionPingTimeout" type="INT">5000</constant>
+  <constant namespace="RC.NetworkingSystem" name="ConnectionPingFrequency" type="INT">2000</constant>
+  <constant namespace="RC.NetworkingSystem" name="ConnectionPingNotIgnored" type="BOOL">true</constant>
+
+  <constant namespace="RC.NetworkingSystem" name="AnnouncementFrequency" type="INT">1000</constant>
+  <constant namespace="RC.NetworkingSystem" name="AnnouncementBroadcastMultiplicity" type="INT">3</constant>
+
+  <constant namespace="RC.NetworkingSystem" name="TcpConnectionBufferDefaultLength" type="INT">1024</constant>
+  <constant namespace="RC.NetworkingSystem" name="AnnouncementUdpPocketSize" type="INT">512</constant>
+</constantsConfig>

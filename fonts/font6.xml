@@ -1,0 +1,104 @@
+<font>
+  <transparentColor>255;0;255</transparentColor>
+  <characterMaskColor>0;255;255</characterMaskColor>
+  <characterMappings spaceBetweenChars="1" minimumSpaceWidth="4" defaultChar="?">
+    <!-- Capital letters -->
+    <characterMapping char="A" base="4;14" top="-5" bottom="0" width="5" />
+    <characterMapping char="B" base="11;14" top="-5" bottom="0" width="5" />
+    <characterMapping char="C" base="18;14" top="-5" bottom="0" width="5" />
+    <characterMapping char="D" base="26;14" top="-5" bottom="0" width="5" />
+    <characterMapping char="E" base="33;14" top="-5" bottom="0" width="4" />
+    <characterMapping char="F" base="39;14" top="-5" bottom="0" width="4" />
+    <characterMapping char="G" base="45;14" top="-5" bottom="0" width="5" />
+    <characterMapping char="H" base="52;14" top="-5" bottom="0" width="5" />
+    <characterMapping char="I" base="60;14" top="-5" bottom="0" width="3" />
+    <characterMapping char="J" base="64;14" top="-5" bottom="0" width="3" />
+    <characterMapping char="K" base="69;14" top="-5" bottom="0" width="5" />
+    <characterMapping char="L" base="77;14" top="-5" bottom="0" width="4" />
+    <characterMapping char="M" base="82;14" top="-5" bottom="0" width="5" />
+    <characterMapping char="N" base="89;14" top="-5" bottom="0" width="5" />
+    <characterMapping char="O" base="10;25" top="-5" bottom="0" width="5" />
+    <characterMapping char="P" base="17;25" top="-5" bottom="0" width="5" />
+    <characterMapping char="Q" base="25;25" top="-5" bottom="1" width="5" />
+    <characterMapping char="R" base="32;25" top="-5" bottom="0" width="5" />
+    <characterMapping char="S" base="39;25" top="-5" bottom="0" width="4" />
+    <characterMapping char="T" base="45;25" top="-5" bottom="0" width="5" />
+    <characterMapping char="U" base="51;25" top="-5" bottom="0" width="5" />
+    <characterMapping char="V" base="58;25" top="-5" bottom="0" width="5" />
+    <characterMapping char="W" base="63;25" top="-5" bottom="0" width="7" />
+    <characterMapping char="X" base="71;25" top="-5" bottom="0" width="5" />
+    <characterMapping char="Y" base="78;25" top="-5" bottom="0" width="5" />
+    <characterMapping char="Z" base="84;25" top="-5" bottom="0" width="4" />
+
+    <!-- Non-capital letters -->
+    <characterMapping char="a" base="6;37" top="-4" bottom="0" width="5" />
+    <characterMapping char="b" base="13;37" top="-6" bottom="0" width="5" />
+    <characterMapping char="c" base="20;37" top="-4" bottom="0" width="4" />
+    <characterMapping char="d" base="27;37" top="-6" bottom="0" width="5" />
+    <characterMapping char="e" base="34;37" top="-4" bottom="0" width="5" />
+    <characterMapping char="f" base="40;37" top="-6" bottom="0" width="5" />
+    <characterMapping char="g" base="46;37" top="-4" bottom="2" width="5" />
+    <characterMapping char="h" base="53;37" top="-6" bottom="0" width="5" />
+    <characterMapping char="i" base="61;37" top="-6" bottom="0" width="1" />
+    <characterMapping char="j" base="62;37" top="-6" bottom="2" width="3" />
+    <characterMapping char="k" base="67;37" top="-6" bottom="0" width="5" />
+    <characterMapping char="l" base="75;37" top="-6" bottom="0" width="1" />
+    <characterMapping char="m" base="78;37" top="-4" bottom="0" width="7" />
+    <characterMapping char="n" base="87;37" top="-4" bottom="0" width="5" />
+    <characterMapping char="o" base="12;48" top="-4" bottom="0" width="5" />
+    <characterMapping char="p" base="19;48" top="-4" bottom="2" width="5" />
+    <characterMapping char="q" base="26;48" top="-4" bottom="2" width="5" />
+    <characterMapping char="r" base="34;48" top="-4" bottom="0" width="3" />
+    <characterMapping char="s" base="38;48" top="-4" bottom="0" width="4" />
+    <characterMapping char="t" base="43;48" top="-5" bottom="0" width="4" />
+    <characterMapping char="u" base="50;48" top="-4" bottom="0" width="5" />
+    <characterMapping char="v" base="56;48" top="-4" bottom="0" width="5" />
+    <characterMapping char="w" base="61;48" top="-4" bottom="0" width="7" />
+    <characterMapping char="x" base="70;48" top="-4" bottom="0" width="5" />
+    <characterMapping char="y" base="76;48" top="-4" bottom="2" width="5" />
+    <characterMapping char="z" base="82;48" top="-4" bottom="0" width="4" />
+
+    <!-- Numbers -->
+    <characterMapping char="0" base="14;60" top="-5" bottom="0" width="5" />
+    <characterMapping char="1" base="21;60" top="-5" bottom="0" width="3" />
+    <characterMapping char="2" base="27;60" top="-5" bottom="0" width="5" />
+    <characterMapping char="3" base="34;60" top="-5" bottom="0" width="5" />
+    <characterMapping char="4" base="41;60" top="-5" bottom="0" width="6" />
+    <characterMapping char="5" base="50;60" top="-5" bottom="0" width="5" />
+    <characterMapping char="6" base="57;60" top="-5" bottom="0" width="5" />
+    <characterMapping char="7" base="64;60" top="-5" bottom="0" width="5" />
+    <characterMapping char="8" base="72;60" top="-5" bottom="0" width="5" />
+    <characterMapping char="9" base="79;60" top="-5" bottom="0" width="5" />
+
+    <!-- Special characters -->
+    <characterMapping char="!" base="54;72" top="-6" bottom="0" width="1" />
+    <characterMapping char="?" base="58;72" top="-6" bottom="0" width="5" />
+    <characterMapping char=";" base="66;95" top="-3" bottom="2" width="2" />
+    <characterMapping char=":" base="70;95" top="-3" bottom="0" width="1" />
+    <characterMapping char="." base="74;95" top="0" bottom="0" width="1" />
+    <characterMapping char="," base="79;95" top="0" bottom="2" width="2" />
+    <characterMapping char="&apos;" base="55;95" top="-5" bottom="0" width="2" />
+    <characterMapping char="&quot;" base="59;95" top="-6" bottom="0" width="5" />
+    <characterMapping char="&amp;" base="65;72" top="-5" bottom="0" width="6" />
+    <characterMapping char="(" base="17;95" top="-6" bottom="2" width="3" />
+    <characterMapping char=")" base="21;95" top="-6" bottom="2" width="3" />
+    <characterMapping char="[" base="26;95" top="-6" bottom="2" width="2" />
+    <characterMapping char="]" base="30;95" top="-6" bottom="2" width="2" />
+    <characterMapping char="{" base="34;95" top="-6" bottom="2" width="3" />
+    <characterMapping char="}" base="39;95" top="-6" bottom="2" width="3" />
+    <characterMapping char="+" base="9;107" top="-5" bottom="0" width="5" />
+    <characterMapping char="-" base="15;107" top="-3" bottom="0" width="4" />
+    <characterMapping char="/" base="20;107" top="-5" bottom="1" width="5" />
+    <characterMapping char="\" base="26;107" top="-5" bottom="1" width="5" />
+    <characterMapping char="_" base="32;107" top="0" bottom="1" width="5" />
+    <characterMapping char="&lt;" base="38;107" top="-6" bottom="0" width="5" />
+    <characterMapping char="&gt;" base="45;107" top="-6" bottom="0" width="5" />
+    <characterMapping char="=" base="52;107" top="-4" bottom="0" width="4" />
+    <characterMapping char="@" base="74;72" top="-5" bottom="1" width="7" />
+    <characterMapping char="*" base="83;72" top="-6" bottom="0" width="5" />
+    <characterMapping char="%" base="40;83" top="-5" bottom="0" width="9" />
+    <characterMapping char="#" base="88;83" top="-5" bottom="0" width="5" />
+    <characterMapping char="$" base="12;83" top="-6" bottom="2" width="5" />
+    <!--characterMapping char=" " base="57;107" top="-5" bottom="0" width="3" /-->
+  </characterMappings>
+</font>

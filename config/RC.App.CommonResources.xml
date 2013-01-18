@@ -1,0 +1,132 @@
+<resourceFile>
+  <loader name="SpriteLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UISpriteLoader" />
+  <loader name="FontLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UIFontLoader" />
+  <loader name="AnimationLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UIAnimationLoader" />
+
+  <resourceGroup namespace="RC.App" name="SplashScreen">
+    <resource namespace="RC.App.Sprites" name="Font6Sprite" loader="SpriteLoader">
+      <path name="imageFile">../fonts/font6.png</path>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="Font7Sprite" loader="SpriteLoader">
+      <path name="imageFile">../fonts/font7.png</path>
+    </resource>
+    
+    <resource namespace="RC.App.Sprites" name="MainMenuTitle0" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/mainmenu_title_phase0.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="MainMenuTitle1" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/mainmenu_title_phase1.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="MainMenuTitle2" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/mainmenu_title_phase2.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="MainMenuTitleAll" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/mainmenu_title_all.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="MainMenuBackground" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/mainmenu_background.png</path>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+
+    <resource namespace="RC.App.Fonts" name="Font6" loader="FontLoader">
+      <path name="mappingFile">../fonts/font6.xml</path>
+      <parameter name="fontSprite">RC.App.Sprites.Font6Sprite</parameter>
+    </resource>
+    <resource namespace="RC.App.Fonts" name="Font7" loader="FontLoader">
+      <path name="mappingFile">../fonts/font7.xml</path>
+      <parameter name="fontSprite">RC.App.Sprites.Font7Sprite</parameter>
+    </resource>
+    
+    <resource namespace="RC.App.Animations" name="MainMenuTitleAnim" loader="AnimationLoader">
+      <path name="animationFile">../animations/mainmenu_title_anim.xml</path>
+    </resource>
+  </resourceGroup>
+  
+  <resourceGroup namespace="RC.App" name="CommonResources">
+    <resource namespace="RC.App.Sprites" name="TestPointerSprite" loader="SpriteLoader">
+      <path name="imageFile">../sprites/pointers/testpointer.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="MenuPointerSprite" loader="SpriteLoader">
+      <path name="imageFile">../sprites/pointers/menu_pointer.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="Font5Sprite" loader="SpriteLoader">
+      <path name="imageFile">../fonts/font5.png</path>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="Font8BSprite" loader="SpriteLoader">
+      <path name="imageFile">../fonts/font8b.png</path>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="Font9BSprite" loader="SpriteLoader">
+      <path name="imageFile">../fonts/font9b.png</path>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="CancelBtnPanel" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/cancel_btn_panel.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="OkBtnPanel" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/ok_btn_panel.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="LeftMediumPanel0" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/left_medium_panel_nobtn.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="LeftMediumPanel1" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/left_medium_panel_1btn.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="LeftMediumPanel2" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/left_medium_panel_2btn.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="LeftLargePanel" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/left_large_panel.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="MultiChatPanel" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/multi_chat_panel.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="RightMediumPanel" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/right_medium_panel.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="PlanetBackground" loader="SpriteLoader">
+      <path name="imageFile">../sprites/menusprites/planet_background.png</path>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+
+    <resource namespace="RC.App.Sprites" name="ScrollbarHorz" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/scrollbar_horz.png</path>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="ScrollbarVert" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/scrollbar_vert.png</path>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+
+    <resource namespace="RC.App.Fonts" name="Font9B" loader="FontLoader">
+      <path name="mappingFile">../fonts/font9b.xml</path>
+      <parameter name="fontSprite">RC.App.Sprites.Font9BSprite</parameter>
+    </resource>
+  </resourceGroup>
+</resourceFile>

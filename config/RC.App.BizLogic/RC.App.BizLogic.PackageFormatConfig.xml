@@ -1,0 +1,5 @@
+<packageFormatConfig>
+  <packageFormat namespace="RC.App.BizLogic" name="TestPackageFormat">
+    <field type="INT">Test field</field>
+  </packageFormat>
+</packageFormatConfig>

@@ -1,0 +1,19 @@
+<configNode>
+  <configObjects>
+    <configObject namespace="RC.Common" name="PackageFormats">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.RCPackageFormatLoader</class>
+      </loader>
+      <contents>RC.Common.PackageFormatConfig.xml</contents>
+    </configObject>
+
+    <configObject namespace="RC.Common" name="TraceConfig">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.TraceConfigLoader</class>
+      </loader>
+      <contents>RC.Common.TraceConfig.xml</contents>
+    </configObject>
+  </configObjects>
+</configNode>

@@ -1,0 +1,3 @@
+<traceConfig>
+  <registerTraceFilter namespace="RC.NetworkingSystem" name="Info" />
+</traceConfig>

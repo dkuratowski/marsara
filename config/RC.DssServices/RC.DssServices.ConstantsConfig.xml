@@ -1,0 +1,23 @@
+<constantsConfig>
+  <constant namespace="RC.DssServices" name="Version" type="STRING">0.1.0.0</constant>
+
+  <constant namespace="RC.DssServices" name="InitialAlarmClockCapacity" type="INT">16</constant>
+  <constant namespace="RC.DssServices" name="EventQueueCapacity" type="INT">1024</constant>
+  <constant namespace="RC.DssServices" name="SetupStepCycleTime" type="INT">3000</constant>
+  
+  <constant namespace="RC.DssServices" name="AvgCalcVectorLength" type="INT">5</constant>
+  <constant namespace="RC.DssServices" name="InitialAft" type="INT">30</constant>
+  <constant namespace="RC.DssServices" name="InitialApt" type="INT">50</constant>
+  <constant namespace="RC.DssServices" name="MaxFrameNum" type="INT">8</constant>
+  <constant namespace="RC.DssServices" name="MinFrameNum" type="INT">2</constant>
+  <constant namespace="RC.DssServices" name="MaxTargetFrameTime" type="INT">200</constant>
+  <constant namespace="RC.DssServices" name="MinTargetFrameTime" type="INT">10</constant>
+
+  <constant namespace="RC.DssServices" name="CommitAnswerTimeout" type="INT">5000</constant>
+  <constant namespace="RC.DssServices" name="CommitTimeout" type="INT">5000</constant>
+  <constant namespace="RC.DssServices" name="ConnectionRequestTimeout" type="INT">5000</constant>
+  <constant namespace="RC.DssServices" name="ConnectionAcknowledgeTimeout" type="INT">5000</constant>
+  <constant namespace="RC.DssServices" name="SetupStepRequestTimeout" type="INT">7000</constant>
+  <constant namespace="RC.DssServices" name="SetupStepAnswerTimeout" type="INT">5000</constant>
+  <constant namespace="RC.DssServices" name="TimeoutsNotIgnored" type="BOOL">true</constant>
+</constantsConfig>

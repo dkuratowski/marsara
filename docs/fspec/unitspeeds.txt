@@ -1,0 +1,22 @@
+SCV (Slowest):
+28 build squares / 31 sec
+--> 28*32=896 px / 31 sec
+--> 28.9 px/s
+--> 5.8 fps
+
+SCV (Normal):
+28 build squares / 12 sec
+--> 28*32=896 px / 12 sec
+--> 74,6 px/s
+--> 15 fps
+
+SCV (Fastest):
+28 build squares / 7.8 sec
+--> 28*32=896 px / 7.8 sec
+--> 114.9 px/s
+--> 23 fps
+
+Building burndown:
+90 HP / 77 sec
+90 HP / 1155 frame
+0.078 HP/frame

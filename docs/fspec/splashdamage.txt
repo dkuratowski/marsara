@@ -1,0 +1,54 @@
+Splash Damage
+
+Splash Damage in Starcraft is damage taken by units surrounding the point of impact. Splash damage never stacks with the original damage with one exception, the Firebat. There are four types of splash damage in Starcraft, radial, line, spell, and special. The properties of splash damage directly effect normal damage, so the splash damage is dealt as a percentage of the original damage before armor and damage type are applied. Therefore, the formula for all splash damage is: [(Original Damage*Splash Modifier)-Armor]*(Damage Type). The splash modifier is generally determined by the distance away from the point of impact, but there are some special cases where the splash modifier is 1, meaning that the splash damage is exactly the same as the original damage. These cases will be enumerated below. 
+
+[edit] Radial
+ 
+Radial splash is the most obvious type of splash damage, where the splash damage is dealt within a certain radius of the point of impact. There are three splash "ranges" for this type of splash damage: the point of impact, r1, and r2. Splash damage dealt in the r1 splash range is 50% of the original damage and splash damage dealt in the r2 range is 25% of the original damage. The units that deal this type of damage are:
+Siege Tank 
+Reaver 
+Infested Terran 
+Archon 
+Corsair 
+Spider Mine 
+Valkyrie 
+
+Most of the radial splash damage dealers only deal damage to enemies, save for three exceptions: the Siege Tank, Infested Terran, and the Spider Mine. Thus, most of the radial splash damage dealers will not hurt your own troops, although radial splash damage always affects allied troops. Therefore, the usefulness of some of these units in 2v2 matches are decreased.
+ 
+[edit] Dark Swarm
+ 
+Under Dark Swarm, the projectile is shifted to the side. Therefore, the point of impact is also shifted to the side. Since the point of impact is shifted to the side, units under Dark Swarm are only affected by the splash damage of those units with radial splash. In addition, if a unit is on top of the shifted point of impact, it takes full damage from the attack. Burrowed units do not take damage from radial splash under Dark Swarm. There are a few exceptions to this effect, and they are the: Reaver, Infested Terran, Firebat, and Spider Mine. In the case of these units, they don't have a projectile attack sprite, so their attacks are not shifted at all. The two airborne radial splash damage dealers both do not attack ground, thus they never come into conflict with Dark Swarm.
+ 
+[edit] Line
+ 
+Line splash is damage dealt from a line from the attacking unit. This type of splash always deals full damage, regardless of the distance from the attack itself. This type of splash is not accompanied by a projectile, thus is not affected by Dark Swarm. The only unit that deals this type of splash damage is the Lurker.
+ 
+The Lurker does not deal damage to your own units, but it deals damage to all others, including allied units. A special point about the Lurker is that the range of its splash is slightly longer than its attack range, so units just beyond its attack range will be hit for the full 20 damage.
+ 
+[edit] Spell
+ 
+Spell splash is sometimes not dealt in damage but rather in special effects. If the spell splash does deal damage, it is mostly dealt in full regardless of distance from the point of impact. The sole exception to this case is the Nuke.
+ 
+[edit] Damage Dealing
+ 
+There are three spells that deal spell splash damage. These are listed below with some notes on each.
+ Psionic Storm - Dealt in 8 volleys of 14 spread out among a certain time interval (varies with game speed). It also does not stack damage. In other words, if two Psionic Storms are cast in the same area, they will not deal damage on top of each other. In addition, Psionic Storm does not affect buildings, affects all units under its area of effect, and ignores armor.
+ Nuke - Deals 500 damage or 2/3 of the maximum hit points (includes shields), whichever is greater. A Nuke deals radial splash damage as well, meaning that it deals full damage at the point of impact, and deals less damage depending on how far from the point of impact the unit or building is. The Nuke is affected by armor, and has the same splash ranges as normal radial splash.
+ Irradiate - Deals 250 damage over a period of 30 seconds. Only one instance of Irradiate can be cast on a unit, but the damage done by Irradiate can be stacked by Irradiating other units and placing them within the range of each other. As an example, two Irradiated Ultralisks standing side by side will deal a total of 500 damage to each other.
+ 
+[edit] Special Effect
+ 
+The spells that have a special effect are listed below with some notes on each. 
+Maelstrom - Freezes biological units for 5 seconds within its circular area of effect.
+ Disruption Web - Stops all attacks within a 120x80 pixel area. The sole exception to this effect is the Spider Mine, which can still explode.
+ Recall - Moves all units in a 5x5 box of the spell epicenter to the Arbiter's location, provided that they can be moved there. Therefore, ground units cannot be recalled onto water, cliffs, or buildings.
+ Stasis Field - Completely freezes units within the circular area of effect for 60 seconds. These units cannot attack, move, be attacked, or be affected by spells.
+ EMP Shockwave - Reduces the shields and energy of all buildings and units within its 3x3 matrix area of effect to zero.
+ Dark Swarm - Shifts all projectile attacks to the side that are fired at units within its 3x3 matrix area of effect.
+ Plague - Causes units and buildings caught within its initial 5x5 matrix area of effect to lose hit points until either 300 hit points have been lost or the unit cannot lose anymore without killing it. Remains in effect for 25 seconds. Does not hit burrowed units within its area of effect and it also reveals cloaked units.
+ Ensnare - Causes units caught within its 5x5 matrix area of effect to be slowed down by 50%. It also affects the attack speed of some units. Does not effect burrowed units within its initial area of effect. Also reveals cloaked units.
+ 
+[edit] Special
+ 
+Special type splash does not fall into any of the aforementioned categories. The two units that fit this description are the Devourer and the Firebat. The Devourer's acid spores have a 1 matrix area of effect. It will only damage one unit, but the acid spores will affect all units within the area of effect. The Firebat is a curious case as it combines both radial and line splash damage. It fires two streams of flames in a line splash damage effect, but it also has a radial splash damage effect where units caught on the sides of the line splash damage will also take damage. At the end of the fire stream is also another 8 damage small radial splash damage effect that can stack with the line splash damage. Therefore, the Firebat has a total damage output of 24, but generally only the two line splash damage streams hit for 8 damage each.
+ 

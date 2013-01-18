@@ -1,0 +1,5 @@
+<constantsConfig>
+  <constant namespace="RC.DssServices.Test" name="OperatorCount" type="INT">8</constant>
+  <constant namespace="RC.DssServices.Test" name="PlayerDiameter" type="INT">25</constant>
+  <constant namespace="RC.DssServices.Test" name="PlayerSpeed" type="INT">1</constant>
+</constantsConfig>

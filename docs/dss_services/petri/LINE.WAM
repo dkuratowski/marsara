@@ -1,0 +1,70 @@
+PiPs [
+'LN_NOREQ' 
+'LN_REQ' 
+'LN_CLSED' 
+'LN_OPNED' 
+'LN_ENGED' 
+]
+
+TiPs [
+'ln_opnreq' 
+'ln_clsreq' 
+'ln_dconnreq' 
+]
+
+Places [ 
+1 'LN_NOREQ' (507,335) 1 1 0 1
+1 'LN_REQ' (513,504) 0 0 0 1
+1 'LN_CLSED' (1050,330) 0 0 0 1
+1 'LN_OPNED' (1053,443) 1 1 0 1
+1 'LN_ENGED' (1055,539) 0 0 0 1
+]
+
+TimedTrans [ 
+]
+
+ImmedTrans [ 
+3 'ln_cls' (753,153) 0 1 0
+3 'ln_opn' (755,240) 0 1 0
+3 'ln_dconn' (755,313) 0 1 0
+3 'ln_conn' (756,390) 0 1 0
+3 'ln_drop' (757,467) 0 1 0
+3 'ln_opnreq' (760,683) 0 1 1
+3 'ln_clsreq' (761,743) 0 1 1
+3 'ln_dconnreq' (762,800) 0 1 1
+]
+
+Subnets [ 
+]
+
+Edges [ 
+'ln_opnreq' to 'LN_REQ' 1 [  ]
+'ln_clsreq' to 'LN_REQ' 1 [  ]
+'ln_dconnreq' to 'LN_REQ' 1 [  ]
+'ln_cls' to 'LN_NOREQ' 1 [  ]
+'ln_opn' to 'LN_NOREQ' 1 [  ]
+'ln_drop' to 'LN_NOREQ' 1 [  ]
+'LN_REQ' to 'ln_cls' 1 [  ]
+'LN_REQ' to 'ln_opn' 1 [  ]
+'LN_REQ' to 'ln_drop' 1 [  ]
+'LN_NOREQ' to 'ln_opnreq' 1 [  ]
+'LN_NOREQ' to 'ln_clsreq' 1 [  ]
+'LN_NOREQ' to 'ln_dconnreq' 1 [  ]
+'ln_cls' to 'LN_CLSED' 1 [  ]
+'LN_CLSED' to 'ln_opn' 1 [  ]
+'ln_drop' to 'LN_CLSED' 1 [  ]
+'ln_opnreq' to 'LN_CLSED' 1 [  ]
+'LN_CLSED' to 'ln_opnreq' 1 [  ]
+'LN_OPNED' to 'ln_clsreq' 1 [  ]
+'ln_clsreq' to 'LN_OPNED' 1 [  ]
+'LN_ENGED' to 'ln_dconnreq' 1 [  ]
+'ln_dconnreq' to 'LN_ENGED' 1 [  ]
+'ln_opn' to 'LN_OPNED' 1 [  ]
+'LN_OPNED' to 'ln_cls' 1 [  ]
+'LN_ENGED' to 'ln_drop' 1 [  ]
+'LN_OPNED' to 'ln_conn' 1 [  ]
+'ln_conn' to 'LN_ENGED' 1 [  ]
+'LN_ENGED' to 'ln_dconn' 1 [  ]
+'ln_dconn' to 'LN_OPNED' 1 [  ]
+]
+

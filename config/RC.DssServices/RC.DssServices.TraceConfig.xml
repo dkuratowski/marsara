@@ -1,0 +1,8 @@
+<traceConfig>
+  <registerTraceFilter namespace="RC.DssServices" name="AlarmClockManagerInfo" />
+  <registerTraceFilter namespace="RC.DssServices" name="EventQueueInfo" />
+  <registerTraceFilter namespace="RC.DssServices" name="SetupStageInfo" />
+  <registerTraceFilter namespace="RC.DssServices" name="SetupStageError" />
+  <registerTraceFilter namespace="RC.DssServices" name="SimulationInfo" />
+  <registerTraceFilter namespace="RC.DssServices" name="SimulationError" />
+</traceConfig>

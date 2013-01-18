@@ -1,0 +1,453 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<tileset name="Test">
+  <terrainType name="Blue">
+    <terrainType name="Green">
+      <terrainType name="Cyan" transitionLength="2">
+        <terrainType name="Red" transitionLength="1" />
+      </terrainType>
+      <terrainType name="Magenta" transitionLength="1">
+        <terrainType name="Brown" />
+      </terrainType>
+    </terrainType>
+    <terrainType name="Gray">
+      <terrainType name="LightBlue">
+        <terrainType name="Yellow" transitionLength="1" />
+      </terrainType>
+      <terrainType name="LightGreen" />
+	</terrainType>
+  </terrainType>
+  
+  <declareFields>
+    <declareField name="TestField" type="BOOL">true</declareField>
+  </declareFields>
+  
+  <declareTiles>
+    <simpleTile terrain="Blue">
+      <variant image="isotile_sample.png" />
+    </simpleTile>
+    <simpleTile terrain="Green">
+      <variant image="isotile_sample.png" />
+    </simpleTile>
+    <simpleTile terrain="Cyan">
+      <variant image="isotile_sample.png" />
+    </simpleTile>
+    <simpleTile terrain="Red">
+      <variant image="isotile_sample.png" />
+    </simpleTile>
+    <simpleTile terrain="Magenta">
+      <variant image="isotile_sample.png" />
+    </simpleTile>
+    <simpleTile terrain="Brown">
+      <variant image="isotile_sample.png" />
+    </simpleTile>
+    <simpleTile terrain="Gray">
+      <variant image="isotile_sample.png" />
+    </simpleTile>
+    <simpleTile terrain="LightBlue">
+      <variant image="isotile_sample.png" />
+    </simpleTile>
+    <simpleTile terrain="Yellow">
+      <variant image="isotile_sample.png" />
+    </simpleTile>
+    <simpleTile terrain="LightGreen">
+      <variant image="isotile_sample.png" />
+    </simpleTile>
+	
+    <!-- Blue-Green transitions -->
+    <mixedTile terrainA="Blue" terrainB="Green" combination="AAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="AABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="AABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="ABAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="ABAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="ABBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="ABBB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="BAAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="BAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="BABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="BABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="BBAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="BBAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Green" combination="BBBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+
+    <!-- Green-Cyan transitions -->
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="AAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="AABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="AABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="ABAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="ABAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="ABBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="ABBB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="BAAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="BAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="BABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="BABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="BBAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="BBAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Cyan" combination="BBBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+
+    <!-- Cyan-Red transitions -->
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="AAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="AABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="AABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="ABAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="ABAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="ABBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="ABBB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="BAAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="BAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="BABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="BABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="BBAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="BBAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Cyan" terrainB="Red" combination="BBBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+
+    <!-- Green-Magenta transitions -->
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="AAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="AABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="AABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="ABAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="ABAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="ABBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="ABBB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="BAAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="BAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="BABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="BABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="BBAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="BBAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Green" terrainB="Magenta" combination="BBBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+
+    <!-- Magenta-Brown transitions -->
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="AAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="AABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="AABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="ABAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="ABAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="ABBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="ABBB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="BAAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="BAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="BABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="BABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="BBAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="BBAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Magenta" terrainB="Brown" combination="BBBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+
+    <!-- Blue-Gray transitions -->
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="AAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="AABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="AABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="ABAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="ABAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="ABBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="ABBB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="BAAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="BAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="BABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="BABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="BBAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="BBAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Blue" terrainB="Gray" combination="BBBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+
+    <!-- Gray-LightBlue transitions -->
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="AAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="AABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="AABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="ABAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="ABAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="ABBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="ABBB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="BAAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="BAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="BABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="BABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="BBAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="BBAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightBlue" combination="BBBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+
+    <!-- LightBlue-Yellow transitions -->
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="AAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="AABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="AABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="ABAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="ABAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="ABBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="ABBB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="BAAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="BAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="BABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="BABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="BBAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="BBAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="LightBlue" terrainB="Yellow" combination="BBBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+
+    <!-- Gray-LightGreen transitions -->
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="AAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="AABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="AABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="ABAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="ABAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="ABBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="ABBB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="BAAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="BAAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="BABA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="BABB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="BBAA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="BBAB">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+    <mixedTile terrainA="Gray" terrainB="LightGreen" combination="BBBA">
+      <variant image="isotile_sample.png" />
+    </mixedTile>
+
+  </declareTiles>
+</tileset>

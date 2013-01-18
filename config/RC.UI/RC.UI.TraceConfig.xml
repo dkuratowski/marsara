@@ -1,0 +1,6 @@
+<traceConfig>
+  <registerTraceFilter namespace="RC.UI" name="Error" />
+  <registerTraceFilter namespace="RC.UI" name="Warning" />
+  <registerTraceFilter namespace="RC.UI" name="Info" />
+  <registerTraceFilter namespace="RC.UI" name="Details" />
+</traceConfig>

@@ -1,0 +1,32 @@
+<configNode>
+  <configNodeReferences>
+    <configNodeReference>../RC.Common/RC.Common.node</configNodeReference>
+    <configNodeReference>../RC.UI/RC.UI.node</configNodeReference>
+  </configNodeReferences>
+
+  <configObjects>
+    <configObject namespace="RC.Engine" name="PackageFormats">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.RCPackageFormatLoader</class>
+      </loader>
+      <contents>RC.Engine.PackageFormatConfig.xml</contents>
+    </configObject>
+
+    <configObject namespace="RC.Engine" name="Constants">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.ConstantsLoader</class>
+      </loader>
+      <contents>RC.Engine.ConstantsConfig.xml</contents>
+    </configObject>
+
+    <configObject namespace="RC.Engine" name="TraceConfig">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.TraceConfigLoader</class>
+      </loader>
+      <contents>RC.Engine.TraceConfig.xml</contents>
+    </configObject>
+  </configObjects>
+</configNode>

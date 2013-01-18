@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageSqueeze", "ImageSqueeze\ImageSqueeze.csproj", "{5E3D68FC-4E3A-42F8-8249-6AE6A183EA88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BmpToPng", "BmpToPng\BmpToPng.csproj", "{0A77FC3A-1494-46AD-905A-1F3B627D164F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangePixelColor", "ChangePixelColor\ChangePixelColor.csproj", "{06713ADD-C47B-4F7B-B292-2D951EAEB610}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckPixelFormats", "CheckPixelFormats\CheckPixelFormats.csproj", "{E566B164-3258-458F-B1A0-E2E6764F957F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetricTest", "MetricTest\MetricTest.csproj", "{59E04D0C-533F-495D-A9AF-8181443DD2E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E3D68FC-4E3A-42F8-8249-6AE6A183EA88}.Debug|x86.ActiveCfg = Debug|x86
+		{5E3D68FC-4E3A-42F8-8249-6AE6A183EA88}.Debug|x86.Build.0 = Debug|x86
+		{5E3D68FC-4E3A-42F8-8249-6AE6A183EA88}.Release|x86.ActiveCfg = Release|x86
+		{5E3D68FC-4E3A-42F8-8249-6AE6A183EA88}.Release|x86.Build.0 = Release|x86
+		{0A77FC3A-1494-46AD-905A-1F3B627D164F}.Debug|x86.ActiveCfg = Debug|x86
+		{0A77FC3A-1494-46AD-905A-1F3B627D164F}.Debug|x86.Build.0 = Debug|x86
+		{0A77FC3A-1494-46AD-905A-1F3B627D164F}.Release|x86.ActiveCfg = Release|x86
+		{0A77FC3A-1494-46AD-905A-1F3B627D164F}.Release|x86.Build.0 = Release|x86
+		{06713ADD-C47B-4F7B-B292-2D951EAEB610}.Debug|x86.ActiveCfg = Debug|x86
+		{06713ADD-C47B-4F7B-B292-2D951EAEB610}.Debug|x86.Build.0 = Debug|x86
+		{06713ADD-C47B-4F7B-B292-2D951EAEB610}.Release|x86.ActiveCfg = Release|x86
+		{06713ADD-C47B-4F7B-B292-2D951EAEB610}.Release|x86.Build.0 = Release|x86
+		{E566B164-3258-458F-B1A0-E2E6764F957F}.Debug|x86.ActiveCfg = Debug|x86
+		{E566B164-3258-458F-B1A0-E2E6764F957F}.Debug|x86.Build.0 = Debug|x86
+		{E566B164-3258-458F-B1A0-E2E6764F957F}.Release|x86.ActiveCfg = Release|x86
+		{E566B164-3258-458F-B1A0-E2E6764F957F}.Release|x86.Build.0 = Release|x86
+		{59E04D0C-533F-495D-A9AF-8181443DD2E5}.Debug|x86.ActiveCfg = Debug|x86
+		{59E04D0C-533F-495D-A9AF-8181443DD2E5}.Debug|x86.Build.0 = Debug|x86
+		{59E04D0C-533F-495D-A9AF-8181443DD2E5}.Release|x86.ActiveCfg = Release|x86
+		{59E04D0C-533F-495D-A9AF-8181443DD2E5}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

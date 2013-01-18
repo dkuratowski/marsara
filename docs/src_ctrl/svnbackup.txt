@@ -1,0 +1,6 @@
+SVN-backup:
+svnadmin dump /path/to/reponame > /path/to/reponame.dump
+
+SVN-restore:
+Create EMPTY repository, then...
+svnadmin load /path/to/reponame < /path/to/reponame.dump

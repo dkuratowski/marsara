@@ -1,0 +1,113 @@
+PiPs [
+]
+
+TiPs [
+]
+
+Places [ 
+1 'S1_INACT' (1408,228) 1 1 0 0
+1 'S1_PENDING' (1196,230) 0 0 0 0
+1 'S1_RQING' (1195,463) 0 0 0 0
+1 'S1_WAITING' (1408,458) 0 0 0 0
+1 'S0_INACT' (82,204) 1 1 0 0
+1 'S0_PENDING' (301,203) 0 0 0 0
+1 'S0_RQING' (302,449) 0 0 0 0
+1 'S0_WAITING' (83,451) 0 0 0 0
+1 'T0_INACT' (33,576) 1 1 0 0
+1 'T0_WAIT' (202,576) 0 0 0 0
+1 'T0_TIMEOUT' (362,577) 0 0 0 0
+1 'T0_ANSOK' (200,689) 0 0 0 0
+1 'T1_TIMEOUT' (1135,583) 0 0 0 0
+1 'T1_WAIT' (1311,583) 0 0 0 0
+1 'T1_INACT' (1487,585) 1 1 0 0
+1 'T1_ANSOK' (1313,705) 0 0 0 0
+]
+
+TimedTrans [ 
+]
+
+ImmedTrans [ 
+3 't1' (1303,208) 1 1 0
+3 't2' (1304,244) 1 1 0
+3 't3' (1196,343) 0 1 0
+3 't4' (1304,344) 0 1 0
+3 't5' (1305,441) 1 1 0
+3 't6' (1305,479) 1 1 0
+3 't7' (1408,347) 0 1 0
+3 't8' (199,185) 1 1 0
+3 't9' (199,226) 1 1 0
+3 't10' (198,427) 1 1 0
+3 't11' (198,470) 1 1 0
+3 't12' (302,321) 0 1 0
+3 't13' (196,320) 0 1 0
+3 't14' (83,315) 0 1 0
+3 't15' (275,577) 1 1 0
+3 't16' (127,575) 1 1 0
+3 't17' (199,522) 1 1 0
+3 't18' (201,632) 0 1 0
+3 't19' (122,643) 1 1 0
+3 't20' (1402,583) 1 1 0
+3 't21' (1217,582) 1 1 0
+3 't22' (1310,643) 0 1 0
+3 't23' (1310,538) 1 1 0
+3 't24' (1416,651) 1 1 0
+]
+
+Subnets [ 
+4 'CHANNEL1' (1380,822) 'F:\SC_CGA\DOCS\DSS_SE~1\PETRI\CHANNEL.WAM'
+4 'CHANNEL0' (110,808) 'F:\SC_CGA\DOCS\DSS_SE~1\PETRI\CHANNEL.WAM'
+4 'LINE1' (1384,70) 'F:\SC_CGA\DOCS\DSS_SE~1\PETRI\LINE.WAM'
+4 'LINE0' (102,62) 'F:\SC_CGA\DOCS\DSS_SE~1\PETRI\LINE.WAM'
+]
+
+Edges [ 
+'t24' to 'T1_INACT' 1 [  ]
+'T1_ANSOK' to 't24' 1 [  ]
+'t22' to 'T1_ANSOK' 1 [  ]
+'T1_WAIT' to 't22' 1 [  ]
+'t23' to 'T1_INACT' 1 [  ]
+'T1_TIMEOUT' to 't23' 1 [  ]
+'t21' to 'T1_TIMEOUT' 1 [  ]
+'T1_WAIT' to 't21' 1 [  ]
+'t20' to 'T1_WAIT' 1 [  ]
+'T1_INACT' to 't20' 1 [  ]
+'t19' to 'T0_INACT' 1 [  ]
+'T0_ANSOK' to 't19' 1 [  ]
+'t18' to 'T0_ANSOK' 1 [  ]
+'T0_WAIT' to 't18' 1 [  ]
+'t17' to 'T0_INACT' 1 [  ]
+'T0_TIMEOUT' to 't17' 1 [  ]
+'t15' to 'T0_TIMEOUT' 1 [  ]
+'T0_WAIT' to 't15' 1 [  ]
+'t16' to 'T0_WAIT' 1 [  ]
+'T0_INACT' to 't16' 1 [  ]
+'t13' to 'S0_INACT' 1 [  ]
+'S0_RQING' to 't13' 1 [  ]
+'t14' to 'S0_INACT' 1 [  ]
+'S0_WAITING' to 't14' 1 [  ]
+'t11' to 'S0_RQING' 1 [  ]
+'S0_WAITING' to 't11' 1 [  ]
+'t10' to 'S0_WAITING' 1 [  ]
+'S0_RQING' to 't10' 1 [  ]
+'t12' to 'S0_RQING' 1 [  ]
+'S0_PENDING' to 't12' 1 [  ]
+'t9' to 'S0_INACT' 1 [  ]
+'S0_PENDING' to 't9' 1 [  ]
+'t8' to 'S0_PENDING' 1 [  ]
+'S0_INACT' to 't8' 1 [  ]
+'t7' to 'S1_INACT' 1 [  ]
+'S1_WAITING' to 't7' 1 [  ]
+'t6' to 'S1_RQING' 1 [  ]
+'S1_WAITING' to 't6' 1 [  ]
+'t5' to 'S1_WAITING' 1 [  ]
+'S1_RQING' to 't5' 1 [  ]
+'t4' to 'S1_INACT' 1 [  ]
+'S1_RQING' to 't4' 1 [  ]
+'t3' to 'S1_RQING' 1 [  ]
+'S1_PENDING' to 't3' 1 [  ]
+'t2' to 'S1_INACT' 1 [  ]
+'S1_PENDING' to 't2' 1 [  ]
+'t1' to 'S1_PENDING' 1 [  ]
+'S1_INACT' to 't1' 1 [  ]
+]
+

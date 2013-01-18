@@ -1,0 +1,23 @@
+<configNode>
+  <configNodeReferences>
+    <configNodeReference>../RC.UI.XnaPlugin/RC.UI.XnaPlugin.node</configNodeReference>
+    <configNodeReference>../RC.UI/RC.UI.node</configNodeReference>
+  </configNodeReferences>
+
+  <configObjects>
+    <configObject namespace="RC.UI.Test" name="TraceConfig">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.TraceConfigLoader</class>
+      </loader>
+      <contents>RC.UI.Test.TraceConfig.xml</contents>
+    </configObject>
+    <configObject namespace="RC.App" name="CommonResources">
+      <loader>
+        <assembly>RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.UI.UIResourceFileLoader</class>
+      </loader>
+      <contents>../RC.App.CommonResources.xml</contents>
+    </configObject>
+  </configObjects>
+</configNode>

@@ -1,0 +1,3 @@
+<traceConfig>
+  <registerTraceFilter namespace="RC.App.PresLogic" name="Info" />
+</traceConfig>

@@ -1,0 +1,38 @@
+<packageFormatConfig>
+  
+  <packageFormat namespace="RC.Common" name="RclEvent">
+    <description>Format of an event in an RCL file.</description>
+    <field type="INT">The thread ID.</field>
+    <field type="STRING">The thread name.</field>
+    <field type="LONG">The timestamp (ms).</field>
+    <field type="STRING">The event.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Common" name="RclFork">
+    <description>Format of a thread fork in an RCL file.</description>
+    <field type="INT">The ID of the new thread.</field>
+    <field type="STRING">The name of the new thread.</field>
+    <field type="INT">The ID of the parent thread.</field>
+    <field type="STRING">The name of the parent thread.</field>
+    <field type="LONG">The timestamp (ms).</field>
+  </packageFormat>
+  
+  <packageFormat namespace="RC.Common" name="RclJoin">
+    <description>Format of a thread join in an RCL file.</description>
+    <field type="INT">The ID of the running thread.</field>
+    <field type="STRING">The name of the running thread.</field>
+    <field type="INT">The ID of the waiting thread.</field>
+    <field type="STRING">The name of the waiting thread.</field>
+    <field type="LONG">The timestamp (ms).</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Common" name="RclException">
+    <description>Format of an exception in an RCL file.</description>
+    <field type="INT">The thread ID.</field>
+    <field type="STRING">The thread name.</field>
+    <field type="LONG">The timestamp (ms).</field>
+    <field type="BYTE">Was the exception fatal?</field>
+    <field type="STRING">The exception itself.</field>	
+  </packageFormat>
+  
+</packageFormatConfig>

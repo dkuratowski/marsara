@@ -1,0 +1,84 @@
+To determine how much damage an attack will do to a unit, follow these steps.
+
+1. If the unit has shield HP, subtract shield armor upgrades from the damage.
+2. Apply the damage to the shield HP.
+3. If any damage remains, subtract the unit's armor from the damage.
+4. If the damage is Explosive or Concussive type, modify it based on the unit's size.
+Explosive damage deals 100% to large units, 75% to medium units, and 50% to small units.
+Concussive damage deals 25% to large units, 50% to medium units, and 100% to small units.
+5. Apply the remaining damage to the HP. If the remaining damage is zero, it will do half a point of damage.
+Example:
+Siege Tank (70 damage) attacks a Zealot (60 shields, 100 hit points, 1 armor)
+
+1. 70 damage is reduced by 0. (No shield armor upgrades)
+2. 60 shield points are removed from the zealot. 10 damage remains.
+3. 10 damage is reduced by 1. (Zealot base armor)
+4. The damage is Explosive type and the Zealot is small. 9 damage becomes 4.5 damage.
+5. 100 HP reduced to 96 and one-half. Remember that fractional damage will do half a point of damage.
+
+******************************************************************************************************
+
+How much damage gets done to a unit when it gets hit by an attack? Well, the algorithm is pretty simple: 
+
+You start with an attack of a certain value and type. (an unupgraded siege tank does 30 explosive, for example) 
+If the target has any shields left, subtract from the value of the attack the level of shield upgrades. 
+The remaining damage is applied to the shields. Any damage in excess of the shield points continues on. 
+From what was left after dealing with shields, subtract the total armor of the unit (basic armor plus upgrades). 
+If the remaining damage is of a type that does less than full damage to the unit being hit, apply that penalty now. 
+Remaining damage is dealt to the unit's hit points. 
+Starcraft keeps track of fractional damage. If the amount of damage being done is not integral, the damage you see being done will deterministically alternate between the two integers close to the actual damage, and will average to the right amount (in the example of 2.25, continued attacks will appear to do do 2,2,2,3, repeatedly). 
+
+The minimum damage dealt by any attack is 0.5. 
+
+Note: the above algorithm means that protoss units that get hit when they have only a few shield points get the protection of both their shield and their armor upgrades.
+
+Special case: The Mutalisk. The mutalisk's attack has a bounce effect, where after the first hit, the attack bounces to another target, then a third. Each successive bounce does 1/3 of the damage of the previous attack. Upgrade bonuses are applied to the base attack, and thus have a reduced impact upon the bounces.
+
+******************************************************************************************************
+
+In StarCraft, there are three damage types: concussive, normal, and explosive. The actual damage done depends on the type and the size of the target unit, as indicated in the following table: 
+
+Unit Size  Concussive  Normal  Explosive  
+Small  100%  100%  50%  
+Medium  50%  100%  75%  
+Large  25%  100%  100%  
+
+Protoss shields always take full damage. 
+
+Concussive DamageEdit
+Units which deal concussive damage are optimized to kill small units such as zerglings and zealots. Concussive damage is limited more than any other damage type and is comparatively a rare attack mode. 
+
+It includes the vulture, ghost, and firebat. 
+
+Concussive damage, like all damage types, always does full damage against protoss shields. 
+
+Explosive DamageEdit
+Units which deal explosive damage are optimized to kill large units and buildings. Explosive damage isn't particularly effective against small units (which suffer half of the damage). Despite the name, many explosive attacks do not deal splash damage; for instance, the siege tank's attack in tank mode is optimized for destroying armored units, but it only gains splash damage when it switches to siege mode. 
+
+It includes all rockets attacks (e.g. missile turrets, goliaths, scouts), and all types of powerful cannons, like those of siege tanks and dragoons. 
+
+Explosive damage always deals full damage against protoss shields. 
+
+Normal DamageEdit
+Normal attacks are effective against all types of units. 
+
+It includes all melee attacks, like those of the zergling and ultralisk. It also includes laser weapons (battlecruiser and wraith), most bullets (marine) and special cases (photon cannon, workers' attacks) 
+
+Unit SizesEdit
+Unit size is only loosely correlated with the size of a unit's sprite and the amount of space a unit takes up in a transport. Unit size is more closely linked to armor quality. 
+
+A small ground unit, such as a ghost, wears personal armor, whereas a large unit, such as a siege tank, is covered with neosteel plating. Few units, such as the hydralisk, are medium-sized. 
+
+Most air units are large; indeed, all terran air units are large, even units which would be expected to be relatively small and lightly-armored, such as wraiths (compared to battlecruisers). Most powerful anti-air attacks deal explosive damage, as a result. The biggest exception to the rule is probably the mutalisk, which is small, but is expected to face explosive attacks regularly. (Mutalisks do low damage, however). 
+
+NotesEdit
+¦If a unit is shielded (protoss only), the shield takes full damage from any attack, regardless of the unit's size. 
+¦All buildings are "large" units. 
+¦Some attacks may also deal splash damage, which damage units around the target. Splash damage typically affects all units except the attacker's own units; the exceptions are siege tank, spider mines, and infested terrans which affect all units. 
+
+***********************************************************************************************************
+
+There are three different types of map coordinates: 
+•Positions are measured in pixels and are the highest resolution 
+•Walk Tiles - each walk tile is an 8x8 square of pixels. These are called walk tiles because walkability data is available at this resolution. 
+•Build Tiles - each build tile is a 4x4 square of walk tiles, or a 32x32 square of pixels. These are called build tiles because buildability data is available at this resolution, and correspond to the tiles seen in game. For example, a Command Center occupies an area of 4x3 build tiles. Build tiles can be specified in TilePosition objects. 

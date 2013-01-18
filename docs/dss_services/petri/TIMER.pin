@@ -1,0 +1,25 @@
+P-invariants:
+
+0 1    (main.CALL_MUTEX) 
+0 1    (main.STP_FAILED) 
+1 0    (main.STOPPED) 
+1 0    (main.TIMEDOUT) 
+1 0    (main.RUNNING) 
+0 1    (main.STP_SUCCESS) 
+1 0    (main.STOPPING) 
+1 0    (main.TIMINGOUT) 
+0 1    (main.STP_PROC) 
+0 1    (main.STP_SUCCING) 
+0 1    (main.STP_FAILING) 
+0 1    (main.CALL_BLCKD) 
+1 1    (main.STARTING) 
+0 1    (main.STRT_PROC) 
+0 1    (main.STRT_OK) 
+0 1    (main.STRT_ERR) 
+
+ie.
+
+M(main.STOPPED) + M(main.TIMEDOUT) + M(main.RUNNING) + M(main.STOPPING) + M(main.TIMINGOUT) + M(main.STARTING)
+M(main.CALL_MUTEX) + M(main.STP_FAILED) + M(main.STP_SUCCESS) + M(main.STP_PROC) + M(main.STP_SUCCING) + M(main.STP_FAILING) + M(main.CALL_BLCKD) + M(main.STARTING) + M(main.STRT_PROC) + M(main.STRT_OK) + M(main.STRT_ERR)
+
+All places are covered by P-invariants.

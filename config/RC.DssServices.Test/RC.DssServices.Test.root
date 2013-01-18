@@ -1,0 +1,31 @@
+<configNode>
+  <configNodeReferences>
+    <configNodeReference>../RC.DssServices/RC.DssServices.node</configNodeReference>
+  </configNodeReferences>
+
+  <configObjects>
+    <configObject namespace="RC.DssServices.Test" name="PackageFormats">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.RCPackageFormatLoader</class>
+      </loader>
+      <contents>RC.DssServices.Test.PackageFormatConfig.xml</contents>
+    </configObject>
+
+    <configObject namespace="RC.DssServices.Test" name="Constants">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.ConstantsLoader</class>
+      </loader>
+      <contents>RC.DssServices.Test.ConstantsConfig.xml</contents>
+    </configObject>
+
+    <configObject namespace="RC.DssServices.Test" name="TraceConfig">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.TraceConfigLoader</class>
+      </loader>
+      <contents>RC.DssServices.Test.TraceConfig.xml</contents>
+    </configObject>
+  </configObjects>
+</configNode>

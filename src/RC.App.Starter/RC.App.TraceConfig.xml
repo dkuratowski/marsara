@@ -1,0 +1,40 @@
+<traceConfig>
+  <registerTraceFilter namespace="RC.App" name="Info" />
+
+  <activateTraceFilters pattern="RC.App.Info" />
+  <activateTraceFilters pattern="RC.UI.Error" />
+  <activateTraceFilters pattern="RC.UI.Warning" />
+  <activateTraceFilters pattern="RC.UI.Info" />
+  <activateTraceFilters pattern="RC.UI.Details" />
+  <activateTraceFilters pattern="RC.UI.XnaPlugin.Error" />
+  <activateTraceFilters pattern="RC.UI.XnaPlugin.Warning" />
+  <activateTraceFilters pattern="RC.UI.XnaPlugin.Info" />
+  <activateTraceFilters pattern="RC.UI.XnaPlugin.Details" />
+  <activateTraceFilters pattern="RC.Engine.Error" />
+  <activateTraceFilters pattern="RC.Engine.Warning" />
+  <activateTraceFilters pattern="RC.Engine.Info" />
+  <activateTraceFilters pattern="RC.Engine.Details" />
+  <activateTraceFilters pattern="RC.Common.ComponentMgr.Info" />
+  <activateTraceFilters pattern="RC.App.PresLogic.Info" />
+  <activateTraceFilters pattern="RC.App.BizLogic.Info" />
+
+  <registerTrace>
+    <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+    <class>RC.Common.Diagnostics.ConsoleTrace</class>
+    <ctorParam type="STRING">RC.App.ConsoleTrace</ctorParam>
+  </registerTrace>
+
+  <!--registerTrace>
+    <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+    <class>RC.Common.Diagnostics.RCLogTrace</class>
+    <ctorParam type="STRING">RC.UI.RCLogTrace</ctorParam>
+    <ctorParam type="STRING">RC.UI</ctorParam>
+  </registerTrace-->
+
+  <!--registerTrace>
+    <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+    <class>RC.Common.Diagnostics.LogfileTrace</class>
+    <ctorParam type="STRING">RC.DssServices.LogfileTrace</ctorParam>
+    <ctorParam type="STRING">RC.DssServices</ctorParam>
+  </registerTrace-->
+</traceConfig>

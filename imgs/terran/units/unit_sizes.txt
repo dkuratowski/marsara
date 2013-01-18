@@ -1,0 +1,17 @@
+supply: 46x31 -> 96x64 (x2.09)
+
+Spider Mine:  7x7 -> 15x15
+Terran Ghost:  7x11 -> 15x22  
+Terran Marine:  8x10 -> 17x20  
+Terran Medic:  8x10 -> 17x20  
+Terran Firebat: 11x11 -> 23x22  
+Terran Scv:  11x11 -> 23x23  
+Terran Vulture:  15x15 -> 32x32  
+Terran Goliath:  15x15 -> 32x32  
+Terran Siege Tank (Tank Mode):  16x16 -> 32x32  
+Terran Siege Tank (Siege Mode):  16x16 -> 32x32  
+Terran Wraith:  18x14 -> 38x30  
+Terran Dropship:  23x18 -> 49x37  
+Terran Valkyrie:  23x18 -> 49x37  
+Terran Science Vessel:  31x24 -> 65x50  
+Terran Battlecruiser:  36x28 -> 75x59  
