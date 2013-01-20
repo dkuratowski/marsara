@@ -411,7 +411,7 @@ namespace RC.UI
                 {
                     this.activeSensor.OnEnter();
                 }
-                else if (raiseOnMove)
+                if (raiseOnMove)
                 {
                     this.activeSensor.OnMove(newPointerPos);
                 }

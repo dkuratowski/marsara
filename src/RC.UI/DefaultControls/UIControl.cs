@@ -30,6 +30,7 @@ namespace RC.UI
         {
             get { return this.isEnabled; }
             set { this.isEnabled = value; }
+            /// TODO: Call UISensitiveObject.ResetState when this property has been changed???
         }
 
         /// <summary>

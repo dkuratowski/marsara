@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common;
+using RC.Common.Diagnostics;
 
 namespace RC.UI
 {
@@ -116,6 +117,7 @@ namespace RC.UI
 
             /// Set the static settings of this UISlider.
             this.alignment = settings.Alignment;
+            this.trackLength = settings.TrackSize.X;
             this.trackRectangle = this.alignment == Alignment.Horizontal
                                 ? new RCIntRectangle(0, -settings.TrackSize.Y, settings.TrackSize.X, 2 * settings.TrackSize.Y + 1)
                                 : new RCIntRectangle(-settings.TrackSize.Y, 0, 2 * settings.TrackSize.Y + 1, settings.TrackSize.X);
@@ -149,6 +151,31 @@ namespace RC.UI
             this.MouseSensor.ButtonDown += this.OnMouseDown;
             this.MouseSensor.ButtonUp += this.OnMouseUp;
         }
+
+        /// <summary>
+        /// Constructs a UISlider object.
+        /// </summary>
+        /// <param name="position">The position of the UISlider control.</param>
+        /// <param name="size">The size of the UISlider control.</param>
+        /// <param name="settings">The settings of this UISlider control.</param>
+        /// <param name="scrollbarStyle">
+        /// The flag that indicates whether this is a scrollbar-style UISlider or not.
+        /// </param>
+        /// <remarks>WARNING! This internal constructor is a hack only for implementing UIScrollBar!</remarks>
+        internal UISlider(RCIntVector position, RCIntVector size, Settings settings, bool scrollbarStyle)
+            : this(position, size, settings)
+        {
+            this.scrollbarStyle = scrollbarStyle;
+            if (this.scrollbarStyle)
+            {
+                /// Compute the extended track-rectangle
+                this.extendedTrackRect = this.alignment == Alignment.Horizontal
+                                       ? new RCIntRectangle(-settings.SliderLeft, -settings.TrackSize.Y, settings.TrackSize.X + settings.SliderLeft + settings.SliderRight, 2 * settings.TrackSize.Y + 1)
+                                       : new RCIntRectangle(-settings.TrackSize.Y, -settings.SliderTop, 2 * settings.TrackSize.Y + 1, settings.TrackSize.X + settings.SliderTop + settings.SliderBottom);
+            }
+        }
+        private bool scrollbarStyle;
+        private RCIntRectangle extendedTrackRect;
 
         /// <summary>
         /// Gets or sets the selected value from the interval.
@@ -253,6 +280,7 @@ namespace RC.UI
         /// <param name="evtArgs">The details of the event.</param>
         private void OnMouseMove(UISensitiveObject sender, UIMouseEventArgs evtArgs)
         {
+            TraceManager.WriteAllTrace("OnMouseMove", UITraceFilters.INFO);
             this.lastKnownMousePosition = evtArgs.Position;
 
             if (this.IsEnabled)
@@ -427,7 +455,14 @@ namespace RC.UI
         private bool IsInsideTrack(RCIntVector position)
         {
             RCIntVector posInTrackSpace = position - this.trackPosition;
-            return this.trackRectangle.Contains(posInTrackSpace);
+            if (!this.scrollbarStyle)
+            {
+                return this.trackRectangle.Contains(posInTrackSpace);
+            }
+            else
+            {
+                return this.extendedTrackRect.Contains(posInTrackSpace);
+            }
         }
 
         /// <summary>
@@ -449,7 +484,7 @@ namespace RC.UI
                                                                                     this.trackRectangle.Width :
                                                                                     this.trackRectangle.Height) - 1)
             {
-                return (int)Math.Round((float)this.sliderPosition * this.scaling);
+                return Math.Min((int)Math.Round((float)this.sliderPosition * this.scaling), this.intervalLength - 1);
             }
             else
             {
@@ -473,7 +508,7 @@ namespace RC.UI
             }
             else if (this.selectedValue > 0 && this.selectedValue < this.intervalLength - 1)
             {
-                return (int)Math.Round((float)this.selectedValue / this.scaling);
+                return Math.Min((int)Math.Round((float)this.selectedValue / this.scaling), this.trackLength - 1);
             }
             else
             {
@@ -576,6 +611,11 @@ namespace RC.UI
         /// The area of the slider in it's own coordinate system.
         /// </summary>
         private RCIntRectangle sliderRectangle;
+
+        /// <summary>
+        /// The length of the track in pixels.
+        /// </summary>
+        private int trackLength;
 
         /// <summary>
         /// The position of the beginning of the track in the local coordinate system of this UISlider control.

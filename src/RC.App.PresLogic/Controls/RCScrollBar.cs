@@ -169,6 +169,7 @@ namespace RC.App.PresLogic
                     new RCIntRectangle(RCScrollBar.BUTTON_SIZE, 0, RCScrollBar.BUTTON_SIZE, RCScrollBar.WIDTH) :
                     new RCIntRectangle(0, RCScrollBar.BUTTON_SIZE, RCScrollBar.WIDTH, RCScrollBar.BUTTON_SIZE));
 
+
             /// Render the slider.
             renderContext.RenderSprite(
                 this.controlSprite,
@@ -201,7 +202,7 @@ namespace RC.App.PresLogic
         private const int SPRITE_SLIDERTRACK_LENGTH = 200;
         private const int STEP_VALUE_CHANGE_DEFAULT = 1;
         private const int TRACKING_VALUE_CHANGE_DEFAULT = 5;
-        private const int TIME_BETWEEN_STEPS_DEFAULT = 250;
-        private const int TIME_BETWEEN_TRACKINGS_DEFAULT = 400;
+        private const int TIME_BETWEEN_STEPS_DEFAULT = 100;
+        private const int TIME_BETWEEN_TRACKINGS_DEFAULT = 300;
     }
 }

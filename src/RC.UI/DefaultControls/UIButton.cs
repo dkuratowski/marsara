@@ -18,6 +18,16 @@ namespace RC.UI
         /// </summary>
         public event UIInputEventHdl Pressed;
 
+        /// <summary>
+        /// Occurs when this button has been pushed by an input device.
+        /// </summary>
+        public event UIInputEventHdl Pushed;
+
+        /// <summary>
+        /// Occurs when this button has been released by an input device.
+        /// </summary>
+        public event UIInputEventHdl Released;
+
         #endregion Event and delegate definitions
 
         /// <summary>
@@ -71,7 +81,11 @@ namespace RC.UI
             if (this.IsEnabled)
             {
                 this.isHighlighted = true;
-                if (this.activatorBtn == UIMouseButton.Left) { this.isPushed = true; }
+                if (this.activatorBtn == UIMouseButton.Left)
+                {
+                    this.isPushed = true;
+                    if (this.Pushed != null) { this.Pushed(this); }
+                }
             }
         }
 
@@ -84,7 +98,11 @@ namespace RC.UI
             if (this.IsEnabled)
             {
                 this.isHighlighted = false;
-                if (this.activatorBtn == UIMouseButton.Left) { this.isPushed = false; }
+                if (this.activatorBtn == UIMouseButton.Left)
+                {
+                    this.isPushed = false;
+                    if (this.Released != null) { this.Released(this); }
+                }
             }
         }
 
@@ -100,6 +118,7 @@ namespace RC.UI
             {
                 this.activatorBtn = evtArgs.Button;
                 this.isPushed = true;
+                if (this.Pushed != null) { this.Pushed(this); }
             }
         }
 
@@ -115,10 +134,11 @@ namespace RC.UI
             {
                 this.activatorBtn = UIMouseButton.Undefined;
 
-                if (this.isHighlighted && this.Pressed != null)
+                if (this.isHighlighted)
                 {
                     this.isPushed = false;
-                    this.Pressed(this);
+                    if (this.Released != null) { this.Released(this); }
+                    if (this.Pressed != null) { this.Pressed(this); }
                 }
             }
         }
