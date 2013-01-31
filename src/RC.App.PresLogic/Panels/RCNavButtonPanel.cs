@@ -16,7 +16,7 @@ namespace RC.App.PresLogic
         /// Creates an RCNavButtonPanel instance.
         /// </summary>
         /// <param name="backgroundRect">The area of the background of the panel in workspace coordinates.</param>
-        /// <param name="buttonRect">The area of the button inside the panel relative to the background rectangle.</param>
+        /// <param name="buttonRect">The area of the button on the panel relative to the background rectangle.</param>
         /// <param name="showMode">The mode how the panel will appear on a page when being shown.</param>
         /// <param name="hideMode">The mode how the panel will disappear from a page when being hidden.</param>
         /// <param name="appearDuration">

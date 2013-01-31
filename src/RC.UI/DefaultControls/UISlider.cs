@@ -280,7 +280,6 @@ namespace RC.UI
         /// <param name="evtArgs">The details of the event.</param>
         private void OnMouseMove(UISensitiveObject sender, UIMouseEventArgs evtArgs)
         {
-            TraceManager.WriteAllTrace("OnMouseMove", UITraceFilters.INFO);
             this.lastKnownMousePosition = evtArgs.Position;
 
             if (this.IsEnabled)

@@ -43,6 +43,7 @@
     <Compile Include="DefaultControls\UICheckbox.cs" />
     <Compile Include="DefaultControls\UIControl.cs" />
     <Compile Include="DefaultControls\UIDropdownSelector.cs" />
+    <Compile Include="DefaultControls\UIListBox.cs" />
     <Compile Include="DefaultControls\UIScrollBar.cs" />
     <Compile Include="DefaultControls\UISlider.cs" />
     <Compile Include="DefaultRenderManager.cs" />

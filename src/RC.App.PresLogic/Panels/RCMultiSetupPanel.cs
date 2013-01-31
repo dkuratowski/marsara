@@ -15,7 +15,7 @@ namespace RC.App.PresLogic
         /// Creates an RCMultiSetupPanel instance.
         /// </summary>
         /// <param name="backgroundRect">The area of the background of the panel in workspace coordinates.</param>
-        /// <param name="buttonRect">The area of the button inside the panel relative to the background rectangle.</param>
+        /// <param name="contentRect">The area of the content of the panel relative to the background rectangle.</param>
         /// <param name="showMode">The mode how the panel will appear on a page when being shown.</param>
         /// <param name="hideMode">The mode how the panel will disappear from a page when being hidden.</param>
         /// <param name="appearDuration">
@@ -29,12 +29,11 @@ namespace RC.App.PresLogic
         /// <param name="backgroundSprite">
         /// Name of the sprite resource that will be the background of this panel or null if there is no background.
         /// </param>
-        /// <param name="buttonText">The text that should be displayed on the navigation button.</param>
-        public RCMultiSetupPanel(RCIntRectangle backgroundRect, RCIntRectangle buttonRect,
+        public RCMultiSetupPanel(RCIntRectangle backgroundRect, RCIntRectangle contentRect,
                                  ShowMode showMode, HideMode hideMode,
                                  int appearDuration, int disappearDuration,
                                  string backgroundSprite)
-            : base(backgroundRect, buttonRect, showMode, hideMode, appearDuration, disappearDuration, backgroundSprite)
+            : base(backgroundRect, contentRect, showMode, hideMode, appearDuration, disappearDuration, backgroundSprite)
         {
         }
     }

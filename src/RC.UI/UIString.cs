@@ -10,7 +10,7 @@ namespace RC.UI
     /// <summary>
     /// Represents a string that can be rendered to an IUIRenderContext.
     /// </summary>
-    public class UIString
+    public class UIString : IDisposable
     {
         /// <summary>
         /// Constructs a UIString from the given composite format string.
@@ -190,6 +190,12 @@ namespace RC.UI
         /// Gets the UIFont of this UIString.
         /// </summary>
         public UIFont Font { get { return this.font; } }
+
+        /// <see cref="IDisposable.Dispose"/>
+        public void Dispose()
+        {
+            UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(this.stringRibbon);
+        }
 
         #region Internal methods
 

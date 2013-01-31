@@ -36,11 +36,11 @@ namespace RC.App.PresLogic
         /// The range rectangle of the panel will be backgroundRect relative to contentRect.
         /// The clip rectangle of the panel will be contentRect in the panel's coordinate system.
         /// </remarks>
-        public RCAppPanel(RCIntRectangle backgroundRect, RCIntRectangle buttonRect,
+        public RCAppPanel(RCIntRectangle backgroundRect, RCIntRectangle contentRect,
                           ShowMode showMode, HideMode hideMode,
                           int appearDuration, int disappearDuration,
                           string backgroundSprite)
-            : base(backgroundRect, buttonRect, showMode, hideMode, appearDuration, disappearDuration)
+            : base(backgroundRect, contentRect, showMode, hideMode, appearDuration, disappearDuration)
         {
             this.StatusChanged += this.OnPanelStatusChanged;
             this.background = backgroundSprite != null ? UIResourceManager.GetResource<UISprite>(backgroundSprite) : null;

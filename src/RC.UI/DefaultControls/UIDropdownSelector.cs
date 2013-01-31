@@ -223,7 +223,7 @@ namespace RC.UI
         }
 
         /// <summary>
-        /// The UIMouseButton that activated the mouse sensor of this UIButton.
+        /// The UIMouseButton that activated the mouse sensor of this UIDropdownSelector.
         /// </summary>
         private UIMouseButton activatorBtn;
 

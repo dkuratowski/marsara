@@ -71,7 +71,7 @@ namespace RC.App.Starter
         /// <summary>
         /// Gets the string representation of the contents of the MapEditorSetup.
         /// </summary>
-        public static string ToString()
+        public static new string ToString()
         {
             if (mode == MapEditorMode.NewMap)
             {

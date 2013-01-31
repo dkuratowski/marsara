@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 
-namespace RC.UI.DefaultControls
+namespace RC.UI
 {
     /// <summary>
     /// A scrollbar is the combination of a slider and 2 buttons. The slider part of the control can be dragged
@@ -262,11 +262,6 @@ namespace RC.UI.DefaultControls
                 }
             }
         }
-
-        /// <summary>
-        /// The UIMouseButton that activated the mouse sensor of this UIScrollBar.
-        /// </summary>
-        private UIMouseButton activatorBtn;
 
         #endregion Event handlers
 

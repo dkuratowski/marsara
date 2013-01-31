@@ -40,9 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\RCDropdownSelector.cs" />
+    <Compile Include="Controls\RCListBox.cs" />
     <Compile Include="Controls\RCMapDisplay.cs" />
     <Compile Include="Controls\RCScrollBar.cs" />
     <Compile Include="Pages\RCMapEditorPage.cs" />
+    <Compile Include="Panels\RCMapEditorPanel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Panels\RCAppPanel.cs" />
     <Compile Include="Panels\RCGameInfoPanel.cs" />

@@ -23,7 +23,7 @@ namespace RC.App.PresLogic
         {
             this.mapDisplayInfoProvider = ComponentManager.GetInterface<IMapWindow>();
             this.tilesetInfoProvider = ComponentManager.GetInterface<ITileSetStore>();
-            this.noOpenedMapFont = UIResourceManager.GetResource<UIFont>("RC.MapEditor.Fonts.Font9B");
+            this.noOpenedMapFont = UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font9B");
             this.noOpenedMapStr = new UIString("No opened map...",
                                                this.noOpenedMapFont,
                                                UIWorkspace.Instance.PixelScaling,
