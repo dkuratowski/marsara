@@ -10,10 +10,9 @@ namespace RC.App.BizLogic
     /// <summary>
     /// This component interface provides informations for displaying a rectangular area of the currently opened map.
     /// The area to be displayed is designated by a window with a resolution aligned with the navigation cells.
-    /// This interface cannot be accessed if there is no opened map in the system.
     /// </summary>
     [ComponentInterface]
-    public interface IMapWindow
+    public interface IMapDisplayInfo
     {
         /// <summary>
         /// Gets or sets the window that designates the displayed area of the map.

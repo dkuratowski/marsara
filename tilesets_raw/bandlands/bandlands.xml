@@ -129,6 +129,16 @@
         </variant>
       </else>
     </mixedTile>
+    <mixedTile terrainA="Water" terrainB="Dirt" combination="BABA">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
+    <mixedTile terrainA="Water" terrainB="Dirt" combination="ABAB">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BBBA">
       <variant image="water_dirt_bbba.png">
         <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
@@ -177,6 +187,16 @@
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="ABBA">
       <variant image="dirt_asphalt_abba.png"></variant>
+    </mixedTile>
+    <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="BABA">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
+    <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="ABAB">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="AAAB">
       <variant image="dirt_asphalt_aaab.png"></variant>
@@ -375,6 +395,16 @@
         <dataOverwriteRect field="GroundLevel" rect="11;4;2;2">1</dataOverwriteRect>
         <dataOverwriteRect field="GroundLevel" rect="9;5;2;2">1</dataOverwriteRect>
         <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
+      </variant>
+    </mixedTile>
+    <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BABA">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
+    <mixedTile terrainA="Asphalt" terrainB="Structure" combination="ABAB">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="AAAB">
@@ -610,6 +640,16 @@
         <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
       </variant>
     </mixedTile>
+    <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BABA">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
+    <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="ABAB">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="AAAB">
       <variant image="dirt_highdirt_aaab.png">
         <dataOverwriteRect field="IsWalkable" rect="1;3;2;2">false</dataOverwriteRect>
@@ -697,6 +737,16 @@
         <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
       </variant>
     </mixedTile>
+    <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BABA">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
+    <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="ABAB">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="AAAB">
       <variant image="highdirt_highgrass_aaab.png">
         <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
@@ -742,6 +792,16 @@
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="ABBA">
       <variant image="dirt_grass_abba.png"></variant>
     </mixedTile>
+    <mixedTile terrainA="Dirt" terrainB="Grass" combination="BABA">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
+    <mixedTile terrainA="Dirt" terrainB="Grass" combination="ABAB">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="AAAB">
       <variant image="dirt_grass_aaab.png"></variant>
     </mixedTile>
@@ -778,6 +838,16 @@
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="ABBA">
       <variant image="dirt_mud_abba.png"></variant>
+    </mixedTile>
+    <mixedTile terrainA="Dirt" terrainB="Mud" combination="BABA">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
+    <mixedTile terrainA="Dirt" terrainB="Mud" combination="ABAB">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="AAAB">
       <variant image="dirt_mud_aaab.png"></variant>
@@ -865,6 +935,16 @@
         <dataOverwriteQuarter field="IsBuildable" which="East">false</dataOverwriteQuarter>
         <dataOverwriteQuarter field="IsBuildable" which="South">false</dataOverwriteQuarter>
         <dataOverwriteCell field="IsBuildable" cell="7;3">false</dataOverwriteCell>
+      </variant>
+    </mixedTile>
+    <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BABA">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
+      </variant>
+    </mixedTile>
+    <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="ABAB">
+      <variant image="isotile_sample.png">
+		<!-- TODO -->
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="AAAB">

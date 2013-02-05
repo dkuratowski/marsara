@@ -17,8 +17,7 @@ namespace RC.App.Starter
     }
 
     /// <summary>
-    /// Static class that contains the information for starting the map editor. By default the map editor
-    /// is not started.
+    /// Static class that contains the startup-settings of the map editor. By default the map editor is not started.
     /// </summary>
     static class MapEditorSetup
     {
@@ -42,12 +41,12 @@ namespace RC.App.Starter
         }
 
         /// <summary>
-        /// Gets the name of the tileset file in case of MapEditorMode.NewMap or MapEditorMode.LoadMap.
+        /// Gets the name of the tileset of the new map in case of MapEditorMode.NewMap.
         /// </summary>
-        public static string TilesetFile
+        public static string TilesetName
         {
-            get { return tilesetFile; }
-            set { tilesetFile = value; }
+            get { return tilesetName; }
+            set { tilesetName = value; }
         }
 
         /// <summary>
@@ -75,11 +74,11 @@ namespace RC.App.Starter
         {
             if (mode == MapEditorMode.NewMap)
             {
-                return string.Format("NEW MAP: map-file={0} tileset-file={1} default-terrain={2} size={3}", mapFile, tilesetFile, defaultTerrain, mapSize);
+                return string.Format("NEW MAP: map-file={0} tileset-file={1} default-terrain={2} size={3}", mapFile, tilesetName, defaultTerrain, mapSize);
             }
             else if (mode == MapEditorMode.LoadMap)
             {
-                return string.Format("LOAD MAP: map-file={0} tileset-file={1}", mapFile, tilesetFile);
+                return string.Format("LOAD MAP: map-file={0} tileset-file={1}", mapFile, tilesetName);
             }
             else
             {
@@ -99,9 +98,9 @@ namespace RC.App.Starter
         private static string mapFile;
 
         /// <summary>
-        /// The name of the tileset file in case of MapEditorMode.NewMap or MapEditorMode.LoadMap.
+        /// The name of the tileset of the new map in case of MapEditorMode.NewMap.
         /// </summary>
-        private static string tilesetFile;
+        private static string tilesetName;
 
         /// <summary>
         /// The name of the default terrain in case of MapEditorMode.NewMap.

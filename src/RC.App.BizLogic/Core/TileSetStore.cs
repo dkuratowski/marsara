@@ -20,10 +20,16 @@ namespace RC.App.BizLogic.Core
         public TileSetStore()
         {
             this.tilesetManager = null;
-            this.loadedTilesets = new List<string>();
+            this.loadedTilesets = new HashSet<string>();
         }
 
         #region ITileSetStore methods
+
+        /// <see cref="ITileSetStore.HasTileSet"/>
+        public bool HasTileSet(string tilesetName)
+        {
+            return this.loadedTilesets.Contains(tilesetName);
+        }
 
         /// <see cref="ITileSetStore.TileSets"/>
         public IEnumerable<string> TileSets
@@ -72,7 +78,11 @@ namespace RC.App.BizLogic.Core
             FileInfo[] tilesetFiles = rootDir.GetFiles("*.xml", SearchOption.AllDirectories);
             foreach (FileInfo tilesetFile in tilesetFiles)
             {
-                this.loadedTilesets.Add(this.tilesetManager.LoadTileSet(tilesetFile.FullName));
+                string tilesetName = this.tilesetManager.LoadTileSet(tilesetFile.FullName);
+                if (!this.loadedTilesets.Add(tilesetName))
+                {
+                    throw new InvalidOperationException(string.Format("Tileset with name '{0}' already loaded!", tilesetName));
+                }
             }
         }
 
@@ -87,6 +97,6 @@ namespace RC.App.BizLogic.Core
         /// <summary>
         /// List of the name of the loaded tilesets.
         /// </summary>
-        private List<string> loadedTilesets;
+        private HashSet<string> loadedTilesets;
     }
 }

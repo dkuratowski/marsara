@@ -21,8 +21,11 @@ namespace RC.App.PresLogic
         /// <param name="backgroundSprite">
         /// Name of the sprite resource that will be the background of this panel or null if there is no background.
         /// </param>
-        public RCMapEditorPanel(RCIntRectangle backgroundRect, RCIntRectangle contentRect, string backgroundSprite)
-            : base(backgroundRect, contentRect, ShowMode.Appear, HideMode.Disappear, 0, 0, backgroundSprite)
+        public RCMapEditorPanel(RCIntRectangle backgroundRect, RCIntRectangle contentRect,
+                               ShowMode showMode, HideMode hideMode,
+                               int appearDuration, int disappearDuration,
+                               string backgroundSprite)
+            : base(backgroundRect, contentRect, showMode, hideMode, appearDuration, disappearDuration, backgroundSprite)
         {
             this.editModeSelector = new RCDropdownSelector(new RCIntVector(4, 4), 85, new string[3] { "Draw terrain", "Place terrain object", "Place starting point" });
             this.paletteListbox = new RCListBox(new RCIntVector(4, 22), 85, 9, 100);
@@ -64,6 +67,16 @@ namespace RC.App.PresLogic
             this.AddControl(this.saveButton);
             this.AddControl(this.exitButton);
         }
+
+        /// <summary>
+        /// Gets the "Save" button.
+        /// </summary>
+        public RCMenuButton SaveButton { get { return this.saveButton; } }
+
+        /// <summary>
+        /// Gets the "Exit" button.
+        /// </summary>
+        public RCMenuButton ExitButton { get { return this.exitButton; } }
 
         /// <summary>
         /// The edit-mode selector control.

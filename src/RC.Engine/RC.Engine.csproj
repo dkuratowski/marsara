@@ -47,7 +47,6 @@
     <Compile Include="MapManagement\IMap.cs" />
     <Compile Include="MapManagement\IMapEdit.cs" />
     <Compile Include="MapManagement\IMapManager.cs" />
-    <Compile Include="MapManagement\IMapPlay.cs" />
     <Compile Include="MapManagement\INavCell.cs" />
     <Compile Include="MapManagement\Map.cs" />
     <Compile Include="MapManagement\MapDirection.cs" />

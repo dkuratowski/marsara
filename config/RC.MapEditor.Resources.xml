@@ -36,7 +36,12 @@
     </resource>
     <resource namespace="RC.MapEditor.Sprites" name="CtrlPanel" loader="SpriteLoader">
       <path name="imageFile">../sprites/menusprites/mapeditor_ctrlpanel.png</path>
-	  <parameter name="transparentColor">255;0;255</parameter>
+	    <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="IsotileHighlight" loader="SpriteLoader">
+      <path name="imageFile">../sprites/pointers/isotile_highlight.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
 

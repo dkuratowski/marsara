@@ -171,7 +171,18 @@ namespace RC.App.Starter
             UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(InitMapEditorPage);
 
             /// Create and activate the map editor page.
-            RCMapEditorPage mapEditorPage = new RCMapEditorPage();
+            RCMapEditorPage mapEditorPage = null;
+            if (MapEditorSetup.Mode == MapEditorMode.LoadMap)
+            {
+                mapEditorPage = new RCMapEditorPage(MapEditorSetup.MapFile);
+            }
+            else if (MapEditorSetup.Mode == MapEditorMode.NewMap)
+            {
+                mapEditorPage = new RCMapEditorPage(MapEditorSetup.MapFile,
+                                                    MapEditorSetup.TilesetName,
+                                                    MapEditorSetup.DefaultTerrain,
+                                                    MapEditorSetup.MapSize);
+            }
             UIWorkspace.Instance.RegisterPage(mapEditorPage);
             mapEditorPage.Activate();
         }
@@ -189,9 +200,10 @@ namespace RC.App.Starter
                                                 });
 
             ComponentManager.RegisterComponents("RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[1]
+                                                new string[2]
                                                 {
-                                                    "RC.App.BizLogic.TileSetStore"
+                                                    "RC.App.BizLogic.TileSetStore",
+                                                    "RC.App.BizLogic.MapControl"
                                                 });
             ComponentManager.StartComponents();
         }

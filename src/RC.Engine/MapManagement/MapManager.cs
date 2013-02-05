@@ -96,8 +96,8 @@ namespace RC.Engine
             }
         }
 
-        /// <see cref="IMapManager.LoadMapForPlay"/>
-        public IMapPlay LoadMapForPlay(string fileName)
+        /// <see cref="IMapManager.LoadMap"/>
+        public IMap LoadMap(string fileName)
         {
             lock (this.lockObject)
             {

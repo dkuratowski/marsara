@@ -13,6 +13,13 @@ namespace RC.App.BizLogic
     public interface ITileSetStore
     {
         /// <summary>
+        /// Checks whether a tileset with the given name exists in the system or not.
+        /// </summary>
+        /// <param name="tilesetName">The name of the tileset.</param>
+        /// <returns>True if a tileset with the given name exists in the system, false otherwise.</returns>
+        bool HasTileSet(string tilesetName);
+
+        /// <summary>
         /// Gets the list of the names of the available tilesets.
         /// </summary>
         IEnumerable<string> TileSets { get; }

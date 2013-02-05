@@ -41,9 +41,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\BizLogicConstants.cs" />
+    <Compile Include="Core\MapControl.cs" />
     <Compile Include="Core\TileSetStore.cs" />
-    <Compile Include="IMapWindow.cs" />
+    <Compile Include="IMapDisplayInfo.cs" />
     <Compile Include="IMapEditor.cs" />
+    <Compile Include="IMapGeneralInfo.cs" />
     <Compile Include="ITileSetStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

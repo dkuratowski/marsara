@@ -1,3 +1,6 @@
 <traceConfig>
+  <registerTraceFilter namespace="RC.App.BizLogic" name="Error" />
+  <registerTraceFilter namespace="RC.App.BizLogic" name="Warning" />
   <registerTraceFilter namespace="RC.App.BizLogic" name="Info" />
+  <registerTraceFilter namespace="RC.App.BizLogic" name="Details" />
 </traceConfig>

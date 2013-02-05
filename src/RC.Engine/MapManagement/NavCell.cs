@@ -39,6 +39,12 @@ namespace RC.Engine
         /// <see cref="INavCell.Data"/>
         public CellData Data { get { return this.data; } }
 
+        /// <see cref="INavCell.ParentQuadTile"/>
+        public IQuadTile ParentQuadTile { get { return this.parentQuadTile; } }
+
+        /// <see cref="INavCell.ParentIsoTile"/>
+        public IIsoTile ParentIsoTile { get { return this.parentIsoTile; } }
+
         #endregion INavCell methods
 
         #region Internal map structure buildup methods

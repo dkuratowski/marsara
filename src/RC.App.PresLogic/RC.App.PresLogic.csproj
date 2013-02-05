@@ -42,7 +42,8 @@
   <ItemGroup>
     <Compile Include="Controls\RCDropdownSelector.cs" />
     <Compile Include="Controls\RCListBox.cs" />
-    <Compile Include="Controls\RCMapDisplay.cs" />
+    <Compile Include="MapScrollDirection.cs" />
+    <Compile Include="RCMapDisplay.cs" />
     <Compile Include="Controls\RCScrollBar.cs" />
     <Compile Include="Pages\RCMapEditorPage.cs" />
     <Compile Include="Panels\RCMapEditorPanel.cs" />

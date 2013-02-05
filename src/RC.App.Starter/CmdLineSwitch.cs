@@ -191,7 +191,7 @@ namespace RC.App.Starter
         /// The indices of the arguments.
         /// </summary>
         public const int MAP_FILE = 0;
-        public const int TILESET_FILE = 1;
+        public const int TILESET_NAME = 1;
         public const int DEFAULT_TERRAIN = 2;
         public const int SIZE = 3;
 
@@ -201,11 +201,11 @@ namespace RC.App.Starter
         /// <param name="args">The arguments of the switch.</param>
         public NewMapSwitch(string[] args) : base(args)
         {
-            if (args == null || args.Length != 4) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-file default-terrain size'. Example: '/newmap mymap.rcm mytileset.xml Dirt 64;32'."); }
-            if (args[0] == null || args[0].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-file default-terrain size'. Example: '/newmap mymap.rcm mytileset.xml Dirt 64;32'."); }
-            if (args[1] == null || args[1].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-file default-terrain size'. Example: '/newmap mymap.rcm mytileset.xml Dirt 64;32'."); }
-            if (args[2] == null || args[2].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-file default-terrain size'. Example: '/newmap mymap.rcm mytileset.xml Dirt 64;32'."); }
-            if (args[3] == null || args[3].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-file default-terrain size'. Example: '/newmap mymap.rcm mytileset.xml Dirt 64;32'."); }
+            if (args == null || args.Length != 4) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-name default-terrain size'. Example: '/newmap mymap.rcm Bandlands Dirt 64;32'."); }
+            if (args[0] == null || args[0].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-name default-terrain size'. Example: '/newmap mymap.rcm Bandlands Dirt 64;32'."); }
+            if (args[1] == null || args[1].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-name default-terrain size'. Example: '/newmap mymap.rcm Bandlands Dirt 64;32'."); }
+            if (args[2] == null || args[2].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-name default-terrain size'. Example: '/newmap mymap.rcm Bandlands Dirt 64;32'."); }
+            if (args[3] == null || args[3].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-name default-terrain size'. Example: '/newmap mymap.rcm Bandlands Dirt 64;32'."); }
         }
 
         /// <see cref="CmdLineSwitch.Execute"/>
@@ -213,7 +213,7 @@ namespace RC.App.Starter
         {
             MapEditorSetup.Mode = MapEditorMode.NewMap;
             MapEditorSetup.MapFile = this.Arguments[MAP_FILE];
-            MapEditorSetup.TilesetFile = this.Arguments[TILESET_FILE];
+            MapEditorSetup.TilesetName = this.Arguments[TILESET_NAME];
             MapEditorSetup.DefaultTerrain = this.Arguments[DEFAULT_TERRAIN];
             MapEditorSetup.MapSize = XmlHelper.LoadVector(this.Arguments[SIZE]);
         }
@@ -233,7 +233,6 @@ namespace RC.App.Starter
         /// The indices of the arguments.
         /// </summary>
         public const int MAP_FILE = 0;
-        public const int TILESET_FILE = 1;
 
         /// <summary>
         /// Constructs a LoadMapSwitch object.
@@ -241,9 +240,8 @@ namespace RC.App.Starter
         /// <param name="args">The arguments of the switch.</param>
         public LoadMapSwitch(string[] args) : base(args)
         {
-            if (args == null || args.Length != 2) { throw new Exception("/loadmap switch usage: '/loadmap map-file tileset-file'. Example: '/loadmap mymap.rcm mytileset.xml'."); }
-            if (args[0] == null || args[0].Length == 0) { throw new Exception("/loadmap switch usage: '/loadmap map-file tileset-file'. Example: '/loadmap mymap.rcm mytileset.xml'."); }
-            if (args[1] == null || args[1].Length == 0) { throw new Exception("/loadmap switch usage: '/loadmap map-file tileset-file'. Example: '/loadmap mymap.rcm mytileset.xml'."); }
+            if (args == null || args.Length != 1) { throw new Exception("/loadmap switch usage: '/loadmap map-file'. Example: '/loadmap mymap.rcm'."); }
+            if (args[0] == null || args[0].Length == 0) { throw new Exception("/loadmap switch usage: '/loadmap map-file'. Example: '/loadmap mymap.rcm'."); }
         }
 
         /// <see cref="CmdLineSwitch.Execute"/>
@@ -251,7 +249,6 @@ namespace RC.App.Starter
         {
             MapEditorSetup.Mode = MapEditorMode.LoadMap;
             MapEditorSetup.MapFile = this.Arguments[MAP_FILE];
-            MapEditorSetup.TilesetFile = this.Arguments[TILESET_FILE];
         }
     }
 }

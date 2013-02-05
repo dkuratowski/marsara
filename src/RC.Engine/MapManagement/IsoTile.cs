@@ -34,6 +34,8 @@ namespace RC.Engine
 
             this.navCells = new NavCell[Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD,
                                         Map.QUAD_PER_ISO_HORZ * Map.NAVCELL_PER_QUAD];
+
+            this.referenceNavCell = null;
         }
 
         #region IIsoTile methods
@@ -53,13 +55,26 @@ namespace RC.Engine
         /// <see cref="IIsoTile.Type"/>
         public TileType Type { get { return this.type; } }
 
-        /// <see cref="IIsoTile.GetNavCell"/>
-        public INavCell GetNavCell(RCIntVector coords)
-        {
-            if (coords == RCIntVector.Undefined) { throw new ArgumentNullException("coords"); }
-            if (coords.X < 0 || coords.Y < 0 || coords.X >= Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD || coords.Y >= Map.QUAD_PER_ISO_HORZ * Map.NAVCELL_PER_QUAD) { throw new ArgumentOutOfRangeException("coords"); }
+        /// <see cref="IIsoTile.Variant"/>
+        public TileVariant Variant { get { return this.variant; } }
 
-            return this.navCells[coords.X, coords.Y];
+        /// <see cref="IIsoTile.GetNavCell"/>
+        public INavCell GetNavCell(RCIntVector index)
+        {
+            if (index == RCIntVector.Undefined) { throw new ArgumentNullException("index"); }
+            if (index.X < 0 || index.Y < 0 || index.X >= Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD || index.Y >= Map.QUAD_PER_ISO_HORZ * Map.NAVCELL_PER_QUAD) { throw new ArgumentOutOfRangeException("index"); }
+
+            return this.navCells[index.X, index.Y];
+        }
+
+        /// <see cref="IIsoTile.GetNavCellCoords"/>
+        public RCIntVector GetNavCellCoords(RCIntVector index)
+        {
+            if (this.referenceNavCell == null) { throw new InvalidOperationException("Reference navigation cell doesn't exist!"); }
+            if (index == RCIntVector.Undefined) { throw new ArgumentNullException("index"); }
+            if (index.X < 0 || index.Y < 0 || index.X >= Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD || index.Y >= Map.QUAD_PER_ISO_HORZ * Map.NAVCELL_PER_QUAD) { throw new ArgumentOutOfRangeException("index"); }
+
+            return this.referenceNavCell.MapCoords + index - this.referenceNavCell.IsoIndices;
         }
 
         #endregion IIsoTile methods
@@ -95,6 +110,7 @@ namespace RC.Engine
             if (this.navCells[indices.X, indices.Y] != null) { throw new InvalidOperationException(string.Format("Child navigation cell at {0} already set!", indices)); }
 
             this.navCells[indices.X, indices.Y] = cell;
+            if (this.referenceNavCell == null) { this.referenceNavCell = cell; }
         }
 
         #endregion Internal map structure buildup methods
@@ -438,6 +454,11 @@ namespace RC.Engine
         /// List of the navigation cells of this isometric tile.
         /// </summary>
         private NavCell[,] navCells;
+
+        /// <summary>
+        /// The reference navigation cell.
+        /// </summary>
+        private NavCell referenceNavCell;
 
         /// <summary>
         /// Reference to the map that this isometric tile belongs to.

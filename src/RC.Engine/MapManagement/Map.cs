@@ -260,6 +260,26 @@ namespace RC.Engine
             }
         }
 
+        /// <see cref="IMap.Size"/>
+        public RCIntVector Size
+        {
+            get
+            {
+                if (this.status == MapStatus.Disposed) { throw new ObjectDisposedException("MapManager"); }
+                return this.size;
+            }
+        }
+
+        /// <see cref="IMap.NavSize"/>
+        public RCIntVector NavSize
+        {
+            get
+            {
+                if (this.status == MapStatus.Disposed) { throw new ObjectDisposedException("MapManager"); }
+                return this.size * NAVCELL_PER_QUAD;
+            }
+        }
+
         /// <see cref="IMap.GetQuadTile"/>
         public IQuadTile GetQuadTile(RCIntVector coords)
         {
@@ -270,6 +290,12 @@ namespace RC.Engine
         public IIsoTile GetIsoTile(RCIntVector coords)
         {
             return this.GetIsoTileImpl(coords);
+        }
+
+        /// <see cref="IMap.GetNavCell"/>
+        public INavCell GetNavCell(RCIntVector coords)
+        {
+            return this.GetNavCellImpl(coords);
         }
 
         #endregion IMap methods
@@ -357,18 +383,6 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// Gets the size of this map.
-        /// </summary>
-        public RCIntVector Size
-        {
-            get
-            {
-                if (this.status == MapStatus.Disposed) { throw new ObjectDisposedException("MapManager"); }
-                return this.size;
-            }
-        }
-
-        /// <summary>
         /// Gets the default tile type or null if no default tile type was given.
         /// </summary>
         public TileType DefaultTileType
@@ -407,6 +421,19 @@ namespace RC.Engine
                 null;
         }
 
+        /// <summary>
+        /// The internal implementation of IMap.GetNavCell.
+        /// </summary>
+        public NavCell GetNavCellImpl(RCIntVector coords)
+        {
+            if (this.status == MapStatus.Disposed) { throw new ObjectDisposedException("MapManager"); }
+            if (this.status != MapStatus.ReadyToEdit && this.status != MapStatus.ReadyToUse) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
+            if (coords == RCIntVector.Undefined) { throw new ArgumentNullException("coords"); }
+            if (coords.X < 0 || coords.X >= this.size.X * NAVCELL_PER_QUAD || coords.Y < 0 || coords.Y >= this.size.Y * NAVCELL_PER_QUAD) { throw new ArgumentOutOfRangeException("coords"); }
+
+            return this.navCells[coords.X, coords.Y];
+        }
+
         #endregion Internal public methods
 
         #region Static constants
@@ -430,7 +457,7 @@ namespace RC.Engine
         /// <summary>
         /// The maximum size of a map in quadratic tiles.
         /// </summary>
-        public const int MAX_MAPSIZE = 64; // TODO: change it back to 256
+        public const int MAX_MAPSIZE = 256; // TODO: change back to 256
 
         /// <summary>
         /// Number of quadratic tile rows intersecting horizontally the half of an isometric tile.
@@ -527,7 +554,7 @@ namespace RC.Engine
                 {
                     for (int y = 0; y < Map.NAVCELL_PER_QUAD; y++)
                     {
-                        NavCell currentCell = tile[x, y];
+                        NavCell currentCell = tile.GetNavCellImpl(new RCIntVector(x, y));
                         this.navCells[currentCell.MapCoords.X, currentCell.MapCoords.Y] = currentCell;
                     }
                 }

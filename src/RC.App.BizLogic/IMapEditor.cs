@@ -32,10 +32,15 @@ namespace RC.App.BizLogic
         MapEditorErrorCode LoadMap(string filename);
 
         /// <summary>
-        /// Saves the map to the given file.
+        /// Saves the currently opened map to the given file.
         /// </summary>
         /// <param name="filename">The name of the file to save.</param>
         MapEditorErrorCode SaveMap(string filename);
+
+        /// <summary>
+        /// Closes the currently opened map. If there is no opened map, then this function has no effect.
+        /// </summary>
+        MapEditorErrorCode CloseMap();
 
         /// <summary>
         /// Draws the given terrain type on the isometric tile at the given position.
@@ -43,11 +48,6 @@ namespace RC.App.BizLogic
         /// <param name="position">The position inside the map display window in navigation cells.</param>
         /// <param name="terrainName">The name of the terrain to draw.</param>
         MapEditorErrorCode DrawTerrain(RCIntVector position, string terrainName);
-
-        /// <summary>
-        /// Gets the name of the tileset of the currently loaded map.
-        /// </summary>
-        string TilesetName { get; }
     }
 
     /// <summary>

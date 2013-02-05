@@ -46,11 +46,11 @@ namespace RC.Engine
         IMapEdit LoadMapForEdit(string fileName);
 
         /// <summary>
-        /// Loads an existing map from the given file for playing.
+        /// Loads an existing map from the given file.
         /// </summary>
         /// <param name="fileName">The name of the file to load from.</param>
-        /// <returns>The playing interface of the loaded map.</returns>
-        IMapPlay LoadMapForPlay(string fileName);
+        /// <returns>The interface of the loaded map.</returns>
+        IMap LoadMap(string fileName);
 
         /// <summary>
         /// Closes the current map. If the map is being edited, every unsaved data will be lost.

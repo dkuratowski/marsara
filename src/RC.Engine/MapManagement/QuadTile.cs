@@ -45,15 +45,21 @@ namespace RC.Engine
         /// <see cref="IQuadTile.ParentIsoTile"/>
         public IIsoTile IsoTile { get { return this.GetIsoTile(); } }
 
+        /// <see cref="IQuadTile.MapCoords"/>
+        public RCIntVector MapCoords { get { return this.mapCoords; } }
+
+        /// <see cref="IQuadTile.NavCellDims"/>
+        public RCIntVector NavCellDims { get { return new RCIntVector(Map.NAVCELL_PER_QUAD, Map.NAVCELL_PER_QUAD); } }
+
+        /// <see cref="IQuadTile.GetNavCell"/>
+        public INavCell GetNavCell(RCIntVector index) { return this.GetNavCellImpl(index); }
+
         #endregion IQuadTile methods
 
         /// <summary>
-        /// Gets the navigation cell of this quadratic tile at the given coordinates.
+        /// Internal implementation of IQuadTile.GetNavCell
         /// </summary>
-        /// <param name="x">The X coordinate of the navigation cell to get.</param>
-        /// <param name="y">The Y coordinate of the navigation cell to get.</param>
-        /// <returns>The navigation cell of this quadratic tile at the given coordinates.</returns>
-        public NavCell this[int x, int y] { get { return this.navCells[x, y]; } }
+        public NavCell GetNavCellImpl(RCIntVector index) { return this.navCells[index.X, index.Y]; }
 
         #region Internal map structure buildup methods
 
@@ -109,11 +115,6 @@ namespace RC.Engine
         }
 
         #endregion Internal attach and detach methods
-
-        /// <summary>
-        /// Gets the map coordinates of this quadratic tile.
-        /// </summary>
-        public RCIntVector MapCoords { get { return this.mapCoords; } }
 
         /// <summary>
         /// Gets the reference to the parent isometric tile.

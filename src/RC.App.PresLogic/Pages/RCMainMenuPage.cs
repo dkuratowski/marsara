@@ -138,7 +138,6 @@ namespace RC.App.PresLogic
                     this.loadingTask = UIResourceManager.LoadResourceGroupAsync("RC.App.CommonResources");
                     this.loadingTask.Finished += this.LoadingFinished;
                     this.loadingTask.Failed += this.LoadingFailed;
-
                 }
             }
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common.Configuration;
+using RC.Common.Diagnostics;
 
 namespace RC.App.BizLogic.Core
 {
@@ -20,5 +21,16 @@ namespace RC.App.BizLogic.Core
         /// Name of the tile variant property that stores the transparent color.
         /// </summary>
         public const string TILEPROP_TRANSPARENTCOLOR = "TransparentColor";
+    }
+
+    /// <summary>
+    /// This static class is used to access the trace filters defined for the RC.App.BizLogic module.
+    /// </summary>
+    static class BizLogicTraceFilters
+    {
+        public static readonly int ERROR = TraceManager.GetTraceFilterID("RC.App.BizLogic.Error");
+        public static readonly int WARNING = TraceManager.GetTraceFilterID("RC.App.BizLogic.Warning");
+        public static readonly int INFO = TraceManager.GetTraceFilterID("RC.App.BizLogic.Info");
+        public static readonly int DETAILS = TraceManager.GetTraceFilterID("RC.App.BizLogic.Details");
     }
 }

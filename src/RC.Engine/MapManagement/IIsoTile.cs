@@ -27,6 +27,11 @@ namespace RC.Engine
         TileType Type { get; }
 
         /// <summary>
+        /// Gets the currently selected variant of this isometric tile.
+        /// </summary>
+        TileVariant Variant { get; }
+
+        /// <summary>
         /// Gets the neighbour of this isometric tile at the given direction.
         /// </summary>
         /// <param name="direction">The direction of the neighbour to get.</param>
@@ -34,13 +39,20 @@ namespace RC.Engine
         IIsoTile GetNeighbour(MapDirection direction);
 
         /// <summary>
-        /// Gets the navigation cell of this isometric tile at the given coordinates.
+        /// Gets the navigation cell of this isometric tile at the given index.
         /// </summary>
-        /// <param name="coords">The coordinates of the navigation cell to get.</param>
+        /// <param name="index">The index of the navigation cell to get.</param>
         /// <returns>
-        /// The navigation cell at the given coordinates or null if the given coordinates are outside
+        /// The navigation cell at the given index or null if the given index is outside
         /// of the isometric tile.
         /// </returns>
-        INavCell GetNavCell(RCIntVector coords);
+        INavCell GetNavCell(RCIntVector index);
+
+        /// <summary>
+        /// Gets the map coordinates of the navigation cell at the given index.
+        /// </summary>
+        /// <param name="index">The index of the navigation cell.</param>
+        /// <returns>The coordinates of the navigation cell at the given index.</returns>
+        RCIntVector GetNavCellCoords(RCIntVector index);
     }
 }

@@ -134,6 +134,11 @@
       <path name="imageFile">../sprites/controls/listbox.png</path>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
+    <resource namespace="RC.App.Sprites" name="IsotileHighlight" loader="SpriteLoader">
+      <path name="imageFile">../sprites/pointers/isotile_highlight.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
 
     <resource namespace="RC.App.Fonts" name="Font9B" loader="FontLoader">
       <path name="mappingFile">../fonts/font9b.xml</path>
