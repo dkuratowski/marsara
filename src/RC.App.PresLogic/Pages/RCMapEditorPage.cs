@@ -60,6 +60,7 @@ namespace RC.App.PresLogic
             this.currMapScrollDir = MapScrollDirection.NoScroll;
             this.timeSinceLastScroll = 0;
             this.lastKnownMousePosition = RCIntVector.Undefined;
+            this.activatorBtn = UIMouseButton.Undefined;
         }
 
         /// <see cref="RCAppPage.OnActivated"/>
@@ -91,10 +92,14 @@ namespace RC.App.PresLogic
 
             this.mapDisplay.DisplayingMap = true;
             this.MouseSensor.Move += this.OnMouseMove;
+            this.MouseSensor.ButtonDown += this.OnMouseDown;
+            this.MouseSensor.ButtonUp += this.OnMouseUp;
 
+            this.mapEditorPanel.EditModeChanged += this.OnEditModeChanged;
             this.mapEditorPanel.SaveButton.Pressed += this.OnSaveMapPressed;
             this.mapEditorPanel.ExitButton.Pressed += this.OnExitPressed;
             this.mapEditorPanel.Show();
+            this.mapEditorPanel.ResetControls();
         }
 
         /// <summary>
@@ -123,9 +128,13 @@ namespace RC.App.PresLogic
         private void OnExitPressed(UISensitiveObject sender)
         {
             this.MouseSensor.Move -= this.OnMouseMove;
+            this.MouseSensor.ButtonDown -= this.OnMouseDown;
+            this.MouseSensor.ButtonUp -= this.OnMouseUp;
 
+            this.mapEditorPanel.EditModeChanged -= this.OnEditModeChanged;
             this.mapEditorPanel.SaveButton.Pressed -= this.OnSaveMapPressed;
             this.mapEditorPanel.ExitButton.Pressed -= this.OnExitPressed;
+
             this.StatusChanged += this.OnPageStatusChanged;
             this.Deactivate();
         }
@@ -144,6 +153,33 @@ namespace RC.App.PresLogic
                 this.mapDisplay.DisplayingMap = false;
                 this.StatusChanged -= this.OnPageStatusChanged;
                 UIRoot.Instance.GraphicsPlatform.RenderLoop.Stop();
+            }
+        }
+
+        /// <summary>
+        /// Called when a mouse button has been pushed over the page.
+        /// </summary>
+        private void OnMouseDown(UISensitiveObject sender, UIMouseEventArgs evtArgs)
+        {
+            if (this.activatorBtn == UIMouseButton.Undefined && evtArgs.Button == UIMouseButton.Left)
+            {
+                this.activatorBtn = evtArgs.Button;
+                if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain)
+                {
+                    this.mapEditor.DrawTerrain(this.mapDisplay.TransformPixelToNavCoords(this.lastKnownMousePosition - this.mapDisplay.Position),
+                                               this.mapEditorPanel.SelectedItem);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when a mouse button has been released over the page.
+        /// </summary>
+        private void OnMouseUp(UISensitiveObject sender, UIMouseEventArgs evtArgs)
+        {
+            if (this.activatorBtn == UIMouseButton.Left && evtArgs.Button == UIMouseButton.Left)
+            {
+                this.activatorBtn = UIMouseButton.Undefined;
             }
         }
 
@@ -170,7 +206,10 @@ namespace RC.App.PresLogic
             if (this.lastKnownMousePosition != evtArgs.Position)
             {
                 this.lastKnownMousePosition = evtArgs.Position;
-                this.mapDisplay.HighlightIsoTileAt(this.lastKnownMousePosition - this.mapDisplay.Position);
+                if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain)
+                {
+                    this.mapDisplay.HighlightIsoTileAt(this.lastKnownMousePosition - this.mapDisplay.Position);
+                }
             }
 
             if (this.currMapScrollDir != newScrollDir)
@@ -205,8 +244,20 @@ namespace RC.App.PresLogic
                 if (this.currMapScrollDir == MapScrollDirection.SouthWest) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-1, 1)); }
                 if (this.currMapScrollDir == MapScrollDirection.West) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-1, 0)); }
                 if (this.currMapScrollDir == MapScrollDirection.NorthWest) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-1, -1)); }
-                this.mapDisplay.HighlightIsoTileAt(this.lastKnownMousePosition - this.mapDisplay.Position);
+                
+                if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain)
+                {
+                    this.mapDisplay.HighlightIsoTileAt(this.lastKnownMousePosition - this.mapDisplay.Position);
+                }
             }
+        }
+
+        /// <summary>
+        /// This method is called when the edit mode selection has been changed.
+        /// </summary>
+        private void OnEditModeChanged()
+        {
+            if (this.mapEditorPanel.SelectedMode != RCMapEditorPanel.EditMode.DrawTerrain) { this.mapDisplay.UnhighlightIsoTile(); }
         }
 
         /// <summary>
@@ -263,6 +314,11 @@ namespace RC.App.PresLogic
         /// The last known position of the mouse cursor in the coordinate system of the page.
         /// </summary>
         private RCIntVector lastKnownMousePosition;
+
+        /// <summary>
+        /// The UIMouseButton that activated the mouse sensor of this page.
+        /// </summary>
+        private UIMouseButton activatorBtn;
 
         /// <summary>
         /// The time between map-scrolling operations.

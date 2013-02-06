@@ -89,7 +89,13 @@ namespace RC.App.BizLogic.Core
             if (!this.initThreadStarted) { throw new InvalidOperationException("Component has not yet been started!"); }
             this.initThread.Join();
 
-            throw new NotImplementedException();
+            if (this.activeEditedMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            RCIntVector navCellCoords = this.window.Location + position;
+            IIsoTile isotile = this.activeEditedMap.GetNavCell(navCellCoords).ParentIsoTile;
+
+            this.activeEditedMap.DrawTerrain(isotile, this.activeEditedMap.Tileset.GetTerrainType(terrainName));
+            this.RefreshDisplayInfos();
+            return MapEditorErrorCode.Success;
         }
 
         #endregion IMapEditor methods
@@ -111,74 +117,7 @@ namespace RC.App.BizLogic.Core
                 if (this.window != value)
                 {
                     this.window = value;
-                    this.isoTileDisplayInfos.Clear();
-                    this.tmpIsoTileList.Clear();
-
-                    if (this.window != RCIntRectangle.Undefined)
-                    {
-                        RCIntVector topLeftNavCellCoords = new RCIntVector(Math.Max(0, this.window.Left), Math.Max(0, this.window.Top));
-                        RCIntVector bottomRightNavCellCoords = new RCIntVector(Math.Min(this.activeMap.NavSize.X - 1, this.window.Right - 1), Math.Min(this.activeMap.NavSize.Y - 1, this.window.Bottom - 1));
-                        IQuadTile topLeftQuadTile = this.activeMap.GetNavCell(topLeftNavCellCoords).ParentQuadTile;
-                        IQuadTile bottomRightQuadTile = this.activeMap.GetNavCell(bottomRightNavCellCoords).ParentQuadTile;
-
-                        for (int x = topLeftQuadTile.MapCoords.X; x <= bottomRightQuadTile.MapCoords.X; x++)
-                        {
-                            for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
-                            {
-                                IIsoTile isotile = this.activeMap.GetQuadTile(new RCIntVector(x, y)).IsoTile;
-                                if (this.tmpIsoTileList.Contains(isotile)) { continue; }
-
-                                this.tmpIsoTileList.Add(isotile);
-                                this.isoTileDisplayInfos.Add(
-                                    new IsoTileDisplayInfo()
-                                    {
-                                        TileTypeIndex = isotile.Variant.Index,
-                                        DisplayCoords = isotile.GetNavCellCoords(new RCIntVector(0, 0)) - this.window.Location
-                                    });
-                            }
-
-                            if (x == topLeftQuadTile.MapCoords.X)
-                            {
-                                for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
-                                {
-                                    IQuadTile quadTile = this.activeMap.GetQuadTile(new RCIntVector(x, y));
-                                    for (int row = 0; row < quadTile.NavCellDims.Y; row++)
-                                    {
-                                        IIsoTile isotile = quadTile.GetNavCell(new RCIntVector(0, row)).ParentIsoTile;
-                                        if (this.tmpIsoTileList.Contains(isotile)) { continue; }
-
-                                        this.tmpIsoTileList.Add(isotile);
-                                        this.isoTileDisplayInfos.Add(
-                                            new IsoTileDisplayInfo()
-                                            {
-                                                TileTypeIndex = isotile.Variant.Index,
-                                                DisplayCoords = isotile.GetNavCellCoords(new RCIntVector(0, 0)) - this.window.Location
-                                            });
-                                    }
-                                }
-                            }
-                            else if (x == bottomRightQuadTile.MapCoords.X)
-                            {
-                                for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
-                                {
-                                    IQuadTile quadTile = this.activeMap.GetQuadTile(new RCIntVector(x, y));
-                                    for (int row = 0; row < quadTile.NavCellDims.Y; row++)
-                                    {
-                                        IIsoTile isotile = quadTile.GetNavCell(new RCIntVector(quadTile.NavCellDims.X - 1, row)).ParentIsoTile;
-                                        if (this.tmpIsoTileList.Contains(isotile)) { continue; }
-
-                                        this.tmpIsoTileList.Add(isotile);
-                                        this.isoTileDisplayInfos.Add(
-                                            new IsoTileDisplayInfo()
-                                            {
-                                                TileTypeIndex = isotile.Variant.Index,
-                                                DisplayCoords = isotile.GetNavCellCoords(new RCIntVector(0, 0)) - this.window.Location
-                                            });
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    this.RefreshDisplayInfos();
                 }
             }
         }
@@ -279,6 +218,78 @@ namespace RC.App.BizLogic.Core
         }
 
         #endregion IDisposable methods
+
+        private void RefreshDisplayInfos()
+        {
+            this.isoTileDisplayInfos.Clear();
+            this.tmpIsoTileList.Clear();
+
+            if (this.window != RCIntRectangle.Undefined)
+            {
+                RCIntVector topLeftNavCellCoords = new RCIntVector(Math.Max(0, this.window.Left), Math.Max(0, this.window.Top));
+                RCIntVector bottomRightNavCellCoords = new RCIntVector(Math.Min(this.activeMap.NavSize.X - 1, this.window.Right - 1), Math.Min(this.activeMap.NavSize.Y - 1, this.window.Bottom - 1));
+                IQuadTile topLeftQuadTile = this.activeMap.GetNavCell(topLeftNavCellCoords).ParentQuadTile;
+                IQuadTile bottomRightQuadTile = this.activeMap.GetNavCell(bottomRightNavCellCoords).ParentQuadTile;
+
+                for (int x = topLeftQuadTile.MapCoords.X; x <= bottomRightQuadTile.MapCoords.X; x++)
+                {
+                    for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
+                    {
+                        IIsoTile isotile = this.activeMap.GetQuadTile(new RCIntVector(x, y)).IsoTile;
+                        if (this.tmpIsoTileList.Contains(isotile)) { continue; }
+
+                        this.tmpIsoTileList.Add(isotile);
+                        this.isoTileDisplayInfos.Add(
+                            new IsoTileDisplayInfo()
+                            {
+                                TileTypeIndex = isotile.Variant.Index,
+                                DisplayCoords = isotile.GetNavCellCoords(new RCIntVector(0, 0)) - this.window.Location
+                            });
+                    }
+
+                    if (x == topLeftQuadTile.MapCoords.X)
+                    {
+                        for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
+                        {
+                            IQuadTile quadTile = this.activeMap.GetQuadTile(new RCIntVector(x, y));
+                            for (int row = 0; row < quadTile.NavCellDims.Y; row++)
+                            {
+                                IIsoTile isotile = quadTile.GetNavCell(new RCIntVector(0, row)).ParentIsoTile;
+                                if (this.tmpIsoTileList.Contains(isotile)) { continue; }
+
+                                this.tmpIsoTileList.Add(isotile);
+                                this.isoTileDisplayInfos.Add(
+                                    new IsoTileDisplayInfo()
+                                    {
+                                        TileTypeIndex = isotile.Variant.Index,
+                                        DisplayCoords = isotile.GetNavCellCoords(new RCIntVector(0, 0)) - this.window.Location
+                                    });
+                            }
+                        }
+                    }
+                    else if (x == bottomRightQuadTile.MapCoords.X)
+                    {
+                        for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
+                        {
+                            IQuadTile quadTile = this.activeMap.GetQuadTile(new RCIntVector(x, y));
+                            for (int row = 0; row < quadTile.NavCellDims.Y; row++)
+                            {
+                                IIsoTile isotile = quadTile.GetNavCell(new RCIntVector(quadTile.NavCellDims.X - 1, row)).ParentIsoTile;
+                                if (this.tmpIsoTileList.Contains(isotile)) { continue; }
+
+                                this.tmpIsoTileList.Add(isotile);
+                                this.isoTileDisplayInfos.Add(
+                                    new IsoTileDisplayInfo()
+                                    {
+                                        TileTypeIndex = isotile.Variant.Index,
+                                        DisplayCoords = isotile.GetNavCellCoords(new RCIntVector(0, 0)) - this.window.Location
+                                    });
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Reference to the RC.Engine.MapManager component.

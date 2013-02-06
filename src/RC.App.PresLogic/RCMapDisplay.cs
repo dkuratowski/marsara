@@ -168,6 +168,16 @@ namespace RC.App.PresLogic
             if (this.isotileHighlightCoords != RCIntVector.Undefined) { this.isotileHighlightCoords = RCIntVector.Undefined; }
         }
 
+        /// <summary>
+        /// Transforms the given pixel coordinates to navigation coordinates.
+        /// </summary>
+        /// <param name="pixelCoords">The pixel coordinates to be transformed.</param>
+        /// <returns>The navigation coordinates.</returns>
+        public RCIntVector TransformPixelToNavCoords(RCIntVector pixelCoords)
+        {
+            return pixelCoords / PIXEL_PER_NAVCELL;
+        }
+
         /// <see cref="UIObject.Render_i"/>
         protected override void Render_i(IUIRenderContext renderContext)
         {

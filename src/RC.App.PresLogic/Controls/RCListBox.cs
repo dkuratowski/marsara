@@ -32,6 +32,7 @@ namespace RC.App.PresLogic
             this.items = new UIString[0];
             this.highlightedItems = new UIString[0];
             this.disabledItems = new UIString[0];
+            this.itemStrings = new string[0];
             this.textPartWidth = width - TEXT_PADDING_LEFT - TEXT_PADDING_RIGHT;
 
             this.controlSprite = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ListBox");
@@ -55,16 +56,25 @@ namespace RC.App.PresLogic
             this.items = new UIString[itemStrings.Length];
             this.highlightedItems = new UIString[itemStrings.Length];
             this.disabledItems = new UIString[itemStrings.Length];
+            this.itemStrings = new string[itemStrings.Length];
 
             for (int i = 0; i < itemStrings.Length; i++)
             {
                 this.items[i] = new UIString(itemStrings[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, UIColor.Green);
                 this.highlightedItems[i] = new UIString(itemStrings[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, UIColor.LightGreen);
                 this.disabledItems[i] = new UIString(itemStrings[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, UIColor.White);
+                this.itemStrings[i] = itemStrings[i];
             }
 
             this.ItemCount = itemStrings.Length;
         }
+
+        /// <summary>
+        /// Gets the item of this listbox at the given index.
+        /// </summary>
+        /// <param name="index">The index of the item to get.</param>
+        /// <returns>The item at the given index.</returns>
+        public string this[int index] { get { return this.itemStrings[index]; } }
 
         /// <see cref="UIListBox.CreateScrollbar"/>
         protected override UIScrollBar CreateScrollbar(int intervalLength, int selectedValue)
@@ -111,20 +121,23 @@ namespace RC.App.PresLogic
                 renderContext.RenderSprite(this.controlSprite, new RCIntVector(TEXT_PADDING_LEFT + textPartWidth, i * HEIGHT), new RCIntRectangle(TEXT_PADDING_LEFT + SPRITE_BACKGROUND_WIDTH, i < this.VisibleItemCount - 1 ? HEIGHT : 2 * HEIGHT, TEXT_PADDING_RIGHT, HEIGHT));
             }
 
-            /// Render the items.
-            for (int i = this.FirstVisibleIndex, j = 0; i < this.FirstVisibleIndex + this.VisibleItemCount && i < this.ItemCount; i++, j++)
+            /// Render the items if necessary.
+            if (this.ItemCount > 0)
             {
-                if (this.IsEnabled)
+                for (int i = this.FirstVisibleIndex, j = 0; i < this.FirstVisibleIndex + this.VisibleItemCount && i < this.ItemCount; i++, j++)
                 {
-                    renderContext.RenderString(i == this.HighlightedIndex ? this.highlightedItems[i] : this.items[i],
-                                               new RCIntVector(TEXT_PADDING_LEFT, (j + 1) * HEIGHT - BASELINE - 1),
-                                               this.textPartWidth);
-                }
-                else
-                {
-                    renderContext.RenderString(this.disabledItems[i],
-                                               new RCIntVector(TEXT_PADDING_LEFT, (j + 1) * HEIGHT - BASELINE - 1),
-                                               this.textPartWidth);
+                    if (this.IsEnabled)
+                    {
+                        renderContext.RenderString(i == this.HighlightedIndex ? this.highlightedItems[i] : this.items[i],
+                                                   new RCIntVector(TEXT_PADDING_LEFT, (j + 1) * HEIGHT - BASELINE - 1),
+                                                   this.textPartWidth);
+                    }
+                    else
+                    {
+                        renderContext.RenderString(this.disabledItems[i],
+                                                   new RCIntVector(TEXT_PADDING_LEFT, (j + 1) * HEIGHT - BASELINE - 1),
+                                                   this.textPartWidth);
+                    }
                 }
             }
         }
@@ -143,6 +156,11 @@ namespace RC.App.PresLogic
         /// List of the disabled item strings.
         /// </summary>
         private UIString[] disabledItems;
+
+        /// <summary>
+        /// List of the item strings.
+        /// </summary>
+        private string[] itemStrings;
 
         /// <summary>
         /// The sprite of the control.

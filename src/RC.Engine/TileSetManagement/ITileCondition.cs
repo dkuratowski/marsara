@@ -53,7 +53,7 @@ namespace RC.Engine
             if (neighbour == null) { return false; }
 
             if (isoTile.Type.TerrainA != neighbour.Type.TerrainA || isoTile.Type.TerrainB != neighbour.Type.TerrainB) { return false; }
-            return isoTile.Type.Combination == neighbour.Type.Combination;
+            return this.combination == neighbour.Type.Combination;
         }
 
         /// <summary>
