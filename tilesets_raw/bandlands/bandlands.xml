@@ -974,4 +974,117 @@
       </variant>
     </mixedTile>
   </declareTiles>
+  
+  <declareTerrainObjects>
+    <terrainObject name="Bridge0" image="terrainobj_bridge_0.png" quadSize="14;9" offset="0;0">
+      <tileConstraint quadCoords="13;0" terrain="Asphalt" />      
+      <tileConstraint quadCoords="10;0" terrainA="Dirt" terrainB="Asphalt" combinations="ABAA" />
+      <tileConstraint quadCoords="12;1" terrainA="Dirt" terrainB="Asphalt" combinations="BBAA" />
+      <tileConstraint quadCoords="13;2" terrainA="Dirt" terrainB="Asphalt" combinations="BBAA;BAAA" />      
+      <tileConstraint quadCoords="6;0" terrainA="Water" terrainB="Dirt" combinations="BBAA;BBAB" />
+      <tileConstraint quadCoords="8;1" terrainA="Water" terrainB="Dirt" combinations="BBAA" />
+      <tileConstraint quadCoords="10;2" terrainA="Water" terrainB="Dirt" combinations="BBAA" />
+      <tileConstraint quadCoords="12;3" terrainA="Water" terrainB="Dirt" combinations="BBAA" />
+      <tileConstraint quadCoords="13;4" terrainA="Water" terrainB="Dirt" combinations="BBAA;BAAA" />      
+      <tileConstraint quadCoords="6;2" terrain="Water" />
+      <tileConstraint quadCoords="8;3" terrain="Water" />
+      <tileConstraint quadCoords="10;4" terrain="Water" />
+      <tileConstraint quadCoords="12;5" terrain="Water" />      
+      <tileConstraint quadCoords="4;3" terrain="Water" />
+      <tileConstraint quadCoords="6;4" terrain="Water" />
+      <tileConstraint quadCoords="8;5" terrain="Water" />
+      <tileConstraint quadCoords="10;6" terrain="Water" />      
+      <tileConstraint quadCoords="2;4" terrainA="Water" terrainB="Dirt" combinations="AABB" />
+      <tileConstraint quadCoords="4;5" terrainA="Water" terrainB="Dirt" combinations="AABB" />
+      <tileConstraint quadCoords="6;6" terrainA="Water" terrainB="Dirt" combinations="AABB" />
+      <tileConstraint quadCoords="8;7" terrainA="Water" terrainB="Dirt" combinations="AABB" />      
+      <tileConstraint quadCoords="0;5" terrainA="Dirt" terrainB="Asphalt" combinations="AABB;AABA" />
+      <tileConstraint quadCoords="2;6" terrainA="Dirt" terrainB="Asphalt" combinations="AABB" />
+      <tileConstraint quadCoords="4;7" terrainA="Dirt" terrainB="Asphalt" combinations="AAAB" />
+      <tileConstraint quadCoords="0;7" terrain="Asphalt" />
+      <property name="TransparentColor">255;0;255</property>
+    </terrainObject>
+    <terrainObject name="Bridge1" image="terrainobj_bridge_1.png" quadSize="14;9" offset="0;0">
+      <tileConstraint quadCoords="0;0" terrain="Asphalt" />
+      <tileConstraint quadCoords="3;0" terrainA="Dirt" terrainB="Asphalt" combinations="AAAB" />
+      <tileConstraint quadCoords="1;1" terrainA="Dirt" terrainB="Asphalt" combinations="BAAB" />
+      <tileConstraint quadCoords="0;2" terrainA="Dirt" terrainB="Asphalt" combinations="BAAB;BAAA" />
+      <tileConstraint quadCoords="7;0" terrainA="Water" terrainB="Dirt" combinations="BAAB;BBAB" />
+      <tileConstraint quadCoords="5;1" terrainA="Water" terrainB="Dirt" combinations="BAAB" />
+      <tileConstraint quadCoords="3;2" terrainA="Water" terrainB="Dirt" combinations="BAAB" />
+      <tileConstraint quadCoords="1;3" terrainA="Water" terrainB="Dirt" combinations="BAAB" />
+      <tileConstraint quadCoords="0;4" terrainA="Water" terrainB="Dirt" combinations="BAAB;BAAA" />
+      <tileConstraint quadCoords="7;2" terrain="Water" />
+      <tileConstraint quadCoords="5;3" terrain="Water" />
+      <tileConstraint quadCoords="3;4" terrain="Water" />
+      <tileConstraint quadCoords="1;5" terrain="Water" />
+      <tileConstraint quadCoords="9;3" terrain="Water" />
+      <tileConstraint quadCoords="7;4" terrain="Water" />
+      <tileConstraint quadCoords="5;5" terrain="Water" />
+      <tileConstraint quadCoords="3;6" terrain="Water" />
+      <tileConstraint quadCoords="11;4" terrainA="Water" terrainB="Dirt" combinations="ABBA" />
+      <tileConstraint quadCoords="9;5" terrainA="Water" terrainB="Dirt" combinations="ABBA" />
+      <tileConstraint quadCoords="7;6" terrainA="Water" terrainB="Dirt" combinations="ABBA" />
+      <tileConstraint quadCoords="5;7" terrainA="Water" terrainB="Dirt" combinations="ABBA" />
+      <tileConstraint quadCoords="13;5" terrainA="Dirt" terrainB="Asphalt" combinations="ABBA;AABA" />
+      <tileConstraint quadCoords="11;6" terrainA="Dirt" terrainB="Asphalt" combinations="ABBA" />
+      <tileConstraint quadCoords="9;7" terrainA="Dirt" terrainB="Asphalt" combinations="ABAA" />
+      <tileConstraint quadCoords="13;7" terrain="Asphalt" />
+      <property name="TransparentColor">255;0;255</property>
+    </terrainObject>
+    <terrainObject name="Cliff0" image="terrainobj_cliff_0.png" quadSize="6;6" offset="0;0">
+      <tileConstraint quadCoords="5;0" terrain="HighDirt" />      
+      <tileConstraint quadCoords="2;0" terrain="HighDirt" />
+      <tileConstraint quadCoords="4;1" terrain="HighDirt" />
+      <tileConstraint quadCoords="5;2" terrain="HighDirt" />
+      <tileConstraint quadCoords="0;0" terrainA="Dirt" terrainB="HighDirt" combinations="BBAA;BBAB" />
+      <tileConstraint quadCoords="2;1" terrainA="Dirt" terrainB="HighDirt" combinations="BBAA" />
+      <tileConstraint quadCoords="4;2" terrainA="Dirt" terrainB="HighDirt" combinations="BBAA" />
+      <tileConstraint quadCoords="5;3" terrainA="Dirt" terrainB="HighDirt" combinations="BBAA;BAAA" />
+      <tileConstraint quadCoords="0;2" terrain="Dirt" />
+      <tileConstraint quadCoords="2;3" terrain="Dirt" />
+      <tileConstraint quadCoords="4;4" terrain="Dirt" />
+      <tileConstraint quadCoords="5;5" terrain="Dirt" />
+      <tileConstraint quadCoords="0;4" terrain="Dirt" />
+      <tileConstraint quadCoords="2;5" terrain="Dirt" />
+      <property name="TransparentColor">255;0;255</property>
+    </terrainObject>
+    <terrainObject name="Cliff1" image="terrainobj_cliff_1.png" quadSize="6;6" offset="0;0">
+      <tileConstraint quadCoords="0;0" terrain="HighDirt" />
+      <tileConstraint quadCoords="3;0" terrain="HighDirt" />
+      <tileConstraint quadCoords="1;1" terrain="HighDirt" />
+      <tileConstraint quadCoords="0;2" terrain="HighDirt" />
+      <tileConstraint quadCoords="5;0" terrainA="Dirt" terrainB="HighDirt" combinations="BAAB;BBAB" />
+      <tileConstraint quadCoords="3;1" terrainA="Dirt" terrainB="HighDirt" combinations="BAAB" />
+      <tileConstraint quadCoords="1;2" terrainA="Dirt" terrainB="HighDirt" combinations="BAAB" />
+      <tileConstraint quadCoords="0;3" terrainA="Dirt" terrainB="HighDirt" combinations="BAAB;BAAA" />
+      <tileConstraint quadCoords="5;2" terrain="Dirt" />
+      <tileConstraint quadCoords="3;3" terrain="Dirt" />
+      <tileConstraint quadCoords="1;4" terrain="Dirt" />
+      <tileConstraint quadCoords="0;5" terrain="Dirt" />
+      <tileConstraint quadCoords="5;4" terrain="Dirt" />
+      <tileConstraint quadCoords="3;5" terrain="Dirt" />
+      <property name="TransparentColor">255;0;255</property>
+    </terrainObject>
+    <terrainObject name="StructureWall0" image="terrainobj_structwall_0.png" quadSize="4;4" offset="0;0">
+      <tileConstraint quadCoords="1;0" terrain="Structure" />
+      <tileConstraint quadCoords="3;1" terrain="Structure" />
+      <tileConstraint quadCoords="0;0" terrainA="Asphalt" terrainB="Structure" combinations="BBAA;BBAB" />
+      <tileConstraint quadCoords="2;1" terrainA="Asphalt" terrainB="Structure" combinations="BBAA" />
+      <tileConstraint quadCoords="3;2" terrainA="Asphalt" terrainB="Structure" combinations="BBAA;BAAA" />
+      <tileConstraint quadCoords="0;2" terrain="Asphalt" />
+      <tileConstraint quadCoords="2;3" terrain="Asphalt" />
+      <property name="TransparentColor">255;0;255</property>
+    </terrainObject>
+    <terrainObject name="StructureWall1" image="terrainobj_structwall_1.png" quadSize="4;4" offset="0;0">
+      <tileConstraint quadCoords="2;0" terrain="Structure" />
+      <tileConstraint quadCoords="0;1" terrain="Structure" />
+      <tileConstraint quadCoords="3;0" terrainA="Asphalt" terrainB="Structure" combinations="BAAB;BBAB" />
+      <tileConstraint quadCoords="1;1" terrainA="Asphalt" terrainB="Structure" combinations="BAAB" />
+      <tileConstraint quadCoords="0;2" terrainA="Asphalt" terrainB="Structure" combinations="BAAB;BAAA" />
+      <tileConstraint quadCoords="3;2" terrain="Asphalt" />
+      <tileConstraint quadCoords="1;3" terrain="Asphalt" />
+      <property name="TransparentColor">255;0;255</property>
+    </terrainObject>
+  </declareTerrainObjects>
 </tileset>
