@@ -7,34 +7,40 @@ using RC.Common;
 namespace RC.Engine
 {
     /// <summary>
-    /// Interface of tile data overwriting operations.
+    /// Interface of tile data changeset objects.
     /// </summary>
-    public interface ITileDataOverwriting
+    public interface ICellDataChangeSet
     {
         /// <summary>
-        /// Applies the data overwriting operation on the navigation cells of the given isometric tile.
+        /// Applies the changeset on the navigation cells of the given isometric tile.
         /// </summary>
-        /// <param name="target">The target isometric tile of the operation.</param>
+        /// <param name="target">The target isometric tile of the changeset.</param>
         void Apply(IIsoTile target);
 
         /// <summary>
-        /// Gets the tileset of this operation.
+        /// Applies the changeset on the navigation cells of the given terrain object.
+        /// </summary>
+        /// <param name="target">The target terrain object of the changeset.</param>
+        //void Apply(ITerrainObject target); TODO!
+
+        /// <summary>
+        /// Gets the tileset of this changeset.
         /// </summary>
         TileSet Tileset { get; }
     }
 
     /// <summary>
-    /// This operation overwrites a specific field in every cells of an isometric tile.
+    /// This changeset overwrites a specific field in every cells of the target.
     /// </summary>
-    public class TileDataOverwriting : ITileDataOverwriting
+    public class CellDataChangeSetBase : ICellDataChangeSet
     {
         /// <summary>
-        /// Constructs a TileDataOverwriting operation for overwriting an integer field.
+        /// Constructs a changeset for overwriting an integer field.
         /// </summary>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public TileDataOverwriting(string targetField, int value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public CellDataChangeSetBase(string targetField, int value, TileSet tileset)
         {
             if (tileset == null) { throw new ArgumentNullException("tileset"); }
 
@@ -47,12 +53,12 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// Constructs a TileDataOverwriting operation for overwriting a bool field.
+        /// Constructs a changeset for overwriting a bool field.
         /// </summary>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public TileDataOverwriting(string targetField, bool value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public CellDataChangeSetBase(string targetField, bool value, TileSet tileset)
         {
             if (tileset == null) { throw new ArgumentNullException("tileset"); }
 
@@ -65,34 +71,34 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// Gets the name of the field to overwrite.
+        /// Gets the name of the field that this changeset overwrites.
         /// </summary>
         public string TargetField { get { return this.targetField; } }
 
         /// <summary>
-        /// Gets the index of the field to overwrite.
+        /// Gets the index of the field that this changeset overwrites.
         /// </summary>
         public int TargetFieldIdx { get { return this.targetFieldIdx; } }
 
         /// <summary>
-        /// Gets the type of the field to overwrite.
+        /// Gets the type of the field that this changeset overwrites.
         /// </summary>
         public CellDataType TargetFieldType { get { return this.targetFieldType; } }
 
         /// <summary>
-        /// Gets the value of the field to overwrite (in case of CellDataType.INT).
+        /// Gets the target value of the field that this changeset overwrites (in case of CellDataType.INT).
         /// </summary>
         public int IntValue { get { return this.intValue; } }
 
         /// <summary>
-        /// Gets the value of the field to overwrite (in case of CellDataType.BOOL).
+        /// Gets the target value of the field that this changeset overwrites (in case of CellDataType.BOOL).
         /// </summary>
         public bool BoolValue { get { return this.boolValue; } }
 
-        /// <see cref="ITileDataOverwriting.Tileset"/>
+        /// <see cref="ICellDataChangeSet.Tileset"/>
         public TileSet Tileset { get { return this.tileset; } }
 
-        /// <see cref="ITileDataOverwriting.Apply"/>
+        /// <see cref="ICellDataChangeSet.Apply"/>
         public virtual void Apply(IIsoTile target)
         {
             for (int x = 0; x < Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD; x++)
@@ -105,7 +111,7 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// Applies the overwriting on the navigation cell of the given tile at the given coordinates. If there
+        /// Applies the changeset on the navigation cell of the given isometric tile at the given coordinates. If there
         /// is no cell at the given coordinates then this method has no effect.
         /// </summary>
         /// <param name="target">The target isometric tile of the operation.</param>
@@ -131,73 +137,74 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// The name of the field to overwrite.
+        /// The name of the field that this changeset overwrites.
         /// </summary>
         private string targetField;
 
         /// <summary>
-        /// The index of the field to overwrite.
+        /// The index of the field that this changeset overwrites.
         /// </summary>
         private int targetFieldIdx;
 
         /// <summary>
-        /// The type of the field to overwrite.
+        /// The type of the field that this changeset overwrites.
         /// </summary>
         private CellDataType targetFieldType;
 
         /// <summary>
-        /// The value of the field to overwrite (in case of CellDataType.INT).
+        /// The target value of the field that this changeset overwrites (in case of CellDataType.INT).
         /// </summary>
         private int intValue;
 
         /// <summary>
-        /// The value of the field to overwrite (in case of CellDataType.BOOL).
+        /// The target value of the field that this changeset overwrites (in case of CellDataType.BOOL).
         /// </summary>
         private bool boolValue;
 
         /// <summary>
-        /// The tileset of this operation.
+        /// The tileset of this changeset.
         /// </summary>
         private TileSet tileset;
     }
 
     /// <summary>
-    /// This operation overwrites a specific field in a given quarter of an isometric tile.
+    /// This changeset overwrites a specific field in a given quarter of an isometric tile.
+    /// This changeset cannot be applied to terrain objects.
     /// </summary>
-    public class QuarterOverwriting : TileDataOverwriting
+    public class IsoQuarterChangeSet : CellDataChangeSetBase
     {
         /// <summary>
-        /// Constructs a QuarterOverwriting operation for overwriting an integer field.
+        /// Constructs a changeset for overwriting an integer field.
         /// </summary>
-        /// <param name="targetQuarter">The quarter of the isometric tile to perform the operation.</param>
+        /// <param name="targetQuarter">The quarter of the isometric tile to perform the changeset.</param>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public QuarterOverwriting(MapDirection targetQuarter, string targetField, int value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public IsoQuarterChangeSet(MapDirection targetQuarter, string targetField, int value, TileSet tileset)
             : base(targetField, value, tileset)
         {
             this.CheckAndAssignCtorParams(targetQuarter);
         }
 
         /// <summary>
-        /// Constructs a QuarterOverwriting operation for overwriting a bool field.
+        /// Constructs a changeset for overwriting a bool field.
         /// </summary>
-        /// <param name="targetQuarter">The quarter of the isometric tile to perform the operation.</param>
+        /// <param name="targetQuarter">The quarter of the isometric tile to perform the changeset.</param>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public QuarterOverwriting(MapDirection targetQuarter, string targetField, bool value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public IsoQuarterChangeSet(MapDirection targetQuarter, string targetField, bool value, TileSet tileset)
             : base(targetField, value, tileset)
         {
             this.CheckAndAssignCtorParams(targetQuarter);
         }
 
         /// <summary>
-        /// Gets the target quarter of this operation.
+        /// Gets the target quarter of this changeset.
         /// </summary>
         public MapDirection TargetQuarter { get { return this.targetQuarter; } }
 
-        /// <see cref="ITileDataOverwriting.Apply"/>
+        /// <see cref="ICellDataChangeSet.Apply"/>
         public override void Apply(IIsoTile target)
         {
             for (int x = 0; x < Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD; x++)
@@ -235,7 +242,7 @@ namespace RC.Engine
         /// <summary>
         /// Checks and assigns the parameters coming from the constructor.
         /// </summary>
-        /// <param name="targetQuarter">The target quarter of this operation.</param>
+        /// <param name="targetQuarter">The target quarter of this changeset.</param>
         private void CheckAndAssignCtorParams(MapDirection targetQuarter)
         {
             if (targetQuarter != MapDirection.North &&
@@ -250,48 +257,48 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// The target quarter of this operation.
+        /// The target quarter of this changeset.
         /// </summary>
         private MapDirection targetQuarter;
     }
 
     /// <summary>
-    /// This operation overwrites a specific field in a given row of an isometric tile.
+    /// This changeset overwrites a specific field in a given row of the target.
     /// </summary>
-    public class RowOverwriting : TileDataOverwriting
+    public class RowChangeSet : CellDataChangeSetBase
     {
         /// <summary>
-        /// Constructs a RowOverwriting operation for overwriting an integer field.
+        /// Constructs a changeset for overwriting an integer field.
         /// </summary>
-        /// <param name="targetRow">The row of the isometric tile to perform the operation.</param>
+        /// <param name="targetRow">The row of the target to perform the changeset.</param>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public RowOverwriting(int targetRow, string targetField, int value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public RowChangeSet(int targetRow, string targetField, int value, TileSet tileset)
             : base(targetField, value, tileset)
         {
             this.CheckAndAssignCtorParams(targetRow);
         }
 
         /// <summary>
-        /// Constructs a RowOverwriting operation for overwriting a bool field.
+        /// Constructs a changeset for overwriting a bool field.
         /// </summary>
-        /// <param name="targetRow">The row of the isometric tile to perform the operation.</param>
+        /// <param name="targetRow">The row of the target to perform the changeset.</param>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public RowOverwriting(int targetRow, string targetField, bool value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public RowChangeSet(int targetRow, string targetField, bool value, TileSet tileset)
             : base(targetField, value, tileset)
         {
             this.CheckAndAssignCtorParams(targetRow);
         }
 
         /// <summary>
-        /// Gets the target row of this operation.
+        /// Gets the target row of this changeset.
         /// </summary>
         public int TargetRow { get { return this.targetRow; } }
 
-        /// <see cref="ITileDataOverwriting.Apply"/>
+        /// <see cref="ICellDataChangeSet.Apply"/>
         public override void Apply(IIsoTile target)
         {
             for (int x = 0; x < Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD; x++)
@@ -303,7 +310,7 @@ namespace RC.Engine
         /// <summary>
         /// Checks and assigns the parameters coming from the constructor.
         /// </summary>
-        /// <param name="targetRow">The target row of this operation.</param>
+        /// <param name="targetRow">The target row of this changeset.</param>
         private void CheckAndAssignCtorParams(int targetRow)
         {
             /// TODO: check the parameter.
@@ -311,48 +318,48 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// The target row of this operation.
+        /// The target row of this changeset.
         /// </summary>
         private int targetRow;
     }
 
     /// <summary>
-    /// This operation overwrites a specific field in a given column of an isometric tile.
+    /// This changeset overwrites a specific field in a given column of the target.
     /// </summary>
-    public class ColOverwriting : TileDataOverwriting
+    public class ColumnChangeSet : CellDataChangeSetBase
     {
         /// <summary>
-        /// Constructs a ColOverwriting operation for overwriting an integer field.
+        /// Constructs a changeset for overwriting an integer field.
         /// </summary>
-        /// <param name="targetCol">The column of the isometric tile to perform the operation.</param>
+        /// <param name="targetCol">The column of the target to perform the changeset.</param>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public ColOverwriting(int targetCol, string targetField, int value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public ColumnChangeSet(int targetCol, string targetField, int value, TileSet tileset)
             : base(targetField, value, tileset)
         {
             this.CheckAndAssignCtorParams(targetCol);
         }
 
         /// <summary>
-        /// Constructs a ColOverwriting operation for overwriting a bool field.
+        /// Constructs a changeset for overwriting a bool field.
         /// </summary>
-        /// <param name="targetCol">The column of the isometric tile to perform the operation.</param>
+        /// <param name="targetCol">The column of the target to perform the changeset.</param>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public ColOverwriting(int targetCol, string targetField, bool value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public ColumnChangeSet(int targetCol, string targetField, bool value, TileSet tileset)
             : base(targetField, value, tileset)
         {
             this.CheckAndAssignCtorParams(targetCol);
         }
 
         /// <summary>
-        /// Gets the target column of this operation.
+        /// Gets the target column of this changeset.
         /// </summary>
         public int TargetCol { get { return this.targetCol; } }
 
-        /// <see cref="ITileDataOverwriting.Apply"/>
+        /// <see cref="ICellDataChangeSet.Apply"/>
         public override void Apply(IIsoTile target)
         {
             for (int y = 0; y < Map.QUAD_PER_ISO_HORZ * Map.NAVCELL_PER_QUAD; y++)
@@ -364,7 +371,7 @@ namespace RC.Engine
         /// <summary>
         /// Checks and assigns the parameters coming from the constructor.
         /// </summary>
-        /// <param name="targetCol">The target column of this operation.</param>
+        /// <param name="targetCol">The target column of this changeset.</param>
         private void CheckAndAssignCtorParams(int targetCol)
         {
             /// TODO: check the parameter.
@@ -372,48 +379,48 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// The target column of this operation.
+        /// The target column of this changeset.
         /// </summary>
         private int targetCol;
     }
 
     /// <summary>
-    /// This operation overwrites a specific field in a given cell of an isometric tile.
+    /// This changeset overwrites a specific field in a given cell of the target.
     /// </summary>
-    public class CellOverwriting : TileDataOverwriting
+    public class CellChangeSet : CellDataChangeSetBase
     {
         /// <summary>
-        /// Constructs a CellOverwriting operation for overwriting an integer field.
+        /// Constructs a changeset for overwriting an integer field.
         /// </summary>
-        /// <param name="targetCell">The cell of the isometric tile to perform the operation.</param>
+        /// <param name="targetCell">The cell of the target to perform the changeset.</param>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public CellOverwriting(RCIntVector targetCell, string targetField, int value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public CellChangeSet(RCIntVector targetCell, string targetField, int value, TileSet tileset)
             : base(targetField, value, tileset)
         {
             this.CheckAndAssignCtorParams(targetCell);
         }
 
         /// <summary>
-        /// Constructs a CellOverwriting operation for overwriting a bool field.
+        /// Constructs a changeset for overwriting a bool field.
         /// </summary>
-        /// <param name="targetCell">The cell of the isometric tile to perform the operation.</param>
+        /// <param name="targetCell">The cell of the target to perform the changeset.</param>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public CellOverwriting(RCIntVector targetCell, string targetField, bool value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public CellChangeSet(RCIntVector targetCell, string targetField, bool value, TileSet tileset)
             : base(targetField, value, tileset)
         {
             this.CheckAndAssignCtorParams(targetCell);
         }
 
         /// <summary>
-        /// Gets the target cell of this operation.
+        /// Gets the target cell of this changeset.
         /// </summary>
         public RCIntVector TargetCell { get { return this.targetCell; } }
 
-        /// <see cref="ITileDataOverwriting.Apply"/>
+        /// <see cref="ICellDataChangeSet.Apply"/>
         public override void Apply(IIsoTile target)
         {
             this.ApplyOnCell(target, this.targetCell);
@@ -422,7 +429,7 @@ namespace RC.Engine
         /// <summary>
         /// Checks and assigns the parameters coming from the constructor.
         /// </summary>
-        /// <param name="targetCell">The target cell of this operation.</param>
+        /// <param name="targetCell">The target cell of this changeset.</param>
         private void CheckAndAssignCtorParams(RCIntVector targetCell)
         {
             if (targetCell == RCIntVector.Undefined) { throw new ArgumentNullException("targetCell"); }
@@ -432,48 +439,48 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// The target cell of this operation.
+        /// The target cell of this changeset.
         /// </summary>
         private RCIntVector targetCell;
     }
 
     /// <summary>
-    /// This operation overwrites a specific field in a given rectangle of an isometric tile.
+    /// This changeset overwrites a specific field in a given rectangle of the target.
     /// </summary>
-    public class RectOverwriting : TileDataOverwriting
+    public class RectangleChangeSet : CellDataChangeSetBase
     {
         /// <summary>
-        /// Constructs a RectOverwriting operation for overwriting an integer field.
+        /// Constructs a changeset for overwriting an integer field.
         /// </summary>
-        /// <param name="targetRect">The rectangle of the isometric tile to perform the operation.</param>
+        /// <param name="targetRect">The rectangle of the target to perform the changeset.</param>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public RectOverwriting(RCIntRectangle targetRect, string targetField, int value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public RectangleChangeSet(RCIntRectangle targetRect, string targetField, int value, TileSet tileset)
             : base(targetField, value, tileset)
         {
             this.CheckAndAssignCtorParams(targetRect);
         }
 
         /// <summary>
-        /// Constructs a RectOverwriting operation for overwriting a bool field.
+        /// Constructs a changeset for overwriting a bool field.
         /// </summary>
-        /// <param name="targetRect">The rectangle of the isometric tile to perform the operation.</param>
+        /// <param name="targetRect">The rectangle of the target to perform the changeset.</param>
         /// <param name="targetField">The name of the target field.</param>
         /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this operation.</param>
-        public RectOverwriting(RCIntRectangle targetRect, string targetField, bool value, TileSet tileset)
+        /// <param name="tileset">The tileset of this changeset.</param>
+        public RectangleChangeSet(RCIntRectangle targetRect, string targetField, bool value, TileSet tileset)
             : base(targetField, value, tileset)
         {
             this.CheckAndAssignCtorParams(targetRect);
         }
 
         /// <summary>
-        /// Gets the target rectangle of this operation.
+        /// Gets the target rectangle of this changeset.
         /// </summary>
         public RCIntRectangle TargetRect { get { return this.targetRect; } }
 
-        /// <see cref="ITileDataOverwriting.Apply"/>
+        /// <see cref="ICellDataChangeSet.Apply"/>
         public override void Apply(IIsoTile target)
         {
             for (int x = this.targetRect.X; x < this.targetRect.Right; x++)
@@ -488,7 +495,7 @@ namespace RC.Engine
         /// <summary>
         /// Checks and assigns the parameters coming from the constructor.
         /// </summary>
-        /// <param name="targetRect">The target rectangle of this operation.</param>
+        /// <param name="targetRect">The target rectangle of this changeset.</param>
         private void CheckAndAssignCtorParams(RCIntRectangle targetRect)
         {
             if (targetRect == RCIntRectangle.Undefined) { throw new ArgumentNullException("targetRect"); }
@@ -498,7 +505,7 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// The target rectangle of this operation.
+        /// The target rectangle of this changeset.
         /// </summary>
         private RCIntRectangle targetRect;
     }

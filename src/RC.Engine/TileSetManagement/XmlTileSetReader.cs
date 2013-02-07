@@ -30,6 +30,7 @@ namespace RC.Engine
             XElement terrainTreeElem = xmlDoc.Root.Element(XmlTileSetConstants.TERRAINTYPE_ELEM);
             XElement declareFieldsElem = xmlDoc.Root.Element(XmlTileSetConstants.DECLAREFIELDS_ELEM);
             XElement declareTilesElem = xmlDoc.Root.Element(XmlTileSetConstants.DECLARETILES_ELEM);
+            XElement declareTerrainObjectsElem = xmlDoc.Root.Element(XmlTileSetConstants.DECLARETERRAINOBJECTS_ELEM);
             if (tilesetNameAttr == null) { throw new TileSetException("Tileset name not defined!"); }
             if (terrainTreeElem == null) { throw new TileSetException("Terrain-tree not defined!"); }
             if (declareFieldsElem == null) { throw new TileSetException("Field declarations not found!"); }
@@ -59,6 +60,15 @@ namespace RC.Engine
             foreach (XElement mixedTileElem in declareTilesElem.Elements(XmlTileSetConstants.MIXEDTILE_ELEM))
             {
                 LoadMixedTile(mixedTileElem, tileset);
+            }
+
+            /// Load the terrain objects.
+            if (declareTerrainObjectsElem != null)
+            {
+                foreach (XElement terrainObjElem in declareTerrainObjectsElem.Elements(XmlTileSetConstants.TERRAINOBJECT_ELEM))
+                {
+                    LoadTerrainObject(terrainObjElem, tileset);
+                }
             }
 
             tileset.CheckAndFinalize();
@@ -184,6 +194,110 @@ namespace RC.Engine
         }
 
         /// <summary>
+        /// Loads a terrain object definition from the XML element into the given tileset.
+        /// </summary>
+        /// <param name="fromElem">The XML element to load from.</param>
+        /// <param name="tileset">The TileSet to load to.</param>
+        private static void LoadTerrainObject(XElement fromElem, TileSet tileset)
+        {
+            XAttribute nameAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_NAME_ATTR);
+            XAttribute imageAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_IMAGE_ATTR);
+            XAttribute quadSizeAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_QUADSIZE_ATTR);
+            XAttribute offsetAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_OFFSET_ATTR);
+            if (nameAttr == null) { throw new TileSetException("Name not defined for terrain object!"); }
+            if (imageAttr == null) { throw new TileSetException("Image not defined for terrain object!"); }
+            if (quadSizeAttr == null) { throw new TileSetException("Quadratic size not defined for terrain object!"); }
+
+            /// Read the image data.
+            string imagePath = Path.Combine(tmpTilesetFile.DirectoryName, imageAttr.Value);
+            byte[] imageData = File.ReadAllBytes(imagePath);
+
+            tileset.CreateTerrainObjectType(nameAttr.Value,
+                                            imageData,
+                                            XmlHelper.LoadVector(quadSizeAttr.Value),
+                                            offsetAttr != null ? XmlHelper.LoadVector(offsetAttr.Value)
+                                                               : new RCIntVector(0, 0));
+            TerrainObjectType terrainObj = tileset.GetTerrainObjectType(nameAttr.Value);
+
+            /// Apply the defined area exclusions.
+            foreach (XElement excludeAreaElem in fromElem.Elements(XmlTileSetConstants.TERRAINOBJ_EXCLUDEAREA_ELEM))
+            {
+                XAttribute rectAttr = excludeAreaElem.Attribute(XmlTileSetConstants.TERRAINOBJ_EXCLUDEAREA_RECT_ATTR);
+                if (rectAttr == null) { throw new TileSetException("The rectangle of the excluded area not defined!"); }
+                terrainObj.ExcludeArea(XmlHelper.LoadRectangle(rectAttr.Value));
+            }
+
+            /// Load the constraints, the properties and the cell data changesets.
+            foreach (XElement childElem in fromElem.Elements())
+            {
+                if (childElem.Name.LocalName == XmlTileSetConstants.TERRAINOBJ_PROP_ELEM)
+                {
+                    XAttribute propNameAttr = childElem.Attribute(XmlTileSetConstants.TERRAINOBJ_PROP_NAME_ATTR);
+                    if (propNameAttr == null) { throw new TileSetException("Terrain object property name not defined!"); }
+                    terrainObj.AddProperty(propNameAttr.Value, childElem.Value);
+                }
+                else if (childElem.Name.LocalName == XmlTileSetConstants.TERRAINOBJ_TILECONSTRAINT_ELEM)
+                {
+                    ITerrainObjectConstraint constraint = LoadTileConstraint(childElem, terrainObj, tileset);
+                    terrainObj.AddConstraint(constraint);
+                }
+                else if (childElem.Name.LocalName != XmlTileSetConstants.TERRAINOBJ_EXCLUDEAREA_ELEM)
+                {
+                    ICellDataChangeSet changeset = LoadCellDataChangeSet(childElem, tileset);
+                    terrainObj.AddCellDataChangeset(changeset);
+                }
+                /// TODO: loading other constaint types can take place here!
+            }
+        }
+
+        /// <summary>
+        /// Load a tile-constraint for a terrain object from the given XML element.
+        /// </summary>
+        /// <param name="fromElem">The XML element to load from.</param>
+        /// <param name="terrainObj">The terrain object.</param>
+        /// <param name="tileset">The tileset being loaded.</param>
+        /// <returns>The loaded tile-constraint.</returns>
+        private static ITerrainObjectConstraint LoadTileConstraint(XElement fromElem, TerrainObjectType terrainObj, TileSet tileset)
+        {
+            /// Load the attributes of the constraint.
+            XAttribute quadCoordsAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_TILECONSTRAINT_QUADCOORDS_ATTR);
+            XAttribute terrainAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_TILECONSTRAINT_TERRAIN_ATTR);
+            XAttribute terrainAAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_TILECONSTRAINT_TERRAINA_ATTR);
+            XAttribute terrainBAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_TILECONSTRAINT_TERRAINB_ATTR);
+            XAttribute combinationsAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_TILECONSTRAINT_COMBINATIONS_ATTR);
+            if (quadCoordsAttr == null) { throw new TileSetException("Quadratic coordinates not defined for tile constraint element!"); }
+            if (terrainAttr != null && (terrainAAttr != null || terrainBAttr != null || combinationsAttr != null)) { throw new TileSetException("Invalid attributes defined for tile constraint on a simple tile!"); }
+            if (terrainAttr == null && (terrainAAttr == null || terrainBAttr == null || combinationsAttr == null)) { throw new TileSetException("Invalid attributes defined for tile constraint on a mixed tile!"); }
+
+            RCIntVector quadCoords = XmlHelper.LoadVector(quadCoordsAttr.Value);
+            if (terrainObj.IsExcluded(quadCoords)) { throw new TileSetException(string.Format("TileConstraint at excluded coordinates {0} cannot be defined!", quadCoords)); }
+            if (terrainAttr != null)
+            {
+                TerrainType terrain = tileset.GetTerrainType(terrainAttr.Value);
+                return new TileConstraint(quadCoords, terrain, tileset);
+            }
+            else
+            {
+                TerrainType terrainA = tileset.GetTerrainType(terrainAAttr.Value);
+                TerrainType terrainB = tileset.GetTerrainType(terrainBAttr.Value);
+                List<TerrainCombination> combinations = new List<TerrainCombination>();
+                string[] combinationStrings = combinationsAttr.Value.Split(';');
+                if (combinationStrings.Length == 0) { throw new TileSetException("Terrain combination not defined for tile constraint on a mixed tile!"); }
+                foreach (string combStr in combinationStrings)
+                {
+                    TerrainCombination combination;
+                    if (!EnumMap<TerrainCombination, string>.Demap(combStr, out combination) || combination == TerrainCombination.Simple)
+                    {
+                        throw new TileSetException(string.Format("Unexpected terrain combination '{0}' defined for tile constraint!", combStr));
+                    }
+                    combinations.Add(combination);
+                }
+
+                return new TileConstraint(quadCoords, terrainA, terrainB, combinations, tileset);
+            }
+        }
+
+        /// <summary>
         /// Loads the variants of a tile type from the XML element into the given tileset.
         /// </summary>
         /// <param name="fromElem">The XML element to load from.</param>
@@ -278,7 +392,7 @@ namespace RC.Engine
             TileVariant newVariant = new TileVariant(imageData, tileset);
             tile.AddVariant(newVariant);
 
-            /// Load the navigation cell data overwritings and the properties.
+            /// Load the cell data changesets and the properties.
             foreach (XElement childElem in fromElem.Elements())
             {
                 if (childElem.Name.LocalName == XmlTileSetConstants.VARIANTPROP_ELEM)
@@ -289,8 +403,8 @@ namespace RC.Engine
                 }
                 else
                 {
-                    ITileDataOverwriting overwriting = LoadOverwriting(childElem, tileset);
-                    newVariant.AddOverwriting(overwriting);
+                    ICellDataChangeSet changeset = LoadCellDataChangeSet(childElem, tileset);
+                    newVariant.AddCellDataChangeset(changeset);
                 }
             }
 
@@ -299,124 +413,124 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// Load a cell data overwriting from the given XML element.
+        /// Load a cell data changeset from the given XML element.
         /// </summary>
         /// <param name="fromElem">The XML element to load from.</param>
         /// <param name="tileset">The tileset being loaded.</param>
-        /// <returns>The loaded cell data overwriting.</returns>
-        private static ITileDataOverwriting LoadOverwriting(XElement fromElem, TileSet tileset)
+        /// <returns>The loaded cell data changeset.</returns>
+        private static ICellDataChangeSet LoadCellDataChangeSet(XElement fromElem, TileSet tileset)
         {
-            ITileDataOverwriting retObj = null;
+            ICellDataChangeSet retObj = null;
 
             /// Load the name of the target field.
-            XAttribute fieldAttr = fromElem.Attribute(XmlTileSetConstants.DATAOVERWRT_FIELD_ATTR);
-            if (fieldAttr == null) { throw new TileSetException("Field name not defined for data overwriting element!"); }
+            XAttribute fieldAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_FIELD_ATTR);
+            if (fieldAttr == null) { throw new TileSetException("Field name not defined for a data changeset element!"); }
             CellDataType fieldType = tileset.GetFieldType(tileset.GetFieldIndex(fieldAttr.Value));
 
             switch (fromElem.Name.LocalName)
             {
-                case XmlTileSetConstants.DATAOVERWRTALL_ELEM:
-                    /// Create the overwriting object.
+                case XmlTileSetConstants.CELLDATACHANGESET_ALL_ELEM:
+                    /// Create the changeset object.
                     if (fieldType == CellDataType.BOOL)
                     {
-                        retObj = new TileDataOverwriting(fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
+                        retObj = new CellDataChangeSetBase(fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
                     }
                     else if (fieldType == CellDataType.INT)
                     {
-                        retObj = new TileDataOverwriting(fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
+                        retObj = new CellDataChangeSetBase(fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
                     }
                     break;
 
-                case XmlTileSetConstants.DATAOVERWRTCELL_ELEM:
+                case XmlTileSetConstants.CELLDATACHANGESET_CELL_ELEM:
                     /// Load the target cell.
-                    XAttribute cellAttr = fromElem.Attribute(XmlTileSetConstants.DATAOVERWRTCELL_CELL_ATTR);
-                    if (cellAttr == null) { throw new TileSetException("Cell not defined for a cell data overwriting element!"); }
+                    XAttribute cellAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_CELL_CELL_ATTR);
+                    if (cellAttr == null) { throw new TileSetException("Cell not defined for a cell data changeset element!"); }
 
-                    /// Create the overwriting object.
+                    /// Create the changeset object.
                     if (fieldType == CellDataType.BOOL)
                     {
-                        retObj = new CellOverwriting(XmlHelper.LoadVector(cellAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
+                        retObj = new CellChangeSet(XmlHelper.LoadVector(cellAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
                     }
                     else if (fieldType == CellDataType.INT)
                     {
-                        retObj = new CellOverwriting(XmlHelper.LoadVector(cellAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
+                        retObj = new CellChangeSet(XmlHelper.LoadVector(cellAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
                     }
                     break;
 
-                case XmlTileSetConstants.DATAOVERWRTCOL_ELEM:
+                case XmlTileSetConstants.CELLDATACHANGESET_COL_ELEM:
                     /// Load the target column.
-                    XAttribute colIndexAttr = fromElem.Attribute(XmlTileSetConstants.DATAOVERWRTCOL_INDEX_ATTR);
-                    if (colIndexAttr == null) { throw new TileSetException("Column not defined for a column data overwriting element!"); }
+                    XAttribute colIndexAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_COL_INDEX_ATTR);
+                    if (colIndexAttr == null) { throw new TileSetException("Column not defined for a column data changeset element!"); }
 
-                    /// Create the overwriting object.
+                    /// Create the changeset object.
                     if (fieldType == CellDataType.BOOL)
                     {
-                        retObj = new ColOverwriting(XmlHelper.LoadInt(colIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
+                        retObj = new ColumnChangeSet(XmlHelper.LoadInt(colIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
                     }
                     else if (fieldType == CellDataType.INT)
                     {
-                        retObj = new ColOverwriting(XmlHelper.LoadInt(colIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
+                        retObj = new ColumnChangeSet(XmlHelper.LoadInt(colIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
                     }
                     break;
 
-                case XmlTileSetConstants.DATAOVERWRTQUARTER_ELEM:
+                case XmlTileSetConstants.CELLDATACHANGESET_QUARTER_ELEM:
                     /// Load the target quarter.
-                    XAttribute quarterAttr = fromElem.Attribute(XmlTileSetConstants.DATAOVERWRTQUARTER_WHICH_ATTR);
-                    if (quarterAttr == null) { throw new TileSetException("Quarter not defined for a quarter data overwriting element!"); }
+                    XAttribute quarterAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_QUARTER_WHICH_ATTR);
+                    if (quarterAttr == null) { throw new TileSetException("Quarter not defined for a quarter data changeset element!"); }
                     MapDirection quarter;
                     if (!EnumMap<MapDirection, string>.Demap(quarterAttr.Value, out quarter))
                     {
-                        throw new TileSetException(string.Format("Unexpected quarter '{0}' defined for quarter data overwriting!", quarterAttr.Value));
+                        throw new TileSetException(string.Format("Unexpected quarter '{0}' defined for quarter data changeset!", quarterAttr.Value));
                     }
 
-                    /// Create the overwriting object.
+                    /// Create the changeset object.
                     if (fieldType == CellDataType.BOOL)
                     {
-                        retObj = new QuarterOverwriting(quarter, fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
+                        retObj = new IsoQuarterChangeSet(quarter, fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
                     }
                     else if (fieldType == CellDataType.INT)
                     {
-                        retObj = new QuarterOverwriting(quarter, fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
+                        retObj = new IsoQuarterChangeSet(quarter, fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
                     }
                     break;
 
-                case XmlTileSetConstants.DATAOVERWRTRECT_ELEM:
+                case XmlTileSetConstants.CELLDATACHANGESET_RECT_ELEM:
                     /// Load the target rectangle.
-                    XAttribute rectAttr = fromElem.Attribute(XmlTileSetConstants.DATAOVERWRTRECT_RECT_ATTR);
-                    if (rectAttr == null) { throw new TileSetException("Rectangle not defined for a rectangle data overwriting element!"); }
+                    XAttribute rectAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_RECT_RECT_ATTR);
+                    if (rectAttr == null) { throw new TileSetException("Rectangle not defined for a rectangle data changeset element!"); }
 
-                    /// Create the overwriting object.
+                    /// Create the changeset object.
                     if (fieldType == CellDataType.BOOL)
                     {
-                        retObj = new RectOverwriting(XmlHelper.LoadRectangle(rectAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
+                        retObj = new RectangleChangeSet(XmlHelper.LoadRectangle(rectAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
                     }
                     else if (fieldType == CellDataType.INT)
                     {
-                        retObj = new RectOverwriting(XmlHelper.LoadRectangle(rectAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
+                        retObj = new RectangleChangeSet(XmlHelper.LoadRectangle(rectAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
                     }
                     break;
 
-                case XmlTileSetConstants.DATAOVERWRTROW_ELEM:
+                case XmlTileSetConstants.CELLDATACHANGESET_ROW_ELEM:
                     /// Load the target row.
-                    XAttribute rowIndexAttr = fromElem.Attribute(XmlTileSetConstants.DATAOVERWRTROW_INDEX_ATTR);
-                    if (rowIndexAttr == null) { throw new TileSetException("Row not defined for a row data overwriting element!"); }
+                    XAttribute rowIndexAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_ROW_INDEX_ATTR);
+                    if (rowIndexAttr == null) { throw new TileSetException("Row not defined for a row data changeset element!"); }
 
-                    /// Create the overwriting object.
+                    /// Create the changeset object.
                     if (fieldType == CellDataType.BOOL)
                     {
-                        retObj = new RowOverwriting(XmlHelper.LoadInt(rowIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
+                        retObj = new RowChangeSet(XmlHelper.LoadInt(rowIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
                     }
                     else if (fieldType == CellDataType.INT)
                     {
-                        retObj = new RowOverwriting(XmlHelper.LoadInt(rowIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
+                        retObj = new RowChangeSet(XmlHelper.LoadInt(rowIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
                     }
                     break;
 
                 default:
-                    throw new TileSetException(string.Format("Unexpected data overwriting element '{0}'!", fromElem.Name));
+                    throw new TileSetException(string.Format("Unexpected data changeset element '{0}'!", fromElem.Name));
             }
 
-            if (retObj == null) { throw new TileSetException("Unable to load data overwriting!"); }
+            if (retObj == null) { throw new TileSetException("Unable to load cell data changeset!"); }
             return retObj;
         }
 

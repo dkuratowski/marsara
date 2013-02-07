@@ -59,9 +59,11 @@
     <Compile Include="RCEngineException.cs" />
     <Compile Include="RCEngineHelper.cs" />
     <Compile Include="TileSetManagement\CellData.cs" />
+    <Compile Include="TileSetManagement\ITerrainObjectConstraint.cs" />
     <Compile Include="TileSetManagement\ITileCondition.cs" />
-    <Compile Include="TileSetManagement\ITileDataOverwriting.cs" />
+    <Compile Include="TileSetManagement\ICellDataChangeSet.cs" />
     <Compile Include="TileSetManagement\ITileSetManager.cs" />
+    <Compile Include="TileSetManagement\TerrainObjectType.cs" />
     <Compile Include="TileSetManagement\TerrainType.cs" />
     <Compile Include="TileSetManagement\TileSet.cs" />
     <Compile Include="TileSetManagement\TileSetException.cs" />

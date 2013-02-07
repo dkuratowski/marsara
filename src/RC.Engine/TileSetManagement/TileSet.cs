@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 
 namespace RC.Engine
 {
@@ -27,6 +28,7 @@ namespace RC.Engine
             this.defaultValues = new CellData(this);
             this.terrainTypes = new Dictionary<string, TerrainType>();
             this.simpleTileTypes = new Dictionary<string, TileType>();
+            this.terrainObjectTypes = new Dictionary<string, TerrainObjectType>();
             this.mixedTileTypes = new Dictionary<Tuple<string, string, TerrainCombination>, TileType>();
             this.allTileVariants = new HashSet<TileVariant>();
             this.allTileVariantList = new List<TileVariant>();
@@ -193,6 +195,39 @@ namespace RC.Engine
 
         #endregion Tile type methods
 
+        #region TerrainObject type methods
+
+        /// <summary>
+        /// Creates a TerrainObjectType.
+        /// </summary>
+        /// <param name="name">The name of the TerrainObjectType.</param>
+        /// <param name="imgData">The byte sequence that contains the image data of the TerrainObjectType.</param>
+        /// <param name="quadraticSize">The size of the TerrainObjectType in quadratic tiles.</param>
+        /// <param name="offset">The offset of the top-left corner of the TerrainObjectType on the image in pixels.</param>
+        public void CreateTerrainObjectType(string name, byte[] imgData, RCIntVector quadSize, RCIntVector offset)
+        {
+            if (this.isFinalized) { throw new InvalidOperationException("It is not possible to create new TerrainObjectType for a finalized TileSet!"); }
+            if (name == null) { throw new ArgumentNullException("name"); }
+            if (this.terrainObjectTypes.ContainsKey(name)) { throw new TileSetException(string.Format("TerrainObjectType with name '{0}' already exists!", name)); }
+
+            this.terrainObjectTypes.Add(name, new TerrainObjectType(name, imgData, quadSize, offset, this));
+        }
+
+        /// <summary>
+        /// Gets the TerrainObjectType of this tileset with the given name.
+        /// </summary>
+        /// <param name="name">The name of the TerrainObjectType.</param>
+        /// <returns>The TerrainObjectType with the given name.</returns>
+        public TerrainObjectType GetTerrainObjectType(string name)
+        {
+            if (name == null) { throw new ArgumentNullException("name"); }
+            if (!this.terrainObjectTypes.ContainsKey(name)) { throw new TileSetException(string.Format("TerrainObjectType with name '{0}' doesn't exist!", name)); }
+
+            return this.terrainObjectTypes[name];
+        }
+
+        #endregion TerrainObject type methods
+
         /// <summary>
         /// Registers the given variant with this tileset.
         /// </summary>
@@ -281,6 +316,11 @@ namespace RC.Engine
         public IEnumerable<string> TerrainTypes { get { return this.terrainTypes.Keys; } }
 
         /// <summary>
+        /// Gets all the terrain object types defined in this tileset.
+        /// </summary>
+        public IEnumerable<TerrainObjectType> TerrainObjectTypes { get { return this.terrainObjectTypes.Values; } }
+
+        /// <summary>
         /// Gets all the tile variants defined in this tileset.
         /// </summary>
         public IEnumerable<TileVariant> TileVariants { get { return this.allTileVariantList; } }
@@ -319,6 +359,11 @@ namespace RC.Engine
         /// List of the simple tile types mapped by the names of the corresponding terrain types.
         /// </summary>
         private Dictionary<string, TileType> simpleTileTypes;
+
+        /// <summary>
+        /// List of the terrain object types mapped by their name.
+        /// </summary>
+        private Dictionary<string, TerrainObjectType> terrainObjectTypes;
 
         /// <summary>
         /// List of the mixed tile types mapped by the names of the corresponding terrain types and the combinations.

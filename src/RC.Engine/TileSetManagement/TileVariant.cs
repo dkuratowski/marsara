@@ -23,21 +23,21 @@ namespace RC.Engine
 
             this.imageData = imageData;
             this.properties = new Dictionary<string, string>();
-            this.overwritings = new List<ITileDataOverwriting>();
+            this.cellDataChangesets = new List<ICellDataChangeSet>();
             this.tileset = tileset;
         }
 
         /// <summary>
-        /// Adds an overwriting operation to this tile variant.
+        /// Adds a cell data changeset to this tile variant.
         /// </summary>
-        /// <param name="overwriting">The overwriting operation to add.</param>
-        public void AddOverwriting(ITileDataOverwriting overwriting)
+        /// <param name="changeset">The changeset operation to add.</param>
+        public void AddCellDataChangeset(ICellDataChangeSet changeset)
         {
-            if (overwriting == null) { throw new ArgumentNullException("overwriting"); }
-            if (overwriting.Tileset != this.tileset) { throw new TileSetException("The given ITileDataOverwriting is in another TileSet!"); }
+            if (changeset == null) { throw new ArgumentNullException("changeset"); }
+            if (changeset.Tileset != this.tileset) { throw new TileSetException("The given ICellDataChangeSet is in another TileSet!"); }
             if (this.tileset.IsFinalized) { throw new InvalidOperationException("TileSet already finalized!"); }
 
-            this.overwritings.Add(overwriting);
+            this.cellDataChangesets.Add(changeset);
         }
 
         /// <summary>
@@ -74,9 +74,9 @@ namespace RC.Engine
         }
 
         /// <summary>
-        /// Gets the overwriting operations of this variant.
+        /// Gets the cell data changesets of this variant.
         /// </summary>
-        public IEnumerable<ITileDataOverwriting> Overwritings { get { return this.overwritings; } }
+        public IEnumerable<ICellDataChangeSet> CellDataChangesets { get { return this.cellDataChangesets; } }
 
         /// <summary>
         /// Gets the tileset of this variant.
@@ -118,9 +118,9 @@ namespace RC.Engine
         private Dictionary<string, string> properties;
 
         /// <summary>
-        /// List of the data overwriting operations of this variant.
+        /// List of the cell data changesets of this variant.
         /// </summary>
-        private List<ITileDataOverwriting> overwritings;
+        private List<ICellDataChangeSet> cellDataChangesets;
 
         /// <summary>
         /// Reference to the tileset of this variant.

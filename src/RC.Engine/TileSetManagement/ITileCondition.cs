@@ -66,9 +66,7 @@ namespace RC.Engine
         /// </summary>
         public MapDirection Direction { get { return this.direction; } }
 
-        /// <summary>
-        /// Gets the tileset of this condition.
-        /// </summary>
+        /// <see cref="ITileCondition.Tileset"/>
         public TileSet Tileset { get { return this.tileset; } }
 
         /// <summary>
@@ -159,9 +157,7 @@ namespace RC.Engine
             return retVal;
         }
 
-        /// <summary>
-        /// Gets the tileset of this condition.
-        /// </summary>
+        /// <see cref="ITileCondition.Tileset"/>
         public TileSet Tileset { get { return this.tileset; } }
 
         /// <summary>

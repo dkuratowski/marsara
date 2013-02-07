@@ -17,7 +17,7 @@ namespace RC.Engine.Test
     {
         static void Main(string[] args)
         {
-            ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
+            ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");            
 
             //ComponentManager.RegisterComponents("RC.Engine.Test, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
             //                                    new string[3] { "C0", "C1", "C2" });

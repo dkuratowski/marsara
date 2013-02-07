@@ -21,8 +21,8 @@
   <declareTiles>
     <simpleTile terrain="Water">
       <variant image="water.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </simpleTile>
     <simpleTile terrain="Dirt">
@@ -33,18 +33,18 @@
     </simpleTile>
     <simpleTile terrain="Structure">
       <variant image="structure.png">
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </simpleTile>
     <simpleTile terrain="HighDirt">
       <variant image="highdirt.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </simpleTile>
     <simpleTile terrain="HighGrass">
       <variant image="grass.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </simpleTile>
     <simpleTile terrain="Mud">
@@ -55,32 +55,32 @@
     </simpleTile>
     <simpleTile terrain="RockyGround">
       <variant image="rockyground.png">
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </simpleTile>
     <!-- Water-Dirt transitions -->
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BAAA">
       <variant image="water_dirt_baaa.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="ABAA">
       <variant image="water_dirt_abaa.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="AABA">
       <variant image="water_dirt_aaba.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="AAAB">
       <variant image="water_dirt_aaab.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BBAA">
@@ -88,28 +88,28 @@
         <neighbourCondition which="NorthWest" combination="ABAA" />
         <then>
           <variant image="water_dirt_bbaa_0.png">
-            <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-            <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
         </then>
       </if>
       <else>
         <variant image="water_dirt_bbaa_1.png">
-          <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-          <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
         </variant>
       </else>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="ABBA">
       <variant image="water_dirt_abba.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="AABB">
       <variant image="water_dirt_aabb.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BAAB">
@@ -117,15 +117,15 @@
         <neighbourCondition which="NorthEast" combination="AAAB" />
         <then>
           <variant image="water_dirt_baab_0.png">
-            <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-            <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
         </then>
       </if>
       <else>
         <variant image="water_dirt_baab_1.png">
-          <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-          <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
         </variant>
       </else>
     </mixedTile>
@@ -141,26 +141,26 @@
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BBBA">
       <variant image="water_dirt_bbba.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="ABBB">
       <variant image="water_dirt_abbb.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BABB">
       <variant image="water_dirt_babb.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BBAB">
       <variant image="water_dirt_bbab.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <!-- Dirt-Asphalt transitions -->
@@ -213,94 +213,94 @@
     <!-- Asphalt-Structure transitions -->
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="ABBB">
       <variant image="asphalt_structure_abbb.png">
-        <dataOverwriteRect field="IsWalkable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="3;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="5;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="9;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="11;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="3;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="5;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="9;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="11;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="3;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="5;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="9;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="11;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="3;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="5;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="9;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="11;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="3;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="5;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="9;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="11;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BABB">
       <variant image="asphalt_structure_babb.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsWalkable" cell="14;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="12;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="10;6">true</dataOverwriteCell>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsBuildable" cell="14;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="12;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="10;6">true</dataOverwriteCell>
-        <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="5;1;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="3;2;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="3;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="5;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BBAB">
       <variant image="asphalt_structure_bbab.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-        <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="3;2;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="5;1;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="9;1;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="11;2;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BBBA">
       <variant image="asphalt_structure_bbba.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsWalkable" cell="1;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="3;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="5;6">true</dataOverwriteCell>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsBuildable" cell="1;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="3;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="5;6">true</dataOverwriteCell>
-        <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="9;1;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="11;2;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="11;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="9;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="AABB">
       <variant image="asphalt_structure_aabb.png">
-        <dataOverwriteRect field="IsWalkable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="3;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="5;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="3;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="5;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="3;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="5;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="3;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="5;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="3;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="5;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BAAB">
@@ -308,37 +308,37 @@
         <neighbourCondition which="NorthEast" combination="AAAB" />
         <then>
           <variant image="asphalt_structure_baab_0.png">
-            <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-            <dataOverwriteCell field="IsWalkable" cell="8;7">true</dataOverwriteCell>
-            <dataOverwriteCell field="IsWalkable" cell="10;6">true</dataOverwriteCell>
-            <dataOverwriteRect field="IsWalkable" rect="12;2;3;4">true</dataOverwriteRect>
-            <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-            <dataOverwriteCell field="IsBuildable" cell="8;7">true</dataOverwriteCell>
-            <dataOverwriteCell field="IsBuildable" cell="10;6">true</dataOverwriteCell>
-            <dataOverwriteRect field="IsBuildable" rect="12;2;3;4">true</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="3;2;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="5;1;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetCell field="IsWalkable" cell="8;7">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetCell field="IsBuildable" cell="8;7">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsBuildable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
           </variant>
         </then>
       </if>
       <else>
         <variant image="asphalt_structure_baab_1.png">
-          <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-          <dataOverwriteCell field="IsWalkable" cell="8;7">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="10;6">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="12;5">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="14;4">true</dataOverwriteCell>
-          <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-          <dataOverwriteCell field="IsBuildable" cell="8;7">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="10;6">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="12;5">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="14;4">true</dataOverwriteCell>
-          <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="3;2;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="5;1;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetCell field="IsWalkable" cell="8;7">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetCell field="IsBuildable" cell="8;7">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+          <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
         </variant>
       </else>
     </mixedTile>
@@ -347,54 +347,54 @@
         <neighbourCondition which="NorthWest" combination="ABAA" />
         <then>
           <variant image="asphalt_structure_bbaa_0.png">
-            <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-            <dataOverwriteCell field="IsWalkable" cell="7;7">true</dataOverwriteCell>
-            <dataOverwriteCell field="IsWalkable" cell="5;6">true</dataOverwriteCell>
-            <dataOverwriteRect field="IsWalkable" rect="1;2;3;4">true</dataOverwriteRect>
-            <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-            <dataOverwriteCell field="IsBuildable" cell="7;7">true</dataOverwriteCell>
-            <dataOverwriteCell field="IsBuildable" cell="5;6">true</dataOverwriteCell>
-            <dataOverwriteRect field="IsBuildable" rect="1;2;3;4">true</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="11;2;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="9;1;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetCell field="IsWalkable" cell="7;7">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsWalkable" rect="1;2;3;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetCell field="IsBuildable" cell="7;7">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsBuildable" rect="1;2;3;4">true</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
           </variant>
         </then>
       </if>
       <else>
         <variant image="asphalt_structure_bbaa_1.png">
-          <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-          <dataOverwriteCell field="IsWalkable" cell="7;7">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="5;6">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="3;5">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="1;4">true</dataOverwriteCell>
-          <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-          <dataOverwriteCell field="IsBuildable" cell="7;7">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="5;6">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="3;5">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="1;4">true</dataOverwriteCell>
-          <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="11;2;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="9;1;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetCell field="IsWalkable" cell="7;7">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetCell field="IsBuildable" cell="7;7">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+          <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
         </variant>
       </else>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="ABBA">
       <variant image="asphalt_structure_abba.png">
-        <dataOverwriteRect field="IsWalkable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="11;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="9;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="11;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="9;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="11;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="9;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="11;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="9;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="11;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="9;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BABA">
@@ -409,141 +409,141 @@
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="AAAB">
       <variant image="asphalt_structure_aaab.png">
-        <dataOverwriteRect field="IsWalkable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="3;4;1;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="3;4;1;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="3;4;1;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="3;4;1;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BAAA">
       <variant image="asphalt_structure_baaa.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsWalkable" cell="1;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="3;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="5;6">true</dataOverwriteCell>
-        <dataOverwriteRect field="IsWalkable" rect="7;7;2;1">true</dataOverwriteRect>
-        <dataOverwriteCell field="IsWalkable" cell="10;6">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="12;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="14;4">true</dataOverwriteCell>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsBuildable" cell="1;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="3;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="5;6">true</dataOverwriteCell>
-        <dataOverwriteRect field="IsBuildable" rect="7;7;2;1">true</dataOverwriteRect>
-        <dataOverwriteCell field="IsBuildable" cell="10;6">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="12;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="14;4">true</dataOverwriteCell>
-        <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+        <dataChangesetRect field="IsWalkable" rect="7;7;2;1">true</dataChangesetRect>
+        <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+        <dataChangesetRect field="IsBuildable" rect="7;7;2;1">true</dataChangesetRect>
+        <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="ABAA">
       <variant image="asphalt_structure_abaa.png">
-        <dataOverwriteRect field="IsWalkable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="12;4;1;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="12;4;1;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="12;4;1;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="12;4;1;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="AABA">
       <variant image="asphalt_structure_aaba.png">
-        <dataOverwriteRect field="IsWalkable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <!-- Dirt-HighDirt transitions -->
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="ABBB">
       <variant image="dirt_highdirt_abbb.png">
-        <dataOverwriteRect field="IsWalkable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="3;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="5;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="9;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="11;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="3;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="5;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="9;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="11;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="3;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="5;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="9;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="11;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="3;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="5;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="9;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="11;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="3;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="5;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="9;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="11;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BABB">
       <variant image="dirt_highdirt_babb.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsWalkable" cell="14;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="12;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="10;6">true</dataOverwriteCell>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsBuildable" cell="14;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="12;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="10;6">true</dataOverwriteCell>
-        <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="5;1;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="3;2;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="3;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="5;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BBAB">
       <variant image="dirt_highdirt_bbab.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-        <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="3;2;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="5;1;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="9;1;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="11;2;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BBBA">
       <variant image="dirt_highdirt_bbba.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsWalkable" cell="1;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="3;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="5;6">true</dataOverwriteCell>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsBuildable" cell="1;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="3;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="5;6">true</dataOverwriteCell>
-        <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="9;1;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="11;2;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="11;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="9;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="AABB">
       <variant image="dirt_highdirt_aabb.png">
-        <dataOverwriteRect field="IsWalkable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="3;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="5;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="3;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="5;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="3;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="5;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="3;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="5;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="3;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="5;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BAAB">
@@ -551,37 +551,37 @@
         <neighbourCondition which="NorthEast" combination="AAAB" />
         <then>
           <variant image="dirt_highdirt_baab_0.png">
-            <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-            <dataOverwriteCell field="IsWalkable" cell="8;7">true</dataOverwriteCell>
-            <dataOverwriteCell field="IsWalkable" cell="10;6">true</dataOverwriteCell>
-            <dataOverwriteRect field="IsWalkable" rect="12;2;3;4">true</dataOverwriteRect>
-            <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-            <dataOverwriteCell field="IsBuildable" cell="8;7">true</dataOverwriteCell>
-            <dataOverwriteCell field="IsBuildable" cell="10;6">true</dataOverwriteCell>
-            <dataOverwriteRect field="IsBuildable" rect="12;2;3;4">true</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="3;2;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="5;1;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetCell field="IsWalkable" cell="8;7">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetCell field="IsBuildable" cell="8;7">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsBuildable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
           </variant>
         </then>
       </if>
       <else>
         <variant image="dirt_highdirt_baab_1.png">
-          <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-          <dataOverwriteCell field="IsWalkable" cell="8;7">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="10;6">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="12;5">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="14;4">true</dataOverwriteCell>
-          <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-          <dataOverwriteCell field="IsBuildable" cell="8;7">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="10;6">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="12;5">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="14;4">true</dataOverwriteCell>
-          <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="3;2;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="5;1;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetCell field="IsWalkable" cell="8;7">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetCell field="IsBuildable" cell="8;7">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+          <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
         </variant>
       </else>
     </mixedTile>
@@ -590,54 +590,54 @@
         <neighbourCondition which="NorthWest" combination="ABAA" />
         <then>
           <variant image="dirt_highdirt_bbaa_0.png">
-            <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-            <dataOverwriteCell field="IsWalkable" cell="7;7">true</dataOverwriteCell>
-            <dataOverwriteCell field="IsWalkable" cell="5;6">true</dataOverwriteCell>
-            <dataOverwriteRect field="IsWalkable" rect="1;2;3;4">true</dataOverwriteRect>
-            <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-            <dataOverwriteCell field="IsBuildable" cell="7;7">true</dataOverwriteCell>
-            <dataOverwriteCell field="IsBuildable" cell="5;6">true</dataOverwriteCell>
-            <dataOverwriteRect field="IsBuildable" rect="1;2;3;4">true</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="11;2;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="9;1;2;2">1</dataOverwriteRect>
-            <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetCell field="IsWalkable" cell="7;7">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsWalkable" rect="1;2;3;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetCell field="IsBuildable" cell="7;7">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsBuildable" rect="1;2;3;4">true</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
           </variant>
         </then>
       </if>
       <else>
         <variant image="dirt_highdirt_bbaa_1.png">
-          <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-          <dataOverwriteCell field="IsWalkable" cell="7;7">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="5;6">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="3;5">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsWalkable" cell="1;4">true</dataOverwriteCell>
-          <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-          <dataOverwriteCell field="IsBuildable" cell="7;7">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="5;6">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="3;5">true</dataOverwriteCell>
-          <dataOverwriteCell field="IsBuildable" cell="1;4">true</dataOverwriteCell>
-          <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="11;2;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="9;1;2;2">1</dataOverwriteRect>
-          <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetCell field="IsWalkable" cell="7;7">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetCell field="IsBuildable" cell="7;7">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+          <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
         </variant>
       </else>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="ABBA">
       <variant image="dirt_highdirt_abba.png">
-        <dataOverwriteRect field="IsWalkable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="11;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="9;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="11;4;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="9;5;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="11;4;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="9;5;2;2">1</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="11;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="9;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="11;4;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="9;5;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BABA">
@@ -652,89 +652,89 @@
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="AAAB">
       <variant image="dirt_highdirt_aaab.png">
-        <dataOverwriteRect field="IsWalkable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="3;4;1;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="1;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="3;4;1;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="1;3;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="3;4;1;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="3;4;1;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BAAA">
       <variant image="dirt_highdirt_baaa.png">
-        <dataOverwriteAll field="IsWalkable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsWalkable" cell="1;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="3;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="5;6">true</dataOverwriteCell>
-        <dataOverwriteRect field="IsWalkable" rect="7;7;2;1">true</dataOverwriteRect>
-        <dataOverwriteCell field="IsWalkable" cell="10;6">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="12;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsWalkable" cell="14;4">true</dataOverwriteCell>
-        <dataOverwriteAll field="IsBuildable">false</dataOverwriteAll>
-        <dataOverwriteCell field="IsBuildable" cell="1;4">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="3;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="5;6">true</dataOverwriteCell>
-        <dataOverwriteRect field="IsBuildable" rect="7;7;2;1">true</dataOverwriteRect>
-        <dataOverwriteCell field="IsBuildable" cell="10;6">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="12;5">true</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="14;4">true</dataOverwriteCell>
-        <dataOverwriteRect field="GroundLevel" rect="7;0;2;2">1</dataOverwriteRect>
+        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+        <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+        <dataChangesetRect field="IsWalkable" rect="7;7;2;1">true</dataChangesetRect>
+        <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+        <dataChangesetRect field="IsBuildable" rect="7;7;2;1">true</dataChangesetRect>
+        <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="ABAA">
       <variant image="dirt_highdirt_abaa.png">
-        <dataOverwriteRect field="IsWalkable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsWalkable" rect="12;4;1;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="13;3;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="12;4;1;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="13;3;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="12;4;1;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="12;4;1;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="AABA">
       <variant image="dirt_highdirt_aaba.png">
-        <dataOverwriteRect field="IsWalkable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="IsBuildable" rect="7;6;2;2">false</dataOverwriteRect>
-        <dataOverwriteRect field="GroundLevel" rect="7;6;2;2">1</dataOverwriteRect>
+        <dataChangesetRect field="IsWalkable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="7;6;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <!-- HighDirt-HighGrass transitions -->
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="ABBB">
       <variant image="highdirt_highgrass_abbb.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BABB">
       <variant image="highdirt_highgrass_babb.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BBAB">
       <variant image="highdirt_highgrass_bbab.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BBBA">
       <variant image="highdirt_highgrass_bbba.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="AABB">
       <variant image="highdirt_highgrass_aabb.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BAAB">
       <variant image="highdirt_highgrass_baab.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BBAA">
       <variant image="highdirt_highgrass_bbaa.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="ABBA">
       <variant image="highdirt_highgrass_abba.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BABA">
@@ -749,22 +749,22 @@
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="AAAB">
       <variant image="highdirt_highgrass_aaab.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BAAA">
       <variant image="highdirt_highgrass_baaa.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="ABAA">
       <variant image="highdirt_highgrass_abaa.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="AABA">
       <variant image="highdirt_highgrass_aaba.png">
-        <dataOverwriteAll field="GroundLevel">1</dataOverwriteAll>
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <!-- Dirt-Grass transitions -->
@@ -864,77 +864,77 @@
     <!-- Dirt-RockyGround transitions -->
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="ABBB">
       <variant image="dirt_rockyground_abbb.png">
-        <dataOverwriteQuarter field="IsBuildable" which="West">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="South">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="East">false</dataOverwriteQuarter>
-        <dataOverwriteRow field="IsBuildable" index="2">false</dataOverwriteRow>
-        <dataOverwriteRow field="IsBuildable" index="3">false</dataOverwriteRow>
+        <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
+        <dataChangesetRow field="IsBuildable" index="2">false</dataChangesetRow>
+        <dataChangesetRow field="IsBuildable" index="3">false</dataChangesetRow>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BABB">
       <variant image="dirt_rockyground_babb.png">
-        <dataOverwriteQuarter field="IsBuildable" which="North">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="West">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="South">false</dataOverwriteQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BBAB">
       <variant image="dirt_rockyground_bbab.png">
-        <dataOverwriteQuarter field="IsBuildable" which="North">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="East">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="West">false</dataOverwriteQuarter>
-        <dataOverwriteCell field="IsBuildable" cell="6;4">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="7;4">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="4;5">false</dataOverwriteCell>
+        <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
+        <dataChangesetCell field="IsBuildable" cell="6;4">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="7;4">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="4;5">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BBBA">
       <variant image="dirt_rockyground_bbba.png">
-        <dataOverwriteQuarter field="IsBuildable" which="North">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="East">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="South">false</dataOverwriteQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="AABB">
       <variant image="dirt_rockyground_aabb.png">
-        <dataOverwriteQuarter field="IsBuildable" which="West">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="South">false</dataOverwriteQuarter>
-        <dataOverwriteCell field="IsBuildable" cell="4;2">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="5;2">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="6;2">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="7;2">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="6;3">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="7;3">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="8;4">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="9;4">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="10;4">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="10;5">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="11;5">false</dataOverwriteCell>
+        <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
+        <dataChangesetCell field="IsBuildable" cell="4;2">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="5;2">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="6;2">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="7;2">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="6;3">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="7;3">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="8;4">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="9;4">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="10;4">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="10;5">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="11;5">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BAAB">
       <variant image="dirt_rockyground_baab.png">
-        <dataOverwriteQuarter field="IsBuildable" which="North">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="West">false</dataOverwriteQuarter>
-        <dataOverwriteCell field="IsBuildable" cell="8;3">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="9;3">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="10;3">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="4;5">false</dataOverwriteCell>
+        <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
+        <dataChangesetCell field="IsBuildable" cell="8;3">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="9;3">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="10;3">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="4;5">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BBAA">
       <variant image="dirt_rockyground_bbaa.png">
-        <dataOverwriteQuarter field="IsBuildable" which="North">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="East">false</dataOverwriteQuarter>
-        <dataOverwriteCell field="IsBuildable" cell="5;3">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="7;4">false</dataOverwriteCell>
+        <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
+        <dataChangesetCell field="IsBuildable" cell="5;3">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="7;4">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="ABBA">
       <variant image="dirt_rockyground_abba.png">
-        <dataOverwriteQuarter field="IsBuildable" which="East">false</dataOverwriteQuarter>
-        <dataOverwriteQuarter field="IsBuildable" which="South">false</dataOverwriteQuarter>
-        <dataOverwriteCell field="IsBuildable" cell="7;3">false</dataOverwriteCell>
+        <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
+        <dataChangesetCell field="IsBuildable" cell="7;3">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BABA">
@@ -949,35 +949,43 @@
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="AAAB">
       <variant image="dirt_rockyground_aaab.png">
-        <dataOverwriteQuarter field="IsBuildable" which="West">false</dataOverwriteQuarter>
-        <dataOverwriteCell field="IsBuildable" cell="4;5">false</dataOverwriteCell>
+        <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
+        <dataChangesetCell field="IsBuildable" cell="4;5">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BAAA">
       <variant image="dirt_rockyground_baaa.png">
-        <dataOverwriteQuarter field="IsBuildable" which="North">false</dataOverwriteQuarter>
-        <dataOverwriteCell field="IsBuildable" cell="5;3">false</dataOverwriteCell>
+        <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
+        <dataChangesetCell field="IsBuildable" cell="5;3">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="ABAA">
       <variant image="dirt_rockyground_abaa.png">
-        <dataOverwriteQuarter field="IsBuildable" which="East">false</dataOverwriteQuarter>
-        <dataOverwriteCell field="IsBuildable" cell="7;4">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="8;5">false</dataOverwriteCell>
-        <dataOverwriteCell field="IsBuildable" cell="9;5">false</dataOverwriteCell>
+        <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
+        <dataChangesetCell field="IsBuildable" cell="7;4">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="8;5">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="9;5">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="AABA">
       <variant image="dirt_rockyground_aaba.png">
-        <dataOverwriteQuarter field="IsBuildable" which="South">false</dataOverwriteQuarter>
-        <dataOverwriteCell field="IsBuildable" cell="8;4">false</dataOverwriteCell>
+        <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
+        <dataChangesetCell field="IsBuildable" cell="8;4">false</dataChangesetCell>
       </variant>
     </mixedTile>
   </declareTiles>
   
   <declareTerrainObjects>
     <terrainObject name="Bridge0" image="terrainobj_bridge_0.png" quadSize="14;9" offset="0;0">
-      <tileConstraint quadCoords="13;0" terrain="Asphalt" />      
+      <excludeArea rect="0;0;6;3" />
+      <excludeArea rect="0;3;4;1" />
+      <excludeArea rect="8;0;2;1" />
+      <excludeArea rect="12;0;2;1" />
+      <excludeArea rect="0;8;2;1" />
+      <excludeArea rect="12;6;2;1" />
+      <excludeArea rect="10;7;4;1" />
+      <excludeArea rect="8;8;6;1" />
+      <tileConstraint quadCoords="13;1" terrain="Asphalt" />      
       <tileConstraint quadCoords="10;0" terrainA="Dirt" terrainB="Asphalt" combinations="ABAA" />
       <tileConstraint quadCoords="12;1" terrainA="Dirt" terrainB="Asphalt" combinations="BBAA" />
       <tileConstraint quadCoords="13;2" terrainA="Dirt" terrainB="Asphalt" combinations="BBAA;BAAA" />      
@@ -1005,7 +1013,15 @@
       <property name="TransparentColor">255;0;255</property>
     </terrainObject>
     <terrainObject name="Bridge1" image="terrainobj_bridge_1.png" quadSize="14;9" offset="0;0">
-      <tileConstraint quadCoords="0;0" terrain="Asphalt" />
+      <excludeArea rect="8;0;6;3" />
+      <excludeArea rect="10;3;4;1" />
+      <excludeArea rect="4;0;2;1" />
+      <excludeArea rect="0;0;2;1" />
+      <excludeArea rect="12;8;2;1" />
+      <excludeArea rect="0;6;2;1" />
+      <excludeArea rect="0;7;4;1" />
+      <excludeArea rect="0;8;6;1" />
+      <tileConstraint quadCoords="0;1" terrain="Asphalt" />
       <tileConstraint quadCoords="3;0" terrainA="Dirt" terrainB="Asphalt" combinations="AAAB" />
       <tileConstraint quadCoords="1;1" terrainA="Dirt" terrainB="Asphalt" combinations="BAAB" />
       <tileConstraint quadCoords="0;2" terrainA="Dirt" terrainB="Asphalt" combinations="BAAB;BAAA" />
@@ -1067,6 +1083,7 @@
       <property name="TransparentColor">255;0;255</property>
     </terrainObject>
     <terrainObject name="StructureWall0" image="terrainobj_structwall_0.png" quadSize="4;4" offset="0;0">
+      <excludeArea rect="2;0;2;1" />
       <tileConstraint quadCoords="1;0" terrain="Structure" />
       <tileConstraint quadCoords="3;1" terrain="Structure" />
       <tileConstraint quadCoords="0;0" terrainA="Asphalt" terrainB="Structure" combinations="BBAA;BBAB" />
@@ -1077,6 +1094,7 @@
       <property name="TransparentColor">255;0;255</property>
     </terrainObject>
     <terrainObject name="StructureWall1" image="terrainobj_structwall_1.png" quadSize="4;4" offset="0;0">
+      <excludeArea rect="0;0;2;1" />
       <tileConstraint quadCoords="2;0" terrain="Structure" />
       <tileConstraint quadCoords="0;1" terrain="Structure" />
       <tileConstraint quadCoords="3;0" terrainA="Asphalt" terrainB="Structure" combinations="BAAB;BBAB" />

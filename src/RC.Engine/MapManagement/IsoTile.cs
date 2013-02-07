@@ -238,9 +238,9 @@ namespace RC.Engine
 
             /// Load the data from the appropriate variant into the navigation cells.
             this.variant = this.type.GetVariant(this, this.variantIdx);
-            foreach (ITileDataOverwriting dataOverwrt in this.variant.Overwritings)
+            foreach (ICellDataChangeSet changeset in this.variant.CellDataChangesets)
             {
-                dataOverwrt.Apply(this);
+                changeset.Apply(this);
             }
 
             this.isReady = true;
@@ -307,10 +307,10 @@ namespace RC.Engine
                 }
             }
 
-            /// Apply the data overwritings of the new variant on the navigation cells.
-            foreach (ITileDataOverwriting dataOverwrt in this.variant.Overwritings)
+            /// Apply the cell data changesets of the new variant on the navigation cells.
+            foreach (ICellDataChangeSet changeset in this.variant.CellDataChangesets)
             {
-                dataOverwrt.Apply(this);
+                changeset.Apply(this);
             }
         }
 
