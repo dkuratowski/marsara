@@ -7,26 +7,52 @@ using RC.Common;
 namespace RC.Engine
 {
     /// <summary>
-    /// Interface of tile data changeset objects.
+    /// Interface of navigation cell data changeset objects.
+    /// If you apply a changeset on a target the following happens:
+    ///     - A set of navigation cells (called as the "target-set") is selected out of the target depending
+    ///       on the description of the changeset.
+    ///     - The data field (given in the description of the changeset) of the navigation cells of the target-set
+    ///       is overwritten with a new value (given in the description of the changeset).
+    /// A changeset instance can be applied multiple times but the target-sets of the same instance have to be
+    /// disjunct from each other, otherwise you get an exception.
+    /// You can undo a changeset on any of the target-sets it has been applied to if there is no other changeset
+    /// applied to any part of the appropriate target-set. Otherwise you get an exception.
     /// </summary>
     public interface ICellDataChangeSet
     {
-        /// <summary>
-        /// Applies the changeset on the navigation cells of the given isometric tile.
-        /// </summary>
-        /// <param name="target">The target isometric tile of the changeset.</param>
-        void Apply(IIsoTile target);
+        /// <summary>Applies the changeset on the navigation cells of the given target.</summary>
+        /// <param name="target">The target of the changeset.</param>
+        void Apply(ICellDataChangeSetTarget target);
 
-        /// <summary>
-        /// Applies the changeset on the navigation cells of the given terrain object.
-        /// </summary>
-        /// <param name="target">The target terrain object of the changeset.</param>
-        //void Apply(ITerrainObject target); TODO!
+        /// <summary>Undo the effect of the changeset on the navigation cells of the given target.</summary>
+        /// <param name="target">The target of the changeset.</param>
+        void Undo(ICellDataChangeSetTarget target);
 
         /// <summary>
         /// Gets the tileset of this changeset.
         /// </summary>
         TileSet Tileset { get; }
+    }
+
+    /// <summary>
+    /// This interface shall be implemented by any objects that we want to be the target of a navigation
+    /// cell data changeset.
+    /// </summary>
+    public interface ICellDataChangeSetTarget
+    {
+        /// <summary>
+        /// Gets the navigation cell of this changeset target at the given index.
+        /// </summary>
+        /// <param name="index">The index of the navigation cell to get.</param>
+        /// <returns>
+        /// The navigation cell at the given index or null if the given index is outside of the changeset target.
+        /// </returns>
+        INavCell GetNavCell(RCIntVector index);
+
+        /// <summary>
+        /// Gets the size of this changeset target in navigation cells.
+        /// </summary>
+        RCIntVector NavSize { get; }
     }
 
     /// <summary>
@@ -95,44 +121,73 @@ namespace RC.Engine
         /// </summary>
         public bool BoolValue { get { return this.boolValue; } }
 
-        /// <see cref="ICellDataChangeSet.Tileset"/>
-        public TileSet Tileset { get { return this.tileset; } }
+        #region ICellDataChangeSet methods
 
         /// <see cref="ICellDataChangeSet.Apply"/>
-        public virtual void Apply(IIsoTile target)
+        public void Apply(ICellDataChangeSetTarget target)
         {
-            for (int x = 0; x < Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD; x++)
+            HashSet<RCIntVector> targetset = this.CollectTargetSet(target);
+            foreach (RCIntVector targetCell in targetset)
             {
-                for (int y = 0; y < Map.QUAD_PER_ISO_HORZ * Map.NAVCELL_PER_QUAD; y++)
-                {
-                    this.ApplyOnCell(target, new RCIntVector(x, y));
-                }
+                this.ApplyOnCell(target, targetCell);
             }
         }
 
-        /// <summary>
-        /// Applies the changeset on the navigation cell of the given isometric tile at the given coordinates. If there
-        /// is no cell at the given coordinates then this method has no effect.
-        /// </summary>
-        /// <param name="target">The target isometric tile of the operation.</param>
-        /// <param name="coords">The coordinates of the navigation cell to be applied.</param>
-        protected void ApplyOnCell(IIsoTile target, RCIntVector coords)
+        /// <see cref="ICellDataChangeSet.Undo"/>
+        public void Undo(ICellDataChangeSetTarget target)
         {
-            INavCell cell = target.GetNavCell(coords);
-            if (cell != null)
+            /// TODO: implement this method.
+            throw new NotImplementedException();
+        }
+
+        /// <see cref="ICellDataChangeSet.Tileset"/>
+        public TileSet Tileset { get { return this.tileset; } }
+
+        #endregion ICellDataChangeSet methods
+
+        /// <summary>
+        /// Collects the coordinates of the navigation cells of the target-set.
+        /// </summary>
+        /// <param name="target">The target of the changeset.</param>
+        /// <returns>The collected coordinates.</returns>
+        protected virtual HashSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
+        {
+            HashSet<RCIntVector> targetset = new HashSet<RCIntVector>();
+            for (int x = 0; x < target.NavSize.X; x++)
             {
-                if (this.targetFieldType == CellDataType.INT)
+                for (int y = 0; y < target.NavSize.Y; y++)
                 {
-                    cell.Data.WriteInt(this.targetFieldIdx, this.intValue);
+                    RCIntVector index = new RCIntVector(x, y);
+                    if (target.GetNavCell(index) != null)
+                    {
+                        targetset.Add(index);
+                    }
                 }
-                else if (this.targetFieldType == CellDataType.BOOL)
-                {
-                    cell.Data.WriteBool(this.targetFieldIdx, this.boolValue);
-                }
-                else
-                {
-                    throw new RCEngineException("Unknown field type!");
-                }
+            }
+            return targetset;
+        }
+
+        /// <summary>
+        /// Applies the changeset on the navigation cell of the given target at the given index.
+        /// </summary>
+        /// <param name="target">The target of the operation.</param>
+        /// <param name="index">The index of the navigation cell to be applied.</param>
+        private void ApplyOnCell(ICellDataChangeSetTarget target, RCIntVector index)
+        {
+            INavCell cell = target.GetNavCell(index);
+            if (cell == null) { throw new RCEngineException(string.Format("Navigation cell at index {0} not found in the changeset target!", index)); }
+
+            if (this.targetFieldType == CellDataType.INT)
+            {
+                cell.Data.WriteInt(this.targetFieldIdx, this.intValue);
+            }
+            else if (this.targetFieldType == CellDataType.BOOL)
+            {
+                cell.Data.WriteBool(this.targetFieldIdx, this.boolValue);
+            }
+            else
+            {
+                throw new RCEngineException("Unknown field type!");
             }
         }
 
@@ -204,12 +259,13 @@ namespace RC.Engine
         /// </summary>
         public MapDirection TargetQuarter { get { return this.targetQuarter; } }
 
-        /// <see cref="ICellDataChangeSet.Apply"/>
-        public override void Apply(IIsoTile target)
+        /// <see cref="CellDataChangeSetBase.CollectTargetSet"/>
+        protected override HashSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
         {
-            for (int x = 0; x < Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD; x++)
+            HashSet<RCIntVector> targetset = new HashSet<RCIntVector>();
+            for (int x = 0; x < target.NavSize.X; x++)
             {
-                for (int y = 0; y < Map.QUAD_PER_ISO_HORZ * Map.NAVCELL_PER_QUAD; y++)
+                for (int y = 0; y < target.NavSize.Y; y++)
                 {
                     RCNumVector cellIsoCoordsDbl = Map.NavCellIsoTransform.TransformAB(new RCNumVector(x, y)) * 2;
                     bool isCellInQuarter = false;
@@ -234,9 +290,17 @@ namespace RC.Engine
                         throw new RCEngineException("Unexpected quarter!");
                     }
 
-                    if (isCellInQuarter) { this.ApplyOnCell(target, new RCIntVector(x, y)); }                    
+                    if (isCellInQuarter)
+                    {
+                        RCIntVector index = new RCIntVector(x, y);
+                        if (target.GetNavCell(index) != null)
+                        {
+                            targetset.Add(index);
+                        }
+                    }
                 }
             }
+            return targetset;
         }
 
         /// <summary>
@@ -298,13 +362,19 @@ namespace RC.Engine
         /// </summary>
         public int TargetRow { get { return this.targetRow; } }
 
-        /// <see cref="ICellDataChangeSet.Apply"/>
-        public override void Apply(IIsoTile target)
+        /// <see cref="CellDataChangeSetBase.CollectTargetSet"/>
+        protected override HashSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
         {
-            for (int x = 0; x < Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD; x++)
+            HashSet<RCIntVector> targetset = new HashSet<RCIntVector>();
+            for (int x = 0; x < target.NavSize.X; x++)
             {
-                this.ApplyOnCell(target, new RCIntVector(x, this.targetRow));
+                RCIntVector index = new RCIntVector(x, this.targetRow);
+                if (target.GetNavCell(index) != null)
+                {
+                    targetset.Add(index);
+                }
             }
+            return targetset;
         }
 
         /// <summary>
@@ -359,13 +429,19 @@ namespace RC.Engine
         /// </summary>
         public int TargetCol { get { return this.targetCol; } }
 
-        /// <see cref="ICellDataChangeSet.Apply"/>
-        public override void Apply(IIsoTile target)
+        /// <see cref="CellDataChangeSetBase.CollectTargetSet"/>
+        protected override HashSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
         {
-            for (int y = 0; y < Map.QUAD_PER_ISO_HORZ * Map.NAVCELL_PER_QUAD; y++)
+            HashSet<RCIntVector> targetset = new HashSet<RCIntVector>();
+            for (int y = 0; y < target.NavSize.Y; y++)
             {
-                this.ApplyOnCell(target, new RCIntVector(this.targetCol, y));
+                RCIntVector index = new RCIntVector(this.targetCol, y);
+                if (target.GetNavCell(index) != null)
+                {
+                    targetset.Add(index);
+                }
             }
+            return targetset;
         }
 
         /// <summary>
@@ -420,10 +496,11 @@ namespace RC.Engine
         /// </summary>
         public RCIntVector TargetCell { get { return this.targetCell; } }
 
-        /// <see cref="ICellDataChangeSet.Apply"/>
-        public override void Apply(IIsoTile target)
+        /// <see cref="CellDataChangeSetBase.CollectTargetSet"/>
+        protected override HashSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
         {
-            this.ApplyOnCell(target, this.targetCell);
+            return target.GetNavCell(this.targetCell) != null ? new HashSet<RCIntVector>() { this.targetCell }
+                                                              : new HashSet<RCIntVector>();
         }
 
         /// <summary>
@@ -480,16 +557,22 @@ namespace RC.Engine
         /// </summary>
         public RCIntRectangle TargetRect { get { return this.targetRect; } }
 
-        /// <see cref="ICellDataChangeSet.Apply"/>
-        public override void Apply(IIsoTile target)
+        /// <see cref="CellDataChangeSetBase.CollectTargetSet"/>
+        protected override HashSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
         {
+            HashSet<RCIntVector> targetset = new HashSet<RCIntVector>();
             for (int x = this.targetRect.X; x < this.targetRect.Right; x++)
             {
                 for (int y = this.targetRect.Y; y < this.targetRect.Bottom; y++)
                 {
-                    this.ApplyOnCell(target, new RCIntVector(x, y));
+                    RCIntVector index = new RCIntVector(x, y);
+                    if (target.GetNavCell(index) != null)
+                    {
+                        targetset.Add(index);
+                    }
                 }
             }
+            return targetset;
         }
 
         /// <summary>

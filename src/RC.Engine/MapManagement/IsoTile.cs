@@ -9,7 +9,7 @@ namespace RC.Engine
     /// <summary>
     /// Represents an isometric tile on a map.
     /// </summary>
-    class IsoTile : IIsoTile
+    class IsoTile : IIsoTile, ICellDataChangeSetTarget
     {
         /// <summary>
         /// Constructs an isometric tile.
@@ -20,7 +20,6 @@ namespace RC.Engine
         {
             if (map == null) { throw new ArgumentNullException("map"); }
             if (mapCoords == RCIntVector.Undefined) { throw new ArgumentNullException("mapCoords"); }
-            if (variantIdx < 0 && variantIdx != -1) { throw new ArgumentOutOfRangeException("variantIdx"); }
 
             this.parentMap = map;
             this.mapCoords = mapCoords;
@@ -58,15 +57,6 @@ namespace RC.Engine
         /// <see cref="IIsoTile.Variant"/>
         public TileVariant Variant { get { return this.variant; } }
 
-        /// <see cref="IIsoTile.GetNavCell"/>
-        public INavCell GetNavCell(RCIntVector index)
-        {
-            if (index == RCIntVector.Undefined) { throw new ArgumentNullException("index"); }
-            if (index.X < 0 || index.Y < 0 || index.X >= Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD || index.Y >= Map.QUAD_PER_ISO_HORZ * Map.NAVCELL_PER_QUAD) { throw new ArgumentOutOfRangeException("index"); }
-
-            return this.navCells[index.X, index.Y];
-        }
-
         /// <see cref="IIsoTile.GetNavCellCoords"/>
         public RCIntVector GetNavCellCoords(RCIntVector index)
         {
@@ -78,6 +68,29 @@ namespace RC.Engine
         }
 
         #endregion IIsoTile methods
+
+        #region ICellDataChangeSetTarget methods
+
+        /// <see cref="ICellDataChangeSetTarget.GetNavCell"/>
+        public INavCell GetNavCell(RCIntVector index)
+        {
+            if (index == RCIntVector.Undefined) { throw new ArgumentNullException("index"); }
+            if (index.X < 0 || index.Y < 0 || index.X >= Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD || index.Y >= Map.QUAD_PER_ISO_HORZ * Map.NAVCELL_PER_QUAD) { throw new ArgumentOutOfRangeException("index"); }
+
+            return this.navCells[index.X, index.Y];
+        }
+
+        /// <see cref="ICellDataChangeSetTarget.NavSize"/>
+        public RCIntVector NavSize
+        {
+            get
+            {
+                return new RCIntVector(Map.QUAD_PER_ISO_VERT * Map.NAVCELL_PER_QUAD,
+                                       Map.QUAD_PER_ISO_HORZ * Map.NAVCELL_PER_QUAD);
+            }
+        }
+
+        #endregion ICellDataChangeSetTarget methods
 
         #region Internal map structure buildup methods
 

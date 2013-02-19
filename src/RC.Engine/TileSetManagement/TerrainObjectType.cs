@@ -130,9 +130,29 @@ namespace RC.Engine
         }
 
         /// <summary>
+        /// Collects all the quadratic coordinates of the given terrain object violating the constraints of this
+        /// terrain object type.
+        /// </summary>
+        /// <returns>
+        /// The list of the quadratic coordinates (relative to the top-left corner) violating the constraints
+        /// of this terrain object type.
+        /// </returns>
+        public HashSet<RCIntVector> CheckConstraints(ITerrainObject terrainObj)
+        {
+            if (terrainObj == null) { throw new ArgumentNullException("terrainObj"); }
+
+            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
+            foreach (ITerrainObjectConstraint contraint in this.constraints)
+            {
+                retList.UnionWith(contraint.Check(terrainObj));
+            }
+            return retList;
+        }
+
+        /// <summary>
         /// Gets the constraints of this TerrainObjectType.
         /// </summary>
-        public IEnumerable<ITerrainObjectConstraint> Constraints { get { return this.constraints; } }
+        //public IEnumerable<ITerrainObjectConstraint> Constraints { get { return this.constraints; } }
 
         /// <summary>
         /// Gets the tileset of this TerrainObjectType.

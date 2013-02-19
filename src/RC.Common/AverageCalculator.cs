@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace RC.DssServices
+namespace RC.Common
 {
     /// <summary>
     /// This is a helper class that can be used to calculate the average of the last N items

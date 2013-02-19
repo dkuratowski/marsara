@@ -12,10 +12,8 @@ namespace RC.Engine
     /// </summary>
     static class EngineConstants
     {
-        /// <summary>
-        /// Test constant.
-        /// </summary>
-        public static readonly int TEST_CONSTANT = ConstantsTable.Get<int>("RC.Engine.TestConstant");
+        public static readonly int BSP_NODE_CAPACITY = ConstantsTable.Get<int>("RC.Engine.BspNodeCapacity");
+        public static readonly int BSP_MIN_NODE_SIZE = ConstantsTable.Get<int>("RC.Engine.BspMinNodeSize");
     }
 
     /// <summary>

@@ -39,16 +39,6 @@ namespace RC.Engine
         IIsoTile GetNeighbour(MapDirection direction);
 
         /// <summary>
-        /// Gets the navigation cell of this isometric tile at the given index.
-        /// </summary>
-        /// <param name="index">The index of the navigation cell to get.</param>
-        /// <returns>
-        /// The navigation cell at the given index or null if the given index is outside
-        /// of the isometric tile.
-        /// </returns>
-        INavCell GetNavCell(RCIntVector index);
-
-        /// <summary>
         /// Gets the map coordinates of the navigation cell at the given index.
         /// </summary>
         /// <param name="index">The index of the navigation cell.</param>

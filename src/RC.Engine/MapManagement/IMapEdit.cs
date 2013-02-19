@@ -24,6 +24,11 @@ namespace RC.Engine
         /// <remarks>If the file already exists, it will be overwritten.</remarks>
         void Save(string fileName);
 
+        /// <summary>
+        /// Gets the terrain object editor of the map.
+        /// </summary>
+        ITerrainObjectEdit TerrainObjectEditor { get; }
+
         /// TODO: only for debugging!
         IEnumerable<IIsoTile> IsometricTiles { get; }
     }

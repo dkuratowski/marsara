@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RC.Engine.DrawTerrain.Test.Properties {
+namespace RC.Engine.BspMapContentMgr.Test.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

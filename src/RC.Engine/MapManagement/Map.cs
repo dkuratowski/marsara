@@ -357,6 +357,17 @@ namespace RC.Engine
             return replacedTiles;
         }
 
+        /// <see cref="IMapEdit.CreateTerrainObject"/> TODO: place to the implementation of ITerrainObjectEdit!!!
+        //public ITerrainObject CreateTerrainObject(TerrainObjectType type)
+        //{
+        //    if (this.status == MapStatus.Disposed) { throw new ObjectDisposedException("MapManager"); }
+        //    if (this.status != MapStatus.ReadyToEdit) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
+        //    if (type == null) { throw new ArgumentNullException("type"); }
+        //    if (this.tileset != type.Tileset) { throw new ArgumentException("TerrainObjectType is in another tileset!", "type"); }
+
+        //    return new TerrainObject(this, type);
+        //}
+
         /// <see cref="IMapEdit.Save"/>
         public void Save(string fileName)
         {
@@ -364,6 +375,15 @@ namespace RC.Engine
             if (this.status != MapStatus.ReadyToEdit) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
 
             throw new NotImplementedException();
+        }
+
+        /// <see cref="IMapEdit.TerrainObjectEditor"/>
+        public ITerrainObjectEdit TerrainObjectEditor
+        {
+            get
+            {
+                return this.terrainObjectManager;
+            }
         }
 
         #endregion IMapEdit methods
@@ -1017,5 +1037,10 @@ namespace RC.Engine
         /// Reference to the default tile type or null if no default tile type was given.
         /// </summary>
         private TileType defaultTileType;
+
+        /// <summary>
+        /// Reference to the terrain object manager part of the map.
+        /// </summary>
+        private TerrainObjectManager terrainObjectManager;
     }
 }

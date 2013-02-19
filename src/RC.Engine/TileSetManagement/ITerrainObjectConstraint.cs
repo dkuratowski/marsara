@@ -12,12 +12,14 @@ namespace RC.Engine
     public interface ITerrainObjectConstraint
     {
         /// <summary>
-        /// Checks whether this constraint allows placing the given terrain object to the given position.
+        /// Checks whether this constraint allows attaching the given terrain object to the map at it's
+        /// current position and collects all the violating quadratic coordinates.
         /// </summary>
-        /// <param name="terrainObj">The terrain object to be placed.</param>
-        /// <param name="targetPos">The target position of the top-left quadratic tile of the terrain object.</param>
-        /// <returns>True if placing the terrain object is allowed by this constraint, false otherwise.</returns>
-        bool Check(TerrainObjectType terrainObj, IQuadTile targetPos);
+        /// <param name="terrainObj">The terrain object to be checked.</param>
+        /// <returns>
+        /// The list of the quadratic coordinates (relative to the top-left corner) violating the constraint.
+        /// </returns>
+        HashSet<RCIntVector> Check(ITerrainObject terrainObj);
 
         /// <summary>
         /// Gets the tileset of this constraint.
@@ -97,8 +99,9 @@ namespace RC.Engine
         public TileSet Tileset { get { return this.tileset; } }
 
         /// <see cref="ITerrainObjectConstraint.Check"/>
-        public bool Check(TerrainObjectType terrainObj, IQuadTile targetPos)
+        public HashSet<RCIntVector> Check(ITerrainObject terrainObj)
         {
+            /// TODO: implement this method!
             throw new NotImplementedException();
         }
 
