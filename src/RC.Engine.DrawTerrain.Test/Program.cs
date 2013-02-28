@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using RC.Common.Configuration;
 
 namespace RC.Engine.DrawTerrain.Test
 {
@@ -32,6 +33,7 @@ namespace RC.Engine.DrawTerrain.Test
             //    }
             //}
 
+            ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());

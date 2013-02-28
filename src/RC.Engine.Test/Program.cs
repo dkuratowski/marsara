@@ -10,6 +10,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using RC.Common.ComponentModel;
+using RC.Engine.Core;
+using RC.Engine.PublicInterfaces;
 
 namespace RC.Engine.Test
 {
@@ -50,12 +52,12 @@ namespace RC.Engine.Test
 
             //Stopwatch watch = new Stopwatch();
             //watch.Start();
-            //engineRoot.MapManager.Initialize();
+            //engineRoot.MapLoader.Initialize();
             //watch.Stop();
             //Console.WriteLine("Initializing: " + watch.ElapsedMilliseconds);
 
             //watch.Restart();
-            //IMapEdit map = engineRoot.MapManager.CreateMap(tileset, "HighGrass", new RCIntVector(64, 64));
+            //IMapEdit map = engineRoot.MapLoader.CreateMap(tileset, "HighGrass", new RCIntVector(64, 64));
             //watch.Stop();
             //Console.WriteLine("Creating new map: " + watch.ElapsedMilliseconds);
 

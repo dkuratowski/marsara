@@ -1,11 +1,9 @@
 <packageFormatConfig>
   
-  <packageFormat namespace="RC.Engine" name="TestFormat">
-    <description>This is a test format.</description>
-    <field type="STRING">Test field 0</field>
-    <field type="STRING">Test field 1</field>
-    <field type="INT">Test field 2</field>
-    <field type="BYTE_ARRAY">Test field 3</field>
+  <packageFormat namespace="RC.Engine" name="TileSetFormat">
+    <description>Format of packages containing tilesets.</description>
+    <field type="STRING">The XML that describes the tileset.</field>
+    <field type="STRING">The directory of the referenced images (TODO: this is a hack).</field>
   </packageFormat>
 
 </packageFormatConfig>

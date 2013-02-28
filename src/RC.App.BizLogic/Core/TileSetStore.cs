@@ -5,6 +5,9 @@ using System.Text;
 using RC.Common.ComponentModel;
 using RC.Engine;
 using System.IO;
+using RC.Engine.ComponentInterfaces;
+using RC.Common;
+using RC.Engine.PublicInterfaces;
 
 namespace RC.App.BizLogic.Core
 {
@@ -19,8 +22,8 @@ namespace RC.App.BizLogic.Core
         /// </summary>
         public TileSetStore()
         {
-            this.tilesetManager = null;
-            this.loadedTilesets = new HashSet<string>();
+            this.tilesetLoader = null;
+            this.loadedTilesets = new Dictionary<string, ITileSet>();
         }
 
         #region ITileSetStore methods
@@ -28,42 +31,53 @@ namespace RC.App.BizLogic.Core
         /// <see cref="ITileSetStore.HasTileSet"/>
         public bool HasTileSet(string tilesetName)
         {
-            return this.loadedTilesets.Contains(tilesetName);
+            return this.loadedTilesets.ContainsKey(tilesetName);
         }
 
         /// <see cref="ITileSetStore.TileSets"/>
         public IEnumerable<string> TileSets
         {
-            get { return this.loadedTilesets; }
+            get { return this.loadedTilesets.Keys; }
         }
 
         /// <see cref="ITileSetStore.GetTerrainTypes"/>
         public IEnumerable<string> GetTerrainTypes(string tilesetName)
         {
-            TileSet tileset = this.tilesetManager.GetTileSet(tilesetName);
-            return tileset.TerrainTypes;
+            ITileSet tileset = this.loadedTilesets[tilesetName];
+            List<string> retList = new List<string>();
+            foreach (ITerrainType terrainType in tileset.TerrainTypes)
+            {
+                retList.Add(terrainType.Name);
+            }
+            return retList;
         }
 
         /// <see cref="ITileSetStore.GetTileTypes"/>
         public IEnumerable<TileTypeInfo> GetTileTypes(string tilesetName)
         {
-            TileSet tileset = this.tilesetManager.GetTileSet(tilesetName);
+            ITileSet tileset = this.loadedTilesets[tilesetName];
             List<TileTypeInfo> retList = new List<TileTypeInfo>();
-            foreach (TileVariant tile in tileset.TileVariants)
+            foreach (IIsoTileVariant tile in tileset.TileVariants)
             {
                 byte[] imageData = new byte[tile.ImageData.Length];
                 Array.Copy(tile.ImageData, imageData, tile.ImageData.Length);
                 TileTypeInfo info = new TileTypeInfo();
                 info.ImageData = imageData;
                 info.Properties = new Dictionary<string, string>();
-                if (tile[BizLogicConstants.TILEPROP_TRANSPARENTCOLOR] != null)
+                if (tile.GetProperty(BizLogicConstants.TILEPROP_TRANSPARENTCOLOR) != null)
                 {
                     info.Properties.Add(BizLogicConstants.TILEPROP_TRANSPARENTCOLOR,
-                                        tile[BizLogicConstants.TILEPROP_TRANSPARENTCOLOR]);
+                                        tile.GetProperty(BizLogicConstants.TILEPROP_TRANSPARENTCOLOR));
                 }
                 retList.Add(info);
             }
             return retList;
+        }
+
+        /// TODO: this is hack for MapControl.
+        public ITileSet GetTileSet(string tilesetName)
+        {
+            return this.loadedTilesets[tilesetName];
         }
 
         #endregion ITileSetStore methods
@@ -78,25 +92,35 @@ namespace RC.App.BizLogic.Core
             FileInfo[] tilesetFiles = rootDir.GetFiles("*.xml", SearchOption.AllDirectories);
             foreach (FileInfo tilesetFile in tilesetFiles)
             {
-                string tilesetName = this.tilesetManager.LoadTileSet(tilesetFile.FullName);
-                if (!this.loadedTilesets.Add(tilesetName))
+                /// TODO: this is a hack!
+                string xmlStr = File.ReadAllText(tilesetFile.FullName);
+                string imageDir = tilesetFile.DirectoryName;
+                RCPackage tilesetPackage = RCPackage.CreateCustomDataPackage(RCEngineFormats.TILESET_FORMAT);
+                tilesetPackage.WriteString(0, xmlStr);
+                tilesetPackage.WriteString(1, imageDir);
+
+                ITileSet tileset = this.tilesetLoader.LoadTileSet(tilesetPackage);
+
+                if (this.loadedTilesets.ContainsKey(tileset.Name))
                 {
-                    throw new InvalidOperationException(string.Format("Tileset with name '{0}' already loaded!", tilesetName));
+                    throw new InvalidOperationException(string.Format("Tileset with name '{0}' already loaded!", tileset.Name));
                 }
+
+                this.loadedTilesets.Add(tileset.Name, tileset);
             }
         }
 
         #endregion IComponentStart methods
 
         /// <summary>
-        /// Reference to the RC.Engine.TileSetManager component.
+        /// Reference to the RC.Engine.TileSetLoader component.
         /// </summary>
         [ComponentReference]
-        private ITileSetManager tilesetManager;
+        private ITileSetLoader tilesetLoader;
 
         /// <summary>
-        /// List of the name of the loaded tilesets.
+        /// List of the loaded tilesets mapped by their names.
         /// </summary>
-        private HashSet<string> loadedTilesets;
+        private Dictionary<string, ITileSet> loadedTilesets;
     }
 }

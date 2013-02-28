@@ -37,6 +37,13 @@ namespace RC.App.BizLogic
         /// <param name="tilesetName">The name of the tileset.</param>
         /// <returns>The list of the tile display informations.</returns>
         IEnumerable<TileTypeInfo> GetTileTypes(string tilesetName);
+
+        /// <summary>
+        /// TODO: This is a hack for the MapControl.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        RC.Engine.PublicInterfaces.ITileSet GetTileSet(string name);
     }
 
     /// <summary>

@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using RC.Common;
+using RC.Engine.PublicInterfaces;
 
 namespace RC.Engine.DrawTerrain.Test
 {
@@ -37,7 +38,7 @@ namespace RC.Engine.DrawTerrain.Test
             this.maskImages.Add(TerrainCombination.BBBA, this.LoadBitmap("bbba.png"));
             this.maskImages.Add(TerrainCombination.Simple, this.LoadBitmap("simple.png"));
 
-            this.tileImages = new Dictionary<TileType, Bitmap>();
+            this.tileImages = new Dictionary<IIsoTileType, Bitmap>();
 
             this.terrainColors = new Dictionary<string, Color>();
             this.terrainColors.Add("Blue", Color.Blue);
@@ -89,7 +90,7 @@ namespace RC.Engine.DrawTerrain.Test
         /// <summary>
         /// Creates the image for the given type.
         /// </summary>
-        private void CreateTileImage(TileType type)
+        private void CreateTileImage(IIsoTileType type)
         {
             Bitmap baseTerrainA = new Bitmap(TILE_SIZE, TILE_SIZE);
             Graphics baseTerrainAGraphics = Graphics.FromImage(baseTerrainA);
@@ -125,7 +126,7 @@ namespace RC.Engine.DrawTerrain.Test
         /// <summary>
         /// The tile images mapped by the types.
         /// </summary>
-        private Dictionary<TileType, Bitmap> tileImages;
+        private Dictionary<IIsoTileType, Bitmap> tileImages;
 
         /// <summary>
         /// List of the terrain colors mapped by their names.

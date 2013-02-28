@@ -193,10 +193,11 @@ namespace RC.App.Starter
         private static void StartComponents()
         {
             ComponentManager.RegisterComponents("RC.Engine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[2]
+                                                new string[3]
                                                 {
-                                                    "RC.Engine.TileSetManager",
-                                                    "RC.Engine.MapManager"
+                                                    "RC.Engine.TileSetLoader",
+                                                    "RC.Engine.MapLoader",
+                                                    "RC.Engine.MapEditor"
                                                 });
 
             ComponentManager.RegisterComponents("RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",

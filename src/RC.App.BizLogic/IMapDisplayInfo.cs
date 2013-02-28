@@ -9,7 +9,7 @@ namespace RC.App.BizLogic
 {
     /// <summary>
     /// This component interface provides informations for displaying a rectangular area of the currently opened map.
-    /// The area to be displayed is designated by a window with a resolution aligned with the navigation cells.
+    /// The area to be displayed is designated by a window with a resolution aligned with the cells.
     /// </summary>
     [ComponentInterface]
     public interface IMapDisplayInfo
@@ -29,7 +29,7 @@ namespace RC.App.BizLogic
         /// Gets the display coordinates of the isometric tile at the given position. The term "display coordinates"
         /// means the same as in the description of the IsoTileDisplayInfo.DisplayCoords property.
         /// </summary>
-        /// <param name="position">The position inside the map display window in navigation cells.</param>
+        /// <param name="position">The position inside the map display window in cells.</param>
         /// <returns>The display coordinates of the isometric tile at the given position.</returns>
         RCIntVector GetIsoTileDisplayCoords(RCIntVector position);
     }
@@ -47,7 +47,7 @@ namespace RC.App.BizLogic
 
         /// <summary>
         /// Suppose that we have a minimum size bounding box around the isometric tile with the resolution
-        /// of navigation cells. This vector is the coordinates of the upper-left corner of this bounding
+        /// of cells. This vector is the coordinates of the upper-left corner of this bounding
         /// box in the coordinate-system of the map display window.
         /// </summary>
         public RCIntVector DisplayCoords { get; set; }

@@ -127,7 +127,7 @@ namespace RC.App.PresLogic
         }
 
         /// <summary>
-        /// Gets the displayed area of the map in navigation cells.
+        /// Gets the displayed area of the map in cells.
         /// </summary>
         public RCIntRectangle DisplayedArea { get { return this.mapDisplayInfoProvider.Window; } }
 
@@ -247,7 +247,7 @@ namespace RC.App.PresLogic
         private UISprite isotileHighlight;
 
         /// <summary>
-        /// The coordinates of the navigation cell where to draw the isometric tile highlight or RCIntVector.Undefined
+        /// The coordinates of the cell where to draw the isometric tile highlight or RCIntVector.Undefined
         /// if no isometric tile is highlighted.
         /// </summary>
         private RCIntVector isotileHighlightCoords;
@@ -263,7 +263,7 @@ namespace RC.App.PresLogic
         public readonly UIColor DEFAULT_TILE_TRANSPARENT_COLOR = new UIColor(255, 0, 255);
 
         /// <summary>
-        /// Number of pixels per navigation cells in both horizontal and vertical direction.
+        /// Number of pixels per cells in both horizontal and vertical direction.
         /// </summary>
         public const int PIXEL_PER_NAVCELL = 4;
     }

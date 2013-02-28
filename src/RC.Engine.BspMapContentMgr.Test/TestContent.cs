@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common;
+using RC.Engine.PublicInterfaces;
 
 namespace RC.Engine.BspMapContentMgr.Test
 {

@@ -24,7 +24,7 @@ namespace RC.App.BizLogic
         RCIntVector Size { get; }
 
         /// <summary>
-        /// Gets the size of the currently opened map in navigation cells.
+        /// Gets the size of the currently opened map in cells.
         /// </summary>
         RCIntVector NavSize { get; }
 

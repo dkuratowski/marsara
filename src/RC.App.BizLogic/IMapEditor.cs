@@ -45,7 +45,7 @@ namespace RC.App.BizLogic
         /// <summary>
         /// Draws the given terrain type on the isometric tile at the given position.
         /// </summary>
-        /// <param name="position">The position inside the map display window in navigation cells.</param>
+        /// <param name="position">The position inside the map display window in cells.</param>
         /// <param name="terrainName">The name of the terrain to draw.</param>
         MapEditorErrorCode DrawTerrain(RCIntVector position, string terrainName);
     }

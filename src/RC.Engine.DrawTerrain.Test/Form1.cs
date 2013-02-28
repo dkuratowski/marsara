@@ -6,10 +6,11 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using RC.Common.Configuration;
 using System.IO;
 using RC.Common;
 using RC.Common.ComponentModel;
+using RC.Engine.PublicInterfaces;
+using RC.Engine.ComponentInterfaces;
 
 namespace RC.Engine.DrawTerrain.Test
 {
@@ -22,38 +23,44 @@ namespace RC.Engine.DrawTerrain.Test
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
             ComponentManager.RegisterComponents("RC.Engine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[2] { "RC.Engine.TileSetManager", "RC.Engine.MapManager" });
+                                                new string[3] { "RC.Engine.TileSetLoader", "RC.Engine.MapLoader", "RC.Engine.MapEditor" });
             ComponentManager.StartComponents();
 
-            this.tilesetManager = ComponentManager.GetInterface<ITileSetManager>();
-            this.mapManager = ComponentManager.GetInterface<IMapManager>();
+            this.tilesetLoader = ComponentManager.GetInterface<ITileSetLoader>();
+            this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
+            this.mapEditor = ComponentManager.GetInterface<IMapEditor>();
 
+            /// TODO: this is a hack!
             FileInfo tilesetFile = new FileInfo("../../../../tilesets_raw/test/test.xml");
-            this.tilesetManager.LoadTileSet(tilesetFile.FullName);
+            string xmlStr = File.ReadAllText(tilesetFile.FullName);
+            string imageDir = tilesetFile.DirectoryName;
+            RCPackage tilesetPackage = RCPackage.CreateCustomDataPackage(RCEngineFormats.TILESET_FORMAT);
+            tilesetPackage.WriteString(0, xmlStr);
+            tilesetPackage.WriteString(1, imageDir);
+            ITileSet tileset = this.tilesetLoader.LoadTileSet(tilesetPackage);
 
-            this.mapManager.Initialize();
-            this.map = this.mapManager.CreateMap("Test", "Yellow", new RCIntVector(64, 32));
-            TileSet tileset = this.tilesetManager.GetTileSet("Test");
+            this.map = this.mapLoader.NewMap(tileset, "Yellow", new RCIntVector(64, 32));
 
             this.draw = new IsoDraw();
 
             this.replacedTiles = new HashSet<IIsoTile>();
             this.terrainTypes = new List<string>();
-            foreach (string terrainType in tileset.TerrainTypes)
+            foreach (ITerrainType terrainType in tileset.TerrainTypes)
             {
-                this.terrainTypes.Add(terrainType);
+                this.terrainTypes.Add(terrainType.Name);
             }
             this.selectedTerrain = 0;
             this.Text = this.terrainTypes[this.selectedTerrain];
         }
 
-        private IMapManager mapManager;
+        private IMapLoader mapLoader;
 
-        private ITileSetManager tilesetManager;
+        private ITileSetLoader tilesetLoader;
 
-        private IMapEdit map;
+        private IMapAccess map;
+
+        private IMapEditor mapEditor;
 
         private IsoDraw draw;
 
@@ -81,7 +88,7 @@ namespace RC.Engine.DrawTerrain.Test
                 if (target != null)
                 {
                     this.replacedTiles.Clear();
-                    IEnumerable<IIsoTile> replacedTiles = map.DrawTerrain(target, map.Tileset.GetTerrainType(this.terrainTypes[this.selectedTerrain]));
+                    IEnumerable<IIsoTile> replacedTiles = this.mapEditor.DrawTerrain(this.map, target, map.Tileset.GetTerrainType(this.terrainTypes[this.selectedTerrain]));
                     foreach (IIsoTile item in replacedTiles)
                     {
                         this.replacedTiles.Add(item);

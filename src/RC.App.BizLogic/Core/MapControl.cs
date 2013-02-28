@@ -7,6 +7,8 @@ using RC.Common;
 using RC.Engine;
 using System.Threading;
 using RC.Common.Diagnostics;
+using RC.Engine.PublicInterfaces;
+using Eng = RC.Engine.ComponentInterfaces;
 
 namespace RC.App.BizLogic.Core
 {
@@ -14,18 +16,16 @@ namespace RC.App.BizLogic.Core
     /// The implementation of the MapControl component.
     /// </summary>
     [Component("RC.App.BizLogic.MapControl")]
-    class MapControl : IMapEditor, IMapDisplayInfo, IMapGeneralInfo, IComponentStart, IDisposable
+    class MapControl : IMapEditor, IMapDisplayInfo, IMapGeneralInfo, IDisposable
     {
         /// <summary>
         /// Constructs a MapControl instance.
         /// </summary>
         public MapControl()
         {
-            this.mapManager = null;
+            this.mapEditor = null;
+            this.mapLoader = null;
             this.activeMap = null;
-            this.activeEditedMap = null;
-            this.initThread = new RCThread(this.InitMapMgrThreadProc, "MapManagerInitializer");
-            this.initThreadStarted = false;
             this.window = RCIntRectangle.Undefined;
             this.isoTileDisplayInfos = new List<IsoTileDisplayInfo>();
             this.tmpIsoTileList = new HashSet<IIsoTile>();
@@ -36,48 +36,35 @@ namespace RC.App.BizLogic.Core
         /// <see cref="IMapEditor.CreateMap"/>
         public MapEditorErrorCode CreateMap(string tilesetName, string defaultTerrain, RCIntVector mapSize)
         {
-            if (!this.initThreadStarted) { throw new InvalidOperationException("Component has not yet been started!"); }
-            this.initThread.Join();
-
             /// TODO: error handling!
-            this.activeEditedMap = this.mapManager.CreateMap(tilesetName, defaultTerrain, mapSize);
-            this.activeMap = this.activeEditedMap;
+            /// TODO: ITileSetStore.GetTileSet is a hack!!!
+            this.activeMap = this.mapLoader.NewMap(this.tilesetStore.GetTileSet(tilesetName), defaultTerrain, mapSize);
             return MapEditorErrorCode.Success;
         }
 
         /// <see cref="IMapEditor.LoadMap"/>
         public MapEditorErrorCode LoadMap(string filename)
         {
-            if (!this.initThreadStarted) { throw new InvalidOperationException("Component has not yet been started!"); }
-            this.initThread.Join();
-
             throw new NotImplementedException();
         }
 
         /// <see cref="IMapEditor.SaveMap"/>
         public MapEditorErrorCode SaveMap(string filename)
         {
-            if (!this.initThreadStarted) { throw new InvalidOperationException("Component has not yet been started!"); }
-            this.initThread.Join();
-
             throw new NotImplementedException();
         }
 
         /// <see cref="IMapEditor.CloseMap"/>
         public MapEditorErrorCode CloseMap()
         {
-            if (!this.initThreadStarted) { throw new InvalidOperationException("Component has not yet been started!"); }
-            this.initThread.Join();
-
-            if (this.activeEditedMap != null && this.activeMap != null)
+            if (this.activeMap != null)
             {
                 /// TODO: error handling
-                this.mapManager.CloseMap();
+                this.activeMap.Close();
+                this.activeMap = null;
                 this.window = RCIntRectangle.Undefined;
                 this.isoTileDisplayInfos.Clear();
                 this.tmpIsoTileList.Clear();
-                this.activeEditedMap = null;
-                this.activeMap = null;
             }
 
             return MapEditorErrorCode.Success;
@@ -86,14 +73,11 @@ namespace RC.App.BizLogic.Core
         /// <see cref="IMapEditor.DrawTerrain"/>
         public MapEditorErrorCode DrawTerrain(RCIntVector position, string terrainName)
         {
-            if (!this.initThreadStarted) { throw new InvalidOperationException("Component has not yet been started!"); }
-            this.initThread.Join();
-
-            if (this.activeEditedMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
             RCIntVector navCellCoords = this.window.Location + position;
-            IIsoTile isotile = this.activeEditedMap.GetNavCell(navCellCoords).ParentIsoTile;
+            IIsoTile isotile = this.activeMap.GetCell(navCellCoords).ParentIsoTile;
 
-            this.activeEditedMap.DrawTerrain(isotile, this.activeEditedMap.Tileset.GetTerrainType(terrainName));
+            this.mapEditor.DrawTerrain(this.activeMap, isotile, this.activeMap.Tileset.GetTerrainType(terrainName));
             this.RefreshDisplayInfos();
             return MapEditorErrorCode.Success;
         }
@@ -139,8 +123,8 @@ namespace RC.App.BizLogic.Core
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             RCIntVector navCellCoords = this.window.Location + position;
-            IIsoTile isotile = this.activeMap.GetNavCell(navCellCoords).ParentIsoTile;
-            return isotile.GetNavCellCoords(new RCIntVector(0, 0)) - this.window.Location;
+            IIsoTile isotile = this.activeMap.GetCell(navCellCoords).ParentIsoTile;
+            return isotile.GetCellMapCoords(new RCIntVector(0, 0)) - this.window.Location;
         }
 
         #endregion IMapDisplayInfo methods
@@ -166,7 +150,7 @@ namespace RC.App.BizLogic.Core
             get
             {
                 if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-                return this.activeMap.NavSize;
+                return this.activeMap.CellSize;
             }
         }
 
@@ -182,39 +166,12 @@ namespace RC.App.BizLogic.Core
 
         #endregion IMapGeneralInfo methods
 
-        #region IComponentStart methods
-
-        /// <see cref="IComponentStart.Start"/>
-        public void Start()
-        {
-            if (!this.initThreadStarted)
-            {
-                this.initThreadStarted = true;
-                this.initThread.Start();
-            }
-        }
-
-        /// <summary>
-        /// Internal method executed by the background initializer thread.
-        /// </summary>
-        private void InitMapMgrThreadProc()
-        {
-            TraceManager.WriteAllTrace("MapManager.Initialize starting...", BizLogicTraceFilters.INFO);
-            this.mapManager.Initialize();
-            TraceManager.WriteAllTrace("MapManager.Initialize finished.", BizLogicTraceFilters.INFO);
-        }
-
-        #endregion IComponentStart methods
-
         #region IDisposable methods
 
         /// <see cref="IDisposable.Dispose"/>
         public void Dispose()
         {
-            if (this.initThreadStarted)
-            {
-                this.initThread.Join();
-            }
+            this.CloseMap();
         }
 
         #endregion IDisposable methods
@@ -227,9 +184,9 @@ namespace RC.App.BizLogic.Core
             if (this.window != RCIntRectangle.Undefined)
             {
                 RCIntVector topLeftNavCellCoords = new RCIntVector(Math.Max(0, this.window.Left), Math.Max(0, this.window.Top));
-                RCIntVector bottomRightNavCellCoords = new RCIntVector(Math.Min(this.activeMap.NavSize.X - 1, this.window.Right - 1), Math.Min(this.activeMap.NavSize.Y - 1, this.window.Bottom - 1));
-                IQuadTile topLeftQuadTile = this.activeMap.GetNavCell(topLeftNavCellCoords).ParentQuadTile;
-                IQuadTile bottomRightQuadTile = this.activeMap.GetNavCell(bottomRightNavCellCoords).ParentQuadTile;
+                RCIntVector bottomRightNavCellCoords = new RCIntVector(Math.Min(this.activeMap.CellSize.X - 1, this.window.Right - 1), Math.Min(this.activeMap.CellSize.Y - 1, this.window.Bottom - 1));
+                IQuadTile topLeftQuadTile = this.activeMap.GetCell(topLeftNavCellCoords).ParentQuadTile;
+                IQuadTile bottomRightQuadTile = this.activeMap.GetCell(bottomRightNavCellCoords).ParentQuadTile;
 
                 for (int x = topLeftQuadTile.MapCoords.X; x <= bottomRightQuadTile.MapCoords.X; x++)
                 {
@@ -243,7 +200,7 @@ namespace RC.App.BizLogic.Core
                             new IsoTileDisplayInfo()
                             {
                                 TileTypeIndex = isotile.Variant.Index,
-                                DisplayCoords = isotile.GetNavCellCoords(new RCIntVector(0, 0)) - this.window.Location
+                                DisplayCoords = isotile.GetCellMapCoords(new RCIntVector(0, 0)) - this.window.Location
                             });
                     }
 
@@ -252,9 +209,9 @@ namespace RC.App.BizLogic.Core
                         for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
                         {
                             IQuadTile quadTile = this.activeMap.GetQuadTile(new RCIntVector(x, y));
-                            for (int row = 0; row < quadTile.NavCellDims.Y; row++)
+                            for (int row = 0; row < quadTile.CellSize.Y; row++)
                             {
-                                IIsoTile isotile = quadTile.GetNavCell(new RCIntVector(0, row)).ParentIsoTile;
+                                IIsoTile isotile = quadTile.GetCell(new RCIntVector(0, row)).ParentIsoTile;
                                 if (this.tmpIsoTileList.Contains(isotile)) { continue; }
 
                                 this.tmpIsoTileList.Add(isotile);
@@ -262,7 +219,7 @@ namespace RC.App.BizLogic.Core
                                     new IsoTileDisplayInfo()
                                     {
                                         TileTypeIndex = isotile.Variant.Index,
-                                        DisplayCoords = isotile.GetNavCellCoords(new RCIntVector(0, 0)) - this.window.Location
+                                        DisplayCoords = isotile.GetCellMapCoords(new RCIntVector(0, 0)) - this.window.Location
                                     });
                             }
                         }
@@ -272,9 +229,9 @@ namespace RC.App.BizLogic.Core
                         for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
                         {
                             IQuadTile quadTile = this.activeMap.GetQuadTile(new RCIntVector(x, y));
-                            for (int row = 0; row < quadTile.NavCellDims.Y; row++)
+                            for (int row = 0; row < quadTile.CellSize.Y; row++)
                             {
-                                IIsoTile isotile = quadTile.GetNavCell(new RCIntVector(quadTile.NavCellDims.X - 1, row)).ParentIsoTile;
+                                IIsoTile isotile = quadTile.GetCell(new RCIntVector(quadTile.CellSize.X - 1, row)).ParentIsoTile;
                                 if (this.tmpIsoTileList.Contains(isotile)) { continue; }
 
                                 this.tmpIsoTileList.Add(isotile);
@@ -282,7 +239,7 @@ namespace RC.App.BizLogic.Core
                                     new IsoTileDisplayInfo()
                                     {
                                         TileTypeIndex = isotile.Variant.Index,
-                                        DisplayCoords = isotile.GetNavCellCoords(new RCIntVector(0, 0)) - this.window.Location
+                                        DisplayCoords = isotile.GetCellMapCoords(new RCIntVector(0, 0)) - this.window.Location
                                     });
                             }
                         }
@@ -292,30 +249,27 @@ namespace RC.App.BizLogic.Core
         }
 
         /// <summary>
-        /// Reference to the RC.Engine.MapManager component.
+        /// Reference to the RC.Engine.MapEditor component.
         /// </summary>
         [ComponentReference]
-        private IMapManager mapManager;
+        private Eng.IMapEditor mapEditor;
+
+        /// <summary>
+        /// Reference to the RC.Engine.MapLoader component.
+        /// </summary>
+        [ComponentReference]
+        private Eng.IMapLoader mapLoader;
+
+        /// <summary>
+        /// Reference to the RC.App.BizLogic.TileSetStore component.
+        /// </summary>
+        [ComponentReference]
+        private ITileSetStore tilesetStore;
 
         /// <summary>
         /// Reference to the currently active map.
         /// </summary>
-        private IMap activeMap;
-
-        /// <summary>
-        /// Reference to the currently active map being edited.
-        /// </summary>
-        private IMapEdit activeEditedMap;
-
-        /// <summary>
-        /// Reference to the initializer thread.
-        /// </summary>
-        private RCThread initThread;
-
-        /// <summary>
-        /// This flag indicates whether the initializer thread has been started or not.
-        /// </summary>
-        private bool initThreadStarted;
+        private IMapAccess activeMap;
 
         /// <summary>
         /// This window designates the displayed area of the opened map.
