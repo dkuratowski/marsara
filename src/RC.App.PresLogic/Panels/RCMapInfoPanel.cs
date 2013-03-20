@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Panels
 {
     /// <summary>
     /// The information panel of the selected map on the Create Game page.

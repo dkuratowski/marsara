@@ -61,6 +61,7 @@ namespace RC.UI.Test
 
             UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\testui_sprites\\pointer.png");
             mouseIcon.TransparentColor = new UIColor(255, 0, 255);
+            mouseIcon.Upload();
             UIMouseManager mouseMgr = new UIMouseManager(workspace);
             mouseMgr.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));
 
@@ -87,6 +88,9 @@ namespace RC.UI.Test
             this.nameStrHigh = new UIString(name, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), new RCIntVector(2, 2), UIColor.LightRed);
             this.backgroundBasic = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(basicColor, this.Range.Size, new RCIntVector(2, 2));
             this.backgroundHigh = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(highColor, this.Range.Size, new RCIntVector(2, 2));
+
+            this.backgroundBasic.Upload();
+            this.backgroundHigh.Upload();
 
             this.name = name;
             this.isHighlighted = false;

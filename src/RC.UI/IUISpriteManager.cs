@@ -124,7 +124,12 @@ namespace RC.UI
         public abstract UISprite ScaleSprite(UISprite sprite, RCIntVector pixelSize);
 
         /// <see cref="IUISpriteManager.CreateRenderContext"/>
-        public abstract IUIRenderContext CreateRenderContext(UISprite sprite);
+        public IUIRenderContext CreateRenderContext(UISprite sprite)
+        {
+            if (sprite.IsUploaded) { throw new InvalidOperationException("Unable to create render context on an uploaded sprite!"); }
+            return this.CreateRenderContext_i(sprite);
+        }
+        protected abstract IUIRenderContext CreateRenderContext_i(UISprite sprite);
 
         /// <see cref="IUISpriteManager.CloseRenderContext"/>
         public abstract void CloseRenderContext(UISprite sprite);

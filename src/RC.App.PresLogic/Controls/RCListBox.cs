@@ -5,7 +5,7 @@ using System.Text;
 using RC.UI;
 using RC.Common;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Controls
 {
     /// <summary>
     /// Represents a listbox control in the RC application.

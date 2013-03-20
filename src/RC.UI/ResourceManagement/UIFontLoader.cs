@@ -19,10 +19,10 @@ namespace RC.UI
             : base(paths, parameters)
         {
             if (!this.HasPath(MAPPING_FILE_PATH)) { throw new ArgumentException(string.Format("Path '{0}' is missing!", MAPPING_FILE_PATH)); }
-            if (!this.HasParameter(FONT_SPRITE_PARAM)) { throw new ArgumentException(string.Format("Parameter '{0}' is missing!", FONT_SPRITE_PARAM)); }
+            if (!this.HasPath(IMAGE_FILE_PATH)) { throw new ArgumentException(string.Format("Path '{0}' is missing!", IMAGE_FILE_PATH)); }
 
             this.mappingFile = this.GetPath(MAPPING_FILE_PATH);
-            this.fontSpriteName = this.GetParameter(FONT_SPRITE_PARAM);
+            this.imageFile = this.GetPath(IMAGE_FILE_PATH);
         }
 
         #region UIResourceLoader methods
@@ -32,7 +32,8 @@ namespace RC.UI
         {
             XDocument xmlDoc = XDocument.Load(this.mappingFile.FullName);
             XElement rootElem = xmlDoc.Root;
-            this.loadedFont = new UIFont(rootElem, this.fontSpriteName);
+            byte[] imageData = File.ReadAllBytes(this.imageFile.FullName);
+            this.loadedFont = new UIFont(rootElem, imageData);
         }
 
         /// <see cref="UIResourceLoader.Unload_i"/>
@@ -58,7 +59,7 @@ namespace RC.UI
         /// <summary>
         /// The name of the font sprite resource.
         /// </summary>
-        private string fontSpriteName;
+        private FileInfo imageFile;
 
         /// <summary>
         /// Reference to the loaded UIFont or null if the font is not loaded currently.
@@ -69,6 +70,6 @@ namespace RC.UI
         /// The name of the paths and parameters defined by this loader.
         /// </summary>
         private const string MAPPING_FILE_PATH = "mappingFile";
-        private const string FONT_SPRITE_PARAM = "fontSprite";
+        private const string IMAGE_FILE_PATH = "imageFile";
     }
 }

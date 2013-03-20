@@ -25,11 +25,6 @@ namespace RC.UI
         }
 
         /// <summary>
-        /// Gets the ID of this UISprite resource.
-        /// </summary>
-        public abstract int ResourceId { get; }
-
-        /// <summary>
         /// Gets the pixel size of this UISprite. The X coordinate of the returned RCIntVector is
         /// the horizontal pixel size, the Y coordinate is the vertical pixel size.
         /// </summary>
@@ -44,6 +39,7 @@ namespace RC.UI
             get { return this.transparentColor; }
             set
             {
+                if (this.IsUploaded) { throw new UIException("Unable to set TransparentColor of an uploaded sprite!"); }
                 if (this.transparentColor != value)
                 {
                     this.transparentColor = value;
@@ -58,11 +54,30 @@ namespace RC.UI
         public RCIntVector Size { get { return this.size; } }
 
         /// <summary>
+        /// Gets whether this UISprite has already been uploaded or not.
+        /// </summary>
+        public abstract bool IsUploaded { get; }
+
+        /// <summary>
         /// Saves this UISprite to the given file.
         /// </summary>
         /// <param name="fileName">The name of the target file.</param>
         /// <remarks>For debugging.</remarks>
         public abstract void Save(string fileName);
+
+        /// <summary>
+        /// Uploads this UISprite to the graphics device.
+        /// </summary>
+        public void Upload()
+        {
+            if (this.IsUploaded) { throw new UIException("Sprite already uploaded!"); }
+            this.Upload_i();
+        }
+
+        /// <summary>
+        /// Internal implementation of the uploading.
+        /// </summary>
+        protected abstract void Upload_i();
 
         /// <summary>
         /// Internal method to setting a new transparent color.

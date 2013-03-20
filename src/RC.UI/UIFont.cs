@@ -17,7 +17,7 @@ namespace RC.UI
         /// <summary>
         /// Constructs a UIFont object.
         /// </summary>
-        public UIFont(XElement mappingFileRoot, string fontSpriteName)
+        public UIFont(XElement mappingFileRoot, byte[] imageData)
         {
             this.fontSprites = new Dictionary<UIFontSpriteDefinition, UISprite>();
             this.charIds = new Dictionary<char, int>();
@@ -70,8 +70,9 @@ namespace RC.UI
                     throw new ConfigurationException("Transparent and character masking color cannot be equal!");
                 }
 
-                /// Get the font sprite and set it's transparent color.
-                this.originalFontSprite = UIResourceManager.GetResource<UISprite>(fontSpriteName);
+                /// Load the font sprite and set it's transparent color as it is defined in the mapping file.
+                /// Do not upload this sprite to the graphics device as it will only be used for creating other font sprites.
+                this.originalFontSprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(imageData);
                 this.originalFontSprite.TransparentColor = this.characterMaskColor;
 
                 /// Check whether there is a mapping for the default character of the UIFont.
@@ -138,6 +139,7 @@ namespace RC.UI
                 newFontSpriteCtx.RenderSprite(this.originalFontSprite, new RCIntVector(0, 0));
                 UIRoot.Instance.GraphicsPlatform.SpriteManager.CloseRenderContext(newFontSprite);
                 newFontSprite.TransparentColor = this.transparentColor;
+                newFontSprite.Upload();
                 this.fontSprites.Add(spriteDef, newFontSprite);
             }
 
@@ -191,6 +193,7 @@ namespace RC.UI
                 UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(sprite);
             }
 
+            UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(this.originalFontSprite);
             this.defaultChar = (char)0;
             this.charIds.Clear();
             this.charSections.Clear();

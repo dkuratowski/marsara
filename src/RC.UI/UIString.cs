@@ -56,6 +56,7 @@ namespace RC.UI
             this.Initialize();
             //this.stringRibbon.Save(format + ".png");
             this.stringRibbon.TransparentColor = this.fontSprite.TransparentColor;
+            this.stringRibbon.Upload();
             this.allFragmentCache = null;
             this.widthCache = new CachedValue<int>(this.ComputeWidth);
         }

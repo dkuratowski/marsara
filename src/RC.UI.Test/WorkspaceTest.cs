@@ -103,6 +103,7 @@ namespace RC.UI.Test
             : base(backgroundRect, contentRect, showMode, hideMode, 300, 300)
         {
             this.backgroundSprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Green, this.Range.Size, UIWorkspace.Instance.PixelScaling);
+            this.backgroundSprite.Upload();
         }
 
         protected override void Render_i(IUIRenderContext renderContext)

@@ -17,7 +17,7 @@ namespace RC.UI
     public delegate void UIMouseEventHdl(UISensitiveObject sender, UIMouseEventArgs evtArgs);
 
     /// <summary>
-    /// Defines mouse events for UISensitiveObjects.
+    /// Defines the interface of mouse sensors.
     /// </summary>
     public interface IUIMouseSensor
     {
@@ -63,6 +63,20 @@ namespace RC.UI
         /// or while this sensor is active.
         /// </summary>
         event UIMouseEventHdl Wheel;
+
+        /// <summary>
+        /// Attaches this mouse sensor to the given target sensor so that the events arrived to the target sensor will be propagated to
+        /// this mouse sensor.
+        /// </summary>
+        /// <param name="target">The target sensor to attach to.</param>
+        void AttachTo(IUIMouseSensor target);
+
+        /// <summary>
+        /// Detaches this mouse sensor from the given target sensor so that the events arrived to the target sensor will no longer be
+        /// propagated to this mouse sensor.
+        /// </summary>
+        /// <param name="target">The target sensor to detach from.</param>
+        void DetachFrom(IUIMouseSensor target);
     }
 
     /// <summary>
@@ -183,6 +197,19 @@ namespace RC.UI
 
         #endregion Trigger methods
 
+        #region Propagation methods
+
+        private void PropagateEnter(UISensitiveObject sender) { if (this.Enter != null) { this.Enter(sender); } }
+        private void PropagateLeave(UISensitiveObject sender) { if (this.Leave != null) { this.Leave(sender); } }
+        private void PropagateMove(UISensitiveObject sender, UIMouseEventArgs evtArgs) { if (this.Move != null) { this.Move(sender, evtArgs); } }
+        private void PropagateButtonDown(UISensitiveObject sender, UIMouseEventArgs evtArgs) { if (this.ButtonDown != null) { this.ButtonDown(sender, evtArgs); } }
+        private void PropagateButtonUp(UISensitiveObject sender, UIMouseEventArgs evtArgs) { if (this.ButtonUp != null) { this.ButtonUp(sender, evtArgs); } }
+        private void PropagateClick(UISensitiveObject sender, UIMouseEventArgs evtArgs) { if (this.Click != null) { this.Click(sender, evtArgs); } }
+        private void PropagateDoubleClick(UISensitiveObject sender, UIMouseEventArgs evtArgs) { if (this.DoubleClick != null) { this.DoubleClick(sender, evtArgs); } }
+        private void PropagateWheel(UISensitiveObject sender, UIMouseEventArgs evtArgs) { if (this.Wheel != null) { this.Wheel(sender, evtArgs); } }
+
+        #endregion Propagation methods
+
         #region Public properties
 
         /// <summary>
@@ -203,7 +230,7 @@ namespace RC.UI
 
         #endregion Public properties
 
-        #region IUIMouseSensor events
+        #region IUIMouseSensor members
 
         /// <see cref="IUIMouseSensor.Enter"/>
         public event UIInputEventHdl Enter;
@@ -229,7 +256,37 @@ namespace RC.UI
         /// <see cref="IUIMouseSensor.Wheel"/>
         public event UIMouseEventHdl Wheel;
 
-        #endregion IUIMouseSensor events
+        /// <see cref="IUIMouseSensor.AttachTo"/>
+        public void AttachTo(IUIMouseSensor target)
+        {
+            if (target == null) { throw new ArgumentNullException("target"); }
+
+            target.Enter += this.PropagateEnter;
+            target.Leave += this.PropagateLeave;
+            target.Move += this.PropagateMove;
+            target.ButtonDown += this.PropagateButtonDown;
+            target.ButtonUp += this.PropagateButtonUp;
+            target.Click += this.PropagateClick;
+            target.DoubleClick += this.PropagateDoubleClick;
+            target.Wheel += this.PropagateWheel;
+        }
+
+        /// <see cref="IUIMouseSensor.DetachFrom"/>
+        public void DetachFrom(IUIMouseSensor target)
+        {
+            if (target == null) { throw new ArgumentNullException("target"); }
+
+            target.Enter -= this.PropagateEnter;
+            target.Leave -= this.PropagateLeave;
+            target.Move -= this.PropagateMove;
+            target.ButtonDown -= this.PropagateButtonDown;
+            target.ButtonUp -= this.PropagateButtonUp;
+            target.Click -= this.PropagateClick;
+            target.DoubleClick -= this.PropagateDoubleClick;
+            target.Wheel -= this.PropagateWheel;
+        }
+
+        #endregion IUIMouseSensor members
 
         #region Private fields
 

@@ -4,15 +4,6 @@
   <loader name="AnimationLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UIAnimationLoader" />
 
   <resourceGroup namespace="RC.MapEditor" name="Resources">
-    <resource namespace="RC.MapEditor.Sprites" name="Font5Sprite" loader="SpriteLoader">
-      <path name="imageFile">../fonts/font5.png</path>
-    </resource>
-    <resource namespace="RC.MapEditor.Sprites" name="Font6Sprite" loader="SpriteLoader">
-      <path name="imageFile">../fonts/font6.png</path>
-    </resource>
-    <resource namespace="RC.MapEditor.Sprites" name="Font9BSprite" loader="SpriteLoader">
-      <path name="imageFile">../fonts/font9b.png</path>
-    </resource>
     <resource namespace="RC.MapEditor.Sprites" name="MenuPointerSprite" loader="SpriteLoader">
       <path name="imageFile">../sprites/pointers/menu_pointer.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
@@ -39,23 +30,32 @@
 	    <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
-    <resource namespace="RC.App.Sprites" name="IsotileHighlight" loader="SpriteLoader">
-      <path name="imageFile">../sprites/pointers/isotile_highlight.png</path>
+    <resource namespace="RC.App.Sprites" name="IsotileHighlighted" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/isotile_highlighted.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="IsotileNormal" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/isotile_normal.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="ObjectPlacementMask" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/object_placement_mask.png</path>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
 
     <resource namespace="RC.App.Fonts" name="Font5" loader="FontLoader">
       <path name="mappingFile">../fonts/font5.xml</path>
-      <parameter name="fontSprite">RC.MapEditor.Sprites.Font5Sprite</parameter>
+      <path name="imageFile">../fonts/font5.png</path>
     </resource>
     <resource namespace="RC.MapEditor.Fonts" name="Font6" loader="FontLoader">
       <path name="mappingFile">../fonts/font6.xml</path>
-      <parameter name="fontSprite">RC.MapEditor.Sprites.Font6Sprite</parameter>
+      <path name="imageFile">../fonts/font6.png</path>
     </resource>
     <resource namespace="RC.App.Fonts" name="Font9B" loader="FontLoader">
       <path name="mappingFile">../fonts/font9b.xml</path>
-      <parameter name="fontSprite">RC.MapEditor.Sprites.Font9BSprite</parameter>
+      <path name="imageFile">../fonts/font9b.png</path>
     </resource>
   </resourceGroup>
 </resourceFile>

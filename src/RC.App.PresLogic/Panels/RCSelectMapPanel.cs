@@ -5,7 +5,7 @@ using System.Text;
 using RC.Common;
 using RC.UI;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Panels
 {
     /// <summary>
     /// The map selector panel on the Create Game page

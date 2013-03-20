@@ -5,8 +5,9 @@ using System.Text;
 using RC.UI;
 using RC.Common;
 using RC.Common.Diagnostics;
+using RC.App.PresLogic.Panels;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Pages
 {
     /// <summary>
     /// The Registry page of the RC application.

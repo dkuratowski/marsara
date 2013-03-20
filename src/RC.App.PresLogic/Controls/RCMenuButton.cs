@@ -5,7 +5,7 @@ using System.Text;
 using RC.UI;
 using RC.Common;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Controls
 {
     /// <summary>
     /// Represents a button in the menu system of the RC application.

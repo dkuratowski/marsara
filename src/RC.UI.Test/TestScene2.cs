@@ -33,6 +33,7 @@ namespace RC.UI.Test
 
             UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\testui_sprites\\pointer.png");
             mouseIcon.TransparentColor = new UIColor(255, 0, 255);
+            mouseIcon.Upload();
             //UIMouseManager mouseMgr = new UIMouseManager(workspace);
             //mouseMgr.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));
 

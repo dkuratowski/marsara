@@ -5,7 +5,7 @@ using System.Text;
 using RC.Common;
 using RC.UI;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Controls
 {
     /// <summary>
     /// Represents a scrollbar in the RC application.

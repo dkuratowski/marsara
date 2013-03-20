@@ -36,6 +36,9 @@ namespace RC.UI.Test
             MyButton button = new MyButton(new RCIntVector(5, 12), new RCIntVector(60, 20),
                                            UIColor.Brown, UIColor.Yellow, UIColor.White,
                                            "MyButton");
+            //button.MouseSensor.Enter += delegate(UISensitiveObject sender) { Console.WriteLine("BUTTON ENTER"); };
+            //button.MouseSensor.Move += delegate(UISensitiveObject sender, UIMouseEventArgs args) { Console.WriteLine("BUTTON MOVE"); };
+            //button.MouseSensor.Leave += delegate(UISensitiveObject sender) { Console.WriteLine("BUTTON LEAVE"); };
             MyCheckbox checkbox = new MyCheckbox(new RCIntVector(70, 12), new RCIntVector(80, 20),
                                                  UIColor.Red, UIColor.Green, UIColor.LightRed, UIColor.LightGreen, UIColor.White,
                                                  "MyCheckbox");
@@ -43,6 +46,9 @@ namespace RC.UI.Test
                                                                  new string[4] { "option0", "option1", "option2", "option3" },
                                                                  UIColor.WhiteHigh, UIColor.Red,
                                                                  UIColor.Green, UIColor.LightGreen, UIColor.LightBlue, UIColor.Gray);
+            //selector.MouseSensor.Enter += delegate(UISensitiveObject sender) { Console.WriteLine("SELECTOR ENTER"); };
+            //selector.MouseSensor.Move += delegate(UISensitiveObject sender, UIMouseEventArgs args) { Console.WriteLine("SELECTOR MOVE"); };
+            //selector.MouseSensor.Leave += delegate(UISensitiveObject sender) { Console.WriteLine("SELECTOR LEAVE"); };
             MySlider sliderHorz = new MySlider(new RCIntVector(5, 80), new RCIntVector(80, 10),
                                                new UISlider.Settings()
                                                {
@@ -109,8 +115,8 @@ namespace RC.UI.Test
             root.GetEventSource("RC.UI.XnaPlugin.XnaMouseEventSource").Activate();
             root.GetEventSource("RC.UI.XnaPlugin.XnaKeyboardEventSource").Activate();
 
-            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\testui_sprites\\pointer.png");
-            mouseIcon.TransparentColor = new UIColor(255, 0, 255);
+            UISprite mouseIcon = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.TestPointerSprite");
+            //mouseIcon.TransparentColor = new UIColor(255, 0, 255);
             UIMouseManager mouseMgr = new UIMouseManager(workspace);
             mouseMgr.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));
 
@@ -137,6 +143,10 @@ namespace RC.UI.Test
             this.basicBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(basicColor, this.Range.Size - new RCIntVector(2, 2), new RCIntVector(2, 2));
             this.highlightedBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(highlightedColor, this.Range.Size - new RCIntVector(2, 2), new RCIntVector(2, 2));
             this.disabledBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(disabledColor, this.Range.Size - new RCIntVector(2, 2), new RCIntVector(2, 2));
+
+            this.basicBackground.Upload();
+            this.highlightedBackground.Upload();
+            this.disabledBackground.Upload();
         }
 
         protected override void Render_i(IUIRenderContext renderContext)
@@ -178,6 +188,12 @@ namespace RC.UI.Test
             this.highlightedUncheckedBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(highlightedUncheckedColor, new RCIntVector(this.Range.Size.Y - 2, this.Range.Size.Y - 2), new RCIntVector(2, 2));
             this.highlightedCheckedBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(highlightedCheckedColor, new RCIntVector(this.Range.Size.Y - 2, this.Range.Size.Y - 2), new RCIntVector(2, 2));
             this.disabledBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(disabledColor, new RCIntVector(this.Range.Size.Y - 2, this.Range.Size.Y - 2), new RCIntVector(2, 2));
+
+            this.basicUncheckedBackground.Upload();
+            this.basicCheckedBackground.Upload();
+            this.highlightedUncheckedBackground.Upload();
+            this.highlightedCheckedBackground.Upload();
+            this.disabledBackground.Upload();
         }
 
         protected override void Render_i(IUIRenderContext renderContext)
@@ -232,6 +248,11 @@ namespace RC.UI.Test
             this.highlightedBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(highlightedBackground, new RCIntVector(size.X, size.Y), new RCIntVector(2, 2));
             this.optListBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(optListBackground, new RCIntVector(size.X, size.Y * this.basicOptions.Length), new RCIntVector(2, 2));
             this.disabledBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(disabledBackground, new RCIntVector(size.X, size.Y), new RCIntVector(2, 2));
+
+            this.basicBackground.Upload();
+            this.highlightedBackground.Upload();
+            this.optListBackground.Upload();
+            this.disabledBackground.Upload();
         }
 
         protected override void Render_i(IUIRenderContext renderContext)
@@ -282,6 +303,11 @@ namespace RC.UI.Test
             this.sliderBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(sliderColor, new RCIntVector(settings.SliderLeft + settings.SliderRight + 1, settings.SliderTop + settings.SliderBottom + 1), new RCIntVector(2, 2));
             this.disabledTrackBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(disabledColor, settings.Alignment == Alignment.Horizontal ? new RCIntVector(settings.TrackSize.X, settings.TrackSize.Y * 2 + 1) : new RCIntVector(settings.TrackSize.Y * 2 + 1, settings.TrackSize.X), new RCIntVector(2, 2));
             this.disabledSliderBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(disabledColor, new RCIntVector(settings.SliderLeft + settings.SliderRight + 1, settings.SliderTop + settings.SliderBottom + 1), new RCIntVector(2, 2));
+
+            this.trackBackground.Upload();
+            this.sliderBackground.Upload();
+            this.disabledTrackBackground.Upload();
+            this.disabledSliderBackground.Upload();
         }
 
         protected override void Render_i(IUIRenderContext renderContext)

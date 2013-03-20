@@ -40,7 +40,6 @@ namespace RC.UI.XnaPlugin
                 this.targetSprite.Unlock();
                 this.targetSprite.TransparentColor = UIColor.Undefined;
                 this.targetSprite.TransparentColor = this.targetTraspColor;
-                this.targetSprite.Upload();
                 this.targetSprite = null;
                 this.targetTraspColor = UIColor.Undefined;
                 this.spriteManager = null;
@@ -61,7 +60,7 @@ namespace RC.UI.XnaPlugin
                             ? sprite
                             : this.spriteManager.ScaleSprite(sprite, this.targetSprite.PixelSize);
 
-            XnaSprite srcSprite = this.spriteManager.GetXnaSprite(source);
+            XnaSprite srcSprite = (XnaSprite)source;
             Bitmap srcBitmap = srcSprite.TransparentBitmap == null ? srcSprite.RawBitmap : srcSprite.TransparentBitmap;
             this.targetGC.DrawImageUnscaled(srcBitmap,
                                             position.X * this.targetSprite.PixelSize.X,
@@ -78,7 +77,7 @@ namespace RC.UI.XnaPlugin
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
             if (section == RCIntRectangle.Undefined) { throw new ArgumentNullException("section"); }
 
-            XnaSprite srcSprite = this.spriteManager.GetXnaSprite(sprite);
+            XnaSprite srcSprite = (XnaSprite)sprite;
             Bitmap sectionBmp = new Bitmap(section.Width * this.targetSprite.PixelSize.X,
                                            section.Height * this.targetSprite.PixelSize.Y,
                                            PixelFormat.Format24bppRgb);

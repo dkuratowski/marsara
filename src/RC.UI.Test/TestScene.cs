@@ -81,6 +81,7 @@ namespace RC.UI.Test
         public void LoadSprite(string spritePath)
         {
             this.sprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(spritePath, this.AbsolutePixelScaling);
+            this.sprite.Upload();
         }
 
         public void ActivateStringRender()

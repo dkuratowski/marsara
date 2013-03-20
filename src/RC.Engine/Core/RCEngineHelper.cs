@@ -50,10 +50,12 @@ namespace RC.Engine.Core
                 if (combination == TerrainCombination.AABA) { return TerrainCombination.ABAA; }
                 if (combination == TerrainCombination.AABB) { return TerrainCombination.ABBA; }
                 if (combination == TerrainCombination.ABAA) { return TerrainCombination.BAAA; }
+                if (combination == TerrainCombination.ABAB) { return TerrainCombination.BABA; }
                 if (combination == TerrainCombination.ABBA) { return TerrainCombination.BBAA; }
                 if (combination == TerrainCombination.ABBB) { return TerrainCombination.BBBA; }
                 if (combination == TerrainCombination.BAAA) { return TerrainCombination.AAAB; }
                 if (combination == TerrainCombination.BAAB) { return TerrainCombination.AABB; }
+                if (combination == TerrainCombination.BABA) { return TerrainCombination.ABAB; }
                 if (combination == TerrainCombination.BABB) { return TerrainCombination.ABBB; }
                 if (combination == TerrainCombination.BBAA) { return TerrainCombination.BAAB; }
                 if (combination == TerrainCombination.BBAB) { return TerrainCombination.BABB; }
@@ -67,10 +69,12 @@ namespace RC.Engine.Core
                 if (combination == TerrainCombination.AABA) { return TerrainCombination.BAAA; }
                 if (combination == TerrainCombination.AABB) { return TerrainCombination.BBAA; }
                 if (combination == TerrainCombination.ABAA) { return TerrainCombination.AAAB; }
+                if (combination == TerrainCombination.ABAB) { return TerrainCombination.ABAB; }
                 if (combination == TerrainCombination.ABBA) { return TerrainCombination.BAAB; }
                 if (combination == TerrainCombination.ABBB) { return TerrainCombination.BBAB; }
                 if (combination == TerrainCombination.BAAA) { return TerrainCombination.AABA; }
                 if (combination == TerrainCombination.BAAB) { return TerrainCombination.ABBA; }
+                if (combination == TerrainCombination.BABA) { return TerrainCombination.BABA; }
                 if (combination == TerrainCombination.BABB) { return TerrainCombination.BBBA; }
                 if (combination == TerrainCombination.BBAA) { return TerrainCombination.AABB; }
                 if (combination == TerrainCombination.BBAB) { return TerrainCombination.ABBB; }
@@ -84,10 +88,12 @@ namespace RC.Engine.Core
                 if (combination == TerrainCombination.AABA) { return TerrainCombination.AAAB; }
                 if (combination == TerrainCombination.AABB) { return TerrainCombination.BAAB; }
                 if (combination == TerrainCombination.ABAA) { return TerrainCombination.AABA; }
+                if (combination == TerrainCombination.ABAB) { return TerrainCombination.BABA; }
                 if (combination == TerrainCombination.ABBA) { return TerrainCombination.AABB; }
                 if (combination == TerrainCombination.ABBB) { return TerrainCombination.BABB; }
                 if (combination == TerrainCombination.BAAA) { return TerrainCombination.ABAA; }
                 if (combination == TerrainCombination.BAAB) { return TerrainCombination.BBAA; }
+                if (combination == TerrainCombination.BABA) { return TerrainCombination.ABAB; }
                 if (combination == TerrainCombination.BABB) { return TerrainCombination.BBAB; }
                 if (combination == TerrainCombination.BBAA) { return TerrainCombination.ABBA; }
                 if (combination == TerrainCombination.BBAB) { return TerrainCombination.BBBA; }
@@ -120,10 +126,12 @@ namespace RC.Engine.Core
             if (combination == TerrainCombination.AABA) { return new ITerrainType[4] { a, a, b, a }; }
             if (combination == TerrainCombination.AABB) { return new ITerrainType[4] { a, a, b, b }; }
             if (combination == TerrainCombination.ABAA) { return new ITerrainType[4] { a, b, a, a }; }
+            if (combination == TerrainCombination.ABAB) { return new ITerrainType[4] { a, b, a, b }; }
             if (combination == TerrainCombination.ABBA) { return new ITerrainType[4] { a, b, b, a }; }
             if (combination == TerrainCombination.ABBB) { return new ITerrainType[4] { a, b, b, b }; }
             if (combination == TerrainCombination.BAAA) { return new ITerrainType[4] { b, a, a, a }; }
             if (combination == TerrainCombination.BAAB) { return new ITerrainType[4] { b, a, a, b }; }
+            if (combination == TerrainCombination.BABA) { return new ITerrainType[4] { b, a, b, a }; }
             if (combination == TerrainCombination.BABB) { return new ITerrainType[4] { b, a, b, b }; }
             if (combination == TerrainCombination.BBAA) { return new ITerrainType[4] { b, b, a, a }; }
             if (combination == TerrainCombination.BBAB) { return new ITerrainType[4] { b, b, a, b }; }

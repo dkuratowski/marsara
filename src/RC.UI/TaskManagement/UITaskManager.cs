@@ -131,9 +131,9 @@ namespace RC.UI
                 }
             }
 
-            foreach (UITimeSharingTask stoppeTask in tmpStoppedTimeSharingTasks)
+            foreach (UITimeSharingTask stoppedTask in tmpStoppedTimeSharingTasks)
             {
-                runningTimeSharingTasks.Remove(stoppeTask);
+                runningTimeSharingTasks.Remove(stoppedTask);
             }
 
             lock (runningParallelTasks)

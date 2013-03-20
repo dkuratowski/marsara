@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using RC.Common.ComponentModel;
 
-namespace RC.App.BizLogic
+namespace RC.App.BizLogic.InternalInterfaces
 {
     /// <summary>
     /// This component interface is used to access informations about the available tilesets.
     /// </summary>
     [ComponentInterface]
-    public interface ITileSetStore
+    interface ITileSetStore
     {
         /// <summary>
         /// Checks whether a tileset with the given name exists in the system or not.
@@ -32,33 +29,10 @@ namespace RC.App.BizLogic
         IEnumerable<string> GetTerrainTypes(string tilesetName);
 
         /// <summary>
-        /// Gets the display informations about each tiles defined by the given tileset.
-        /// </summary>
-        /// <param name="tilesetName">The name of the tileset.</param>
-        /// <returns>The list of the tile display informations.</returns>
-        IEnumerable<TileTypeInfo> GetTileTypes(string tilesetName);
-
-        /// <summary>
         /// TODO: This is a hack for the MapControl.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
         RC.Engine.PublicInterfaces.ITileSet GetTileSet(string name);
-    }
-
-    /// <summary>
-    /// This structure is used to provide informations that are necessary to display a tile type.
-    /// </summary>
-    public struct TileTypeInfo
-    {
-        /// <summary>
-        /// The byte-stream that contains the image data of this tile type.
-        /// </summary>
-        public byte[] ImageData { get; set; }
-
-        /// <summary>
-        /// List of the properties of this tile type mapped by their name.
-        /// </summary>
-        public Dictionary<string, string> Properties { get; set; }
     }
 }

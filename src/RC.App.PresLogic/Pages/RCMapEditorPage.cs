@@ -6,8 +6,11 @@ using RC.Common;
 using RC.UI;
 using RC.App.BizLogic;
 using RC.Common.ComponentModel;
+using RC.App.BizLogic.PublicInterfaces;
+using RC.App.PresLogic.Panels;
+using RC.App.PresLogic.Controls;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Pages
 {
     /// <summary>
     /// This page will display the map editor.
@@ -47,96 +50,99 @@ namespace RC.App.PresLogic
         /// </summary>
         private RCMapEditorPage() : base()
         {
-            this.mapEditor = ComponentManager.GetInterface<IMapEditor>();
-            this.mapDisplay = new RCMapDisplay(new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize);
-            this.Attach(this.mapDisplay);
-
-            this.mapEditorPanel = new RCMapEditorPanel(new RCIntRectangle(213, 0, 107, 190),
-                                                       new RCIntRectangle(0, 25, 90, 165),
-                                                       UIPanel.ShowMode.DriftFromRight, UIPanel.HideMode.DriftToRight,
-                                                       300, 300,
-                                                       "RC.MapEditor.Sprites.CtrlPanel");
-            this.RegisterPanel(this.mapEditorPanel);
+            this.mapEditorBE = ComponentManager.GetInterface<IMapEditorBE>();
             this.currMapScrollDir = MapScrollDirection.NoScroll;
             this.timeSinceLastScroll = 0;
-            this.lastKnownMousePosition = RCIntVector.Undefined;
             this.activatorBtn = UIMouseButton.Undefined;
         }
+
+        #region RCMapEditorPage state handling
 
         /// <see cref="RCAppPage.OnActivated"/>
         protected override void OnActivated()
         {
-            this.mapDisplay.TextIfNoMap = "Loading...";
             this.loadMapTask = UITaskManager.StartParallelTask(this.LoadMapTask, "LoadMapTask");
-            this.loadMapTask.Finished += this.LoadMapFinished;
-            this.loadMapTask.Failed += this.LoadMapFailed;
-            //this.mapEditorPanel.Show();
-        }
-
-        /// <summary>
-        /// Background task for initialize the loading of the map.
-        /// </summary>
-        private void LoadMapTask(object parameter)
-        {
-            /// TODO: Here we can choose between loading/creating later...
-            this.mapEditor.CreateMap(this.tilesetName, this.defaultTerrain, this.mapSize);
+            this.loadMapTask.Finished += this.OnLoadMapFinished;
+            this.loadMapTask.Failed += this.OnLoadMapFailed;
         }
 
         /// <summary>
         /// This method is called if loading the map has been finished successfully.
         /// </summary>
-        private void LoadMapFinished(IUIBackgroundTask sender, object message)
+        private void OnLoadMapFinished(IUIBackgroundTask sender, object message)
         {
-            this.loadMapTask.Finished -= this.LoadMapFinished;
-            this.loadMapTask.Failed -= this.LoadMapFailed;
+            /// Unsubscribe from the events of the background task.
+            this.loadMapTask.Finished -= this.OnLoadMapFinished;
+            this.loadMapTask.Failed -= this.OnLoadMapFailed;
 
-            this.mapDisplay.DisplayingMap = true;
-            this.MouseSensor.Move += this.OnMouseMove;
-            this.MouseSensor.ButtonDown += this.OnMouseDown;
-            this.MouseSensor.ButtonUp += this.OnMouseUp;
-
-            this.mapEditorPanel.EditModeChanged += this.OnEditModeChanged;
-            this.mapEditorPanel.SaveButton.Pressed += this.OnSaveMapPressed;
-            this.mapEditorPanel.ExitButton.Pressed += this.OnExitPressed;
-            this.mapEditorPanel.Show();
-            this.mapEditorPanel.ResetControls();
+            /// To avoid recursive call on the UITaskManager.
+            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnUpdateAfterMapLoaded);
         }
 
         /// <summary>
         /// This method is called if loading the map has been failed.
         /// </summary>
-        private void LoadMapFailed(IUIBackgroundTask sender, object message)
+        private void OnLoadMapFailed(IUIBackgroundTask sender, object message)
         {
-            this.loadMapTask.Finished -= this.LoadMapFinished;
-            this.loadMapTask.Failed -= this.LoadMapFailed;
+            this.loadMapTask.Finished -= this.OnLoadMapFinished;
+            this.loadMapTask.Failed -= this.OnLoadMapFailed;
 
             throw (Exception)message;
         }
 
         /// <summary>
-        /// This method is called when the "Save" button has been pressed.
+        /// To avoid recursive call on the UITaskManager.
         /// </summary>
-        /// <param name="sender">Reference to the button.</param>
-        private void OnSaveMapPressed(UISensitiveObject sender)
+        private void OnUpdateAfterMapLoaded(UIUpdateSystemEventArgs evtArgs)
         {
+            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnUpdateAfterMapLoaded);
+
+            /// Create the necessary views.
+            this.mapTerrainView = this.mapEditorBE.CreateMapTerrainView();
+            this.tilesetView = this.mapEditorBE.CreateTileSetView();
+
+            /// Create the map display control.
+            this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize, mapTerrainView, tilesetView);
+            this.isotileDisplayEx = new RCIsoTileDisplay(this.mapDisplayBasic, this.mapTerrainView);
+            this.mapDisplay = this.isotileDisplayEx;
+            this.mapDisplay.Started += this.OnMapDisplayStarted;
+            this.mapDisplay.Start();
         }
 
         /// <summary>
-        /// This method is called when the "Exit" button has been pressed.
+        /// This method is called when the map display started successfully.
         /// </summary>
-        /// <param name="sender">Reference to the button.</param>
-        private void OnExitPressed(UISensitiveObject sender)
+        private void OnMapDisplayStarted(object sender, EventArgs args)
         {
-            this.MouseSensor.Move -= this.OnMouseMove;
-            this.MouseSensor.ButtonDown -= this.OnMouseDown;
-            this.MouseSensor.ButtonUp -= this.OnMouseUp;
+            this.mapDisplay.Started -= this.OnMapDisplayStarted;
 
-            this.mapEditorPanel.EditModeChanged -= this.OnEditModeChanged;
-            this.mapEditorPanel.SaveButton.Pressed -= this.OnSaveMapPressed;
-            this.mapEditorPanel.ExitButton.Pressed -= this.OnExitPressed;
+            /// Attach the map display control to this page.
+            this.Attach(this.mapDisplay);
+            this.AttachSensitive(this.mapDisplay);
 
-            this.StatusChanged += this.OnPageStatusChanged;
-            this.Deactivate();
+            /// Subscribe to the events of the appropriate mouse sensors.
+            this.MouseSensor.Move += this.OnMouseMove;
+            this.mapDisplay.MouseSensor.ButtonDown += this.OnMouseDown;
+            this.mapDisplay.MouseSensor.ButtonUp += this.OnMouseUp;
+
+            /// Create and register the map editor panel.
+            this.mapEditorPanel = new RCMapEditorPanel(new RCIntRectangle(213, 0, 107, 190),
+                                                       new RCIntRectangle(0, 25, 90, 165),
+                                                       UIPanel.ShowMode.DriftFromRight, UIPanel.HideMode.DriftToRight,
+                                                       300, 300,
+                                                       "RC.MapEditor.Sprites.CtrlPanel",
+                                                       this.tilesetView);
+            this.RegisterPanel(this.mapEditorPanel);
+
+            /// Subscribe to the events of the map editor panel.
+            this.mapEditorPanel.EditModeChanged += this.OnEditModeChanged;
+            this.mapEditorPanel.SaveButton.Pressed += this.OnSaveMapPressed;
+            this.mapEditorPanel.ExitButton.Pressed += this.OnExitPressed;
+            this.isotileDisplayEx.HighlightIsoTile = this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain;
+
+            /// Show the map editor panel.
+            this.mapEditorPanel.Show();
+            this.mapEditorPanel.ResetControls();
         }
 
         /// <summary>
@@ -150,38 +156,66 @@ namespace RC.App.PresLogic
 
             if (newState == Status.Inactive)
             {
-                this.mapDisplay.DisplayingMap = false;
                 this.StatusChanged -= this.OnPageStatusChanged;
-                UIRoot.Instance.GraphicsPlatform.RenderLoop.Stop();
+
+                this.mapDisplay.Stopped += this.OnMapDisplayStopped;
+                this.mapDisplay.Stop();
             }
         }
 
         /// <summary>
-        /// Called when a mouse button has been pushed over the page.
+        /// This method is called when the map display stopped successfully.
         /// </summary>
-        private void OnMouseDown(UISensitiveObject sender, UIMouseEventArgs evtArgs)
+        private void OnMapDisplayStopped(object sender, EventArgs args)
         {
-            if (this.activatorBtn == UIMouseButton.Undefined && evtArgs.Button == UIMouseButton.Left)
-            {
-                this.activatorBtn = evtArgs.Button;
-                if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain)
-                {
-                    this.mapEditor.DrawTerrain(this.mapDisplay.TransformPixelToNavCoords(this.lastKnownMousePosition - this.mapDisplay.Position),
-                                               this.mapEditorPanel.SelectedItem);
-                }
-            }
+            this.mapDisplay.Stopped -= this.OnMapDisplayStopped;
+
+            this.mapEditorBE.CloseMap();
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.Stop();
+        }
+
+        #endregion RCMapEditorPage state handling
+
+        #region RCMapEditorPanel event handlers
+
+        /// <summary>
+        /// This method is called when the edit mode selection has been changed.
+        /// </summary>
+        private void OnEditModeChanged()
+        {
+            this.isotileDisplayEx.HighlightIsoTile = this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain;
         }
 
         /// <summary>
-        /// Called when a mouse button has been released over the page.
+        /// This method is called when the "Save" button has been pressed.
         /// </summary>
-        private void OnMouseUp(UISensitiveObject sender, UIMouseEventArgs evtArgs)
+        /// <param name="sender">Reference to the button.</param>
+        private void OnSaveMapPressed(UISensitiveObject sender)
         {
-            if (this.activatorBtn == UIMouseButton.Left && evtArgs.Button == UIMouseButton.Left)
-            {
-                this.activatorBtn = UIMouseButton.Undefined;
-            }
+            /// TODO: implement map saving logic here
         }
+
+        /// <summary>
+        /// This method is called when the "Exit" button has been pressed.
+        /// </summary>
+        /// <param name="sender">Reference to the button.</param>
+        private void OnExitPressed(UISensitiveObject sender)
+        {
+            this.MouseSensor.Move -= this.OnMouseMove;
+            this.mapDisplay.MouseSensor.ButtonDown -= this.OnMouseDown;
+            this.mapDisplay.MouseSensor.ButtonUp -= this.OnMouseUp;
+
+            this.mapEditorPanel.EditModeChanged -= this.OnEditModeChanged;
+            this.mapEditorPanel.SaveButton.Pressed -= this.OnSaveMapPressed;
+            this.mapEditorPanel.ExitButton.Pressed -= this.OnExitPressed;
+
+            this.StatusChanged += this.OnPageStatusChanged;
+            this.Deactivate();
+        }
+
+        #endregion RCMapEditorPanel event handlers
+
+        #region Mouse event handlers
 
         /// <summary>
         /// Called when the mouse cursor is moved over the area of the page.
@@ -201,15 +235,6 @@ namespace RC.App.PresLogic
                 else if (evtArgs.Position.X == this.Range.Width - 1) { newScrollDir = MapScrollDirection.East; }
                 else if (evtArgs.Position.Y == 0) { newScrollDir = MapScrollDirection.North; }
                 else if (evtArgs.Position.Y == this.Range.Height - 1) { newScrollDir = MapScrollDirection.South; }
-            }
-
-            if (this.lastKnownMousePosition != evtArgs.Position)
-            {
-                this.lastKnownMousePosition = evtArgs.Position;
-                if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain)
-                {
-                    this.mapDisplay.HighlightIsoTileAt(this.lastKnownMousePosition - this.mapDisplay.Position);
-                }
             }
 
             if (this.currMapScrollDir != newScrollDir)
@@ -236,39 +261,83 @@ namespace RC.App.PresLogic
             if (this.timeSinceLastScroll > TIME_BETWEEN_MAP_SCROLLS)
             {
                 this.timeSinceLastScroll = 0;
-                if (this.currMapScrollDir == MapScrollDirection.North) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(0, -1)); }
-                if (this.currMapScrollDir == MapScrollDirection.NorthEast) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(1, -1)); }
-                if (this.currMapScrollDir == MapScrollDirection.East) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(1, 0)); }
-                if (this.currMapScrollDir == MapScrollDirection.SouthEast) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(1, 1)); }
-                if (this.currMapScrollDir == MapScrollDirection.South) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(0, 1)); }
-                if (this.currMapScrollDir == MapScrollDirection.SouthWest) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-1, 1)); }
-                if (this.currMapScrollDir == MapScrollDirection.West) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-1, 0)); }
-                if (this.currMapScrollDir == MapScrollDirection.NorthWest) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-1, -1)); }
-                
+                if (this.currMapScrollDir == MapScrollDirection.North) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(0, -PIXELS_PER_SCROLLS)); }
+                if (this.currMapScrollDir == MapScrollDirection.NorthEast) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(PIXELS_PER_SCROLLS, -PIXELS_PER_SCROLLS)); }
+                if (this.currMapScrollDir == MapScrollDirection.East) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(PIXELS_PER_SCROLLS, 0)); }
+                if (this.currMapScrollDir == MapScrollDirection.SouthEast) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(PIXELS_PER_SCROLLS, PIXELS_PER_SCROLLS)); }
+                if (this.currMapScrollDir == MapScrollDirection.South) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(0, PIXELS_PER_SCROLLS)); }
+                if (this.currMapScrollDir == MapScrollDirection.SouthWest) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-PIXELS_PER_SCROLLS, PIXELS_PER_SCROLLS)); }
+                if (this.currMapScrollDir == MapScrollDirection.West) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-PIXELS_PER_SCROLLS, 0)); }
+                if (this.currMapScrollDir == MapScrollDirection.NorthWest) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-PIXELS_PER_SCROLLS, -PIXELS_PER_SCROLLS)); }
+            }
+        }
+
+        /// <summary>
+        /// Called when a mouse button has been pushed over the page.
+        /// </summary>
+        private void OnMouseDown(UISensitiveObject sender, UIMouseEventArgs evtArgs)
+        {
+            if (this.activatorBtn == UIMouseButton.Undefined && evtArgs.Button == UIMouseButton.Left)
+            {
+                this.activatorBtn = evtArgs.Button;
                 if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain)
                 {
-                    this.mapDisplay.HighlightIsoTileAt(this.lastKnownMousePosition - this.mapDisplay.Position);
+                    this.mapEditorBE.DrawTerrain(this.mapDisplay.DisplayedArea, evtArgs.Position, this.mapEditorPanel.SelectedItem);
                 }
             }
         }
 
         /// <summary>
-        /// This method is called when the edit mode selection has been changed.
+        /// Called when a mouse button has been released over the page.
         /// </summary>
-        private void OnEditModeChanged()
+        private void OnMouseUp(UISensitiveObject sender, UIMouseEventArgs evtArgs)
         {
-            if (this.mapEditorPanel.SelectedMode != RCMapEditorPanel.EditMode.DrawTerrain) { this.mapDisplay.UnhighlightIsoTile(); }
+            if (this.activatorBtn == UIMouseButton.Left && evtArgs.Button == UIMouseButton.Left)
+            {
+                this.activatorBtn = UIMouseButton.Undefined;
+            }
+        }
+
+        #endregion Mouse event handlers
+
+        /// <summary>
+        /// Background task for initialize the loading of the map.
+        /// </summary>
+        private void LoadMapTask(object parameter)
+        {
+            /// TODO: Here we can choose between loading/creating later...
+            this.mapEditorBE.NewMap(this.tilesetName, this.defaultTerrain, this.mapSize);
         }
 
         /// <summary>
-        /// Reference to the map editor component.
+        /// Reference to the map editor backend component.
         /// </summary>
-        private IMapEditor mapEditor;
+        private IMapEditorBE mapEditorBE;
+
+        /// <summary>
+        /// Reference to the map terrain view.
+        /// </summary>
+        private IMapTerrainView mapTerrainView;
+
+        /// <summary>
+        /// Reference to the tileset view.
+        /// </summary>
+        private ITileSetView tilesetView;
 
         /// <summary>
         /// Reference to the map display.
         /// </summary>
         private RCMapDisplay mapDisplay;
+
+        /// <summary>
+        /// The basic part of the map display.
+        /// </summary>
+        private RCMapDisplayBasic mapDisplayBasic;
+
+        /// <summary>
+        /// Extension of the map display that displays the isometric tiles.
+        /// </summary>
+        private RCIsoTileDisplay isotileDisplayEx;
 
         /// <summary>
         /// Reference to the panel with the controls.
@@ -279,6 +348,33 @@ namespace RC.App.PresLogic
         /// Reference to the background task that loads the map.
         /// </summary>
         private IUIBackgroundTask loadMapTask;
+
+        /// <summary>
+        /// The current scrolling direction.
+        /// </summary>
+        private MapScrollDirection currMapScrollDir;
+
+        /// <summary>
+        /// Elapsed time since last scroll in milliseconds.
+        /// </summary>
+        private int timeSinceLastScroll;
+
+        /// <summary>
+        /// The UIMouseButton that activated the mouse sensor of the map display.
+        /// </summary>
+        private UIMouseButton activatorBtn;
+
+        /// <summary>
+        /// The time between map-scrolling operations.
+        /// </summary>
+        private const int TIME_BETWEEN_MAP_SCROLLS = 20;
+
+        /// <summary>
+        /// The number of pixels to scroll in map-scrolling operations.
+        /// </summary>
+        private const int PIXELS_PER_SCROLLS = 5;
+
+        #region Map editor settings
 
         /// <summary>
         /// The name of the file of the map to be loaded/created.
@@ -300,29 +396,6 @@ namespace RC.App.PresLogic
         /// </summary>
         private RCIntVector mapSize;
 
-        /// <summary>
-        /// The current scrolling direction.
-        /// </summary>
-        private MapScrollDirection currMapScrollDir;
-
-        /// <summary>
-        /// Elapsed time since last scroll in milliseconds.
-        /// </summary>
-        private int timeSinceLastScroll;
-
-        /// <summary>
-        /// The last known position of the mouse cursor in the coordinate system of the page.
-        /// </summary>
-        private RCIntVector lastKnownMousePosition;
-
-        /// <summary>
-        /// The UIMouseButton that activated the mouse sensor of this page.
-        /// </summary>
-        private UIMouseButton activatorBtn;
-
-        /// <summary>
-        /// The time between map-scrolling operations.
-        /// </summary>
-        private const int TIME_BETWEEN_MAP_SCROLLS = 30;
+        #endregion Map editor settings
     }
 }

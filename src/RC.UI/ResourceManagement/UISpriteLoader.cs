@@ -40,6 +40,7 @@ namespace RC.UI
                 UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(this.GetPath(IMAGE_FILE_PATH).FullName,
                                                                           XmlHelper.LoadVector(this.pixelSizeStr.Value));
             this.loadedSprite.TransparentColor = this.transparentColor;
+            this.loadedSprite.Upload();
         }
 
         /// <see cref="UIResourceLoader.Unload_i"/>

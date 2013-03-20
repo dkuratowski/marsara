@@ -7,8 +7,10 @@ using RC.UI;
 using RC.Common.Diagnostics;
 using RC.App.BizLogic;
 using RC.Common.ComponentModel;
+using RC.App.PresLogic.Controls;
+using RC.App.BizLogic.PublicInterfaces;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Panels
 {
     /// <summary>
     /// The map editor panel on the map editor page.
@@ -46,14 +48,12 @@ namespace RC.App.PresLogic
         public RCMapEditorPanel(RCIntRectangle backgroundRect, RCIntRectangle contentRect,
                                ShowMode showMode, HideMode hideMode,
                                int appearDuration, int disappearDuration,
-                               string backgroundSprite)
+                               string backgroundSprite,
+                               ITileSetView tilesetView)
             : base(backgroundRect, contentRect, showMode, hideMode, appearDuration, disappearDuration, backgroundSprite)
         {
-            /// Connect to the necessary business component interfaces.
-            this.mapGeneralInfoProvider = ComponentManager.GetInterface<IMapGeneralInfo>();
-            this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
-            if (this.mapGeneralInfoProvider == null) { throw new InvalidOperationException(string.Format("Component not found that implements the interface '{0}'!", typeof(IMapGeneralInfo).FullName)); }
-            if (this.tilesetStore == null) { throw new InvalidOperationException(string.Format("Component not found that implements the interface '{0}'!", typeof(ITileSetStore).FullName)); }
+            if (tilesetView == null) { throw new ArgumentNullException("tilesetView"); }
+            this.tilesetView = tilesetView;
 
             /// Create the controls.
             this.editModeSelector = new RCDropdownSelector(new RCIntVector(4, 4), 85, new string[3] { "Draw terrain", "Place terrain object", "Place starting point" });
@@ -96,35 +96,24 @@ namespace RC.App.PresLogic
         /// </summary>
         public void ResetControls()
         {
-            if (!this.mapGeneralInfoProvider.IsMapOpened)
+            switch ((EditMode)this.editModeSelector.SelectedIndex)
             {
-                this.paletteListbox.SetItems(new string[0] { });
-                this.saveButton.IsEnabled = false;
-                this.editModeSelector.IsEnabled = false;
-                this.paletteListbox.IsEnabled = false;
-            }
-            else
-            {
-                switch ((EditMode)this.editModeSelector.SelectedIndex)
-                {
-                    case EditMode.DrawTerrain:
-                        string tilesetName = this.mapGeneralInfoProvider.TilesetName;
-                        string[] terrainTypes = this.tilesetStore.GetTerrainTypes(tilesetName).ToArray();
-                        this.paletteListbox.SetItems(terrainTypes);
-                        this.saveButton.IsEnabled = true;
-                        this.editModeSelector.IsEnabled = true;
-                        this.paletteListbox.IsEnabled = true;
-                        break;
-                    case EditMode.PlaceTerrainObject:
-                    case EditMode.PlaceStartingPoint:
-                        this.paletteListbox.SetItems(new string[0] { });
-                        this.saveButton.IsEnabled = true;
-                        this.editModeSelector.IsEnabled = true;
-                        this.paletteListbox.IsEnabled = false;
-                        break;
-                    default:
-                        throw new InvalidOperationException("Invalid EditMode!");
-                }
+                case EditMode.DrawTerrain:
+                    string[] terrainTypes = this.tilesetView.GetTerrainTypes().ToArray();
+                    this.paletteListbox.SetItems(terrainTypes);
+                    this.saveButton.IsEnabled = true;
+                    this.editModeSelector.IsEnabled = true;
+                    this.paletteListbox.IsEnabled = true;
+                    break;
+                case EditMode.PlaceTerrainObject:
+                case EditMode.PlaceStartingPoint:
+                    this.paletteListbox.SetItems(new string[0] { });
+                    this.saveButton.IsEnabled = true;
+                    this.editModeSelector.IsEnabled = true;
+                    this.paletteListbox.IsEnabled = false;
+                    break;
+                default:
+                    throw new InvalidOperationException("Invalid EditMode!");
             }
         }
 
@@ -137,6 +126,11 @@ namespace RC.App.PresLogic
             this.ResetControls();
             if (this.EditModeChanged != null) { this.EditModeChanged(); }
         }
+
+        /// <summary>
+        /// Reference to the tileset view.
+        /// </summary>
+        private ITileSetView tilesetView;
 
         /// <summary>
         /// The edit-mode selector control.
@@ -157,15 +151,5 @@ namespace RC.App.PresLogic
         /// The "Exit" button.
         /// </summary>
         private RCMenuButton exitButton;
-
-        /// <summary>
-        /// Reference to the business component that provides general informations about the map.
-        /// </summary>
-        private IMapGeneralInfo mapGeneralInfoProvider;
-
-        /// <summary>
-        /// Reference to the business component that provides informations about the current tileset.
-        /// </summary>
-        private ITileSetStore tilesetStore;
     }
 }

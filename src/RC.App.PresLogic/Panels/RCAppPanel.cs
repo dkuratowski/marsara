@@ -5,7 +5,7 @@ using System.Text;
 using RC.UI;
 using RC.Common;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Panels
 {
     /// <summary>
     /// Represents a panel in the RC application.

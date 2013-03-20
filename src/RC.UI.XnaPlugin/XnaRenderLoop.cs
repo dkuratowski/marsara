@@ -98,7 +98,8 @@ namespace RC.UI.XnaPlugin
         /// <see cref="IUIRenderContext.RenderSprite_i"/>
         protected override void RenderSprite_i(UISprite sprite, RCIntVector position)
         {
-            XnaSprite srcSprite = this.platform.SpriteManagerImpl.GetXnaSprite(sprite);
+            XnaSprite srcSprite = (XnaSprite)sprite;
+            if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
 
             if (this.Clip == RCIntRectangle.Undefined)
             {
@@ -120,7 +121,8 @@ namespace RC.UI.XnaPlugin
         /// <see cref="IUIRenderContext.RenderSprite_i"/>
         protected override void RenderSprite_i(UISprite sprite, RCIntVector position, RCIntRectangle section)
         {
-            XnaSprite srcSprite = this.platform.SpriteManagerImpl.GetXnaSprite(sprite);
+            XnaSprite srcSprite = (XnaSprite)sprite;
+            if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
 
             if (this.Clip == RCIntRectangle.Undefined)
             {
@@ -201,7 +203,7 @@ namespace RC.UI.XnaPlugin
         /// </summary>
         private void Initialize()
         {
-            this.platform.SpriteManagerImpl.UploadSprites();
+            this.platform.SpriteManagerImpl.SecondChanceUploadSprites();
         }
 
         /// <summary>

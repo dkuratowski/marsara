@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Threading;
 using RC.Common.Configuration;
 using RC.UI;
 using System.Reflection;
 using RC.Common;
-using RC.App.PresLogic;
 using RC.Common.Diagnostics;
 using RC.Common.ComponentModel;
+using RC.App.PresLogic.Pages;
 
 namespace RC.App.Starter
 {

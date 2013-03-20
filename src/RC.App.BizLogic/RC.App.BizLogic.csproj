@@ -70,13 +70,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\BizLogicConstants.cs" />
-    <Compile Include="Core\MapControl.cs" />
+    <Compile Include="Core\MapEditorBE.cs" />
+    <Compile Include="Core\MapTerrainView.cs" />
     <Compile Include="Core\TileSetStore.cs" />
-    <Compile Include="IMapDisplayInfo.cs" />
-    <Compile Include="IMapEditor.cs" />
-    <Compile Include="IMapGeneralInfo.cs" />
-    <Compile Include="ITileSetStore.cs" />
+    <Compile Include="Core\TileSetView.cs" />
+    <Compile Include="InternalInterfaces\ITileSetStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PublicInterfaces\IMapEditorBE.cs" />
+    <Compile Include="PublicInterfaces\IMapTerrainView.cs" />
+    <Compile Include="PublicInterfaces\IMapView.cs" />
+    <Compile Include="PublicInterfaces\IsoTileDisplayInfo.cs" />
+    <Compile Include="PublicInterfaces\IsoTileTypeInfo.cs" />
+    <Compile Include="PublicInterfaces\ITileSetView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj">

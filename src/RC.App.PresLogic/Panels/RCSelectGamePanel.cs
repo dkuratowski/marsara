@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 using RC.UI;
+using RC.App.PresLogic.Controls;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Panels
 {
     /// <summary>
     /// The Select Game panel on the Select Game page.

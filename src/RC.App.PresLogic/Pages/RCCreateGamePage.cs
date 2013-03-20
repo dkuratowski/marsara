@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using RC.UI;
 using RC.Common;
+using RC.App.PresLogic.Panels;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Pages
 {
     /// <summary>
     /// The Create Game page of the RC application.

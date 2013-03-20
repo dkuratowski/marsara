@@ -4,16 +4,6 @@
   <loader name="AnimationLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UIAnimationLoader" />
 
   <resourceGroup namespace="RC.App" name="SplashScreen">
-    <resource namespace="RC.App.Sprites" name="Font5Sprite" loader="SpriteLoader">
-      <path name="imageFile">../fonts/font5.png</path>
-    </resource>
-    <resource namespace="RC.App.Sprites" name="Font6Sprite" loader="SpriteLoader">
-      <path name="imageFile">../fonts/font6.png</path>
-    </resource>
-    <resource namespace="RC.App.Sprites" name="Font7Sprite" loader="SpriteLoader">
-      <path name="imageFile">../fonts/font7.png</path>
-    </resource>
-    
     <resource namespace="RC.App.Sprites" name="MainMenuTitle0" loader="SpriteLoader">
       <path name="imageFile">../sprites/menusprites/mainmenu_title_phase0.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
@@ -41,11 +31,11 @@
 
     <resource namespace="RC.App.Fonts" name="Font6" loader="FontLoader">
       <path name="mappingFile">../fonts/font6.xml</path>
-      <parameter name="fontSprite">RC.App.Sprites.Font6Sprite</parameter>
+      <path name="imageFile">../fonts/font6.png</path>
     </resource>
     <resource namespace="RC.App.Fonts" name="Font7" loader="FontLoader">
       <path name="mappingFile">../fonts/font7.xml</path>
-      <parameter name="fontSprite">RC.App.Sprites.Font7Sprite</parameter>
+      <path name="imageFile">../fonts/font7.png</path>
     </resource>
     
     <resource namespace="RC.App.Animations" name="MainMenuTitleAnim" loader="AnimationLoader">
@@ -63,15 +53,6 @@
       <path name="imageFile">../sprites/pointers/menu_pointer.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
-    </resource>
-    <resource namespace="RC.App.Sprites" name="Font5Sprite" loader="SpriteLoader">
-      <path name="imageFile">../fonts/font5.png</path>
-    </resource>
-    <resource namespace="RC.App.Sprites" name="Font8BSprite" loader="SpriteLoader">
-      <path name="imageFile">../fonts/font8b.png</path>
-    </resource>
-    <resource namespace="RC.App.Sprites" name="Font9BSprite" loader="SpriteLoader">
-      <path name="imageFile">../fonts/font9b.png</path>
     </resource>
     <resource namespace="RC.App.Sprites" name="CancelBtnPanel" loader="SpriteLoader">
       <path name="imageFile">../sprites/menusprites/cancel_btn_panel.png</path>
@@ -134,19 +115,28 @@
       <path name="imageFile">../sprites/controls/listbox.png</path>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
-    <resource namespace="RC.App.Sprites" name="IsotileHighlight" loader="SpriteLoader">
-      <path name="imageFile">../sprites/pointers/isotile_highlight.png</path>
+    <resource namespace="RC.App.Sprites" name="IsotileHighlighted" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/isotile_highlighted.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
-
-    <resource namespace="RC.App.Fonts" name="Font9B" loader="FontLoader">
-      <path name="mappingFile">../fonts/font9b.xml</path>
-      <parameter name="fontSprite">RC.App.Sprites.Font9BSprite</parameter>
+    <resource namespace="RC.App.Sprites" name="IsotileNormal" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/isotile_normal.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
+    <resource namespace="RC.App.Sprites" name="ObjectPlacementMask" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/object_placement_mask.png</path>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+
     <resource namespace="RC.App.Fonts" name="Font5" loader="FontLoader">
       <path name="mappingFile">../fonts/font5.xml</path>
-      <parameter name="fontSprite">RC.App.Sprites.Font5Sprite</parameter>
+      <path name="imageFile">../fonts/font5.png</path>
+    </resource>
+    <resource namespace="RC.App.Fonts" name="Font9B" loader="FontLoader">
+      <path name="mappingFile">../fonts/font9b.xml</path>
+      <path name="imageFile">../fonts/font9b.png</path>
     </resource>
   </resourceGroup>
 </resourceFile>

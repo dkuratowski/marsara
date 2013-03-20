@@ -22,17 +22,16 @@ namespace RC.UI.XnaPlugin
         /// Constructs an XnaSprite object.
         /// </summary>
         /// <param name="rawBitmap">The underlying System.Drawing.Bitmap of this XnaSprite.</param>
-        /// <param name="resourceId">The assigned resource ID of this XnaSprite.</param>
         /// <param name="pixelSize">The pixel size of this XnaSprite.</param>
-        public XnaSprite(Bitmap rawBitmap, int resourceId, RCIntVector pixelSize, XnaGraphicsPlatform platform)
+        public XnaSprite(Bitmap rawBitmap, RCIntVector pixelSize, XnaGraphicsPlatform platform)
             : base(rawBitmap.Width / pixelSize.X, rawBitmap.Height / pixelSize.Y, pixelSize)
         {
             this.isLocked = false;
             this.rawBitmap = rawBitmap;
-            this.resourceId = resourceId;
             this.transparentBitmap = null;
+            this.isUploaded = false;
+            this.xnaTexture = null;
             this.platform = platform;
-            this.Upload();
         }
 
         /// <summary>
@@ -74,14 +73,10 @@ namespace RC.UI.XnaPlugin
 
         #region UISprite overrides
 
-        /// <see cref="UISprite.ResourceId"/>
-        public override int ResourceId
+        /// <see cref="UISprite.IsUploaded"/>
+        public override bool IsUploaded
         {
-            get
-            {
-                //if (this.isLocked) { throw new UIException("Sprite is locked"); }
-                return this.resourceId;
-            }
+            get { return this.isUploaded; }
         }
 
         /// <see cref="UISprite.TransparentColor_set"/>
@@ -94,7 +89,7 @@ namespace RC.UI.XnaPlugin
                 /// The transparent bitmap should be deleted and the original bitmap has to be loaded.
                 this.transparentBitmap.Dispose();
                 this.transparentBitmap = null;
-                TraceManager.WriteAllTrace(string.Format("Sprite({0}): transparent bitmap destroyed", this.resourceId), XnaTraceFilters.DETAILS);
+                TraceManager.WriteAllTrace("XnaSprite: transparent bitmap destroyed", XnaTraceFilters.DETAILS);
             }
             else
             {
@@ -103,11 +98,53 @@ namespace RC.UI.XnaPlugin
                 this.transparentBitmap = new Bitmap(this.rawBitmap.Width, this.rawBitmap.Height, PixelFormat.Format24bppRgb);
                 XnaBitmapUtils.CopyBitmapScaled(this.rawBitmap, this.transparentBitmap, this.PixelSize, this.PixelSize);
                 this.transparentBitmap.MakeTransparent(Color.FromArgb(newColor.R, newColor.G, newColor.B));
-                TraceManager.WriteAllTrace(string.Format("Sprite({0}): transparent bitmap replaced", this.resourceId), XnaTraceFilters.DETAILS);
+                TraceManager.WriteAllTrace("XnaSprite: transparent bitmap replaced", XnaTraceFilters.DETAILS);
+            }
+        }
+
+        /// <see cref="UISprite.TransparentColor_set"/>
+        protected override void Upload_i()
+        {
+            if (this.isLocked) { throw new UIException("Sprite is locked"); }
+
+            GraphicsDevice device = this.platform.Device;
+            if (device != null)
+            {
+                Bitmap bmpToUpload = this.transparentBitmap == null ? this.rawBitmap : this.transparentBitmap;
+                MemoryStream stream = new MemoryStream();
+                bmpToUpload.Save(stream, ImageFormat.Png);
+
+                lock (device)
+                {
+                    this.xnaTexture = Texture2D.FromStream(device, stream);
+                }
+
+                stream.Close();
+                if (bmpToUpload == this.transparentBitmap)
+                {
+                    TraceManager.WriteAllTrace("XnaSprite: transparent bitmap uploaded", XnaTraceFilters.DETAILS);
+                }
+                else
+                {
+                    TraceManager.WriteAllTrace("XnaSprite: raw bitmap uploaded", XnaTraceFilters.DETAILS);
+                }
+            }
+            else
+            {
+                TraceManager.WriteAllTrace("XnaSprite: failed to upload", XnaTraceFilters.DETAILS);
             }
 
-            /// Upload to the graphics device.
-            this.Upload();
+            this.isUploaded = true;
+        }
+
+        /// <see cref="UISprite.Save"/>
+        public override void Save(string fileName)
+        {
+            if (this.isLocked) { throw new UIException("Sprite is locked"); }
+            if (fileName == null || fileName.Length == 0) { throw new ArgumentNullException("fileName"); }
+
+            Bitmap bmpToSave = this.transparentBitmap == null ? this.rawBitmap : this.transparentBitmap;
+            bmpToSave.Save(fileName, ImageFormat.Png);
         }
 
         #endregion UISprite overrides
@@ -121,65 +158,28 @@ namespace RC.UI.XnaPlugin
 
             this.rawBitmap.Dispose();
             this.rawBitmap = null;
-            TraceManager.WriteAllTrace(string.Format("Sprite({0}): raw bitmap destroyed", this.resourceId), XnaTraceFilters.DETAILS);
+            TraceManager.WriteAllTrace("XnaSprite: raw bitmap destroyed", XnaTraceFilters.DETAILS);
 
             if (this.transparentBitmap != null)
             {
                 this.transparentBitmap.Dispose();
                 this.transparentBitmap = null;
-                TraceManager.WriteAllTrace(string.Format("Sprite({0}): transparent bitmap destroyed", this.resourceId), XnaTraceFilters.DETAILS);
+                TraceManager.WriteAllTrace("XnaSprite: transparent bitmap destroyed", XnaTraceFilters.DETAILS);
             }
 
             if (this.xnaTexture != null)
             {
-                this.xnaTexture.Dispose();
+                lock (this.platform.Device)
+                {
+                    this.xnaTexture.Dispose();
+                }
+
                 this.xnaTexture = null;
-                TraceManager.WriteAllTrace(string.Format("Sprite({0}): XNA texture destroyed", this.resourceId), XnaTraceFilters.DETAILS);
+                TraceManager.WriteAllTrace("XnaSprite: XNA-texture destroyed", XnaTraceFilters.DETAILS);
             }
         }
 
-        #endregion
-
-        /// <summary>
-        /// Uploads this sprite to the graphics device if the device is currently available.
-        /// </summary>
-        public void Upload()
-        {
-            if (this.isLocked) { throw new UIException("Sprite is locked"); }
-
-            if (this.xnaTexture != null) { this.xnaTexture.Dispose(); }
-            GraphicsDevice device = this.platform.Device;
-            if (device != null)
-            {
-                Bitmap bmpToUpload = this.transparentBitmap == null ? this.rawBitmap : this.transparentBitmap;
-                MemoryStream stream = new MemoryStream();
-                bmpToUpload.Save(stream, ImageFormat.Png);
-                this.xnaTexture = Texture2D.FromStream(device, stream);
-                stream.Close();
-                if (bmpToUpload == this.transparentBitmap)
-                {
-                    TraceManager.WriteAllTrace(string.Format("Sprite({0}): transparent bitmap uploaded", this.resourceId), XnaTraceFilters.DETAILS);
-                }
-                else
-                {
-                    TraceManager.WriteAllTrace(string.Format("Sprite({0}): raw bitmap uploaded", this.resourceId), XnaTraceFilters.DETAILS);
-                }
-            }
-            else
-            {
-                TraceManager.WriteAllTrace(string.Format("Unable to upload sprite({0}). Device not found", this.resourceId), XnaTraceFilters.DETAILS);
-            }
-        }
-
-        /// <see cref="UISprite.Save"/>
-        public override void Save(string fileName)
-        {
-            if (this.isLocked) { throw new UIException("Sprite is locked"); }
-            if (fileName == null || fileName.Length == 0) { throw new ArgumentNullException("fileName"); }
-
-            Bitmap bmpToSave = this.transparentBitmap == null ? this.rawBitmap : this.transparentBitmap;
-            bmpToSave.Save(fileName, ImageFormat.Png);
-        }
+        #endregion IDisposable Members
 
         /// <summary>
         /// Lock function for the corresponding render context.
@@ -188,7 +188,7 @@ namespace RC.UI.XnaPlugin
         {
             if (this.isLocked) { throw new UIException("Sprite already locked!"); }
             this.isLocked = true;
-            TraceManager.WriteAllTrace(string.Format("Sprite({0}) locked", this.resourceId), XnaTraceFilters.DETAILS);
+            TraceManager.WriteAllTrace("XnaSprite: locked", XnaTraceFilters.DETAILS);
         }
 
         /// <summary>
@@ -198,7 +198,19 @@ namespace RC.UI.XnaPlugin
         {
             if (!this.isLocked) { throw new UIException("Sprite already unlocked!"); }
             this.isLocked = false;
-            TraceManager.WriteAllTrace(string.Format("Sprite({0}) unlocked", this.resourceId), XnaTraceFilters.DETAILS);
+            TraceManager.WriteAllTrace("XnaSprite: unlocked", XnaTraceFilters.DETAILS);
+        }
+
+        /// <summary>
+        /// Gives a second chance to upload this sprite. If upload fails again, this method throws an exception.
+        /// </summary>
+        public void SecondChanceUpload()
+        {
+            if (!this.isUploaded) { throw new InvalidOperationException("This sprite was not uploaded to the device!"); }
+            if (this.xnaTexture != null) { throw new InvalidOperationException("This sprite has already been uploaded to the device!"); }
+
+            this.Upload_i();
+            if (this.xnaTexture == null) { throw new UIException("XnaSprite: Second chance upload failed!"); }
         }
 
         /// <summary>
@@ -223,9 +235,9 @@ namespace RC.UI.XnaPlugin
         private Texture2D xnaTexture;
 
         /// <summary>
-        /// The assigned resource ID of this XnaSprite.
+        /// This flag indicates whether this XnaSprite has been uploaded to the graphics device or not.
         /// </summary>
-        private int resourceId;
+        private bool isUploaded;
 
         /// <summary>
         /// Reference to the platform.

@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using RC.UI;
 using RC.Common;
+using RC.App.PresLogic.Controls;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.Panels
 {
     /// <summary>
     /// Represents the panel on the main menu page.

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using RC.Common.ComponentModel;
-using RC.Engine;
 using System.IO;
 using RC.Engine.ComponentInterfaces;
 using RC.Common;
 using RC.Engine.PublicInterfaces;
+using RC.App.BizLogic.InternalInterfaces;
 
 namespace RC.App.BizLogic.Core
 {
@@ -48,28 +46,6 @@ namespace RC.App.BizLogic.Core
             foreach (ITerrainType terrainType in tileset.TerrainTypes)
             {
                 retList.Add(terrainType.Name);
-            }
-            return retList;
-        }
-
-        /// <see cref="ITileSetStore.GetTileTypes"/>
-        public IEnumerable<TileTypeInfo> GetTileTypes(string tilesetName)
-        {
-            ITileSet tileset = this.loadedTilesets[tilesetName];
-            List<TileTypeInfo> retList = new List<TileTypeInfo>();
-            foreach (IIsoTileVariant tile in tileset.TileVariants)
-            {
-                byte[] imageData = new byte[tile.ImageData.Length];
-                Array.Copy(tile.ImageData, imageData, tile.ImageData.Length);
-                TileTypeInfo info = new TileTypeInfo();
-                info.ImageData = imageData;
-                info.Properties = new Dictionary<string, string>();
-                if (tile.GetProperty(BizLogicConstants.TILEPROP_TRANSPARENTCOLOR) != null)
-                {
-                    info.Properties.Add(BizLogicConstants.TILEPROP_TRANSPARENTCOLOR,
-                                        tile.GetProperty(BizLogicConstants.TILEPROP_TRANSPARENTCOLOR));
-                }
-                retList.Add(info);
             }
             return retList;
         }

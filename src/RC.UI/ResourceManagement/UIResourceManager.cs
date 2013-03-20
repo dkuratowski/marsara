@@ -23,7 +23,6 @@ namespace RC.UI
         /// <param name="loader">Reference to the object that will load the resource.</param>
         public static void RegisterResource(string group, string name, UIResourceLoader loader)
         {
-            if (runningTask != null) { throw new InvalidOperationException("There is a background task running!"); }
             if (string.IsNullOrEmpty(group)) { throw new ArgumentNullException("group"); }
             if (string.IsNullOrEmpty(name)) { throw new ArgumentNullException("name"); }
             if (loader == null) { throw new ArgumentNullException("loader"); }
@@ -70,7 +69,6 @@ namespace RC.UI
         {
             if (string.IsNullOrEmpty(group)) { throw new ArgumentNullException("group"); }
             if (!resourceGroups.ContainsKey(group)) { throw new UIException(string.Format("Resource group '{0}' doesn't exist!", group)); }
-            if (runningTask != null) { throw new InvalidOperationException("There is a background task running!"); }
 
             foreach (string resName in resourceGroups[group])
             {
@@ -86,21 +84,15 @@ namespace RC.UI
         /// Calling this method will return immediately with an interface to the background task. This interface can be used
         /// to subscribe the events of the task. The resource group loader task doesn't send messages during it's execution.
         /// </returns>
-        /// <remarks>
-        /// This method throws an InvalidOperationException if there is another resource group loader or unloader task in progress.
-        /// </remarks>
         public static IUIBackgroundTask LoadResourceGroupAsync(string group)
         {
             if (string.IsNullOrEmpty(group)) { throw new ArgumentNullException("group"); }
             if (!resourceGroups.ContainsKey(group)) { throw new UIException(string.Format("Resource group '{0}' doesn't exist!", group)); }
-            if (runningTask != null) { throw new InvalidOperationException("There is a background task running!"); }
 
-            IEnumerator<string> resourceEnumerator = resourceGroups[group].GetEnumerator();
-            runningTask = UITaskManager.StartTimeSharingTask(LoadResourceGroupAsync_i, resourceEnumerator);
-            runningTask.Finished += EndOfTask;
-            runningTask.Failed += EndOfTask;
-
-            return runningTask;
+            string[] resourcesToLoad = new string[resourceGroups[group].Count];
+            resourceGroups[group].CopyTo(resourcesToLoad);
+            IUIBackgroundTask loaderTask = UITaskManager.StartParallelTask(LoadResourceGroupAsync_i, "ResourceLoadingTask", resourcesToLoad);
+            return loaderTask;
         }
 
         /// <summary>
@@ -111,7 +103,6 @@ namespace RC.UI
         {
             if (string.IsNullOrEmpty(group)) { throw new ArgumentNullException("group"); }
             if (!resourceGroups.ContainsKey(group)) { throw new UIException(string.Format("Resource group '{0}' doesn't exist!", group)); }
-            if (runningTask != null) { throw new InvalidOperationException("There is a background task running!"); }
 
             foreach (string resName in resourceGroups[group])
             {
@@ -134,14 +125,10 @@ namespace RC.UI
         {
             if (string.IsNullOrEmpty(group)) { throw new ArgumentNullException("group"); }
             if (!resourceGroups.ContainsKey(group)) { throw new UIException(string.Format("Resource group '{0}' doesn't exist!", group)); }
-            if (runningTask != null) { throw new InvalidOperationException("There is a background task running!"); }
 
-            IEnumerator<string> resourceEnumerator = resourceGroups[group].GetEnumerator();
-            runningTask = UITaskManager.StartTimeSharingTask(UnloadResourceGroupAsync_i, resourceEnumerator);
-            runningTask.Finished += EndOfTask;
-            runningTask.Failed += EndOfTask;
-
-            return runningTask;
+            string[] resourcesToUnload = new string[resourceGroups[group].Count];
+            IUIBackgroundTask unloaderTask = UITaskManager.StartParallelTask(UnloadResourceGroupAsync_i, "ResourceUnloadingTask", resourcesToUnload);
+            return unloaderTask;
         }
 
         /// <summary>
@@ -153,7 +140,6 @@ namespace RC.UI
         {
             if (string.IsNullOrEmpty(group)) { throw new ArgumentNullException("group"); }
             if (!resourceGroups.ContainsKey(group)) { throw new UIException(string.Format("Resource group '{0}' doesn't exist!", group)); }
-            if (runningTask != null) { throw new InvalidOperationException("There is a background task running!"); }
 
             foreach (string resName in resourceGroups[group])
             {
@@ -169,56 +155,26 @@ namespace RC.UI
         /// Loads every unloaded resources in the given resource group.
         /// </summary>
         /// <param name="parameter">The enumerator of the resource group to load.</param>
-        private static bool LoadResourceGroupAsync_i(object parameter)
+        private static void LoadResourceGroupAsync_i(object parameter)
         {
-            IEnumerator<string> resourceEnumerator = (IEnumerator<string>)parameter;
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-            while (resourceEnumerator.MoveNext())
+            string[] resourcesToLoad = (string[])parameter;
+            foreach (string resName in resourcesToLoad)
             {
-                resources[resourceEnumerator.Current].Load();
-                if (timer.ElapsedMilliseconds > LOADING_RESOURCE_GROUP_CYCLE_TIME)
-                {
-                    /// Continue later
-                    return true;
-                }
+                resources[resName].Load();
             }
-
-            /// Finished
-            return false;
         }
 
         /// <summary>
         /// Unloads every loaded resources in the given resource group.
         /// </summary>
         /// <param name="parameter">The enumerator of the resource group to unload.</param>
-        private static bool UnloadResourceGroupAsync_i(object parameter)
+        private static void UnloadResourceGroupAsync_i(object parameter)
         {
-            IEnumerator<string> resourceEnumerator = (IEnumerator<string>)parameter;
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-            while (resourceEnumerator.MoveNext())
+            string[] resourcesToUnload = (string[])parameter;
+            foreach (string resName in resourcesToUnload)
             {
-                resources[resourceEnumerator.Current].Unload();
-                if (timer.ElapsedMilliseconds > LOADING_RESOURCE_GROUP_CYCLE_TIME)
-                {
-                    /// Continue later
-                    return true;
-                }
+                resources[resName].Unload();
             }
-
-            /// Finished
-            return false;
-        }
-
-        /// <summary>
-        /// Called when the running task has completed (or failed).
-        /// </summary>
-        /// <param name="sender">The completed task.</param>
-        /// <param name="message">The exception caught by the task in case of failure, otherwise null.</param>
-        private static void EndOfTask(IUIBackgroundTask sender, object message)
-        {
-            runningTask = null;
         }
 
         #endregion Internal methods
@@ -241,13 +197,8 @@ namespace RC.UI
         private static HashSet<UIResourceLoader> registeredLoaders = new HashSet<UIResourceLoader>();
 
         /// <summary>
-        /// Reference to the currently running background task.
+        /// Object used as mutex.
         /// </summary>
-        private static IUIBackgroundTask runningTask = null;
-
-        /// <summary>
-        /// The duration of the timeslices of loading/unloading background tasks.
-        /// </summary>
-        private const int LOADING_RESOURCE_GROUP_CYCLE_TIME = 200;
+        private static object lockObj = new object();
     }
 }

@@ -137,7 +137,6 @@ namespace RC.Common
             if (start == null) { throw new ArgumentNullException("start"); }
 
             this.parentThread = null;
-            this.name = name;
             this.normalStart = null;
             this.paramStart = start;
             this.wrappedThread = new Thread(this.ParametrizedThreadProc);
@@ -178,7 +177,6 @@ namespace RC.Common
                 if (start == null) { throw new ArgumentNullException("start"); }
 
                 this.parentThread = null;
-                this.name = name;
                 this.normalStart = start;
                 this.paramStart = null;
                 this.wrappedThread = new Thread(this.NormalThreadProc);
