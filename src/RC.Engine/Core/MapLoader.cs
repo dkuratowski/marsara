@@ -68,7 +68,6 @@ namespace RC.Engine.Core
             MapAccess retObj = new MapAccess(this.mapStructure);
             this.mapStructure.BeginOpen(tileset, size, defaultTerrain);
             this.mapStructure.EndOpen();
-
             return retObj;
         }
 

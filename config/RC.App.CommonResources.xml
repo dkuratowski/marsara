@@ -125,8 +125,14 @@
       <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
-    <resource namespace="RC.App.Sprites" name="ObjectPlacementMask" loader="SpriteLoader">
-      <path name="imageFile">../sprites/controls/object_placement_mask.png</path>
+    <resource namespace="RC.App.Sprites" name="ObjectPlacementMaskGreen" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/object_placement_mask_green.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="ObjectPlacementMaskRed" loader="SpriteLoader">
+      <path name="imageFile">../sprites/controls/object_placement_mask_red.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
 

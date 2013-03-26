@@ -49,6 +49,26 @@ namespace RC.Engine.Core
         /// <see cref="IQuadTile.MapCoords"/>
         public RCIntVector MapCoords { get { return this.mapCoords; } }
 
+        /// <see cref="IQuadTile.GetNeighbour"/>
+        public IQuadTile GetNeighbour(MapDirection direction)
+        {
+            return this.GetNeighbourImpl(direction);
+        }
+
+        /// <see cref="IQuadTile.Neighbours"/>
+        public IEnumerable<IQuadTile> Neighbours
+        {
+            get
+            {
+                List<QuadTile> retList = new List<QuadTile>();
+                for (int i = 0; i < this.neighbours.Length; i++)
+                {
+                    if (this.neighbours[i] != null) { retList.Add(this.neighbours[i]); }
+                }
+                return retList;
+            }
+        }
+
         #endregion IQuadTile methods
 
         #region ICellDataChangeSetTarget methods
@@ -65,6 +85,14 @@ namespace RC.Engine.Core
         /// Internal implementation of IQuadTile.GetCell
         /// </summary>
         public Cell GetCellImpl(RCIntVector index) { return this.cells[index.X, index.Y]; }
+
+        /// <summary>
+        /// Internal implementation of the IQuadTile.GetNeighbour method.
+        /// </summary>
+        public QuadTile GetNeighbourImpl(MapDirection dir)
+        {
+            return this.neighbours[(int)dir];
+        }
 
         #region Internal map structure buildup methods
 

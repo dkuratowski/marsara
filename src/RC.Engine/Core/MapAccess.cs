@@ -22,6 +22,7 @@ namespace RC.Engine.Core
             if (mapStructure.Status != MapStructure.MapStatus.Closed) { throw new InvalidOperationException("A map is already opened with this MapStructure!"); }
 
             this.mapStructure = mapStructure;
+            this.terrainObjects = null; // Will be created later, when the map structure is opened
         }
 
         #region IMapAccess methods
@@ -32,34 +33,40 @@ namespace RC.Engine.Core
             get { return this.mapStructure.Size; }
         }
 
-        /// <see cref="IMapAccess.Size"/>
+        /// <see cref="IMapAccess.CellSize"/>
         public RCIntVector CellSize
         {
             get { return this.mapStructure.CellSize; }
         }
 
-        /// <see cref="IMapAccess.Size"/>
+        /// <see cref="IMapAccess.Tileset"/>
         public ITileSet Tileset
         {
             get { return this.mapStructure.Tileset; }
         }
 
-        /// <see cref="IMapAccess.Size"/>
+        /// <see cref="IMapAccess.GetQuadTile"/>
         public IQuadTile GetQuadTile(RCIntVector coords)
         {
             return this.mapStructure.GetQuadTile(coords);
         }
 
-        /// <see cref="IMapAccess.Size"/>
+        /// <see cref="IMapAccess.GetIsoTile"/>
         public IIsoTile GetIsoTile(RCIntVector coords)
         {
             return this.mapStructure.GetIsoTile(coords);
         }
 
-        /// <see cref="IMapAccess.Size"/>
+        /// <see cref="IMapAccess.GetCell"/>
         public ICell GetCell(RCIntVector index)
         {
             return this.mapStructure.GetCell(index);
+        }
+
+        /// <see cref="IMapAccess.QuadToCellRect"/>
+        public RCIntRectangle QuadToCellRect(RCIntRectangle quadRect)
+        {
+            return this.mapStructure.QuadToCellRect(quadRect);
         }
 
         /// <see cref="IMapAccess.BeginExchangingTiles"/>
@@ -83,11 +90,35 @@ namespace RC.Engine.Core
         /// TODO: only for debugging!
         public IEnumerable<IIsoTile> IsometricTiles { get { return this.mapStructure.IsometricTiles; } }
 
+        /// <see cref="IMapAccess.TerrainObjects"/>
+        public IMapContentManager<ITerrainObject> TerrainObjects
+        {
+            get
+            {
+                if (this.terrainObjects == null)
+                {
+                    this.terrainObjects = new BspMapContentManager<ITerrainObject>(
+                        new RCNumRectangle(-(RCNumber)1 / (RCNumber)2,
+                                           -(RCNumber)1 / (RCNumber)2,
+                                           this.CellSize.X,
+                                           this.CellSize.Y),
+                                           16,
+                                           4);
+                }
+                return this.terrainObjects;
+            }
+        }
+
         #endregion IMapAccess methods
 
         /// <summary>
         /// Reference to the used map structure.
         /// </summary>
         private MapStructure mapStructure;
+
+        /// <summary>
+        /// The map content manager that contains the terrain objects of this map.
+        /// </summary>
+        private IMapContentManager<ITerrainObject> terrainObjects;
     }
 }

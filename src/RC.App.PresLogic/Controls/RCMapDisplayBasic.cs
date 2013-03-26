@@ -30,36 +30,29 @@ namespace RC.App.PresLogic.Controls
             if (tilesetView == null) { throw new ArgumentNullException("tilesetView"); }
 
             this.mapView = map;
-            this.tilesetView = tilesetView;
-            this.tileset = new List<UISprite>();
+            this.tiles = new IsoTileSpriteGroup(tilesetView);
+            this.terrainObjects = new TerrainObjectSpriteGroup(tilesetView);
         }
+
+        /// <summary>
+        /// Gets the sprites of the terrain object types.
+        /// </summary>
+        public SpriteGroup TerrainObjectSprites { get { return this.terrainObjects; } }
 
         #region Overrides
 
         /// <see cref="RCMapDisplay.StartProc_i"/>
         protected override void StartProc_i(object parameter)
         {
-            /// Load the tileset.
-            foreach (IsoTileTypeInfo tileType in this.tilesetView.GetIsoTileTypes())
-            {
-                UISprite tile = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(tileType.ImageData, UIWorkspace.Instance.PixelScaling);
-                tile.TransparentColor = tileType.TransparentColorStr != null ?
-                                        UIResourceLoader.LoadColor(tileType.TransparentColorStr) :
-                                        DEFAULT_TILE_TRANSPARENT_COLOR;
-                tile.Upload();
-                this.tileset.Add(tile);
-            }
+            this.tiles.Load();
+            this.terrainObjects.Load();
         }
 
         /// <see cref="RCMapDisplay.StopProc_i"/>
         protected override void StopProc_i(object parameter)
         {
-            /// Unload the tileset.
-            foreach (UISprite tile in this.tileset)
-            {
-                UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(tile);
-            }
-            this.tileset.Clear();
+            this.tiles.Unload();
+            this.terrainObjects.Unload();
         }
 
         /// <see cref="UIObject.Render_i"/>
@@ -68,11 +61,18 @@ namespace RC.App.PresLogic.Controls
             if (this.DisplayedArea != RCIntRectangle.Undefined)
             {
                 /// Display the currently visible tiles.
-                foreach (IsoTileDisplayInfo tileDisplayInfo in this.mapView.GetVisibleIsoTiles(this.DisplayedArea))
+                foreach (MapSpriteInstance tileDisplayInfo in this.mapView.GetVisibleIsoTiles(this.DisplayedArea))
 	            {
-                    UISprite tileToDisplay = this.tileset[tileDisplayInfo.IsoTileTypeIndex];
+                    UISprite tileToDisplay = this.tiles[tileDisplayInfo.Index];
                     renderContext.RenderSprite(tileToDisplay, tileDisplayInfo.DisplayCoords);
 	            }
+
+                /// Display the currently visible terrain objects.
+                foreach (MapSpriteInstance terrainObjDisplayInfo in this.mapView.GetVisibleTerrainObjects(this.DisplayedArea))
+                {
+                    UISprite terrainObjToDisplay = this.terrainObjects[terrainObjDisplayInfo.Index];
+                    renderContext.RenderSprite(terrainObjToDisplay, terrainObjDisplayInfo.DisplayCoords);
+                }
             }
         }
 
@@ -81,7 +81,12 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// List of the tiles in the tileset of the currently displayed map.
         /// </summary>
-        private List<UISprite> tileset;
+        private SpriteGroup tiles;
+
+        /// <summary>
+        /// List of the terrain objects in the tileset of the currently displayed map.
+        /// </summary>
+        private SpriteGroup terrainObjects;
 
         /// <summary>
         /// Reference to the map view.
@@ -89,13 +94,8 @@ namespace RC.App.PresLogic.Controls
         private IMapTerrainView mapView;
 
         /// <summary>
-        /// Reference to the tileset view.
-        /// </summary>
-        private ITileSetView tilesetView;
-
-        /// <summary>
         /// The default color of the transparent parts of the tiles.
         /// </summary>
-        public readonly UIColor DEFAULT_TILE_TRANSPARENT_COLOR = new UIColor(255, 0, 255);
+        public static readonly UIColor DEFAULT_TILE_TRANSPARENT_COLOR = new UIColor(255, 0, 255);
     }
 }

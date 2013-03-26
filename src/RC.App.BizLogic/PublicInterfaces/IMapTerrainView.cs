@@ -16,16 +16,36 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// </summary>
         /// <param name="displayedArea">The area of the map to be displayed in pixels.</param>
         /// <returns>The list of display informations of the visible isometric tiles.</returns>
-        List<IsoTileDisplayInfo> GetVisibleIsoTiles(RCIntRectangle displayedArea);
+        List<MapSpriteInstance> GetVisibleIsoTiles(RCIntRectangle displayedArea);
 
         /// <summary>
         /// Gets the display coordinates of the isometric tile at the given position inside the given displayed area.
-        /// The term "display coordinates" means the same as in the description of the IsoTileDisplayInfo.DisplayCoords
+        /// The term "display coordinates" means the same as in the description of the MapSpriteInstance.DisplayCoords
         /// property.
         /// </summary>
         /// <param name="displayedArea">The area of the map to be displayed in pixels.</param>
-        /// <param name="position">The position inside the map displayed are in pixels.</param>
+        /// <param name="position">The position inside the map displayed area in pixels.</param>
         /// <returns>The display coordinates of the isometric tile at the given position.</returns>
         RCIntVector GetIsoTileDisplayCoords(RCIntRectangle displayedArea, RCIntVector position);
+
+        /// <summary>
+        /// Gets the list of the visible terrain objects at the given area.
+        /// </summary>
+        /// <param name="displayedArea">The area of the map to be displayed in pixels.</param>
+        /// <returns>The list of display informations of the visible terrain objects.</returns>
+        List<MapSpriteInstance> GetVisibleTerrainObjects(RCIntRectangle displayedArea);
+
+        /// <summary>
+        /// Gets the display coordinates of the terrain object at the given position inside the given displayed area.
+        /// The term "display coordinates" means the same as in the description of the MapSpriteInstance.DisplayCoords
+        /// property.
+        /// </summary>
+        /// <param name="displayedArea">The area of the map to be displayed in pixels.</param>
+        /// <param name="position">The position inside the map displayed area in pixels.</param>
+        /// <returns>
+        /// The display coordinates of the terrain object at the given position or RCIntVector.Undefined if there is no
+        /// terrain object at that position.
+        /// </returns>
+        RCIntVector GetTerrainObjectDisplayCoords(RCIntRectangle displayedArea, RCIntVector position);
     }
 }

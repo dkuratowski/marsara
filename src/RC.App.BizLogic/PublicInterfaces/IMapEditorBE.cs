@@ -53,11 +53,36 @@ namespace RC.App.BizLogic.PublicInterfaces
         ITileSetView CreateTileSetView();
 
         /// <summary>
+        /// Creates a terrain object placement view on the currently opened map.
+        /// </summary>
+        /// <param name="terrainObjectName">The name of the terrain object to be placed.</param>
+        /// <returns>The terrain object placement view on the currently opened map.</returns>
+        /// <exception cref="InvalidOperationException">If there is no opened map.</exception>
+        IObjectPlacementView CreateTerrainObjectPlacementView(string terrainObjectName);
+
+        /// <summary>
         /// Draws the given terrain type on the isometric tile at the given position.
         /// </summary>
         /// <param name="displayedArea">The displayed area in pixels.</param>
-        /// <param name="position">The position inside the displayed are in pixels.</param>
+        /// <param name="position">The position inside the displayed area in pixels.</param>
         /// <param name="terrainName">The name of the terrain type to draw.</param>
         void DrawTerrain(RCIntRectangle displayedArea, RCIntVector position, string terrainType);
+
+        /// <summary>
+        /// Places a terrain object on the map at the given position.
+        /// </summary>
+        /// <param name="displayedArea">The displayed area in pixels.</param>
+        /// <param name="position">The position inside the displayed area in pixels.</param>
+        /// <param name="terrainObject">The name of the terrain object to place.</param>
+        /// <returns>True if the terrain object could be placed to the given position, false otherwise.</returns>
+        bool PlaceTerrainObject(RCIntRectangle displayedArea, RCIntVector position, string terrainObject);
+
+        /// <summary>
+        /// Removes a terrain object from the map at the given position.
+        /// </summary>
+        /// <param name="displayedArea">The displayed area in pixels.</param>
+        /// <param name="position">The position inside the displayed area in pixels.</param>
+        /// <returns>True if the terrain object at the given position was removed, false otherwise.</returns>
+        bool RemoveTerrainObject(RCIntRectangle displayedArea, RCIntVector position);
     }
 }

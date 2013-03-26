@@ -72,6 +72,7 @@
     <Compile Include="Core\BizLogicConstants.cs" />
     <Compile Include="Core\MapEditorBE.cs" />
     <Compile Include="Core\MapTerrainView.cs" />
+    <Compile Include="Core\TerrainObjectPlacementView.cs" />
     <Compile Include="Core\TileSetStore.cs" />
     <Compile Include="Core\TileSetView.cs" />
     <Compile Include="InternalInterfaces\ITileSetStore.cs" />
@@ -79,9 +80,11 @@
     <Compile Include="PublicInterfaces\IMapEditorBE.cs" />
     <Compile Include="PublicInterfaces\IMapTerrainView.cs" />
     <Compile Include="PublicInterfaces\IMapView.cs" />
-    <Compile Include="PublicInterfaces\IsoTileDisplayInfo.cs" />
-    <Compile Include="PublicInterfaces\IsoTileTypeInfo.cs" />
+    <Compile Include="PublicInterfaces\IObjectPlacementView.cs" />
+    <Compile Include="PublicInterfaces\MapSpriteInstance.cs" />
+    <Compile Include="PublicInterfaces\MapSpriteType.cs" />
     <Compile Include="PublicInterfaces\ITileSetView.cs" />
+    <Compile Include="PublicInterfaces\ObjectPlacementBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj">

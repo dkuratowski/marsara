@@ -104,7 +104,8 @@ namespace RC.App.PresLogic.Pages
             /// Create the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize, mapTerrainView, tilesetView);
             this.isotileDisplayEx = new RCIsoTileDisplay(this.mapDisplayBasic, this.mapTerrainView);
-            this.mapDisplay = this.isotileDisplayEx;
+            this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.isotileDisplayEx, this.mapTerrainView);
+            this.mapDisplay = this.objectPlacementDisplayEx;
             this.mapDisplay.Started += this.OnMapDisplayStarted;
             this.mapDisplay.Start();
         }
@@ -121,7 +122,8 @@ namespace RC.App.PresLogic.Pages
             this.AttachSensitive(this.mapDisplay);
 
             /// Subscribe to the events of the appropriate mouse sensors.
-            this.MouseSensor.Move += this.OnMouseMove;
+            this.MouseSensor.Move += this.OnMouseMoveOverPage;
+            this.mapDisplay.MouseSensor.Move += this.OnMouseMoveOverDisplay;
             this.mapDisplay.MouseSensor.ButtonDown += this.OnMouseDown;
             this.mapDisplay.MouseSensor.ButtonUp += this.OnMouseUp;
 
@@ -136,6 +138,7 @@ namespace RC.App.PresLogic.Pages
 
             /// Subscribe to the events of the map editor panel.
             this.mapEditorPanel.EditModeChanged += this.OnEditModeChanged;
+            this.mapEditorPanel.SelectedItemChanged += this.OnSelectedItemChanged;
             this.mapEditorPanel.SaveButton.Pressed += this.OnSaveMapPressed;
             this.mapEditorPanel.ExitButton.Pressed += this.OnExitPressed;
             this.isotileDisplayEx.HighlightIsoTile = this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain;
@@ -184,6 +187,31 @@ namespace RC.App.PresLogic.Pages
         private void OnEditModeChanged()
         {
             this.isotileDisplayEx.HighlightIsoTile = this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain;
+            
+            if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
+            {
+                this.objectPlacementDisplayEx.StartPlacingObject(
+                    this.mapEditorBE.CreateTerrainObjectPlacementView(this.mapEditorPanel.SelectedItem),
+                    this.mapDisplayBasic.TerrainObjectSprites);
+            }
+            else
+            {
+                this.objectPlacementDisplayEx.StopPlacingObject();
+            }
+        }
+
+        /// <summary>
+        /// This method is called when the palette listbox selection has been changed.
+        /// </summary>
+        private void OnSelectedItemChanged()
+        {
+            if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
+            {
+                this.objectPlacementDisplayEx.StopPlacingObject();
+                this.objectPlacementDisplayEx.StartPlacingObject(
+                    this.mapEditorBE.CreateTerrainObjectPlacementView(this.mapEditorPanel.SelectedItem),
+                    this.mapDisplayBasic.TerrainObjectSprites);
+            }
         }
 
         /// <summary>
@@ -201,9 +229,10 @@ namespace RC.App.PresLogic.Pages
         /// <param name="sender">Reference to the button.</param>
         private void OnExitPressed(UISensitiveObject sender)
         {
-            this.MouseSensor.Move -= this.OnMouseMove;
+            this.MouseSensor.Move -= this.OnMouseMoveOverPage;
             this.mapDisplay.MouseSensor.ButtonDown -= this.OnMouseDown;
             this.mapDisplay.MouseSensor.ButtonUp -= this.OnMouseUp;
+            this.mapDisplay.MouseSensor.Move -= this.OnMouseMoveOverDisplay;
 
             this.mapEditorPanel.EditModeChanged -= this.OnEditModeChanged;
             this.mapEditorPanel.SaveButton.Pressed -= this.OnSaveMapPressed;
@@ -220,7 +249,7 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// Called when the mouse cursor is moved over the area of the page.
         /// </summary>
-        private void OnMouseMove(UISensitiveObject sender, UIMouseEventArgs evtArgs)
+        private void OnMouseMoveOverPage(UISensitiveObject sender, UIMouseEventArgs evtArgs)
         {
             MapScrollDirection newScrollDir = MapScrollDirection.NoScroll;
 
@@ -247,6 +276,29 @@ namespace RC.App.PresLogic.Pages
                 else
                 {
                     UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Called when the mouse cursor is moved over the area of the map display control.
+        /// </summary>
+        private void OnMouseMoveOverDisplay(UISensitiveObject sender, UIMouseEventArgs evtArgs)
+        {
+            if (this.activatorBtn == UIMouseButton.Undefined && this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
+            {
+                if (this.mapTerrainView.GetTerrainObjectDisplayCoords(this.mapDisplay.DisplayedArea, evtArgs.Position) != RCIntVector.Undefined)
+                {
+                    this.objectPlacementDisplayEx.StopPlacingObject();
+                }
+                else
+                {
+                    if (!this.objectPlacementDisplayEx.PlacingObject)
+                    {
+                        this.objectPlacementDisplayEx.StartPlacingObject(
+                            this.mapEditorBE.CreateTerrainObjectPlacementView(this.mapEditorPanel.SelectedItem),
+                            this.mapDisplayBasic.TerrainObjectSprites);
+                    }
                 }
             }
         }
@@ -284,6 +336,18 @@ namespace RC.App.PresLogic.Pages
                 {
                     this.mapEditorBE.DrawTerrain(this.mapDisplay.DisplayedArea, evtArgs.Position, this.mapEditorPanel.SelectedItem);
                 }
+                else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
+                {
+                    this.mapEditorBE.PlaceTerrainObject(this.mapDisplay.DisplayedArea, evtArgs.Position, this.mapEditorPanel.SelectedItem);
+                }
+            }
+            else if (this.activatorBtn == UIMouseButton.Undefined && evtArgs.Button == UIMouseButton.Right)
+            {
+                this.activatorBtn = evtArgs.Button;
+                if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
+                {
+                    this.mapEditorBE.RemoveTerrainObject(this.mapDisplay.DisplayedArea, evtArgs.Position);
+                }
             }
         }
 
@@ -292,7 +356,7 @@ namespace RC.App.PresLogic.Pages
         /// </summary>
         private void OnMouseUp(UISensitiveObject sender, UIMouseEventArgs evtArgs)
         {
-            if (this.activatorBtn == UIMouseButton.Left && evtArgs.Button == UIMouseButton.Left)
+            if (this.activatorBtn == evtArgs.Button)
             {
                 this.activatorBtn = UIMouseButton.Undefined;
             }
@@ -338,6 +402,11 @@ namespace RC.App.PresLogic.Pages
         /// Extension of the map display that displays the isometric tiles.
         /// </summary>
         private RCIsoTileDisplay isotileDisplayEx;
+
+        /// <summary>
+        /// Extension of the map display that displays the object placement boxes.
+        /// </summary>
+        private RCObjectPlacementDisplay objectPlacementDisplayEx;
 
         /// <summary>
         /// Reference to the panel with the controls.

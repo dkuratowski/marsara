@@ -258,7 +258,6 @@ namespace RC.Engine.Core
         /// <summary>
         /// Indicates that the tile exchanging operation is finished.
         /// </summary>
-        /// TODO: make this method void!
         public IEnumerable<IIsoTile> EndExchangingTiles()
         {
             if (this.status != MapStatus.ExchangingTiles) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
@@ -344,6 +343,17 @@ namespace RC.Engine.Core
             if (index.X < 0 || index.X >= this.size.X * NAVCELL_PER_QUAD || index.Y < 0 || index.Y >= this.size.Y * NAVCELL_PER_QUAD) { throw new ArgumentOutOfRangeException("coords"); }
 
             return this.cells[index.X, index.Y];
+        }
+
+        /// <summary>
+        /// Converts a rectangle of quadratic tiles to a rectangle of cells.
+        /// </summary>
+        /// <param name="quadRect">The quadratic rectangle to convert.</param>
+        /// <returns>The cell rectangle.</returns>
+        public RCIntRectangle QuadToCellRect(RCIntRectangle quadRect)
+        {
+            if (quadRect == RCIntRectangle.Undefined) { throw new ArgumentNullException("quadRect"); }
+            return quadRect * new RCIntVector(MapStructure.NAVCELL_PER_QUAD, MapStructure.NAVCELL_PER_QUAD);
         }
 
         #endregion Internal public methods

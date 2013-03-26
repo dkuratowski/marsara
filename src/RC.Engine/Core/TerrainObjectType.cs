@@ -18,20 +18,17 @@ namespace RC.Engine.Core
         /// <param name="name">The name of the TerrainObjectType.</param>
         /// <param name="imageData">The byte sequence that contains the image data of the TerrainObjectType.</param>
         /// <param name="quadraticSize">The size of the TerrainObjectType in quadratic tiles.</param>
-        /// <param name="offset">The offset of the top-left corner of the TerrainObjectType on the image in pixels.</param>
-        public TerrainObjectType(string name, byte[] imageData, RCIntVector quadraticSize, RCIntVector offset, TileSet tileset)
+        public TerrainObjectType(string name, byte[] imageData, RCIntVector quadraticSize, TileSet tileset)
         {
             if (name == null) { throw new ArgumentNullException("name"); }
             if (imageData == null || imageData.Length == 0) { throw new ArgumentNullException("imageData"); }
             if (quadraticSize == RCIntVector.Undefined) { throw new ArgumentNullException("quadraticSize"); }
-            if (offset == RCIntVector.Undefined) { throw new ArgumentNullException("offset"); }
             if (tileset == null) { throw new ArgumentNullException("tileset"); }
             if (quadraticSize.X <= 0 || quadraticSize.Y <= 0) { throw new ArgumentOutOfRangeException("quadraticSize", "Quadratic size cannot be 0 in any direction!"); }
 
             this.name = name;
             this.imageData = imageData;
             this.quadraticSize = quadraticSize;
-            this.offset = offset;
             this.tileset = tileset;
             this.areaCanBeExcluded = true;
             this.properties = new Dictionary<string, string>();
@@ -112,6 +109,17 @@ namespace RC.Engine.Core
         }
 
         /// <summary>
+        /// Sets the index of this TerrainObjectType in the tileset.
+        /// </summary>
+        /// <param name="newIndex">The new index.</param>
+        public void SetIndex(int newIndex)
+        {
+            if (this.tileset.IsFinalized) { throw new InvalidOperationException("TileSet already finalized!"); }
+            if (newIndex < 0) { throw new ArgumentOutOfRangeException("newIndex", "The index of the TerrainObjectTypes must be non-negative!"); }
+            this.index = newIndex;
+        }
+
+        /// <summary>
         /// Check and finalize this TerrainObjectType. Buildup methods will be unavailable after calling this method.
         /// </summary>
         public void CheckAndFinalize()
@@ -119,36 +127,105 @@ namespace RC.Engine.Core
             this.areaCanBeExcluded = false;
         }
 
-        /// <summary>
-        /// Checks whether the given quadratic position is excluded from this TerrainObjectType or not.
-        /// </summary>
-        /// <param name="position">The quadratic position to check.</param>
-        /// <returns>True if the given quadratic position is excluded from this TerrainObjectType, false otherwise.</returns>
+        #region ITerrainObjectType methods
+
+        /// <see cref="ITerrainObjectType.Name"/>
+        public string Name { get { return this.name; } }
+
+        /// <see cref="ITerrainObjectType.QuadraticSize"/>
+        public RCIntVector QuadraticSize { get { return this.quadraticSize; } }
+
+        /// <see cref="ITerrainObjectType.CellDataChangesets"/>
+        public IEnumerable<ICellDataChangeSet> CellDataChangesets { get { return this.cellDataChangesets; } }
+
+        /// <see cref="ITerrainObjectType.Tileset"/>
+        public ITileSet Tileset { get { return this.tileset; } }
+
+        /// <see cref="ITerrainObjectType.ImageData"/>
+        public byte[] ImageData { get { return this.imageData; } }
+
+        /// <see cref="ITerrainObjectType.Index"/>
+        public int Index { get { return this.index; } }
+
+        /// <see cref="ITerrainObjectType.GetProperty"/>
+        public string GetProperty(string propName)
+        {
+            if (propName == null) { throw new ArgumentNullException("propName"); }
+            return this.properties.ContainsKey(propName) ? this.properties[propName] : null;
+        }
+
+        /// <see cref="ITerrainObjectType.CheckConstraints"/>
+        public HashSet<RCIntVector> CheckConstraints(IMapAccess map, RCIntVector position)
+        {
+            if (map == null) { throw new ArgumentNullException("map"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            /// Check against the constraints defined by this terrain object type.
+            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
+            foreach (ITerrainObjectConstraint contraint in this.constraints)
+            {
+                retList.UnionWith(contraint.Check(map, position));
+            }
+
+            for (int quadX = 0; quadX < this.quadraticSize.X; quadX++)
+            {
+                for (int quadY = 0; quadY < this.quadraticSize.Y; quadY++)
+                {
+                    RCIntVector relQuadCoords = new RCIntVector(quadX, quadY);
+                    RCIntVector absQuadCoords = position + relQuadCoords;
+                    if (absQuadCoords.X < 0 || absQuadCoords.X >= map.Size.X ||
+                        absQuadCoords.Y < 0 || absQuadCoords.Y >= map.Size.Y)
+                    {
+                        /// Intersection with the boundaries of the map.
+                        retList.Add(relQuadCoords);
+                    }
+                }
+            }
+
+            return retList;
+        }
+
+        /// <see cref="ITerrainObjectType.CheckTerrainObjectIntersections"/>
+        public HashSet<RCIntVector> CheckTerrainObjectIntersections(IMapAccess map, RCIntVector position)
+        {
+            if (map == null) { throw new ArgumentNullException("map"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
+            for (int quadX = 0; quadX < this.quadraticSize.X; quadX++)
+            {
+                for (int quadY = 0; quadY < this.quadraticSize.Y; quadY++)
+                {
+                    RCIntVector relQuadCoords = new RCIntVector(quadX, quadY);
+                    RCIntVector absQuadCoords = position + relQuadCoords;
+                    if (absQuadCoords.X >= 0 && absQuadCoords.X < map.Size.X &&
+                        absQuadCoords.Y >= 0 && absQuadCoords.Y < map.Size.Y)
+                    {
+                        /// Check intersection with other terrain objects on the map.
+                        RCNumRectangle quadTileRect = ((RCNumRectangle)map.QuadToCellRect(new RCIntRectangle(absQuadCoords, new RCIntVector(1, 1))))
+                                                    - new RCNumVector(1, 1) / 2;
+                        foreach (ITerrainObject objToCheck in map.TerrainObjects.GetContents(quadTileRect))
+                        {
+                            if (!this.IsExcluded(relQuadCoords) && !objToCheck.Type.IsExcluded(absQuadCoords - objToCheck.MapCoords))
+                            {
+                                retList.Add(relQuadCoords);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return retList;
+        }
+
+        /// <see cref="ITerrainObjectType.IsExcluded"/>
         public bool IsExcluded(RCIntVector position)
         {
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
             return !this.includedQuadCoords.Contains(position);
         }
 
-        /// <summary>
-        /// Collects all the quadratic coordinates of the given terrain object violating the constraints of this
-        /// terrain object type.
-        /// </summary>
-        /// <returns>
-        /// The list of the quadratic coordinates (relative to the top-left corner) violating the constraints
-        /// of this terrain object type.
-        /// </returns>
-        public HashSet<RCIntVector> CheckConstraints(ITerrainObject terrainObj)
-        {
-            if (terrainObj == null) { throw new ArgumentNullException("terrainObj"); }
-
-            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
-            foreach (ITerrainObjectConstraint contraint in this.constraints)
-            {
-                retList.UnionWith(contraint.Check(terrainObj));
-            }
-            return retList;
-        }
+        #endregion ITerrainObjectType methods
 
         /// <summary>
         /// Gets the constraints of this TerrainObjectType.
@@ -156,58 +233,9 @@ namespace RC.Engine.Core
         //public IEnumerable<ITerrainObjectConstraint> Constraints { get { return this.constraints; } }
 
         /// <summary>
-        /// Gets the tileset of this TerrainObjectType.
-        /// </summary>
-        public TileSet Tileset { get { return this.tileset; } }
-
-        /// <summary>
-        /// Gets the image data of this TerrainObjectType.
-        /// </summary>
-        public byte[] ImageData { get { return this.imageData; } }
-
-        /// <summary>
-        /// Gets the value of a given property.
-        /// </summary>
-        /// <param name="propName">The name of the property to get.</param>
-        /// <returns>The value of the property of null if the property doesn't exists.</returns>
-        public string this[string propName]
-        {
-            get
-            {
-                if (propName == null) { throw new ArgumentNullException("propName"); }
-                return this.properties.ContainsKey(propName) ? this.properties[propName] : null;
-            }
-        }
-
-        /// <summary>
-        /// Gets the name of this TerrainObjectType.
-        /// </summary>
-        public string Name { get { return this.name; } }
-
-        /// <summary>
-        /// Gets the size of the TerrainObjectType in quadratic tiles.
-        /// </summary>
-        public RCIntVector QuadraticSize { get { return this.quadraticSize; } }
-
-        /// <summary>
-        /// Gets the offset of the top-left corner of the TerrainObjectType on the image in pixels.
-        /// </summary>
-        public RCIntVector Offset { get { return this.offset; } }
-
-        /// <summary>
-        /// Gets the cell data changesets of this terrain object type.
-        /// </summary>
-        public IEnumerable<ICellDataChangeSet> CellDataChangesets { get { return this.cellDataChangesets; } }
-
-        /// <summary>
         /// The size of the TerrainObjectType in quadratic tiles.
         /// </summary>
         private RCIntVector quadraticSize;
-
-        /// <summary>
-        /// The offset of the top-left corner of the TerrainObjectType on the image in pixels.
-        /// </summary>
-        private RCIntVector offset;
 
         /// <summary>
         /// The byte sequence that contains the image data of this TerrainObjectType.
@@ -248,5 +276,10 @@ namespace RC.Engine.Core
         /// The tileset that this TerrainObjectType belongs to.
         /// </summary>
         private TileSet tileset;
+
+        /// <summary>
+        /// The index of this TerrainObjectType in the tileset.
+        /// </summary>
+        private int index;
     }
 }

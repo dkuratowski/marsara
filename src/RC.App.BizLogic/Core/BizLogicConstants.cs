@@ -23,6 +23,11 @@ namespace RC.App.BizLogic.Core
         public const string TILEPROP_TRANSPARENTCOLOR = "TransparentColor";
 
         /// <summary>
+        /// Name of the terrain object type property that stores the transparent color.
+        /// </summary>
+        public const string TERRAINOBJPROP_TRANSPARENTCOLOR = "TransparentColor";
+
+        /// <summary>
         /// Number of pixels per cells in both horizontal and vertical direction.
         /// </summary>
         public const int PIXEL_PER_NAVCELL = 4;

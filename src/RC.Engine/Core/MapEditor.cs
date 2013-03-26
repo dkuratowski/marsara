@@ -54,21 +54,58 @@ namespace RC.Engine.Core
 
             /// Force regenerating the variant of the draw operation center and its neighbours.
             targetTile.ExchangeType(targetTile.Type);
-
-            // TODO: make this method void
-            return targetMap.EndExchangingTiles();
+                        
+            /// Remove the terrain objects that are violating the new map terrain.
+            IEnumerable<IIsoTile> affectedIsoTiles = targetMap.EndExchangingTiles();
+            foreach (IIsoTile affectedIsoTile in affectedIsoTiles)
+            {
+                RCNumRectangle isoTileRect = new RCNumRectangle(affectedIsoTile.GetCellMapCoords(new RCIntVector(0, 0)), affectedIsoTile.CellSize)
+                                           - new RCNumVector(1, 1) / 2;
+                foreach (ITerrainObject affectedTerrainObj in targetMap.TerrainObjects.GetContents(isoTileRect))
+                {
+                    if (affectedTerrainObj.Type.CheckConstraints(targetMap, affectedTerrainObj.MapCoords).Count != 0)
+                    {
+                        this.RemoveTerrainObject(targetMap, affectedTerrainObj);
+                    }
+                }
+            }
+            return affectedIsoTiles;
         }
 
         /// <see cref="IMapEditor.PlaceTerrainObject"/>
         public ITerrainObject PlaceTerrainObject(IMapAccess targetMap, IQuadTile targetTile, ITerrainObjectType type)
         {
-            throw new NotImplementedException();
+            if (targetMap == null) { throw new ArgumentNullException("targetMap"); }
+            if (targetTile == null) { throw new ArgumentNullException("targetTile"); }
+            if (type == null) { throw new ArgumentNullException("type"); }
+            if (targetMap.Tileset != type.Tileset) { throw new InvalidOperationException("The tileset of the terrain object type must be the same as the tileset of the map!"); }
+            
+            if (type.CheckConstraints(targetMap, targetTile.MapCoords).Count != 0) { return null; }
+            if (type.CheckTerrainObjectIntersections(targetMap, targetTile.MapCoords).Count != 0) { return null; }
+
+            /// TODO: Might be better to create the TerrainObject with a factory?
+            ITerrainObject newObj = new TerrainObject(targetMap, type, targetTile.MapCoords);
+            foreach (ICellDataChangeSet changeset in newObj.Type.CellDataChangesets)
+            {
+                changeset.Apply(newObj);
+            }
+            targetMap.TerrainObjects.AttachContent(newObj);
+            return newObj;
         }
 
         /// <see cref="IMapEditor.RemoveTerrainObject"/>
         public void RemoveTerrainObject(IMapAccess targetMap, ITerrainObject terrainObject)
         {
-            throw new NotImplementedException();
+            if (targetMap == null) { throw new ArgumentNullException("targetMap"); }
+            if (terrainObject == null) { throw new ArgumentNullException("terrainObject"); }
+            if (targetMap != terrainObject.ParentMap) { throw new InvalidOperationException("The map of the terrain object must equal with the target map!"); }
+
+            /// Undo the cell data changesets of the removed terrain object.
+            foreach (ICellDataChangeSet changeset in terrainObject.Type.CellDataChangesets)
+            {
+                changeset.Undo(terrainObject);
+            }
+            targetMap.TerrainObjects.DetachContent(terrainObject);
         }
 
         /// <see cref="IMapEditor.CheckTerrainObjectConstraints"/>

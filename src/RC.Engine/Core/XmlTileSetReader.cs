@@ -206,7 +206,6 @@ namespace RC.Engine.Core
             XAttribute nameAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_NAME_ATTR);
             XAttribute imageAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_IMAGE_ATTR);
             XAttribute quadSizeAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_QUADSIZE_ATTR);
-            XAttribute offsetAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_OFFSET_ATTR);
             if (nameAttr == null) { throw new TileSetException("Name not defined for terrain object!"); }
             if (imageAttr == null) { throw new TileSetException("Image not defined for terrain object!"); }
             if (quadSizeAttr == null) { throw new TileSetException("Quadratic size not defined for terrain object!"); }
@@ -217,9 +216,7 @@ namespace RC.Engine.Core
 
             tileset.CreateTerrainObjectType(nameAttr.Value,
                                             imageData,
-                                            XmlHelper.LoadVector(quadSizeAttr.Value),
-                                            offsetAttr != null ? XmlHelper.LoadVector(offsetAttr.Value)
-                                                               : new RCIntVector(0, 0));
+                                            XmlHelper.LoadVector(quadSizeAttr.Value));
             TerrainObjectType terrainObj = tileset.GetTerrainObjectTypeImpl(nameAttr.Value);
 
             /// Apply the defined area exclusions.
@@ -277,7 +274,7 @@ namespace RC.Engine.Core
             if (terrainAttr != null)
             {
                 TerrainType terrain = tileset.GetTerrainTypeImpl(terrainAttr.Value);
-                return new IsoTileConstraint(quadCoords, terrain, tileset);
+                return new IsoTileConstraint(quadCoords, terrain, terrainObj, tileset);
             }
             else
             {
@@ -296,7 +293,7 @@ namespace RC.Engine.Core
                     combinations.Add(combination);
                 }
 
-                return new IsoTileConstraint(quadCoords, terrainA, terrainB, combinations, tileset);
+                return new IsoTileConstraint(quadCoords, terrainA, terrainB, combinations, terrainObj, tileset);
             }
         }
 

@@ -33,6 +33,7 @@ namespace RC.Engine.Core
             this.mixedTileTypes = new Dictionary<Tuple<string, string, TerrainCombination>, IsoTileType>();
             this.allTileVariants = new HashSet<IsoTileVariant>();
             this.allTileVariantList = new List<IsoTileVariant>();
+            this.allTerrainObjectList = new List<TerrainObjectType>();
         }
 
         #region ITileSet methods
@@ -88,7 +89,7 @@ namespace RC.Engine.Core
         public IEnumerable<ITerrainType> TerrainTypes { get { return this.terrainTypes.Values; } }
 
         /// <see cref="ITileSet.TerrainObjectTypes"/>
-        public IEnumerable<ITerrainObjectType> TerrainObjectTypes { get { return this.terrainObjectTypes.Values; } }
+        public IEnumerable<ITerrainObjectType> TerrainObjectTypes { get { return this.allTerrainObjectList; } }
 
         /// <see cref="ITileSet.TileVariants"/>
         public IEnumerable<IIsoTileVariant> TileVariants { get { return this.allTileVariantList; } }
@@ -221,14 +222,16 @@ namespace RC.Engine.Core
         /// <param name="name">The name of the TerrainObjectType.</param>
         /// <param name="imgData">The byte sequence that contains the image data of the TerrainObjectType.</param>
         /// <param name="quadraticSize">The size of the TerrainObjectType in quadratic tiles.</param>
-        /// <param name="offset">The offset of the top-left corner of the TerrainObjectType on the image in pixels.</param>
-        public void CreateTerrainObjectType(string name, byte[] imgData, RCIntVector quadSize, RCIntVector offset)
+        public void CreateTerrainObjectType(string name, byte[] imgData, RCIntVector quadSize)
         {
             if (this.isFinalized) { throw new InvalidOperationException("It is not possible to create new TerrainObjectType for a finalized TileSet!"); }
             if (name == null) { throw new ArgumentNullException("name"); }
             if (this.terrainObjectTypes.ContainsKey(name)) { throw new TileSetException(string.Format("TerrainObjectType with name '{0}' already exists!", name)); }
 
-            this.terrainObjectTypes.Add(name, new TerrainObjectType(name, imgData, quadSize, offset, this));
+            TerrainObjectType newTerrainObject = new TerrainObjectType(name, imgData, quadSize, this);
+            newTerrainObject.SetIndex(this.allTerrainObjectList.Count);
+            this.terrainObjectTypes.Add(name, newTerrainObject);
+            this.allTerrainObjectList.Add(newTerrainObject);
         }
 
         /// <summary>
@@ -359,6 +362,11 @@ namespace RC.Engine.Core
         /// List of all tile variants defined by this tileset.
         /// </summary>
         private List<IsoTileVariant> allTileVariantList;
+
+        /// <summary>
+        /// List of all terrain objects defined by this tileset.
+        /// </summary>
+        private List<TerrainObjectType> allTerrainObjectList;
 
         /// <summary>
         /// Becomes true when this TileSet is finalized.

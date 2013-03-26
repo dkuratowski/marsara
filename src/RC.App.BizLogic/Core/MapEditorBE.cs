@@ -68,6 +68,16 @@ namespace RC.App.BizLogic.Core
             return new TileSetView(this.activeMap.Tileset);
         }
 
+        /// <see cref="IMapEditorBE.CreateTerrainObjectPlacementView"/>
+        public IObjectPlacementView CreateTerrainObjectPlacementView(string terrainObjectName)
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (terrainObjectName == null) { throw new ArgumentNullException("terrainObjectName"); }
+
+            ITerrainObjectType terrainObjectType = this.activeMap.Tileset.GetTerrainObjectType(terrainObjectName);
+            return new TerrainObjectPlacementView(terrainObjectType, this.activeMap);
+        }
+
         /// <see cref="IMapEditorBE.DrawTerrain"/>
         public void DrawTerrain(RCIntRectangle displayedArea, RCIntVector position, string terrainType)
         {
@@ -81,6 +91,51 @@ namespace RC.App.BizLogic.Core
             IIsoTile isotile = this.activeMap.GetCell(navCellCoords).ParentIsoTile;
 
             this.mapEditor.DrawTerrain(this.activeMap, isotile, this.activeMap.Tileset.GetTerrainType(terrainType));
+        }
+
+        /// <see cref="IMapEditorBE.PlaceTerrainObject"/>
+        public bool PlaceTerrainObject(RCIntRectangle displayedArea, RCIntVector position, string terrainObject)
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+            if (terrainObject == null) { throw new ArgumentNullException("terrainObject"); }
+
+            ITerrainObjectType terrainObjType = this.activeMap.Tileset.GetTerrainObjectType(terrainObject);
+            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
+                                                (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            IQuadTile quadTileAtPos = this.activeMap.GetCell(navCellCoords).ParentQuadTile;
+            RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - terrainObjType.QuadraticSize / 2;
+
+            ITerrainObject placedTerrainObject = null;
+            if (topLeftQuadCoords.X >= 0 && topLeftQuadCoords.Y >= 0 &&
+                topLeftQuadCoords.X < this.activeMap.Size.X && topLeftQuadCoords.Y < this.activeMap.Size.Y)
+            {
+                IQuadTile targetQuadTile = this.activeMap.GetQuadTile(topLeftQuadCoords);
+                placedTerrainObject = this.mapEditor.PlaceTerrainObject(this.activeMap, targetQuadTile, terrainObjType);
+            }
+            return placedTerrainObject != null;
+        }
+
+        /// <see cref="IMapEditorBE.RemoveTerrainObject"/>
+        public bool RemoveTerrainObject(RCIntRectangle displayedArea, RCIntVector position)
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
+                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            IQuadTile quadTileAtPos = this.activeMap.GetCell(navCellCoords).ParentQuadTile;
+            foreach (ITerrainObject objToCheck in this.activeMap.TerrainObjects.GetContents(navCellCoords))
+            {
+                if (!objToCheck.Type.IsExcluded(quadTileAtPos.MapCoords - objToCheck.MapCoords))
+                {
+                    this.mapEditor.RemoveTerrainObject(this.activeMap, objToCheck);
+                    return true;
+                }
+            }
+            return false;
         }
 
         #endregion IMapEditorBE methods

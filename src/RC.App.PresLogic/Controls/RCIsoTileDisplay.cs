@@ -19,7 +19,6 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
         /// <param name="map">Reference to a map view.</param>
-        /// <param name="tilesetView">Reference to a tileset view.</param>
         public RCIsoTileDisplay(RCMapDisplay extendedControl, IMapTerrainView map)
             : base(extendedControl, map)
         {

@@ -19,7 +19,7 @@ namespace RC.Engine.PublicInterfaces
         /// <returns>
         /// The list of the quadratic coordinates (relative to the top-left corner) violating the constraint.
         /// </returns>
-        HashSet<RCIntVector> Check(ITerrainObject terrainObj);
+        HashSet<RCIntVector> Check(IMapAccess map, RCIntVector position);
 
         /// <summary>
         /// Gets the tileset that this constraint belongs to.

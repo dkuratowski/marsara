@@ -11,16 +11,27 @@ namespace RC.App.BizLogic.PublicInterfaces
     public interface ITileSetView
     {
         /// <summary>
-        /// Gets the display informations about each tiles defined by the given tileset.
+        /// Gets the map sprite types for each isometric tile types defined by the tileset of this view.
         /// </summary>
-        /// <param name="tilesetName">The name of the tileset.</param>
-        /// <returns>The list of the tile display informations.</returns>
-        List<IsoTileTypeInfo> GetIsoTileTypes();
+        /// <returns>The list of the map sprite types for isometric tile types.</returns>
+        List<MapSpriteType> GetIsoTileTypes();
 
         /// <summary>
-        /// Gets the list of the terrain types defined in the tileset.
+        /// Gets the map sprite types for each terrain object types defined by the tileset of this view.
         /// </summary>
-        /// <returns>The list of the terrain types defined in the tileset.</returns>
-        List<string> GetTerrainTypes();
+        /// <returns>The list of the map sprite types for terrain object types.</returns>
+        List<MapSpriteType> GetTerrainObjectTypes();
+
+        /// <summary>
+        /// Gets the list of the names of the terrain object types defined by the tileset of this view.
+        /// </summary>
+        /// <returns>The list that contains the name of the terrain object types.</returns>
+        List<string> GetTerrainObjectTypeNames();
+
+        /// <summary>
+        /// Gets the list of the names of the terrain types defined by the tileset of this view.
+        /// </summary>
+        /// <returns>The list that contains the name of the terrain types.</returns>
+        List<string> GetTerrainTypeNames();
     }
 }

@@ -38,6 +38,11 @@ namespace RC.App.PresLogic.Panels
         public event MapEditorPanelHdl EditModeChanged;
 
         /// <summary>
+        /// Raised when the selected item has been changed.
+        /// </summary>
+        public event MapEditorPanelHdl SelectedItemChanged;
+
+        /// <summary>
         /// Creates an RCMapEditorPanel instance.
         /// </summary>
         /// <param name="backgroundRect">The area of the background of the panel in workspace coordinates.</param>
@@ -62,6 +67,7 @@ namespace RC.App.PresLogic.Panels
             this.exitButton = new RCMenuButton("Exit", new RCIntRectangle(48, 144, 41, 15));
 
             this.editModeSelector.SelectedIndexChanged += this.OnEditModeSelectionChanged;
+            this.paletteListbox.SelectedIndexChanged += this.OnPaletteListboxSelectionChanged;
 
             this.AddControl(this.editModeSelector);
             this.AddControl(this.paletteListbox);
@@ -99,13 +105,19 @@ namespace RC.App.PresLogic.Panels
             switch ((EditMode)this.editModeSelector.SelectedIndex)
             {
                 case EditMode.DrawTerrain:
-                    string[] terrainTypes = this.tilesetView.GetTerrainTypes().ToArray();
+                    string[] terrainTypes = this.tilesetView.GetTerrainTypeNames().ToArray();
                     this.paletteListbox.SetItems(terrainTypes);
                     this.saveButton.IsEnabled = true;
                     this.editModeSelector.IsEnabled = true;
                     this.paletteListbox.IsEnabled = true;
                     break;
                 case EditMode.PlaceTerrainObject:
+                    string[] terrainObjectTypes = this.tilesetView.GetTerrainObjectTypeNames().ToArray();
+                    this.paletteListbox.SetItems(terrainObjectTypes);
+                    this.saveButton.IsEnabled = true;
+                    this.editModeSelector.IsEnabled = true;
+                    this.paletteListbox.IsEnabled = true;
+                    break;
                 case EditMode.PlaceStartingPoint:
                     this.paletteListbox.SetItems(new string[0] { });
                     this.saveButton.IsEnabled = true;
@@ -125,6 +137,15 @@ namespace RC.App.PresLogic.Panels
         {
             this.ResetControls();
             if (this.EditModeChanged != null) { this.EditModeChanged(); }
+        }
+
+        /// <summary>
+        /// Called when the selection in the palette listbox has been changed.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        private void OnPaletteListboxSelectionChanged(UISensitiveObject sender)
+        {
+            if (this.SelectedItemChanged != null) { this.SelectedItemChanged(); }
         }
 
         /// <summary>

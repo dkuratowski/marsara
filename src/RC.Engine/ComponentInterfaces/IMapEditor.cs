@@ -29,7 +29,9 @@ namespace RC.Engine.ComponentInterfaces
         /// <param name="targetMap">The target map.</param>
         /// <param name="targetTile">The quadratic tile where the top-left corner of the new terrain object shall be placed.</param>
         /// <param name="type">The type of the new terrain object.</param>
-        /// <returns>Reference to the interface of the new terrain object.</returns>
+        /// <returns>
+        /// Reference to the interface of the new terrain object or null if the terrain object could not be placed.
+        /// </returns>
         ITerrainObject PlaceTerrainObject(IMapAccess targetMap, IQuadTile targetTile, ITerrainObjectType type);
 
         /// <summary>

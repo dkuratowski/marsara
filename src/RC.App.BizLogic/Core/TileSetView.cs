@@ -25,14 +25,14 @@ namespace RC.App.BizLogic.Core
         #region ITileSetView methods
 
         /// <see cref="ITileSetView.GetIsoTileTypes"/>
-        public List<IsoTileTypeInfo> GetIsoTileTypes()
+        public List<MapSpriteType> GetIsoTileTypes()
         {
-            List<IsoTileTypeInfo> retList = new List<IsoTileTypeInfo>();
+            List<MapSpriteType> retList = new List<MapSpriteType>();
             foreach (IIsoTileVariant tile in this.tileset.TileVariants)
             {
                 byte[] imageData = new byte[tile.ImageData.Length];
                 Array.Copy(tile.ImageData, imageData, tile.ImageData.Length);
-                IsoTileTypeInfo info = new IsoTileTypeInfo();
+                MapSpriteType info = new MapSpriteType();
                 info.ImageData = imageData;
                 info.TransparentColorStr = tile.GetProperty(BizLogicConstants.TILEPROP_TRANSPARENTCOLOR);
                 retList.Add(info);
@@ -40,8 +40,35 @@ namespace RC.App.BizLogic.Core
             return retList;
         }
 
-        /// <see cref="ITileSetView.GetTerrainTypes"/>
-        public List<string> GetTerrainTypes()
+        /// <see cref="ITileSetView.GetTerrainObjectTypes"/>
+        public List<MapSpriteType> GetTerrainObjectTypes()
+        {
+            List<MapSpriteType> retList = new List<MapSpriteType>();
+            foreach (ITerrainObjectType terrainObjectType in this.tileset.TerrainObjectTypes)
+            {
+                byte[] imageData = new byte[terrainObjectType.ImageData.Length];
+                Array.Copy(terrainObjectType.ImageData, imageData, terrainObjectType.ImageData.Length);
+                MapSpriteType info = new MapSpriteType();
+                info.ImageData = imageData;
+                info.TransparentColorStr = terrainObjectType.GetProperty(BizLogicConstants.TERRAINOBJPROP_TRANSPARENTCOLOR);
+                retList.Add(info);
+            }
+            return retList;
+        }
+
+        /// <see cref="ITileSetView.GetTerrainObjectTypeNames"/>
+        public List<string> GetTerrainObjectTypeNames()
+        {
+            List<string> retList = new List<string>();
+            foreach (ITerrainObjectType terrainObject in this.tileset.TerrainObjectTypes)
+            {
+                retList.Add(terrainObject.Name);
+            }
+            return retList;
+        }
+
+        /// <see cref="ITileSetView.GetTerrainTypeNames"/>
+        public List<string> GetTerrainTypeNames()
         {
             List<string> retList = new List<string>();
             foreach (ITerrainType terrain in this.tileset.TerrainTypes)

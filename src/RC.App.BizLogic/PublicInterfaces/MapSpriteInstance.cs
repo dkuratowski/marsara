@@ -7,15 +7,14 @@ using RC.Common;
 namespace RC.App.BizLogic.PublicInterfaces
 {
     /// <summary>
-    /// This structure is used to provide informations for displaying an isometric tile on the map.
+    /// This structure contains informations for displaying an instance of a map sprite type on the map.
     /// </summary>
-    public struct IsoTileDisplayInfo
+    public struct MapSpriteInstance
     {
         /// <summary>
-        /// The index of the isometric tile type to be displayed. This index is aligned with the order of isometric tile type
-        /// information list returned by the appropriate ITileSetView.GetIsoTileTypes method.
+        /// The index of the map sprite instance to be displayed.
         /// </summary>
-        public int IsoTileTypeIndex { get; set; }
+        public int Index { get; set; }
 
         /// <summary>
         /// Suppose that we have a minimum size bounding box around the displayed isometric tile. This vector contains the coordinates

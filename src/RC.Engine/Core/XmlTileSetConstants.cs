@@ -57,7 +57,6 @@ namespace RC.Engine.Core
         public const string TERRAINOBJ_NAME_ATTR = "name";
         public const string TERRAINOBJ_IMAGE_ATTR = "image";
         public const string TERRAINOBJ_QUADSIZE_ATTR = "quadSize";
-        public const string TERRAINOBJ_OFFSET_ATTR = "offset";
         public const string TERRAINOBJ_EXCLUDEAREA_ELEM = "excludeArea";
         public const string TERRAINOBJ_EXCLUDEAREA_RECT_ATTR = "rect";
         public const string TERRAINOBJ_TILECONSTRAINT_ELEM = "tileConstraint";

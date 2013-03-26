@@ -46,6 +46,13 @@ namespace RC.Engine.PublicInterfaces
         ICell GetCell(RCIntVector index);
 
         /// <summary>
+        /// Converts a rectangle of quadratic tiles to a rectangle of cells.
+        /// </summary>
+        /// <param name="quadRect">The quadratic rectangle to convert.</param>
+        /// <returns>The cell rectangle.</returns>
+        RCIntRectangle QuadToCellRect(RCIntRectangle quadRect);
+
+        /// <summary>
         /// Begines a tile exchanging operation.
         /// </summary>
         void BeginExchangingTiles();
@@ -53,7 +60,6 @@ namespace RC.Engine.PublicInterfaces
         /// <summary>
         /// Indicates that the tile exchanging operation is finished.
         /// </summary>
-        /// TODO: make this method void!
         IEnumerable<IIsoTile> EndExchangingTiles();
 
         /// <summary>
@@ -63,5 +69,10 @@ namespace RC.Engine.PublicInterfaces
 
         /// TODO: only for debugging!
         IEnumerable<IIsoTile> IsometricTiles { get; }
+
+        /// <summary>
+        /// Gets the map content manager that contains the terrain objects of this map.
+        /// </summary>
+        IMapContentManager<ITerrainObject> TerrainObjects { get; }
     }
 }

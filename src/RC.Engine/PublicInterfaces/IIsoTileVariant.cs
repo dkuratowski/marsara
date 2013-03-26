@@ -10,7 +10,6 @@ namespace RC.Engine.PublicInterfaces
     /// </summary>
     public interface IIsoTileVariant
     {
-
         /// <summary>
         /// Gets the cell data changesets of this variant.
         /// </summary>

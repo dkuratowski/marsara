@@ -17,8 +17,13 @@ namespace RC.Engine.PublicInterfaces
         ITerrainObjectType Type { get; }
 
         /// <summary>
-        /// Gets or sets the coordinates of the top-left quadratic tile of this terrain object.
+        /// Gets the coordinates of the top-left quadratic tile of this terrain object.
         /// </summary>
         RCIntVector MapCoords { get; }
+
+        /// <summary>
+        /// Gets the map that this terrain object belongs to.
+        /// </summary>
+        IMapAccess ParentMap { get; }
     }
 }
