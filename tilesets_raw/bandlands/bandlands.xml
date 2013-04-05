@@ -43,7 +43,7 @@
       </variant>
     </simpleTile>
     <simpleTile terrain="HighGrass">
-      <variant image="grass.png">
+      <variant image="highgrass.png">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </simpleTile>
@@ -60,10 +60,58 @@
     </simpleTile>
     <!-- Water-Dirt transitions -->
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BAAA">
-      <variant image="water_dirt_baaa.png">
-        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
-        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
-      </variant>
+      <if>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="water_dirt_baaa_0.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          </variant>
+        </then>
+      </if>
+      <elseIf>
+        <and>
+          <or>
+            <neighbourCondition which="NorthEast" combination="AAAB" />
+            <neighbourCondition which="NorthEast" combination="ABAB" />
+          </or>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="water_dirt_baaa_1.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          </variant>
+        </then>
+      </elseIf>
+      <elseIf>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <or>
+            <neighbourCondition which="NorthWest" combination="ABAA" />
+            <neighbourCondition which="NorthWest" combination="ABAB" />
+          </or>
+        </and>
+        <then>
+          <variant image="water_dirt_baaa_2.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          </variant>
+        </then>
+      </elseIf>
+      <else>
+        <variant image="water_dirt_baaa_3.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="ABAA">
       <variant image="water_dirt_abaa.png">
@@ -85,7 +133,10 @@
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BBAA">
       <if>
-        <neighbourCondition which="NorthWest" combination="ABAA" />
+        <or>
+          <neighbourCondition which="NorthWest" combination="ABAA" />
+          <neighbourCondition which="NorthWest" combination="ABAB" />
+        </or>
         <then>
           <variant image="water_dirt_bbaa_0.png">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
@@ -114,7 +165,10 @@
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BAAB">
       <if>
-        <neighbourCondition which="NorthEast" combination="AAAB" />
+        <or>
+          <neighbourCondition which="NorthEast" combination="AAAB" />
+          <neighbourCondition which="NorthEast" combination="ABAB" />
+        </or>
         <then>
           <variant image="water_dirt_baab_0.png">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
@@ -130,20 +184,84 @@
       </else>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BABA">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
+      <if>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="water_dirt_baba_0.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          </variant>
+        </then>
+      </if>
+      <elseIf>
+        <and>
+          <or>
+            <neighbourCondition which="NorthEast" combination="AAAB" />
+            <neighbourCondition which="NorthEast" combination="ABAB" />
+          </or>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="water_dirt_baba_1.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          </variant>
+        </then>
+      </elseIf>
+      <elseIf>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <or>
+            <neighbourCondition which="NorthWest" combination="ABAA" />
+            <neighbourCondition which="NorthWest" combination="ABAB" />
+          </or>
+        </and>
+        <then>
+          <variant image="water_dirt_baba_2.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          </variant>
+        </then>
+      </elseIf>
+      <else>
+        <variant image="water_dirt_baba_3.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="ABAB">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
-    </mixedTile>
-    <mixedTile terrainA="Water" terrainB="Dirt" combination="BBBA">
-      <variant image="water_dirt_bbba.png">
+      <variant image="water_dirt_abab.png">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
+    </mixedTile>
+    <mixedTile terrainA="Water" terrainB="Dirt" combination="BBBA">
+      <if>
+        <or>
+          <neighbourCondition which="NorthWest" combination="ABAA" />
+          <neighbourCondition which="NorthWest" combination="ABAB" />
+        </or>
+        <then>
+          <variant image="water_dirt_bbba_1.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          </variant>
+        </then>
+      </if>
+      <else>
+        <variant image="water_dirt_bbba_0.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="ABBB">
       <variant image="water_dirt_abbb.png">
@@ -152,10 +270,24 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BABB">
-      <variant image="water_dirt_babb.png">
-        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
-        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
-      </variant>
+      <if>
+        <or>
+          <neighbourCondition which="NorthEast" combination="AAAB" />
+          <neighbourCondition which="NorthEast" combination="ABAB" />
+        </or>
+        <then>
+          <variant image="water_dirt_babb_1.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          </variant>
+        </then>
+      </if>
+      <else>
+        <variant image="water_dirt_babb_0.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BBAB">
       <variant image="water_dirt_bbab.png">
@@ -189,14 +321,10 @@
       <variant image="dirt_asphalt_abba.png"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="BABA">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
+      <variant image="dirt_asphalt_baba.png"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="ABAB">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
+      <variant image="dirt_asphalt_abab.png"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="AAAB">
       <variant image="dirt_asphalt_aaab.png"></variant>
@@ -237,23 +365,44 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BABB">
-      <variant image="asphalt_structure_babb.png">
-        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
-        <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
-        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
-        <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
-        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
-      </variant>
+      <if>
+        <or>
+          <neighbourCondition which="NorthEast" combination="AAAB" />
+          <neighbourCondition which="NorthEast" combination="ABAB" />
+        </or>
+        <then>
+          <variant image="asphalt_structure_babb_1.png">
+            <dataChangesetRect field="IsWalkable" rect="0;0;12;8">false</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="0;0;12;8">false</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+          </variant>
+        </then>
+      </if>
+      <else>
+        <variant image="asphalt_structure_babb_0.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+          <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BBAB">
       <variant image="asphalt_structure_bbab.png">
@@ -269,23 +418,44 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BBBA">
-      <variant image="asphalt_structure_bbba.png">
-        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
-        <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
-        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
-        <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
-        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
-      </variant>
+      <if>
+        <or>
+          <neighbourCondition which="NorthWest" combination="ABAA" />
+          <neighbourCondition which="NorthWest" combination="ABAB" />
+        </or>
+        <then>
+          <variant image="asphalt_structure_bbba_1.png">
+            <dataChangesetRect field="IsWalkable" rect="5;0;11;8">false</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="5;0;11;8">false</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
+          </variant>
+        </then>
+      </if>
+      <else>
+        <variant image="asphalt_structure_bbba_0.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+          <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="AABB">
       <variant image="asphalt_structure_aabb.png">
@@ -305,7 +475,10 @@
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BAAB">
       <if>
-        <neighbourCondition which="NorthEast" combination="AAAB" />
+        <or>
+          <neighbourCondition which="NorthEast" combination="AAAB" />
+          <neighbourCondition which="NorthEast" combination="ABAB" />
+        </or>
         <then>
           <variant image="asphalt_structure_baab_0.png">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
@@ -344,7 +517,10 @@
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BBAA">
       <if>
-        <neighbourCondition which="NorthWest" combination="ABAA" />
+        <or>
+          <neighbourCondition which="NorthWest" combination="ABAA" />
+          <neighbourCondition which="NorthWest" combination="ABAB" />
+        </or>
         <then>
           <variant image="asphalt_structure_bbaa_0.png">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
@@ -398,13 +574,107 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BABA">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
+      <if>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="asphalt_structure_baba_0.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;7;2;1">1</dataChangesetRect>
+          </variant>
+        </then>
+      </if>
+      <elseIf>
+        <and>
+          <or>
+            <neighbourCondition which="NorthEast" combination="AAAB" />
+            <neighbourCondition which="NorthEast" combination="ABAB" />
+          </or>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="asphalt_structure_baba_1.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsBuildable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;7;2;1">1</dataChangesetRect>
+          </variant>
+        </then>
+      </elseIf>
+      <elseIf>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <or>
+            <neighbourCondition which="NorthWest" combination="ABAA" />
+            <neighbourCondition which="NorthWest" combination="ABAB" />
+          </or>
+        </and>
+        <then>
+          <variant image="asphalt_structure_baba_2.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+            <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+            <dataChangesetRect field="IsBuildable" rect="1;2;4;4">true</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;7;2;1">1</dataChangesetRect>
+          </variant>
+        </then>
+      </elseIf>
+      <else>
+        <variant image="asphalt_structure_baba_3.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
+          <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetRect field="IsBuildable" rect="1;2;4;4">true</dataChangesetRect>
+          <dataChangesetRect field="IsBuildable" rect="12;2;3;4">true</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;7;2;1">1</dataChangesetRect>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="ABAB">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
+      <variant image="asphalt_structure_abab.png">
+        <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="AAAB">
@@ -417,25 +687,102 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BAAA">
-      <variant image="asphalt_structure_baaa.png">
-        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
-        <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
-        <dataChangesetRect field="IsWalkable" rect="7;7;2;1">true</dataChangesetRect>
-        <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
-        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
-        <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
-        <dataChangesetRect field="IsBuildable" rect="7;7;2;1">true</dataChangesetRect>
-        <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
-        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
-      </variant>
+      <if>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="asphalt_structure_baaa_0.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsWalkable" rect="7;7;2;1">true</dataChangesetRect>
+            <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsBuildable" rect="7;7;2;1">true</dataChangesetRect>
+            <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+          </variant>
+        </then>
+      </if>
+      <elseIf>
+        <and>
+          <or>
+            <neighbourCondition which="NorthEast" combination="AAAB" />
+            <neighbourCondition which="NorthEast" combination="ABAB" />
+          </or>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="asphalt_structure_baaa_1.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsWalkable" rect="7;7;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetRect field="IsBuildable" rect="7;7;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+          </variant>
+        </then>
+      </elseIf>
+      <elseIf>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <or>
+            <neighbourCondition which="NorthWest" combination="ABAA" />
+            <neighbourCondition which="NorthWest" combination="ABAB" />
+          </or>
+        </and>
+        <then>
+          <variant image="asphalt_structure_baaa_2.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+            <dataChangesetRect field="IsWalkable" rect="7;7;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+            <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+            <dataChangesetRect field="IsBuildable" rect="7;7;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="1;2;4;4">true</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+          </variant>
+        </then>
+      </elseIf>
+      <else>
+        <variant image="asphalt_structure_baaa_3.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetRect field="IsWalkable" rect="7;7;2;1">true</dataChangesetRect>
+          <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
+          <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetRect field="IsBuildable" rect="7;7;2;1">true</dataChangesetRect>
+          <dataChangesetRect field="IsBuildable" rect="1;2;4;4">true</dataChangesetRect>
+          <dataChangesetRect field="IsBuildable" rect="12;2;3;4">true</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="ABAA">
       <variant image="asphalt_structure_abaa.png">
@@ -480,23 +827,64 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BABB">
-      <variant image="dirt_highdirt_babb.png">
-        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
-        <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
-        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
-        <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
-        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
-      </variant>
+      <if>
+        <or>
+          <neighbourCondition which="NorthEast" combination="AAAB" />
+          <neighbourCondition which="NorthEast" combination="ABAB" />
+        </or>
+        <then>
+          <variant image="dirt_highdirt_babb_1.png">
+            <dataChangesetQuarter field="IsWalkable" which="North">false</dataChangesetQuarter>
+            <dataChangesetQuarter field="IsWalkable" which="West">false</dataChangesetQuarter>
+            <dataChangesetQuarter field="IsWalkable" which="South">false</dataChangesetQuarter>
+            <dataChangesetRect field="IsWalkable" rect="7;7;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsWalkable" rect="5;6;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsWalkable" rect="3;5;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsWalkable" rect="1;3;2;2">true</dataChangesetRect>
+            <dataChangesetRect field="IsWalkable" rect="3;2;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsWalkable" rect="5;1;2;1">true</dataChangesetRect>
+            <dataChangesetCell field="IsWalkable" cell="7;0">true</dataChangesetCell>
+            <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
+            <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
+            <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
+            <dataChangesetRect field="IsBuildable" rect="7;7;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="5;6;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="3;5;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="1;3;2;2">true</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="3;2;2;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="5;1;2;1">true</dataChangesetRect>
+            <dataChangesetCell field="IsBuildable" cell="7;0">true</dataChangesetCell>
+            <dataChangesetRect field="IsBuildable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="3;2;2;1">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="5;1;2;1">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;0;2;1">1</dataChangesetRect>
+          </variant>
+        </then>
+      </if>
+      <else>
+        <variant image="dirt_highdirt_babb_0.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
+          <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="5;1;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="3;2;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BBAB">
       <variant image="dirt_highdirt_bbab.png">
@@ -512,23 +900,58 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BBBA">
-      <variant image="dirt_highdirt_bbba.png">
-        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
-        <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
-        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
-        <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
-        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
-      </variant>
+      <if>
+        <or>
+          <neighbourCondition which="NorthWest" combination="ABAA" />
+          <neighbourCondition which="NorthWest" combination="ABAB" />
+        </or>
+        <then>
+          <variant image="dirt_highdirt_bbba_1.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
+            <dataChangesetRect field="IsWalkable" rect="13;3;2;2">true</dataChangesetRect>
+            <dataChangesetRect field="IsWalkable" rect="11;4;2;2">true</dataChangesetRect>
+            <dataChangesetCell field="IsWalkable" cell="10;5">true</dataChangesetCell>
+            <dataChangesetRect field="IsWalkable" rect="8;6;3;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsWalkable" rect="7;7;2;1">true</dataChangesetRect>
+            <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetRect field="IsBuildable" rect="1;2;4;4">true</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="13;3;2;2">true</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="11;4;2;2">true</dataChangesetRect>
+            <dataChangesetCell field="IsBuildable" cell="10;5">true</dataChangesetCell>
+            <dataChangesetRect field="IsBuildable" rect="8;6;3;1">true</dataChangesetRect>
+            <dataChangesetRect field="IsBuildable" rect="7;7;2;1">true</dataChangesetRect>
+            <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+            <dataChangesetCell field="GroundLevel" cell="8;0">1</dataChangesetCell>
+            <dataChangesetRect field="GroundLevel" rect="9;1;2;1">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="11;2;2;1">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
+          </variant>
+        </then>
+      </if>
+      <else>
+        <variant image="dirt_highdirt_bbba_0.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
+          <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
+          <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="9;1;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="11;2;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="13;3;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="11;4;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="9;5;2;2">1</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="AABB">
       <variant image="dirt_highdirt_aabb.png">
@@ -548,7 +971,10 @@
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BAAB">
       <if>
-        <neighbourCondition which="NorthEast" combination="AAAB" />
+        <or>
+          <neighbourCondition which="NorthEast" combination="AAAB" />
+          <neighbourCondition which="NorthEast" combination="ABAB" />
+        </or>
         <then>
           <variant image="dirt_highdirt_baab_0.png">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
@@ -587,7 +1013,10 @@
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BBAA">
       <if>
-        <neighbourCondition which="NorthWest" combination="ABAA" />
+        <or>
+          <neighbourCondition which="NorthWest" combination="ABAA" />
+          <neighbourCondition which="NorthWest" combination="ABAB" />
+        </or>
         <then>
           <variant image="dirt_highdirt_bbaa_0.png">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
@@ -641,13 +1070,79 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BABA">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
+      <if>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="dirt_highdirt_baba_0.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetRect field="GroundLevel" rect="7;7;2;1">1</dataChangesetRect>
+          </variant>
+        </then>
+      </if>
+      <elseIf>
+        <and>
+          <or>
+            <neighbourCondition which="NorthEast" combination="AAAB" />
+            <neighbourCondition which="NorthEast" combination="ABAB" />
+          </or>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="dirt_highdirt_baba_1.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetRect field="IsBuildable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;7;2;1">1</dataChangesetRect>
+          </variant>
+        </then>
+      </elseIf>
+      <elseIf>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <or>
+            <neighbourCondition which="NorthWest" combination="ABAA" />
+            <neighbourCondition which="NorthWest" combination="ABAB" />
+          </or>
+        </and>
+        <then>
+          <variant image="dirt_highdirt_baba_2.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetRect field="IsBuildable" rect="1;2;4;4">true</dataChangesetRect>
+            <dataChangesetRect field="GroundLevel" rect="7;7;2;1">1</dataChangesetRect>
+          </variant>
+        </then>
+      </elseIf>
+      <else>
+        <variant image="dirt_highdirt_baba_3.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
+          <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetRect field="IsBuildable" rect="1;2;4;4">true</dataChangesetRect>
+          <dataChangesetRect field="IsBuildable" rect="12;2;3;4">true</dataChangesetRect>
+          <dataChangesetRect field="GroundLevel" rect="7;7;2;1">1</dataChangesetRect>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="ABAB">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
+      <variant image="dirt_highdirt_abab.png">
+        <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
+        <dataChangesetRect field="IsBuildable" rect="13;3;2;2">false</dataChangesetRect>
+        <dataChangesetCell field="GroundLevel" cell="1;3">1</dataChangesetCell>
+        <dataChangesetCell field="GroundLevel" cell="14;3">1</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="AAAB">
@@ -660,25 +1155,66 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BAAA">
-      <variant image="dirt_highdirt_baaa.png">
-        <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
-        <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
-        <dataChangesetRect field="IsWalkable" rect="7;7;2;1">true</dataChangesetRect>
-        <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
-        <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
-        <dataChangesetCell field="IsBuildable" cell="1;4">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="3;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="5;6">true</dataChangesetCell>
-        <dataChangesetRect field="IsBuildable" rect="7;7;2;1">true</dataChangesetRect>
-        <dataChangesetCell field="IsBuildable" cell="10;6">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="12;5">true</dataChangesetCell>
-        <dataChangesetCell field="IsBuildable" cell="14;4">true</dataChangesetCell>
-        <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
-      </variant>
+      <if>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="dirt_highdirt_baaa_0.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          </variant>
+        </then>
+      </if>
+      <elseIf>
+        <and>
+          <or>
+            <neighbourCondition which="NorthEast" combination="AAAB" />
+            <neighbourCondition which="NorthEast" combination="ABAB" />
+          </or>
+          <not><neighbourCondition which="NorthWest" combination="ABAA" /></not>
+          <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
+        </and>
+        <then>
+          <variant image="dirt_highdirt_baaa_1.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetRect field="IsBuildable" rect="12;2;3;4">true</dataChangesetRect>
+          </variant>
+        </then>
+      </elseIf>
+      <elseIf>
+        <and>
+          <not><neighbourCondition which="NorthEast" combination="AAAB" /></not>
+          <not><neighbourCondition which="NorthEast" combination="ABAB" /></not>
+          <or>
+            <neighbourCondition which="NorthWest" combination="ABAA" />
+            <neighbourCondition which="NorthWest" combination="ABAB" />
+          </or>
+        </and>
+        <then>
+          <variant image="dirt_highdirt_baaa_2.png">
+            <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+            <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
+            <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+            <dataChangesetRect field="IsBuildable" rect="1;2;4;4">true</dataChangesetRect>
+          </variant>
+        </then>
+      </elseIf>
+      <else>
+        <variant image="dirt_highdirt_baaa_3.png">
+          <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
+          <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
+          <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
+          <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+          <dataChangesetRect field="IsBuildable" rect="1;2;4;4">true</dataChangesetRect>
+          <dataChangesetRect field="IsBuildable" rect="12;2;3;4">true</dataChangesetRect>
+        </variant>
+      </else>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="ABAA">
       <variant image="dirt_highdirt_abaa.png">
@@ -738,14 +1274,14 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BABA">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
+      <variant image="highdirt_highgrass_baba.png">
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
+	  </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="ABAB">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
+      <variant image="highdirt_highgrass_abab.png">
+        <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
+	  </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="AAAB">
       <variant image="highdirt_highgrass_aaab.png">
@@ -793,14 +1329,10 @@
       <variant image="dirt_grass_abba.png"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="BABA">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
+      <variant image="dirt_grass_baba.png"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="ABAB">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
+      <variant image="dirt_grass_abab.png"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="AAAB">
       <variant image="dirt_grass_aaab.png"></variant>
@@ -840,14 +1372,10 @@
       <variant image="dirt_mud_abba.png"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="BABA">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
+      <variant image="dirt_mud_baba.png"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="ABAB">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
-      </variant>
+      <variant image="dirt_mud_abab.png"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="AAAB">
       <variant image="dirt_mud_aaab.png"></variant>
@@ -938,13 +1466,19 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BABA">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
+      <variant image="dirt_rockyground_baba.png">
+        <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
+        <dataChangesetCell field="IsBuildable" cell="6;3">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="ABAB">
-      <variant image="isotile_sample.png">
-		<!-- TODO -->
+      <variant image="dirt_rockyground_abab.png">
+        <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
+        <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
+        <dataChangesetCell field="IsBuildable" cell="8;4">false</dataChangesetCell>
+        <dataChangesetCell field="IsBuildable" cell="5;5">false</dataChangesetCell>
+        <dataChangesetRect field="IsBuildable" rect="9;5;2;1">false</dataChangesetRect>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="AAAB">
@@ -1011,6 +1545,36 @@
       <tileConstraint quadCoords="4;7" terrainA="Dirt" terrainB="Asphalt" combinations="AAAB" />
       <tileConstraint quadCoords="0;7" terrain="Asphalt" />
       <property name="TransparentColor">255;0;255</property>
+      <dataChangesetRect field="IsWalkable" rect="12;19;18;5">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="21;14;20;5">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="30;9;20;5">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="36;6;8;3">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="12;24;10;5">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="8;20;4;5">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="6;21;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="22;24;5;2">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="30;19;7;2">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="41;14;6;2">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="14;17;7;2">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="24;12;6;2">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="34;7;2;2">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="22;26;3;1">true</dataChangesetRect>
+      <dataChangesetCell field="IsWalkable" cell="27;24">true</dataChangesetCell>
+      <dataChangesetRect field="IsWalkable" rect="30;21;3;2">true</dataChangesetRect>
+      <dataChangesetCell field="IsWalkable" cell="33;21">true</dataChangesetCell>
+      <dataChangesetRect field="IsWalkable" rect="37;19;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="41;16;4;1">true</dataChangesetRect>
+      <dataChangesetCell field="IsWalkable" cell="41;17">true</dataChangesetCell>
+      <dataChangesetCell field="IsWalkable" cell="47;14">true</dataChangesetCell>
+      <dataChangesetRect field="IsWalkable" rect="10;19;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="12;18;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="16;16;5;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="18;15;3;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="22;13;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="26;11;4;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="28;10;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="32;8;2;1">true</dataChangesetRect>
+      <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
     </terrainObject>
     <terrainObject name="Bridge1" image="terrainobj_bridge_1.png" quadSize="14;9" offset="0;0">
       <excludeArea rect="8;0;6;3" />
@@ -1047,6 +1611,39 @@
       <tileConstraint quadCoords="9;7" terrainA="Dirt" terrainB="Asphalt" combinations="ABAA" />
       <tileConstraint quadCoords="13;7" terrain="Asphalt" />
       <property name="TransparentColor">255;0;255</property>
+      <dataChangesetRect field="IsWalkable" rect="11;7;10;10">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="21;12;10;9">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="31;17;10;10">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="41;19;4;8">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="33;27;7;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="35;28;3;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="45;21;3;5">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="45;20;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="48;21;1;4">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="41;18;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="31;13;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="31;14;4;3">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="35;15;2;2">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="37;16;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="21;18;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="21;19;4;3">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="25;20;2;2">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="27;21;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="14;6;6;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="6;9;5;5">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="4;12;2;2">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="7;14;4;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="9;15;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="13;17;8;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="15;18;6;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="17;19;4;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="19;20;2;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="22;21;9;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="23;22;8;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="25;23;6;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="27;24;4;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="29;25;2;1">true</dataChangesetRect>
+      <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
     </terrainObject>
     <terrainObject name="Cliff0" image="terrainobj_cliff_0.png" quadSize="6;6" offset="0;0">
       <tileConstraint quadCoords="5;0" terrain="HighDirt" />      
@@ -1064,6 +1661,37 @@
       <tileConstraint quadCoords="0;4" terrain="Dirt" />
       <tileConstraint quadCoords="2;5" terrain="Dirt" />
       <property name="TransparentColor">255;0;255</property>
+      <dataChangesetRect field="IsWalkable" rect="0;9;9;13">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="9;4;7;9">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="6;6;3;3">true</dataChangesetRect>
+      <dataChangesetCell field="IsWalkable" cell="5;8">true</dataChangesetCell>
+      <dataChangesetRect field="IsWalkable" rect="9;13;4;4">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="13;13;2;2">true</dataChangesetRect>
+      <dataChangesetCell field="IsWalkable" cell="13;15">true</dataChangesetCell>
+      <dataChangesetRect field="IsWalkable" rect="16;18;2;3">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="18;18;2;2">true</dataChangesetRect>
+      <dataChangesetCell field="IsWalkable" cell="16;21">true</dataChangesetCell>
+      <dataChangesetRect field="IsWalkable" rect="9;17;1;3">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="9;20;7;2">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="10;17;8;3">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="13;16;7;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="14;15;6;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="18;17;2;2">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="15;13;5;2">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="16;12;4;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="17;11;3;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="18;10;2;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="20;11;2;7">false</dataChangesetRect>	  
+      <dataChangesetRect field="GroundLevel" rect="7;4;5;3">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="12;6;7;4">1</dataChangesetRect>
+      <dataChangesetCell field="GroundLevel" cell="6;6">1</dataChangesetCell>
+      <dataChangesetRect field="GroundLevel" rect="5;7;7;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="7;8;5;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="9;9;3;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="11;10;7;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="13;11;4;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="14;12;2;1">1</dataChangesetRect>
+      <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
     </terrainObject>
     <terrainObject name="Cliff1" image="terrainobj_cliff_1.png" quadSize="6;6" offset="0;0">
       <tileConstraint quadCoords="0;0" terrain="HighDirt" />
@@ -1081,6 +1709,42 @@
       <tileConstraint quadCoords="5;4" terrain="Dirt" />
       <tileConstraint quadCoords="3;5" terrain="Dirt" />
       <property name="TransparentColor">255;0;255</property>
+      <dataChangesetRect field="IsWalkable" rect="4;6;7;4">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="11;4;5;5">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="11;9;5;8">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="19;9;3;5">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="6;10;5;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="7;11;4;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="8;12;3;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="9;13;2;2">true</dataChangesetRect>
+      <dataChangesetCell field="IsWalkable" cell="10;15">true</dataChangesetCell>
+      <dataChangesetRect field="IsWalkable" rect="13;17;3;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="14;18;2;2">true</dataChangesetRect>
+      <dataChangesetCell field="IsWalkable" cell="15;20">true</dataChangesetCell>
+      <dataChangesetRect field="IsWalkable" rect="16;5;1;16">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="17;6;1;14">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="18;8;1;9">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="3;10;3;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="2;11;5;8">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="7;12;1;7">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="8;13;1;6">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="9;15;1;4">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="10;16;1;3">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="11;17;2;3">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="13;18;1;2">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="6;19;5;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="7;20;8;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="8;21;7;1">false</dataChangesetRect>	  
+      <dataChangesetRect field="GroundLevel" rect="4;5;7;5">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="11;3;5;3">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="11;6;7;2">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="11;8;5;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="11;9;3;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="16;10;6;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="17;11;3;1">1</dataChangesetRect>
+      <dataChangesetCell field="GroundLevel" cell="16;5">1</dataChangesetCell>
+      <dataChangesetCell field="GroundLevel" cell="8;12">1</dataChangesetCell>
+      <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
     </terrainObject>
     <terrainObject name="StructureWall0" image="terrainobj_structwall_0.png" quadSize="4;4" offset="0;0">
       <excludeArea rect="2;0;2;1" />
@@ -1092,6 +1756,31 @@
       <tileConstraint quadCoords="0;2" terrain="Asphalt" />
       <tileConstraint quadCoords="2;3" terrain="Asphalt" />
       <property name="TransparentColor">255;0;255</property>
+      <dataChangesetRect field="IsWalkable" rect="7;4;8;5">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="6;5;1;4">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="5;6;1;3">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="4;7;1;2">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="2;9;12;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="1;10;12;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="0;11;12;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="1;12;10;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="3;13;7;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="5;14;4;1">true</dataChangesetRect>
+      <dataChangesetCell field="IsWalkable" cell="3;8">true</dataChangesetCell>
+      <dataChangesetCell field="IsWalkable" cell="7;15">true</dataChangesetCell>
+      <dataChangesetRect field="IsWalkable" rect="0;6;1;5">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="1;6;1;4">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="2;6;1;3">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="11;12;5;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="10;13;6;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="9;14;7;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="8;14;8;1">false</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="7;4;6;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="6;5;8;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="5;6;11;2">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="7;8;8;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="9;9;5;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="11;10;2;1">1</dataChangesetRect>
     </terrainObject>
     <terrainObject name="StructureWall1" image="terrainobj_structwall_1.png" quadSize="4;4" offset="0;0">
       <excludeArea rect="0;0;2;1" />
@@ -1103,6 +1792,31 @@
       <tileConstraint quadCoords="3;2" terrain="Asphalt" />
       <tileConstraint quadCoords="1;3" terrain="Asphalt" />
       <property name="TransparentColor">255;0;255</property>
-    </terrainObject>
+      <dataChangesetRect field="IsWalkable" rect="0;4;8;5">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="8;5;1;4">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="9;6;1;3">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="10;7;1;2">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="2;9;11;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="3;10;11;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="4;11;11;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="5;12;9;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="6;13;6;1">true</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="7;14;3;1">true</dataChangesetRect>
+      <dataChangesetCell field="IsWalkable" cell="11;8">true</dataChangesetCell>
+      <dataChangesetCell field="IsWalkable" cell="7;15">true</dataChangesetCell>
+      <dataChangesetRect field="IsWalkable" rect="0;12;5;4">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="5;13;1;3">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="6;14;1;2">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="12;7;4;2">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="13;9;3;1">false</dataChangesetRect>
+      <dataChangesetRect field="IsWalkable" rect="14;10;2;1">false</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="6;4;2;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="4;5;5;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="2;6;8;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="0;7;11;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="0;8;9;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="2;9;5;1">1</dataChangesetRect>
+      <dataChangesetRect field="GroundLevel" rect="3;10;2;1">1</dataChangesetRect>
+	  </terrainObject>
   </declareTerrainObjects>
 </tileset>
