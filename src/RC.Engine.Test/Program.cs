@@ -10,8 +10,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using RC.Common.ComponentModel;
-using RC.Engine.Core;
-using RC.Engine.PublicInterfaces;
+using RC.Engine.Maps.Core;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Test
 {

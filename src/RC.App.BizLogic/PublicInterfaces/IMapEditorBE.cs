@@ -12,6 +12,7 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// <summary>
         /// Creates a new map.
         /// </summary>
+        /// <param name="mapName">The name of the new map.</param>
         /// <param name="tilesetName">The name of the tileset that the new map is based on.</param>
         /// <param name="defaultTerrain">The default terrain of the new map.</param>
         /// <param name="mapSize">
@@ -19,7 +20,7 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// second coordinate of the vector is the height of the new map. The constraints are the followings:
         /// the width of the map must be a multiple of 4, the height of the map must be a multiple of 2.
         /// </param>
-        void NewMap(string tilesetName, string defaultTerrain, RCIntVector mapSize);
+        void NewMap(string mapName, string tilesetName, string defaultTerrain, RCIntVector mapSize);
 
         /// <summary>
         /// Loads a map from the given file.

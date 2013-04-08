@@ -5,6 +5,13 @@
   </configNodeReferences>
 
   <configObjects>
+    <configObject namespace="RC.UI.Test" name="Constants">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.ConstantsLoader</class>
+      </loader>
+      <contents>RC.UI.Test.ConstantsConfig.xml</contents>
+    </configObject>
     <configObject namespace="RC.UI.Test" name="TraceConfig">
       <loader>
         <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>

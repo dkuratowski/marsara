@@ -7,6 +7,7 @@ using RC.Common;
 using RC.Common.Diagnostics;
 using RC.Common.ComponentModel;
 using RC.App.PresLogic.Pages;
+using System.IO;
 
 namespace RC.App.Starter
 {
@@ -63,6 +64,28 @@ namespace RC.App.Starter
                 {
                     ConsoleHelper.ShowConsole();
                     TraceManager.WriteAllTrace("STARTING MAP EDITOR...", TraceManager.GetTraceFilterID("RC.MapEditor.Info"));
+
+                    /// Read the parameters from the command line
+                    if (MapEditorSetup.Mode == MapEditorMode.NewMap)
+                    {
+                        Console.Write("Name of the new map file: ");
+                        MapEditorSetup.MapFile = Console.ReadLine();
+                        if (File.Exists(MapEditorSetup.MapFile)) { throw new IOException(string.Format("The file '{0}' already exists!", MapEditorSetup.MapFile)); }
+                        Console.Write("Name of the new map: ");
+                        MapEditorSetup.MapName = Console.ReadLine();
+                        Console.Write("Name of the tileset of the new map: ");
+                        MapEditorSetup.TilesetName = Console.ReadLine();
+                        Console.Write("Name of the default terrain of the new map: ");
+                        MapEditorSetup.DefaultTerrain = Console.ReadLine();
+                        Console.Write("Size of the new map: ");
+                        MapEditorSetup.MapSize = XmlHelper.LoadVector(Console.ReadLine());
+                    }
+                    else if (MapEditorSetup.Mode == MapEditorMode.LoadMap)
+                    {
+                        Console.Write("Name of the map file to load: ");
+                        MapEditorSetup.MapFile = Console.ReadLine();
+                    }
+
                     TraceManager.WriteAllTrace(MapEditorSetup.ToString(), TraceManager.GetTraceFilterID("RC.MapEditor.Info"));
 
                     /// Load the resources for the map editor.
@@ -174,6 +197,7 @@ namespace RC.App.Starter
             else if (MapEditorSetup.Mode == MapEditorMode.NewMap)
             {
                 mapEditorPage = new RCMapEditorPage(MapEditorSetup.MapFile,
+                                                    MapEditorSetup.MapName,
                                                     MapEditorSetup.TilesetName,
                                                     MapEditorSetup.DefaultTerrain,
                                                     MapEditorSetup.MapSize);
@@ -187,12 +211,12 @@ namespace RC.App.Starter
         /// </summary>
         private static void StartComponents()
         {
-            ComponentManager.RegisterComponents("RC.Engine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+            ComponentManager.RegisterComponents("RC.Engine.Maps, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                                                 new string[3]
                                                 {
-                                                    "RC.Engine.TileSetLoader",
-                                                    "RC.Engine.MapLoader",
-                                                    "RC.Engine.MapEditor"
+                                                    "RC.Engine.Maps.TileSetLoader",
+                                                    "RC.Engine.Maps.MapLoader",
+                                                    "RC.Engine.Maps.MapEditor"
                                                 });
 
             ComponentManager.RegisterComponents("RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",

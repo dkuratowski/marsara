@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using RC.Common;
 using System.Diagnostics;
-using RC.Engine.Core;
+using RC.Engine.Maps.Core;
 
 namespace RC.Engine.BspMapContentMgr.Test
 {

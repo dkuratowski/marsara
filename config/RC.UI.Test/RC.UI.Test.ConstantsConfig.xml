@@ -1,0 +1,3 @@
+<constantsConfig>
+  <constant namespace="RC.App" name="Version" type="STRING">1.0.0.0</constant>
+</constantsConfig>

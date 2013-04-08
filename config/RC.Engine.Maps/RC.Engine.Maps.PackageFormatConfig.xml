@@ -1,0 +1,52 @@
+<packageFormatConfig>
+  
+  <packageFormat namespace="RC.Engine.Maps" name="TileSetFormat">
+    <description>Format of packages containing tilesets.</description>
+    <field type="STRING">The XML that describes the tileset.</field>
+    <field type="STRING">The directory of the referenced images (TODO: this is a hack).</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Engine.Maps" name="MapHeader">
+    <description>Contains header informations about a map.</description>
+    <field type="INT">Major version of the RC application that created the map.</field>
+    <field type="INT">Minor version of the RC application that created the map.</field>
+    <field type="INT">Build number of the RC application that created the map.</field>
+    <field type="INT">Revision number of the RC application that created the map.</field>
+    <field type="STRING">Name of the map.</field>
+    <field type="STRING">Name of the tileset of the map.</field>
+    <field type="SHORT">The width of the map.</field>
+    <field type="SHORT">The height of the map.</field>
+    <field type="BYTE">Maximum number of players on the map.</field>
+    <field type="INT_ARRAY">Checksum values of the map.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Engine.Maps" name="IsometricTileList">
+    <description>Contains the list of the isometric tiles of the map.</description>
+    <field type="STRING_ARRAY">Terrain type index table.</field>
+    <field type="BYTE_ARRAY">Contains a series of RC.Engine.Maps.IsometricTile packages.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Engine.Maps" name="TerrainObjectList">
+    <description>Contains the list of the terrain objects of the map.</description>
+    <field type="STRING_ARRAY">Terrain object type index table.</field>
+    <field type="BYTE_ARRAY">Contains a series of RC.Engine.Maps.TerrainObject packages.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Engine.Maps" name="IsometricTile">
+    <description>Contains informations about an isometric tile of the map.</description>
+    <field type="SHORT">Quadratic coordinate of the isometric tile (X component).</field>
+    <field type="SHORT">Quadratic coordinate of the isometric tile (Y component).</field>
+    <field type="BYTE">Index of terrain type A.</field>
+    <field type="BYTE">Index of terrain type B.</field>
+    <field type="BYTE">Terrain combination code.</field>
+    <field type="BYTE">Index of the isometric tile variant.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Engine.Maps" name="TerrainObject">
+    <description>Contains informations about a terrain object of the map.</description>
+    <field type="SHORT">Quadratic coordinate of the terrain object (X component).</field>
+    <field type="SHORT">Quadratic coordinate of the terrain object (Y component).</field>
+    <field type="BYTE">Index of the terrain object.</field>
+  </packageFormat>
+
+</packageFormatConfig>

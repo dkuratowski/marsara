@@ -10,10 +10,10 @@
   <activateTraceFilters pattern="RC.UI.XnaPlugin.Warning" />
   <activateTraceFilters pattern="RC.UI.XnaPlugin.Info" />
   <activateTraceFilters pattern="RC.UI.XnaPlugin.Details" />
-  <activateTraceFilters pattern="RC.Engine.Error" />
-  <activateTraceFilters pattern="RC.Engine.Warning" />
-  <activateTraceFilters pattern="RC.Engine.Info" />
-  <activateTraceFilters pattern="RC.Engine.Details" />
+  <activateTraceFilters pattern="RC.Engine.Maps.Error" />
+  <activateTraceFilters pattern="RC.Engine.Maps.Warning" />
+  <activateTraceFilters pattern="RC.Engine.Maps.Info" />
+  <activateTraceFilters pattern="RC.Engine.Maps.Details" />
   <activateTraceFilters pattern="RC.Common.ComponentMgr.Info" />
   <activateTraceFilters pattern="RC.App.PresLogic.Info" />
   <activateTraceFilters pattern="RC.App.BizLogic.Info" />

@@ -1,10 +1,11 @@
 ﻿using System;
 using RC.Common.ComponentModel;
 using RC.App.BizLogic.PublicInterfaces;
-using RC.Engine.ComponentInterfaces;
+using RC.Engine.Maps.ComponentInterfaces;
 using RC.App.BizLogic.InternalInterfaces;
-using RC.Engine.PublicInterfaces;
+using RC.Engine.Maps.PublicInterfaces;
 using RC.Common;
+using System.IO;
 
 namespace RC.App.BizLogic.Core
 {
@@ -25,23 +26,32 @@ namespace RC.App.BizLogic.Core
         #region IMapEditorBE methods
 
         /// <see cref="IMapEditorBE.NewMap"/>
-        public void NewMap(string tilesetName, string defaultTerrain, RCIntVector mapSize)
+        public void NewMap(string mapName, string tilesetName, string defaultTerrain, RCIntVector mapSize)
         {
             if (this.activeMap != null) { throw new InvalidOperationException("Another map is already opened!"); }
 
-            this.activeMap = this.mapLoader.NewMap(this.tilesetStore.GetTileSet(tilesetName), defaultTerrain, mapSize);
+            this.activeMap = this.mapLoader.NewMap(mapName, this.tilesetStore.GetTileSet(tilesetName), defaultTerrain, mapSize);
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
         public void LoadMap(string filename)
         {
-            throw new NotImplementedException();
+            if (this.activeMap != null) { throw new InvalidOperationException("Another map is already opened!"); }
+            if (filename == null) { throw new ArgumentNullException("fileName"); }
+
+            byte[] mapBytes = File.ReadAllBytes(filename);
+            MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
+            this.activeMap = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
         public void SaveMap(string filename)
         {
-            throw new NotImplementedException();
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (filename == null) { throw new ArgumentNullException("fileName"); }
+
+            byte[] mapBytes = this.mapLoader.SaveMap(this.activeMap);
+            File.WriteAllBytes(filename, mapBytes);
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
@@ -147,13 +157,13 @@ namespace RC.App.BizLogic.Core
         private ITileSetStore tilesetStore;
 
         /// <summary>
-        /// Reference to the RC.Engine.MapEditor component.
+        /// Reference to the RC.Engine.Maps.MapEditor component.
         /// </summary>
         [ComponentReference]
         private IMapEditor mapEditor;
 
         /// <summary>
-        /// Reference to the RC.Engine.MapLoader component.
+        /// Reference to the RC.Engine.Maps.MapLoader component.
         /// </summary>
         [ComponentReference]
         private IMapLoader mapLoader;

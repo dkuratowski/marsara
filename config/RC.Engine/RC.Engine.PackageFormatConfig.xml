@@ -1,9 +1,0 @@
-<packageFormatConfig>
-  
-  <packageFormat namespace="RC.Engine" name="TileSetFormat">
-    <description>Format of packages containing tilesets.</description>
-    <field type="STRING">The XML that describes the tileset.</field>
-    <field type="STRING">The directory of the referenced images (TODO: this is a hack).</field>
-  </packageFormat>
-
-</packageFormatConfig>

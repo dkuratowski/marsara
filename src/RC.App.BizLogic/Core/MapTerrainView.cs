@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.App.BizLogic.PublicInterfaces;
-using RC.Engine.PublicInterfaces;
+using RC.Engine.Maps.PublicInterfaces;
 using RC.Common;
 
 namespace RC.App.BizLogic.Core

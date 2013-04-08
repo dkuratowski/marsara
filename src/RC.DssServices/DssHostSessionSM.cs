@@ -150,10 +150,10 @@ namespace RC.DssServices
                         {
                             /// We send back a DSS_CTRL_CONN_ACK package.
                             RCPackage ackPackage = RCPackage.CreateNetworkControlPackage(DssRoot.DSS_CTRL_CONN_ACK);
-                            ackPackage.WriteInt(0, DssRoot.RC_DSSSERVICES_VERSION.Major);
-                            ackPackage.WriteInt(1, DssRoot.RC_DSSSERVICES_VERSION.Minor);
-                            ackPackage.WriteInt(2, DssRoot.RC_DSSSERVICES_VERSION.Build);
-                            ackPackage.WriteInt(3, DssRoot.RC_DSSSERVICES_VERSION.Revision);
+                            ackPackage.WriteInt(0, DssRoot.APPLICATION_VERSION.Major);
+                            ackPackage.WriteInt(1, DssRoot.APPLICATION_VERSION.Minor);
+                            ackPackage.WriteInt(2, DssRoot.APPLICATION_VERSION.Build);
+                            ackPackage.WriteInt(3, DssRoot.APPLICATION_VERSION.Revision);
 
                             this.manager.HostRoot.Lobby.SendControlPackage(ackPackage, this.channel.Index + 1);
                             this.WaitingConnectionRQ_SendingSetupStepRQ.Fire();
@@ -163,7 +163,7 @@ namespace RC.DssServices
                             /// We send back a DSS_CTRL_CONN_REJECT package
                             rejPackage = RCPackage.CreateNetworkControlPackage(DssRoot.DSS_CTRL_CONN_REJECT);
                             string reason = string.Format("Incompatible with host version: {0} (RC.DssServices)",
-                                                          DssRoot.RC_DSSSERVICES_VERSION.ToString());
+                                                          DssRoot.APPLICATION_VERSION.ToString());
                             rejPackage.WriteString(0, reason);
                             rejPackage.WriteByteArray(1, new byte[0]);
                         }

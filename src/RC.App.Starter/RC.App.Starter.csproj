@@ -83,6 +83,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="RC.App.ConstantsConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="RC.MapEditor.ConstantsConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="RC.MapEditor.TraceConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -107,9 +113,9 @@
       <Project>{96EF40A8-8614-468B-ABC3-7315A1B5B7CA}</Project>
       <Name>RC.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RC.Engine\RC.Engine.csproj">
+    <ProjectReference Include="..\RC.Engine.Maps\RC.Engine.Maps.csproj">
       <Project>{2B1355DC-847B-4617-94AD-5423BC538B20}</Project>
-      <Name>RC.Engine</Name>
+      <Name>RC.Engine.Maps</Name>
     </ProjectReference>
     <ProjectReference Include="..\RC.UI.XnaPlugin\RC.UI.XnaPlugin.csproj">
       <Project>{6D0C55AC-B070-408D-BF61-5B87FC86EF1F}</Project>

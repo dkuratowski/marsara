@@ -9,8 +9,8 @@ using System.Windows.Forms;
 using System.IO;
 using RC.Common;
 using RC.Common.ComponentModel;
-using RC.Engine.PublicInterfaces;
-using RC.Engine.ComponentInterfaces;
+using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Maps.ComponentInterfaces;
 
 namespace RC.Engine.DrawTerrain.Test
 {
@@ -24,7 +24,7 @@ namespace RC.Engine.DrawTerrain.Test
         private void Form1_Load(object sender, EventArgs e)
         {
             ComponentManager.RegisterComponents("RC.Engine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[3] { "RC.Engine.TileSetLoader", "RC.Engine.MapLoader", "RC.Engine.MapEditor" });
+                                                new string[3] { "RC.Engine.Maps.TileSetLoader", "RC.Engine.Maps.MapLoader", "RC.Engine.Maps.MapEditor" });
             ComponentManager.StartComponents();
 
             this.tilesetLoader = ComponentManager.GetInterface<ITileSetLoader>();
@@ -35,12 +35,15 @@ namespace RC.Engine.DrawTerrain.Test
             FileInfo tilesetFile = new FileInfo("../../../../tilesets_raw/test/test.xml");
             string xmlStr = File.ReadAllText(tilesetFile.FullName);
             string imageDir = tilesetFile.DirectoryName;
-            RCPackage tilesetPackage = RCPackage.CreateCustomDataPackage(RCEngineFormats.TILESET_FORMAT);
+            RCPackage tilesetPackage = RCPackage.CreateCustomDataPackage(PackageFormats.TILESET_FORMAT);
             tilesetPackage.WriteString(0, xmlStr);
             tilesetPackage.WriteString(1, imageDir);
-            ITileSet tileset = this.tilesetLoader.LoadTileSet(tilesetPackage);
 
-            this.map = this.mapLoader.NewMap(tileset, "Yellow", new RCIntVector(64, 32));
+            byte[] buffer = new byte[tilesetPackage.PackageLength];
+            tilesetPackage.WritePackageToBuffer(buffer, 0);
+            ITileSet tileset = this.tilesetLoader.LoadTileSet(buffer);
+
+            this.map = this.mapLoader.NewMap("TestMap", tileset, "Yellow", new RCIntVector(64, 32));
 
             this.draw = new IsoDraw();
 

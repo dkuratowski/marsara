@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using RC.Common.ComponentModel;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.App.BizLogic.InternalInterfaces
 {
@@ -33,6 +34,6 @@ namespace RC.App.BizLogic.InternalInterfaces
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        RC.Engine.PublicInterfaces.ITileSet GetTileSet(string name);
+        ITileSet GetTileSet(string name);
     }
 }

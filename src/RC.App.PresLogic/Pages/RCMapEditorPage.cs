@@ -20,15 +20,17 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// Constructs an RCMapEditorPage instance for create and edit a new map.
         /// </summary>
-        public RCMapEditorPage(string fileName, string tilesetName, string defaultTerrain, RCIntVector mapSize)
+        public RCMapEditorPage(string fileName, string mapName, string tilesetName, string defaultTerrain, RCIntVector mapSize)
             : this()
         {
             if (fileName == null) { throw new ArgumentNullException("fileName"); }
+            if (mapName == null) { throw new ArgumentNullException("mapName"); }
             if (tilesetName == null) { throw new ArgumentNullException("tilesetName"); }
             if (defaultTerrain == null) { throw new ArgumentNullException("defaultTerrain"); }
             if (mapSize == RCIntVector.Undefined) { throw new ArgumentNullException("mapSize"); }
 
             this.fileName = fileName;
+            this.mapName = mapName;
             this.tilesetName = tilesetName;
             this.defaultTerrain = defaultTerrain;
             this.mapSize = mapSize;
@@ -220,7 +222,7 @@ namespace RC.App.PresLogic.Pages
         /// <param name="sender">Reference to the button.</param>
         private void OnSaveMapPressed(UISensitiveObject sender)
         {
-            /// TODO: implement map saving logic here
+            this.mapEditorBE.SaveMap(this.fileName);
         }
 
         /// <summary>
@@ -369,8 +371,16 @@ namespace RC.App.PresLogic.Pages
         /// </summary>
         private void LoadMapTask(object parameter)
         {
-            /// TODO: Here we can choose between loading/creating later...
-            this.mapEditorBE.NewMap(this.tilesetName, this.defaultTerrain, this.mapSize);
+            if (this.mapName != null)
+            {
+                /// Create a new map.
+                this.mapEditorBE.NewMap(this.mapName, this.tilesetName, this.defaultTerrain, this.mapSize);
+            }
+            else
+            {
+                /// Load an existing map.
+                this.mapEditorBE.LoadMap(this.fileName);
+            }
         }
 
         /// <summary>
@@ -449,6 +459,11 @@ namespace RC.App.PresLogic.Pages
         /// The name of the file of the map to be loaded/created.
         /// </summary>
         private string fileName;
+
+        /// <summary>
+        /// The name of the new map, or null if an existing map is loaded.
+        /// </summary>
+        private string mapName;
 
         /// <summary>
         /// The name of the tileset of the new map, or null if an existing map is loaded.

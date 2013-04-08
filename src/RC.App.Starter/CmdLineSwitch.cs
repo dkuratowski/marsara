@@ -94,10 +94,7 @@ namespace RC.App.Starter
         /// Constructs a CmdLineSwitch object.
         /// </summary>
         /// <param name="args">The arguments of the switch.</param>
-        public CmdLineSwitch(string[] args)
-        {
-            this.arguments = args;
-        }
+        public CmdLineSwitch(string[] args) { this.arguments = args; }
 
         /// <summary>
         /// Executes the switch.
@@ -146,10 +143,7 @@ namespace RC.App.Starter
         }
 
         /// <see cref="CmdLineSwitch.Execute"/>
-        public override void Execute()
-        {
-            ConfigurationManager.Initialize(this.Arguments[0]);
-        }
+        public override void Execute() { ConfigurationManager.Initialize(this.Arguments[0]); }
     }
 
     /// <summary>
@@ -166,15 +160,10 @@ namespace RC.App.Starter
         /// Constructs a ConsoleSwitch object.
         /// </summary>
         /// <param name="args">The arguments of the switch.</param>
-        public ConsoleSwitch(string[] args) : base(args)
-        {
-        }
+        public ConsoleSwitch(string[] args) : base(args) { }
 
         /// <see cref="CmdLineSwitch.Execute"/>
-        public override void Execute()
-        {
-            ConsoleHelper.ShowConsole();
-        }
+        public override void Execute() { ConsoleHelper.ShowConsole(); }
     }
 
     /// <summary>
@@ -188,35 +177,13 @@ namespace RC.App.Starter
         public static readonly string SIGNATURE = "/newmap";
 
         /// <summary>
-        /// The indices of the arguments.
-        /// </summary>
-        public const int MAP_FILE = 0;
-        public const int TILESET_NAME = 1;
-        public const int DEFAULT_TERRAIN = 2;
-        public const int SIZE = 3;
-
-        /// <summary>
         /// Constructs a NewMapSwitch object.
         /// </summary>
         /// <param name="args">The arguments of the switch.</param>
-        public NewMapSwitch(string[] args) : base(args)
-        {
-            if (args == null || args.Length != 4) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-name default-terrain size'. Example: '/newmap mymap.rcm Bandlands Dirt 64;32'."); }
-            if (args[0] == null || args[0].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-name default-terrain size'. Example: '/newmap mymap.rcm Bandlands Dirt 64;32'."); }
-            if (args[1] == null || args[1].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-name default-terrain size'. Example: '/newmap mymap.rcm Bandlands Dirt 64;32'."); }
-            if (args[2] == null || args[2].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-name default-terrain size'. Example: '/newmap mymap.rcm Bandlands Dirt 64;32'."); }
-            if (args[3] == null || args[3].Length == 0) { throw new Exception("/newmap switch usage: '/newmap map-file tileset-name default-terrain size'. Example: '/newmap mymap.rcm Bandlands Dirt 64;32'."); }
-        }
+        public NewMapSwitch(string[] args) : base(args) { }
 
         /// <see cref="CmdLineSwitch.Execute"/>
-        public override void Execute()
-        {
-            MapEditorSetup.Mode = MapEditorMode.NewMap;
-            MapEditorSetup.MapFile = this.Arguments[MAP_FILE];
-            MapEditorSetup.TilesetName = this.Arguments[TILESET_NAME];
-            MapEditorSetup.DefaultTerrain = this.Arguments[DEFAULT_TERRAIN];
-            MapEditorSetup.MapSize = XmlHelper.LoadVector(this.Arguments[SIZE]);
-        }
+        public override void Execute() { MapEditorSetup.Mode = MapEditorMode.NewMap; }
     }
 
     /// <summary>
@@ -230,25 +197,12 @@ namespace RC.App.Starter
         public static readonly string SIGNATURE = "/loadmap";
 
         /// <summary>
-        /// The indices of the arguments.
-        /// </summary>
-        public const int MAP_FILE = 0;
-
-        /// <summary>
         /// Constructs a LoadMapSwitch object.
         /// </summary>
         /// <param name="args">The arguments of the switch.</param>
-        public LoadMapSwitch(string[] args) : base(args)
-        {
-            if (args == null || args.Length != 1) { throw new Exception("/loadmap switch usage: '/loadmap map-file'. Example: '/loadmap mymap.rcm'."); }
-            if (args[0] == null || args[0].Length == 0) { throw new Exception("/loadmap switch usage: '/loadmap map-file'. Example: '/loadmap mymap.rcm'."); }
-        }
+        public LoadMapSwitch(string[] args) : base(args) { }
 
         /// <see cref="CmdLineSwitch.Execute"/>
-        public override void Execute()
-        {
-            MapEditorSetup.Mode = MapEditorMode.LoadMap;
-            MapEditorSetup.MapFile = this.Arguments[MAP_FILE];
-        }
+        public override void Execute() { MapEditorSetup.Mode = MapEditorMode.LoadMap; }
     }
 }

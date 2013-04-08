@@ -1,0 +1,6 @@
+<traceConfig>
+  <registerTraceFilter namespace="RC.Engine.Maps" name="Error" />
+  <registerTraceFilter namespace="RC.Engine.Maps" name="Warning" />
+  <registerTraceFilter namespace="RC.Engine.Maps" name="Info" />
+  <registerTraceFilter namespace="RC.Engine.Maps" name="Details" />
+</traceConfig>

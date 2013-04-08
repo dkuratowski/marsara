@@ -64,6 +64,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.Common", "RC.Common", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.DssServices.TestConsole", "RC.DssServices.TestConsole", "{733C7611-46EB-4AA0-AD1D-CB9BEFC506CE}"
 	ProjectSection(SolutionItems) = preProject
+		..\config\RC.DssServices.TestConsole\RC.DssServices.TestConsole.ConstantsConfig.xml = ..\config\RC.DssServices.TestConsole\RC.DssServices.TestConsole.ConstantsConfig.xml
 		..\config\RC.DssServices.TestConsole\RC.DssServices.TestConsole.PackageFormatConfig.xml = ..\config\RC.DssServices.TestConsole\RC.DssServices.TestConsole.PackageFormatConfig.xml
 		..\config\RC.DssServices.TestConsole\RC.DssServices.TestConsole.root = ..\config\RC.DssServices.TestConsole\RC.DssServices.TestConsole.root
 		..\config\RC.DssServices.TestConsole\RC.DssServices.TestConsole.TraceConfig.xml = ..\config\RC.DssServices.TestConsole\RC.DssServices.TestConsole.TraceConfig.xml
@@ -95,6 +96,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.UI", "RC.UI", "{CA019A15
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.UI.Test", "RC.UI.Test", "{5964F5CF-E783-4D62-B031-A5A87B080EC0}"
 	ProjectSection(SolutionItems) = preProject
+		..\config\RC.UI.Test\RC.UI.Test.ConstantsConfig.xml = ..\config\RC.UI.Test\RC.UI.Test.ConstantsConfig.xml
 		..\config\RC.UI.Test\RC.UI.Test.root = ..\config\RC.UI.Test\RC.UI.Test.root
 		..\config\RC.UI.Test\RC.UI.Test.TraceConfig.xml = ..\config\RC.UI.Test\RC.UI.Test.TraceConfig.xml
 	EndProjectSection
@@ -114,20 +116,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.App.Starter", "RC.App.St
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.App.PresLogic", "RC.App.PresLogic\RC.App.PresLogic.csproj", "{2893161C-952D-4AD0-8A64-5A04871A6882}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine", "RC.Engine\RC.Engine.csproj", "{2B1355DC-847B-4617-94AD-5423BC538B20}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.Engine", "RC.Engine", "{70948948-CB25-44FB-902C-9BA351E054BE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.Engine.Maps", "RC.Engine.Maps", "{70948948-CB25-44FB-902C-9BA351E054BE}"
 	ProjectSection(SolutionItems) = preProject
-		..\config\RC.Engine\RC.Engine.ConstantsConfig.xml = ..\config\RC.Engine\RC.Engine.ConstantsConfig.xml
-		..\config\RC.Engine\RC.Engine.node = ..\config\RC.Engine\RC.Engine.node
-		..\config\RC.Engine\RC.Engine.PackageFormatConfig.xml = ..\config\RC.Engine\RC.Engine.PackageFormatConfig.xml
-		..\config\RC.Engine\RC.Engine.TraceConfig.xml = ..\config\RC.Engine\RC.Engine.TraceConfig.xml
+		..\config\RC.Engine.Maps\RC.Engine.Maps.ConstantsConfig.xml = ..\config\RC.Engine.Maps\RC.Engine.Maps.ConstantsConfig.xml
+		..\config\RC.Engine.Maps\RC.Engine.Maps.node = ..\config\RC.Engine.Maps\RC.Engine.Maps.node
+		..\config\RC.Engine.Maps\RC.Engine.Maps.PackageFormatConfig.xml = ..\config\RC.Engine.Maps\RC.Engine.Maps.PackageFormatConfig.xml
+		..\config\RC.Engine.Maps\RC.Engine.Maps.TraceConfig.xml = ..\config\RC.Engine.Maps\RC.Engine.Maps.TraceConfig.xml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.Test", "RC.Engine.Test\RC.Engine.Test.csproj", "{D25CA7A4-4681-42B9-8903-F96D701EA039}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.Engine.Test", "RC.Engine.Test", "{F87F6A99-57CB-41AF-92F6-58E37CC3B4B6}"
 	ProjectSection(SolutionItems) = preProject
+		..\config\RC.Engine.Test\RC.Engine.Test.ConstantsConfig.xml = ..\config\RC.Engine.Test\RC.Engine.Test.ConstantsConfig.xml
 		..\config\RC.Engine.Test\RC.Engine.Test.root = ..\config\RC.Engine.Test\RC.Engine.Test.root
 		..\config\RC.Engine.Test\RC.Engine.Test.TraceConfig.xml = ..\config\RC.Engine.Test\RC.Engine.Test.TraceConfig.xml
 	EndProjectSection
@@ -151,6 +152,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.App.BizLogic", "RC.App.B
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.BspMapContentMgr.Test", "RC.Engine.BspMapContentMgr.Test\RC.Engine.BspMapContentMgr.Test.csproj", "{24754C8C-55BF-4AB0-9C90-6FD5C6B281D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.Maps", "RC.Engine.Maps\RC.Engine.Maps.csproj", "{2B1355DC-847B-4617-94AD-5423BC538B20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -374,20 +377,6 @@ Global
 		{2893161C-952D-4AD0-8A64-5A04871A6882}.Release|x64.ActiveCfg = Release|x64
 		{2893161C-952D-4AD0-8A64-5A04871A6882}.Release|x64.Build.0 = Release|x64
 		{2893161C-952D-4AD0-8A64-5A04871A6882}.Release|x86.ActiveCfg = Release|Any CPU
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|x64.ActiveCfg = Debug|x64
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|x64.Build.0 = Debug|x64
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|x64.ActiveCfg = Release|x64
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|x64.Build.0 = Release|x64
-		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|x86.ActiveCfg = Release|Any CPU
 		{D25CA7A4-4681-42B9-8903-F96D701EA039}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{D25CA7A4-4681-42B9-8903-F96D701EA039}.Debug|Any CPU.Build.0 = Debug|x86
 		{D25CA7A4-4681-42B9-8903-F96D701EA039}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
@@ -444,6 +433,20 @@ Global
 		{24754C8C-55BF-4AB0-9C90-6FD5C6B281D2}.Release|x64.ActiveCfg = Release|x64
 		{24754C8C-55BF-4AB0-9C90-6FD5C6B281D2}.Release|x86.ActiveCfg = Release|x86
 		{24754C8C-55BF-4AB0-9C90-6FD5C6B281D2}.Release|x86.Build.0 = Release|x86
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|x64.ActiveCfg = Debug|x64
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|x64.Build.0 = Debug|x64
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Debug|x86.ActiveCfg = Debug|x64
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|Mixed Platforms.Build.0 = Release|x64
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|x64.ActiveCfg = Release|x64
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|x64.Build.0 = Release|x64
+		{2B1355DC-847B-4617-94AD-5423BC538B20}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

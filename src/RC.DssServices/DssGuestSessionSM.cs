@@ -55,10 +55,10 @@ namespace RC.DssServices
         {
             /// We send a DSS_CTRL_CONN_REQUEST package.
             RCPackage reqPackage = RCPackage.CreateNetworkControlPackage(DssRoot.DSS_CTRL_CONN_REQUEST);
-            reqPackage.WriteInt(0, DssRoot.RC_DSSSERVICES_VERSION.Major);
-            reqPackage.WriteInt(1, DssRoot.RC_DSSSERVICES_VERSION.Minor);
-            reqPackage.WriteInt(2, DssRoot.RC_DSSSERVICES_VERSION.Build);
-            reqPackage.WriteInt(3, DssRoot.RC_DSSSERVICES_VERSION.Revision);
+            reqPackage.WriteInt(0, DssRoot.APPLICATION_VERSION.Major);
+            reqPackage.WriteInt(1, DssRoot.APPLICATION_VERSION.Minor);
+            reqPackage.WriteInt(2, DssRoot.APPLICATION_VERSION.Build);
+            reqPackage.WriteInt(3, DssRoot.APPLICATION_VERSION.Revision);
             this.guestRoot.Lobby.SendControlPackage(reqPackage);
 
             /// Then we fire the corresponding trigger at the session state machine.

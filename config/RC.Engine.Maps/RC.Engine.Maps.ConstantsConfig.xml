@@ -1,0 +1,4 @@
+<constantsConfig>
+  <constant namespace="RC.Engine.Maps" name="BspNodeCapacity" type="INT">16</constant>
+  <constant namespace="RC.Engine.Maps" name="BspMinNodeSize" type="INT">10</constant>
+</constantsConfig>

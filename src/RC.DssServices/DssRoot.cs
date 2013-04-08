@@ -26,7 +26,7 @@ namespace RC.DssServices
 
         static DssRoot()
         {
-            RC_DSSSERVICES_VERSION = new Version("0.1.0.0");
+            APPLICATION_VERSION = new Version(ConstantsTable.Get<string>("RC.App.Version"));
 
             DSS_CTRL_CONN_REQUEST = RCPackageFormatMap.Get("RC.DssServices.DssCtrlConnectionRequest");
             DSS_CTRL_CONN_ACK = RCPackageFormatMap.Get("RC.DssServices.DssCtrlConnectionAcknowledge");
@@ -51,7 +51,7 @@ namespace RC.DssServices
         public static bool IsCompatibleVersion(Version otherVersion)
         {
             if (otherVersion == null) { throw new ArgumentNullException("otherVersion"); }
-            return otherVersion.CompareTo(RC_DSSSERVICES_VERSION) == 0;
+            return otherVersion.CompareTo(APPLICATION_VERSION) == 0;
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace RC.DssServices
         /// <summary>
         /// The current version of the component.
         /// </summary>
-        public static readonly Version RC_DSSSERVICES_VERSION;
+        public static readonly Version APPLICATION_VERSION;
 
         /// <summary>
         /// Gets the singleton instance of this class or null if no instance exists.

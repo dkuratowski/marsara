@@ -5,7 +5,7 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using RC.Common;
-using RC.Engine.PublicInterfaces;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.DrawTerrain.Test
 {

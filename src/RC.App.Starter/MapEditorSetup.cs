@@ -22,7 +22,7 @@ namespace RC.App.Starter
     static class MapEditorSetup
     {
         /// <summary>
-        /// Gets the starting mode of the map editor.
+        /// Gets or sets the starting mode of the map editor.
         /// </summary>
         public static MapEditorMode Mode
         {
@@ -31,7 +31,7 @@ namespace RC.App.Starter
         }
 
         /// <summary>
-        /// Gets the name of the file that the new map will be saved to in case of MapEditorMode.NewMap or
+        /// Gets or sets the name of the file that the new map will be saved to in case of MapEditorMode.NewMap or
         /// the name of the file that contains the map to be loaded in case of MapEditorMode.LoadMap.
         /// </summary>
         public static string MapFile
@@ -41,7 +41,16 @@ namespace RC.App.Starter
         }
 
         /// <summary>
-        /// Gets the name of the tileset of the new map in case of MapEditorMode.NewMap.
+        /// Gets or sets the name of the new map in case of MapEditorMode.NewMap.
+        /// </summary>
+        public static string MapName
+        {
+            get { return mapName; }
+            set { mapName = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the tileset of the new map in case of MapEditorMode.NewMap.
         /// </summary>
         public static string TilesetName
         {
@@ -50,7 +59,7 @@ namespace RC.App.Starter
         }
 
         /// <summary>
-        /// Gets the name of the default terrain in case of MapEditorMode.NewMap.
+        /// Gets or sets the name of the default terrain in case of MapEditorMode.NewMap.
         /// </summary>
         public static string DefaultTerrain
         {
@@ -59,7 +68,7 @@ namespace RC.App.Starter
         }
 
         /// <summary>
-        /// Gets the size of the new map in case of MapEditorMode.NewMap.
+        /// Gets or sets the size of the new map in case of MapEditorMode.NewMap.
         /// </summary>
         public static RCIntVector MapSize
         {
@@ -96,6 +105,11 @@ namespace RC.App.Starter
         /// the name of the file that contains the map to be loaded in case of MapEditorMode.LoadMap.
         /// </summary>
         private static string mapFile;
+
+        /// <summary>
+        /// The name of the new map in case of MapEditorMode.NewMap.
+        /// </summary>
+        private static string mapName;
 
         /// <summary>
         /// The name of the tileset of the new map in case of MapEditorMode.NewMap.

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using RC.Common.ComponentModel;
 using System.IO;
-using RC.Engine.ComponentInterfaces;
+using RC.Engine.Maps.ComponentInterfaces;
 using RC.Common;
-using RC.Engine.PublicInterfaces;
+using RC.Engine.Maps.PublicInterfaces;
 using RC.App.BizLogic.InternalInterfaces;
 
 namespace RC.App.BizLogic.Core
@@ -71,11 +71,13 @@ namespace RC.App.BizLogic.Core
                 /// TODO: this is a hack!
                 string xmlStr = File.ReadAllText(tilesetFile.FullName);
                 string imageDir = tilesetFile.DirectoryName;
-                RCPackage tilesetPackage = RCPackage.CreateCustomDataPackage(RCEngineFormats.TILESET_FORMAT);
+                RCPackage tilesetPackage = RCPackage.CreateCustomDataPackage(PackageFormats.TILESET_FORMAT);
                 tilesetPackage.WriteString(0, xmlStr);
                 tilesetPackage.WriteString(1, imageDir);
 
-                ITileSet tileset = this.tilesetLoader.LoadTileSet(tilesetPackage);
+                byte[] buffer = new byte[tilesetPackage.PackageLength];
+                tilesetPackage.WritePackageToBuffer(buffer, 0);
+                ITileSet tileset = this.tilesetLoader.LoadTileSet(buffer);
 
                 if (this.loadedTilesets.ContainsKey(tileset.Name))
                 {
@@ -89,7 +91,7 @@ namespace RC.App.BizLogic.Core
         #endregion IComponentStart methods
 
         /// <summary>
-        /// Reference to the RC.Engine.TileSetLoader component.
+        /// Reference to the RC.Engine.Maps.TileSetLoader component.
         /// </summary>
         [ComponentReference]
         private ITileSetLoader tilesetLoader;

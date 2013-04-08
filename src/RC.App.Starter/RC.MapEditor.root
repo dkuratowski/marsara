@@ -2,12 +2,20 @@
   <configNodeReferences>
     <configNodeReference>./config/RC.UI.XnaPlugin/RC.UI.XnaPlugin.node</configNodeReference>
     <configNodeReference>./config/RC.UI/RC.UI.node</configNodeReference>
-    <configNodeReference>./config/RC.Engine/RC.Engine.node</configNodeReference>
+    <configNodeReference>./config/RC.Engine.Maps/RC.Engine.Maps.node</configNodeReference>
     <configNodeReference>./config/RC.App.PresLogic/RC.App.PresLogic.node</configNodeReference>
     <configNodeReference>./config/RC.App.BizLogic/RC.App.BizLogic.node</configNodeReference>
   </configNodeReferences>
 
   <configObjects>
+    <configObject namespace="RC.MapEditor" name="Constants">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.ConstantsLoader</class>
+      </loader>
+      <contents>RC.MapEditor.ConstantsConfig.xml</contents>
+    </configObject>
+	
     <configObject namespace="RC.MapEditor" name="TraceConfig">
       <loader>
         <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>

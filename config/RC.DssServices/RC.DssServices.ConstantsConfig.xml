@@ -1,6 +1,4 @@
 <constantsConfig>
-  <constant namespace="RC.DssServices" name="Version" type="STRING">0.1.0.0</constant>
-
   <constant namespace="RC.DssServices" name="InitialAlarmClockCapacity" type="INT">16</constant>
   <constant namespace="RC.DssServices" name="EventQueueCapacity" type="INT">1024</constant>
   <constant namespace="RC.DssServices" name="SetupStepCycleTime" type="INT">3000</constant>
