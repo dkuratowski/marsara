@@ -219,11 +219,18 @@ namespace RC.App.Starter
                                                     "RC.Engine.Maps.MapEditor"
                                                 });
 
+            ComponentManager.RegisterComponents("RC.Engine.Scenarios, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                                    new string[1]
+                                                {
+                                                    "RC.Engine.Scenarios.ScenarioSimulator"
+                                                });
+
             ComponentManager.RegisterComponents("RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[2]
+                                                new string[3]
                                                 {
                                                     "RC.App.BizLogic.TileSetStore",
-                                                    "RC.App.BizLogic.MapControl"
+                                                    "RC.App.BizLogic.MapEditorBE",
+                                                    "RC.App.BizLogic.GameplayBE"
                                                 });
             ComponentManager.StartComponents();
         }

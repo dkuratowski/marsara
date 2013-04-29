@@ -77,6 +77,7 @@
     <characterMapping char=":" base="4;8" top="-3" bottom="0" width="1" />
     <characterMapping char="." base="4;7" top="0" bottom="0" width="1" />
     <characterMapping char="," base="2;8" top="0" bottom="1" width="1" />
+    <characterMapping char="/" base="339;8" top="-5" bottom="0" width="3" />
     <!--characterMapping char="&apos;" base="55;95" top="-5" bottom="0" width="2" />
     <characterMapping char="&quot;" base="59;95" top="-6" bottom="0" width="5" />
     <characterMapping char="&amp;" base="65;72" top="-5" bottom="0" width="6" />
@@ -88,7 +89,6 @@
     <characterMapping char="}" base="39;95" top="-6" bottom="2" width="3" />
     <characterMapping char="+" base="9;107" top="-5" bottom="0" width="5" />
     <characterMapping char="-" base="15;107" top="-3" bottom="0" width="4" />
-    <characterMapping char="/" base="20;107" top="-5" bottom="1" width="5" />
     <characterMapping char="\" base="26;107" top="-5" bottom="1" width="5" />
     <characterMapping char="_" base="32;107" top="0" bottom="1" width="5" />
     <characterMapping char="&lt;" base="38;107" top="-6" bottom="0" width="5" />

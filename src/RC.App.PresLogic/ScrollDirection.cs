@@ -6,9 +6,9 @@ using System.Text;
 namespace RC.App.PresLogic
 {
     /// <summary>
-    /// Enumerates the possible map-scrolling directions.
+    /// Enumerates the possible scrolling directions of a scrollable control.
     /// </summary>
-    public enum MapScrollDirection
+    public enum ScrollDirection
     {
         NoScroll = -1,
         North = 0,

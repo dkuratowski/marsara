@@ -11,22 +11,17 @@ namespace RC.App.BizLogic.Core
     /// <summary>
     /// Implementation of views on the terrain of the currently opened map.
     /// </summary>
-    class MapTerrainView : IMapTerrainView
+    class MapTerrainView : MapViewBase, IMapTerrainView
     {
         /// <summary>
         /// Constructs a MapTerrainView instance.
         /// </summary>
         /// <param name="map">The subject of this view.</param>
-        public MapTerrainView(IMapAccess map)
+        public MapTerrainView(IMapAccess map) : base(map)
         {
-            if (map == null) { throw new ArgumentNullException("map"); }
-            this.map = map;
         }
 
         #region IMapTerrainView methods
-
-        /// <see cref="IMapView.MapSize"/>
-        public RCIntVector MapSize { get { return this.map.CellSize * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL); } }
 
         /// <see cref="IMapTerrainView.GetVisibleIsoTiles"/>
         public List<MapSpriteInstance> GetVisibleIsoTiles(RCIntRectangle displayedArea)
@@ -34,25 +29,23 @@ namespace RC.App.BizLogic.Core
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
 
-            RCIntRectangle cellWindow = new RCIntRectangle(displayedArea.X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                           displayedArea.Y / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                           (displayedArea.Right - 1) / BizLogicConstants.PIXEL_PER_NAVCELL - displayedArea.X / BizLogicConstants.PIXEL_PER_NAVCELL + 1,
-                                                           (displayedArea.Bottom - 1) / BizLogicConstants.PIXEL_PER_NAVCELL - displayedArea.Y / BizLogicConstants.PIXEL_PER_NAVCELL + 1);
-            RCIntVector displayOffset = new RCIntVector(displayedArea.X % BizLogicConstants.PIXEL_PER_NAVCELL, displayedArea.Y % BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntRectangle cellWindow;
+            RCIntVector displayOffset;
+            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             List<MapSpriteInstance> retList = new List<MapSpriteInstance>();
             HashSet<IIsoTile> tmpIsoTileList = new HashSet<IIsoTile>();
 
             RCIntVector topLeftNavCellCoords = new RCIntVector(Math.Max(0, cellWindow.Left), Math.Max(0, cellWindow.Top));
-            RCIntVector bottomRightNavCellCoords = new RCIntVector(Math.Min(this.map.CellSize.X - 1, cellWindow.Right - 1), Math.Min(this.map.CellSize.Y - 1, cellWindow.Bottom - 1));
-            IQuadTile topLeftQuadTile = this.map.GetCell(topLeftNavCellCoords).ParentQuadTile;
-            IQuadTile bottomRightQuadTile = this.map.GetCell(bottomRightNavCellCoords).ParentQuadTile;
+            RCIntVector bottomRightNavCellCoords = new RCIntVector(Math.Min(this.Map.CellSize.X - 1, cellWindow.Right - 1), Math.Min(this.Map.CellSize.Y - 1, cellWindow.Bottom - 1));
+            IQuadTile topLeftQuadTile = this.Map.GetCell(topLeftNavCellCoords).ParentQuadTile;
+            IQuadTile bottomRightQuadTile = this.Map.GetCell(bottomRightNavCellCoords).ParentQuadTile;
 
             for (int x = topLeftQuadTile.MapCoords.X; x <= bottomRightQuadTile.MapCoords.X; x++)
             {
                 for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
                 {
-                    IIsoTile isotile = this.map.GetQuadTile(new RCIntVector(x, y)).IsoTile;
+                    IIsoTile isotile = this.Map.GetQuadTile(new RCIntVector(x, y)).IsoTile;
                     if (tmpIsoTileList.Contains(isotile)) { continue; }
 
                     tmpIsoTileList.Add(isotile);
@@ -70,7 +63,7 @@ namespace RC.App.BizLogic.Core
                 {
                     for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
                     {
-                        IQuadTile quadTile = this.map.GetQuadTile(new RCIntVector(x, y));
+                        IQuadTile quadTile = this.Map.GetQuadTile(new RCIntVector(x, y));
                         for (int row = 0; row < quadTile.CellSize.Y; row++)
                         {
                             IIsoTile isotile = quadTile.GetCell(new RCIntVector(0, row)).ParentIsoTile;
@@ -92,7 +85,7 @@ namespace RC.App.BizLogic.Core
                 {
                     for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
                     {
-                        IQuadTile quadTile = this.map.GetQuadTile(new RCIntVector(x, y));
+                        IQuadTile quadTile = this.Map.GetQuadTile(new RCIntVector(x, y));
                         for (int row = 0; row < quadTile.CellSize.Y; row++)
                         {
                             IIsoTile isotile = quadTile.GetCell(new RCIntVector(quadTile.CellSize.X - 1, row)).ParentIsoTile;
@@ -122,16 +115,14 @@ namespace RC.App.BizLogic.Core
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(position)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-            
-            RCIntRectangle cellWindow = new RCIntRectangle(displayedArea.X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                           displayedArea.Y / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                           (displayedArea.Right - 1) / BizLogicConstants.PIXEL_PER_NAVCELL - displayedArea.X / BizLogicConstants.PIXEL_PER_NAVCELL + 1,
-                                                           (displayedArea.Bottom - 1) / BizLogicConstants.PIXEL_PER_NAVCELL - displayedArea.Y / BizLogicConstants.PIXEL_PER_NAVCELL + 1);
-            RCIntVector displayOffset = new RCIntVector(displayedArea.X % BizLogicConstants.PIXEL_PER_NAVCELL, displayedArea.Y % BizLogicConstants.PIXEL_PER_NAVCELL);
+
+            RCIntRectangle cellWindow;
+            RCIntVector displayOffset;
+            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            IIsoTile isotile = this.map.GetCell(navCellCoords).ParentIsoTile;
+            IIsoTile isotile = this.Map.GetCell(navCellCoords).ParentIsoTile;
             return (isotile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
                  * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
                  - displayOffset;
@@ -143,14 +134,12 @@ namespace RC.App.BizLogic.Core
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
 
-            RCIntRectangle cellWindow = new RCIntRectangle(displayedArea.X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                           displayedArea.Y / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                           (displayedArea.Right - 1) / BizLogicConstants.PIXEL_PER_NAVCELL - displayedArea.X / BizLogicConstants.PIXEL_PER_NAVCELL + 1,
-                                                           (displayedArea.Bottom - 1) / BizLogicConstants.PIXEL_PER_NAVCELL - displayedArea.Y / BizLogicConstants.PIXEL_PER_NAVCELL + 1);
-            RCIntVector displayOffset = new RCIntVector(displayedArea.X % BizLogicConstants.PIXEL_PER_NAVCELL, displayedArea.Y % BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntRectangle cellWindow;
+            RCIntVector displayOffset;
+            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             List<MapSpriteInstance> retList = new List<MapSpriteInstance>();
-            HashSet<ITerrainObject> visibleTerrainObjects = this.map.TerrainObjects.GetContents(
+            HashSet<ITerrainObject> visibleTerrainObjects = this.Map.TerrainObjects.GetContents(
                 new RCNumRectangle(cellWindow.X - (RCNumber)1/(RCNumber)2,
                                    cellWindow.Y - (RCNumber)1/(RCNumber)2,
                                    cellWindow.Width,
@@ -160,7 +149,7 @@ namespace RC.App.BizLogic.Core
                 retList.Add(new MapSpriteInstance()
                 {
                     Index = terrainObj.Type.Index,
-                    DisplayCoords = (this.map.QuadToCellRect(new RCIntRectangle(terrainObj.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
+                    DisplayCoords = (this.Map.QuadToCellRect(new RCIntRectangle(terrainObj.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
                                   * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
                                   - displayOffset
                 });
@@ -176,20 +165,18 @@ namespace RC.App.BizLogic.Core
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(position)) { throw new ArgumentOutOfRangeException("displayedArea"); }
 
-            RCIntRectangle cellWindow = new RCIntRectangle(displayedArea.X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                           displayedArea.Y / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                           (displayedArea.Right - 1) / BizLogicConstants.PIXEL_PER_NAVCELL - displayedArea.X / BizLogicConstants.PIXEL_PER_NAVCELL + 1,
-                                                           (displayedArea.Bottom - 1) / BizLogicConstants.PIXEL_PER_NAVCELL - displayedArea.Y / BizLogicConstants.PIXEL_PER_NAVCELL + 1);
-            RCIntVector displayOffset = new RCIntVector(displayedArea.X % BizLogicConstants.PIXEL_PER_NAVCELL, displayedArea.Y % BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntRectangle cellWindow;
+            RCIntVector displayOffset;
+            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            IQuadTile quadTileAtPos = this.map.GetCell(navCellCoords).ParentQuadTile;
-            foreach (ITerrainObject objToCheck in this.map.TerrainObjects.GetContents(navCellCoords))
+            IQuadTile quadTileAtPos = this.Map.GetCell(navCellCoords).ParentQuadTile;
+            foreach (ITerrainObject objToCheck in this.Map.TerrainObjects.GetContents(navCellCoords))
             {
                 if (!objToCheck.Type.IsExcluded(quadTileAtPos.MapCoords - objToCheck.MapCoords))
                 {
-                    return (this.map.QuadToCellRect(new RCIntRectangle(objToCheck.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
+                    return (this.Map.QuadToCellRect(new RCIntRectangle(objToCheck.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
                          * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
                          - displayOffset;
                 }
@@ -199,10 +186,5 @@ namespace RC.App.BizLogic.Core
         }
 
         #endregion IMapTerrainView methods
-
-        /// <summary>
-        /// The subject of this view.
-        /// </summary>
-        private IMapAccess map;
     }
 }

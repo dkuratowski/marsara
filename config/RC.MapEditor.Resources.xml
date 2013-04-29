@@ -30,12 +30,12 @@
 	    <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
-    <resource namespace="RC.App.Sprites" name="IsotileHighlighted" loader="SpriteLoader">
+    <resource namespace="RC.MapEditor.Sprites" name="IsotileHighlighted" loader="SpriteLoader">
       <path name="imageFile">../sprites/controls/isotile_highlighted.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
-    <resource namespace="RC.App.Sprites" name="IsotileNormal" loader="SpriteLoader">
+    <resource namespace="RC.MapEditor.Sprites" name="IsotileNormal" loader="SpriteLoader">
       <path name="imageFile">../sprites/controls/isotile_normal.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>

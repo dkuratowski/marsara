@@ -70,14 +70,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\BizLogicConstants.cs" />
+    <Compile Include="Core\GameplayBE.cs" />
     <Compile Include="Core\MapEditorBE.cs" />
+    <Compile Include="Core\MapObjectView.cs" />
     <Compile Include="Core\MapTerrainView.cs" />
+    <Compile Include="Core\MapViewBase.cs" />
     <Compile Include="Core\TerrainObjectPlacementView.cs" />
     <Compile Include="Core\TileSetStore.cs" />
     <Compile Include="Core\TileSetView.cs" />
     <Compile Include="InternalInterfaces\ITileSetStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PublicInterfaces\IGameplayBE.cs" />
     <Compile Include="PublicInterfaces\IMapEditorBE.cs" />
+    <Compile Include="PublicInterfaces\IMapObjectView.cs" />
     <Compile Include="PublicInterfaces\IMapTerrainView.cs" />
     <Compile Include="PublicInterfaces\IMapView.cs" />
     <Compile Include="PublicInterfaces\IObjectPlacementView.cs" />
@@ -94,6 +99,10 @@
     <ProjectReference Include="..\RC.Engine.Maps\RC.Engine.Maps.csproj">
       <Project>{2B1355DC-847B-4617-94AD-5423BC538B20}</Project>
       <Name>RC.Engine.Maps</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.Engine.Scenarios\RC.Engine.Scenarios.csproj">
+      <Project>{2B041172-C0FC-42DB-A344-079F40491FE5}</Project>
+      <Name>RC.Engine.Scenarios</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

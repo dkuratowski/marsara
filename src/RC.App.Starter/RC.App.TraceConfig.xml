@@ -14,6 +14,10 @@
   <activateTraceFilters pattern="RC.Engine.Maps.Warning" />
   <activateTraceFilters pattern="RC.Engine.Maps.Info" />
   <activateTraceFilters pattern="RC.Engine.Maps.Details" />
+  <activateTraceFilters pattern="RC.Engine.Scenarios.Error" />
+  <activateTraceFilters pattern="RC.Engine.Scenarios.Warning" />
+  <activateTraceFilters pattern="RC.Engine.Scenarios.Info" />
+  <activateTraceFilters pattern="RC.Engine.Scenarios.Details" />
   <activateTraceFilters pattern="RC.Common.ComponentMgr.Info" />
   <activateTraceFilters pattern="RC.App.PresLogic.Info" />
   <activateTraceFilters pattern="RC.App.BizLogic.Info" />

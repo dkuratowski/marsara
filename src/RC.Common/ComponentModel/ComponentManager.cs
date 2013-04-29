@@ -221,7 +221,7 @@ namespace RC.Common.ComponentModel
                     if (compAttr == null) { continue; }
                     if (startedComponents.ContainsKey(compAttr.Name)) { continue; }
 
-                    CreateComponentInstance(compAttr.Name, type);
+                    if (components.Contains(compAttr.Name)) { CreateComponentInstance(compAttr.Name, type); }
                 }
             }
             else

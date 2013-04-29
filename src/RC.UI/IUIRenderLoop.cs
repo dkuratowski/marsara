@@ -193,6 +193,17 @@ namespace RC.UI
             this.RenderString_i(str, position, textboxSize, alignment);
         }
 
+        /// <see cref="IUIRenderContext.RenderRectangle"/>
+        public void RenderRectangle(UISprite brush, RCIntRectangle rect)
+        {
+            if (this.objectDisposed) { throw new ObjectDisposedException("UIRenderLoopBase"); }
+            if (!this.isRendering) { throw new UIException("Access denied on screen render context!"); }
+            if (brush == null) { throw new ArgumentNullException("brush"); }
+            if (rect == RCIntRectangle.Undefined) { throw new ArgumentNullException("rect"); }
+
+            this.RenderRectangle_i(brush, rect);
+        }
+
         /// <see cref="IUIRenderContext.Clip"/>
         public RCIntRectangle Clip
         {
@@ -227,6 +238,9 @@ namespace RC.UI
 
         /// <see cref="IUIRenderContext.RenderString"/>
         protected abstract void RenderString_i(UIString str, RCIntVector position, RCIntVector textboxSize, UIStringAlignment alignment);
+
+        /// <see cref="IUIRenderContext.RenderRectangle"/>
+        protected abstract void RenderRectangle_i(UISprite brush, RCIntRectangle rect);
 
         #endregion IUIRenderContext implementations
 

@@ -82,6 +82,7 @@ namespace RC.App.PresLogic.Pages
             if (sender == this.okButtonPanel.NavigationButton)
             {
                 /// TODO: start countdown and begin the game
+                this.NavigateToPage("Gameplay");
             }
             else if (sender == this.cancelButtonPanel.NavigationButton)
             {

@@ -23,7 +23,7 @@ namespace RC.Engine.DrawTerrain.Test
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            ComponentManager.RegisterComponents("RC.Engine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+            ComponentManager.RegisterComponents("RC.Engine.Maps, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                                                 new string[3] { "RC.Engine.Maps.TileSetLoader", "RC.Engine.Maps.MapLoader", "RC.Engine.Maps.MapEditor" });
             ComponentManager.StartComponents();
 
@@ -32,7 +32,7 @@ namespace RC.Engine.DrawTerrain.Test
             this.mapEditor = ComponentManager.GetInterface<IMapEditor>();
 
             /// TODO: this is a hack!
-            FileInfo tilesetFile = new FileInfo("../../../../tilesets_raw/test/test.xml");
+            FileInfo tilesetFile = new FileInfo("../../../../tilesets/test/test.xml");
             string xmlStr = File.ReadAllText(tilesetFile.FullName);
             string imageDir = tilesetFile.DirectoryName;
             RCPackage tilesetPackage = RCPackage.CreateCustomDataPackage(PackageFormats.TILESET_FORMAT);

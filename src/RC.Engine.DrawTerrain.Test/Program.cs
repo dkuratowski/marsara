@@ -17,7 +17,7 @@ namespace RC.Engine.DrawTerrain.Test
         [STAThread]
         static void Main()
         {
-            //FileInfo tilesetFile = new FileInfo("../../../../tilesets_raw/test/test.xml");
+            //FileInfo tilesetFile = new FileInfo("../../../../tilesets/test/test.xml");
             //TileSet tileset = XmlTileSetReader.Read(tilesetFile.FullName);
             //IsoDraw draw = new IsoDraw();
             //foreach (TileType type in tileset.TileTypes)

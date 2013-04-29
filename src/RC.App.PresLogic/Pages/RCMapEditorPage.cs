@@ -53,9 +53,8 @@ namespace RC.App.PresLogic.Pages
         private RCMapEditorPage() : base()
         {
             this.mapEditorBE = ComponentManager.GetInterface<IMapEditorBE>();
-            this.currMapScrollDir = MapScrollDirection.NoScroll;
-            this.timeSinceLastScroll = 0;
             this.activatorBtn = UIMouseButton.Undefined;
+            this.scrollHandler = null;
         }
 
         #region RCMapEditorPage state handling
@@ -104,12 +103,15 @@ namespace RC.App.PresLogic.Pages
             this.tilesetView = this.mapEditorBE.CreateTileSetView();
 
             /// Create the map display control.
-            this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize, mapTerrainView, tilesetView);
+            this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize, this.mapTerrainView, this.tilesetView);
             this.isotileDisplayEx = new RCIsoTileDisplay(this.mapDisplayBasic, this.mapTerrainView);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.isotileDisplayEx, this.mapTerrainView);
             this.mapDisplay = this.objectPlacementDisplayEx;
             this.mapDisplay.Started += this.OnMapDisplayStarted;
             this.mapDisplay.Start();
+
+            /// Create the scroll handler for the map display.
+            this.scrollHandler = new ScrollHandler(this, this.mapDisplay);
         }
 
         /// <summary>
@@ -124,7 +126,7 @@ namespace RC.App.PresLogic.Pages
             this.AttachSensitive(this.mapDisplay);
 
             /// Subscribe to the events of the appropriate mouse sensors.
-            this.MouseSensor.Move += this.OnMouseMoveOverPage;
+            this.scrollHandler.ActivateMouseHandling();
             this.mapDisplay.MouseSensor.Move += this.OnMouseMoveOverDisplay;
             this.mapDisplay.MouseSensor.ButtonDown += this.OnMouseDown;
             this.mapDisplay.MouseSensor.ButtonUp += this.OnMouseUp;
@@ -231,7 +233,7 @@ namespace RC.App.PresLogic.Pages
         /// <param name="sender">Reference to the button.</param>
         private void OnExitPressed(UISensitiveObject sender)
         {
-            this.MouseSensor.Move -= this.OnMouseMoveOverPage;
+            this.scrollHandler.DeactivateMouseHandling();
             this.mapDisplay.MouseSensor.ButtonDown -= this.OnMouseDown;
             this.mapDisplay.MouseSensor.ButtonUp -= this.OnMouseUp;
             this.mapDisplay.MouseSensor.Move -= this.OnMouseMoveOverDisplay;
@@ -247,40 +249,6 @@ namespace RC.App.PresLogic.Pages
         #endregion RCMapEditorPanel event handlers
 
         #region Mouse event handlers
-
-        /// <summary>
-        /// Called when the mouse cursor is moved over the area of the page.
-        /// </summary>
-        private void OnMouseMoveOverPage(UISensitiveObject sender, UIMouseEventArgs evtArgs)
-        {
-            MapScrollDirection newScrollDir = MapScrollDirection.NoScroll;
-
-            if (evtArgs.Position.X == 0 || evtArgs.Position.X == this.Range.Width - 1 ||
-                evtArgs.Position.Y == 0 || evtArgs.Position.Y == this.Range.Height - 1)
-            {
-                if (evtArgs.Position.X == 0 && evtArgs.Position.Y == 0) { newScrollDir = MapScrollDirection.NorthWest; }
-                else if (evtArgs.Position.X == this.Range.Width - 1 && evtArgs.Position.Y == 0) { newScrollDir = MapScrollDirection.NorthEast; }
-                else if (evtArgs.Position.X == this.Range.Width - 1 && evtArgs.Position.Y == this.Range.Height - 1) { newScrollDir = MapScrollDirection.SouthEast; }
-                else if (evtArgs.Position.X == 0 && evtArgs.Position.Y == this.Range.Height - 1) { newScrollDir = MapScrollDirection.SouthWest; }
-                else if (evtArgs.Position.X == 0) { newScrollDir = MapScrollDirection.West; }
-                else if (evtArgs.Position.X == this.Range.Width - 1) { newScrollDir = MapScrollDirection.East; }
-                else if (evtArgs.Position.Y == 0) { newScrollDir = MapScrollDirection.North; }
-                else if (evtArgs.Position.Y == this.Range.Height - 1) { newScrollDir = MapScrollDirection.South; }
-            }
-
-            if (this.currMapScrollDir != newScrollDir)
-            {
-                this.currMapScrollDir = newScrollDir;
-                if (this.currMapScrollDir != MapScrollDirection.NoScroll)
-                {
-                    UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
-                }
-                else
-                {
-                    UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
-                }
-            }
-        }
         
         /// <summary>
         /// Called when the mouse cursor is moved over the area of the map display control.
@@ -302,27 +270,6 @@ namespace RC.App.PresLogic.Pages
                             this.mapDisplayBasic.TerrainObjectSprites);
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// This method is called on every frame update.
-        /// </summary>
-        /// <param name="evtArgs">Contains timing informations.</param>
-        private void OnFrameUpdate(UIUpdateSystemEventArgs evtArgs)
-        {
-            this.timeSinceLastScroll += evtArgs.TimeSinceLastUpdate;
-            if (this.timeSinceLastScroll > TIME_BETWEEN_MAP_SCROLLS)
-            {
-                this.timeSinceLastScroll = 0;
-                if (this.currMapScrollDir == MapScrollDirection.North) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(0, -PIXELS_PER_SCROLLS)); }
-                if (this.currMapScrollDir == MapScrollDirection.NorthEast) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(PIXELS_PER_SCROLLS, -PIXELS_PER_SCROLLS)); }
-                if (this.currMapScrollDir == MapScrollDirection.East) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(PIXELS_PER_SCROLLS, 0)); }
-                if (this.currMapScrollDir == MapScrollDirection.SouthEast) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(PIXELS_PER_SCROLLS, PIXELS_PER_SCROLLS)); }
-                if (this.currMapScrollDir == MapScrollDirection.South) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(0, PIXELS_PER_SCROLLS)); }
-                if (this.currMapScrollDir == MapScrollDirection.SouthWest) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-PIXELS_PER_SCROLLS, PIXELS_PER_SCROLLS)); }
-                if (this.currMapScrollDir == MapScrollDirection.West) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-PIXELS_PER_SCROLLS, 0)); }
-                if (this.currMapScrollDir == MapScrollDirection.NorthWest) { this.mapDisplay.ScrollTo(this.mapDisplay.DisplayedArea.Location + new RCIntVector(-PIXELS_PER_SCROLLS, -PIXELS_PER_SCROLLS)); }
             }
         }
 
@@ -429,29 +376,14 @@ namespace RC.App.PresLogic.Pages
         private IUIBackgroundTask loadMapTask;
 
         /// <summary>
-        /// The current scrolling direction.
-        /// </summary>
-        private MapScrollDirection currMapScrollDir;
-
-        /// <summary>
-        /// Elapsed time since last scroll in milliseconds.
-        /// </summary>
-        private int timeSinceLastScroll;
-
-        /// <summary>
         /// The UIMouseButton that activated the mouse sensor of the map display.
         /// </summary>
         private UIMouseButton activatorBtn;
 
         /// <summary>
-        /// The time between map-scrolling operations.
+        /// Reference to the object that controls the scrolling of the map display.
         /// </summary>
-        private const int TIME_BETWEEN_MAP_SCROLLS = 20;
-
-        /// <summary>
-        /// The number of pixels to scroll in map-scrolling operations.
-        /// </summary>
-        private const int PIXELS_PER_SCROLLS = 5;
+        private ScrollHandler scrollHandler;
 
         #region Map editor settings
 

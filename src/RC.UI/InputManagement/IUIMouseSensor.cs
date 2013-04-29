@@ -101,6 +101,7 @@ namespace RC.UI
         {
             this.activatorButton = UIMouseButton.Undefined;
             this.activeOver = false;
+            this.StopDoubleClickTimer();
             this.targetObject.ResetState();
         }
 
@@ -111,10 +112,26 @@ namespace RC.UI
         /// </summary>
         public void OnButtonDown(RCIntVector absPosition, UIMouseButton whichButton)
         {
+            bool raiseDoubleClickEvt = false;
             if (this.activatorButton == UIMouseButton.Undefined)
             {
                 this.activatorButton = whichButton;
                 this.activeOver = true;
+
+                if (this.doubleClickButton == UIMouseButton.Undefined)
+                {
+                    /// Start double-click timer.
+                    this.doubleClickButton = whichButton;
+                    this.doubleClickStartPos = absPosition;
+                    this.doubleClickTimer = 0;
+                    UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                }
+                else if (this.doubleClickButton == whichButton && this.doubleClickStartPos == absPosition)
+                {
+                    /// Double-click happened.
+                    raiseDoubleClickEvt = true;
+                    this.StopDoubleClickTimer();
+                }
             }
 
             if (this.ButtonDown != null)
@@ -123,6 +140,13 @@ namespace RC.UI
                                                                 whichButton);
                 this.ButtonDown(this.targetObject, evtArgs);
             }
+
+            if (raiseDoubleClickEvt && this.DoubleClick != null)
+            {
+                UIMouseEventArgs evtArgs = new UIMouseEventArgs(this.targetObject.TransformAbsToLocal(absPosition),
+                                                                whichButton);
+                this.DoubleClick(this.targetObject, evtArgs);
+            }
         }
 
         /// <summary>
@@ -130,6 +154,7 @@ namespace RC.UI
         /// </summary>
         public void OnButtonUp(RCIntVector absPosition, UIMouseButton whichButton)
         {
+            bool wasActiveOver = this.activeOver;
             if (this.activatorButton == whichButton)
             {
                 this.activatorButton = UIMouseButton.Undefined;
@@ -141,6 +166,13 @@ namespace RC.UI
                 UIMouseEventArgs evtArgs = new UIMouseEventArgs(this.targetObject.TransformAbsToLocal(absPosition),
                                                                 whichButton);
                 this.ButtonUp(this.targetObject, evtArgs);
+            }
+
+            if (this.Click != null && wasActiveOver)
+            {
+                UIMouseEventArgs evtArgs = new UIMouseEventArgs(this.targetObject.TransformAbsToLocal(absPosition),
+                                                                whichButton);
+                this.Click(this.targetObject, evtArgs);
             }
         }
 
@@ -154,6 +186,7 @@ namespace RC.UI
                 this.activeOver = true;
             }
 
+            this.StopDoubleClickTimer();
             if (this.Enter != null) { this.Enter(this.targetObject); }
         }
 
@@ -167,6 +200,7 @@ namespace RC.UI
                 this.activeOver = false;
             }
 
+            this.StopDoubleClickTimer();
             if (this.Leave != null) { this.Leave(this.targetObject); }
         }
 
@@ -175,6 +209,7 @@ namespace RC.UI
         /// </summary>
         public void OnMove(RCIntVector absPosition)
         {
+            this.StopDoubleClickTimer();
             if (this.Move != null)
             {
                 UIMouseEventArgs evtArgs = new UIMouseEventArgs(this.targetObject.TransformAbsToLocal(absPosition));
@@ -187,6 +222,7 @@ namespace RC.UI
         /// </summary>
         public void OnWheel(RCIntVector absPosition, int wheelDelta)
         {
+            this.StopDoubleClickTimer();
             if (this.Wheel != null)
             {
                 UIMouseEventArgs evtArgs = new UIMouseEventArgs(this.targetObject.TransformAbsToLocal(absPosition),
@@ -291,6 +327,31 @@ namespace RC.UI
         #region Private fields
 
         /// <summary>
+        /// Called on every frame update if the double-click timer is running.
+        /// </summary>
+        /// <param name="evtArgs">Contains timing informations.</param>
+        private void OnFrameUpdate(UIUpdateSystemEventArgs evtArgs)
+        {
+            this.doubleClickTimer += evtArgs.TimeSinceLastUpdate;
+            if (this.doubleClickTimer > DOUBLE_CLICK_TIME)
+            {
+                /// Double-click time elapsed.
+                this.StopDoubleClickTimer();
+            }
+        }
+
+        /// <summary>
+        /// Stops the double-click timer.
+        /// </summary>
+        private void StopDoubleClickTimer()
+        {
+            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+            this.doubleClickTimer = 0;
+            this.doubleClickButton = UIMouseButton.Undefined;
+            this.doubleClickStartPos = RCIntVector.Undefined;
+        }
+
+        /// <summary>
         /// Reference to the target UISensitiveObject of this sensor.
         /// </summary>
         private UISensitiveObject targetObject;
@@ -305,6 +366,27 @@ namespace RC.UI
         /// of this sensor or not.
         /// </summary>
         private bool activeOver;
+
+        /// <summary>
+        /// Timer for raising double-click events.
+        /// </summary>
+        private int doubleClickTimer;
+
+        /// <summary>
+        /// Stores the mouse button that will raise the double-click event if pressed another once.
+        /// </summary>
+        private UIMouseButton doubleClickButton;
+
+        /// <summary>
+        /// Stores the absolute position of the mouse when the double-click timer has been started, or
+        /// RCIntVector.Undefined if no double-click timer is running.
+        /// </summary>
+        private RCIntVector doubleClickStartPos;
+
+        /// <summary>
+        /// The maximum time between clicks that raises a double-click event.
+        /// </summary>
+        private const int DOUBLE_CLICK_TIME = 400;
 
         #endregion Private fields
     }

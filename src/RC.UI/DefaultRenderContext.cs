@@ -142,6 +142,27 @@ namespace RC.UI
             throw new NotImplementedException();
         }
 
+        /// <see cref="IUIRenderContext.RenderRectangle"/>
+        public void RenderRectangle(UISprite brush, RCIntRectangle rect)
+        {
+            if (!this.enabled) { throw new InvalidOperationException("Render context is not enabled!"); }
+            if (brush == null) { throw new ArgumentNullException("brush"); }
+            if (rect == RCIntRectangle.Undefined) { throw new ArgumentNullException("rect"); }
+
+            /// Render only if target object is not clipped
+            if (this.absClipRectCache.Value != RCIntRectangle.Undefined)
+            {
+                /// Top
+                this.RenderSprite(brush, rect.Location, new RCIntRectangle(0, 0, rect.Width, brush.Size.Y));
+                /// Right
+                this.RenderSprite(brush, new RCIntVector(rect.Right - brush.Size.X, rect.Top), new RCIntRectangle(0, 0, brush.Size.X, rect.Height));
+                /// Bottom
+                this.RenderSprite(brush, new RCIntVector(rect.Left, rect.Bottom - brush.Size.Y), new RCIntRectangle(0, 0, rect.Width, brush.Size.Y));
+                /// Left
+                this.RenderSprite(brush, new RCIntVector(rect.Left, rect.Top), new RCIntRectangle(0, 0, brush.Size.X, rect.Height));
+            }
+        }
+
         /// <see cref="IUIRenderContext.Clip"/>
         public RCIntRectangle Clip
         {

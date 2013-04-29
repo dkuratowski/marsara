@@ -13,7 +13,7 @@ namespace RC.App.PresLogic.Controls
     /// <summary>
     /// Defines the interface of a map display control.
     /// </summary>
-    public abstract class RCMapDisplay : UISensitiveObject
+    public abstract class RCMapDisplay : UISensitiveObject, IScrollableControl
     {
         /// <summary>
         /// Constructs a map display control at the given position with the given size.
@@ -33,13 +33,9 @@ namespace RC.App.PresLogic.Controls
             this.map = map;
         }
 
-        #region Public interface
+        #region IScrollableControl methods
 
-        /// <summary>
-        /// Scrolls this map display to the given position.
-        /// </summary>
-        /// <param name="where">The top-left corner of the displayed area in pixels.</param>
-        /// <remarks>The displayed area will automatically be corrected not to exceed the borders of the map.</remarks>
+        /// <see cref="IScrollableControl.ScrollTo"/>
         public void ScrollTo(RCIntVector where)
         {
             if (!this.isStarted || this.backgroundTask != null) { throw new InvalidOperationException("The map display has been stopped or is currently being stopped!"); }
@@ -47,6 +43,13 @@ namespace RC.App.PresLogic.Controls
 
             this.ScrollTo_i(where);
         }
+
+        /// <see cref="IScrollableControl.DisplayedArea"/>
+        public RCIntRectangle DisplayedArea { get { return this.displayedArea; } }
+
+        #endregion IScrollableControl methods
+
+        #region Public interface
 
         /// <summary>
         /// Starts displaying the map.
@@ -83,11 +86,6 @@ namespace RC.App.PresLogic.Controls
                 throw (Exception)message;
             };
         }
-
-        /// <summary>
-        /// Gets the displayed area of the map in pixels or RCIntRectangle.Undefined if this map display is stopped.
-        /// </summary>
-        public RCIntRectangle DisplayedArea { get { return this.displayedArea; } }
 
         /// <summary>
         /// Raised when this map display control has been started.

@@ -77,6 +77,13 @@ namespace RC.UI
         void RenderString(UIString str, RCIntVector position, RCIntVector textboxSize, UIStringAlignment alignment);
 
         /// <summary>
+        /// Renders an unfilled rectangle at the given position using the given sprite as a brush.
+        /// </summary>
+        /// <param name="brush">The brush to use for rendering the rectangle.</param>
+        /// <param name="rect">The position of the rectangle in the coordinate-system of the render context.</param>
+        void RenderRectangle(UISprite brush, RCIntRectangle rect);
+
+        /// <summary>
         /// Gets the clip rectangle of the current render operations in the coordinate-system of the render context.
         /// Render operations effects only the area inside this rectangle.
         /// You can define additional constraint by using the setter or turn off that constraint by using the setter

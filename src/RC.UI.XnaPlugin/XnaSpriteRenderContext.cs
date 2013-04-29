@@ -120,6 +120,14 @@ namespace RC.UI.XnaPlugin
             throw new NotImplementedException(); // TODO: implement this method
         }
 
+        /// <see cref="IUIRenderContext.RenderRectangle"/>
+        public void RenderRectangle(UISprite brush, RCIntRectangle rect)
+        {
+            if (this.isClosed) { throw new UIException("Render context unavailable!"); }
+
+            throw new NotImplementedException(); // TODO: implement this method
+        }
+
         /// <see cref="IUIRenderContext.Clip"/>
         public RCIntRectangle Clip
         {

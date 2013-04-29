@@ -1,3 +1,4 @@
 <constantsConfig>
-  <constant namespace="RC.App.BizLogic" name="TileSetDir" type="STRING">./tilesets_raw</constant>
+  <constant namespace="RC.App.BizLogic" name="TileSetDir" type="STRING">./tilesets</constant>
+  <constant namespace="RC.App.BizLogic" name="MapDir" type="STRING">./maps</constant>
 </constantsConfig>

@@ -95,7 +95,7 @@ namespace RC.UI.XnaPlugin
 
         #region IUIRenderContext implementations
 
-        /// <see cref="IUIRenderContext.RenderSprite_i"/>
+        /// <see cref="UIRenderLoopBase.RenderSprite_i"/>
         protected override void RenderSprite_i(UISprite sprite, RCIntVector position)
         {
             XnaSprite srcSprite = (XnaSprite)sprite;
@@ -118,7 +118,7 @@ namespace RC.UI.XnaPlugin
             }
         }
 
-        /// <see cref="IUIRenderContext.RenderSprite_i"/>
+        /// <see cref="UIRenderLoopBase.RenderSprite_i"/>
         protected override void RenderSprite_i(UISprite sprite, RCIntVector position, RCIntRectangle section)
         {
             XnaSprite srcSprite = (XnaSprite)sprite;
@@ -148,20 +148,26 @@ namespace RC.UI.XnaPlugin
             }
         }
 
-        /// <see cref="IUIRenderContext.RenderString_i"/>
+        /// <see cref="UIRenderLoopBase.RenderString_i"/>
         protected override void RenderString_i(UIString str, RCIntVector position)
         {
             throw new NotImplementedException();
         }
 
-        /// <see cref="IUIRenderContext.RenderString_i"/>
+        /// <see cref="UIRenderLoopBase.RenderString_i"/>
         protected override void RenderString_i(UIString str, RCIntVector position, int width)
         {
             throw new NotImplementedException();
         }
 
-        /// <see cref="IUIRenderContext.RenderString_i"/>
+        /// <see cref="UIRenderLoopBase.RenderString_i"/>
         protected override void RenderString_i(UIString str, RCIntVector position, RCIntVector textboxSize, UIStringAlignment alignment)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <see cref="UIRenderLoopBase.RenderRectangle_i"/>
+        protected override void RenderRectangle_i(UISprite brush, RCIntRectangle rect)
         {
             throw new NotImplementedException();
         }
@@ -178,7 +184,7 @@ namespace RC.UI.XnaPlugin
         {
             /// Compute the clipped section in the coordinate-system of the XNA-texture.
             RCIntRectangle clippedSection = new RCIntRectangle(this.Clip.Location - position + absSection.Location,
-                                                         this.Clip.Size);
+                                                               this.Clip.Size);
             clippedSection.Intersect(absSection);
 
             if (clippedSection != RCIntRectangle.Undefined)

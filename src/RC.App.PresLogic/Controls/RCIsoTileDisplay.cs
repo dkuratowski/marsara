@@ -26,8 +26,8 @@ namespace RC.App.PresLogic.Controls
 
             this.map = map;
             this.highlightIsoTile = false;
-            this.isotileHighlightedSprite = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.IsotileHighlighted");
-            this.isotileNormalSprite = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.IsotileNormal");
+            this.isotileHighlightedSprite = UIResourceManager.GetResource<UISprite>("RC.MapEditor.Sprites.IsotileHighlighted");
+            this.isotileNormalSprite = UIResourceManager.GetResource<UISprite>("RC.MapEditor.Sprites.IsotileNormal");
             this.lastKnownMousePosition = RCIntVector.Undefined;
         }
 
