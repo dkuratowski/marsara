@@ -17,9 +17,15 @@ namespace RC.App.BizLogic.PublicInterfaces
         public int Index { get; set; }
 
         /// <summary>
-        /// Suppose that we have a minimum size bounding box around the displayed isometric tile. This vector contains the coordinates
-        /// of the upper-left pixel of this bounding box in the coordinate system of the appropriate display area.
+        /// The coordinates of the upper-left pixel of the rendered part of the map sprite in the coordinate system of
+        /// the display area.
         /// </summary>
         public RCIntVector DisplayCoords { get; set; }
+
+        /// <summary>
+        /// The section of the sprite to render in the coordinate-system of the sprite or RCIntRectangle.Undefined if the
+        /// whole sprite has to be rendered.
+        /// </summary>
+        public RCIntRectangle Section { get; set; }
     }
 }

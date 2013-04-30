@@ -21,11 +21,17 @@ namespace RC.App.PresLogic.Controls
         /// Constructs an RCMapObjectDisplay extension for the given map display control.
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
-        /// <param name="map">Reference to a map view.</param>
-        public RCMapObjectDisplay(RCMapDisplay extendedControl, IMapView map)
-            : base(extendedControl, map)
+        /// <param name="mapObjectView">Reference to a map object view.</param>
+        public RCMapObjectDisplay(RCMapDisplay extendedControl, IMapObjectView mapObjectView)
+            : base(extendedControl, mapObjectView)
         {
-            this.rectBrush = null;
+            if (mapObjectView == null) { throw new ArgumentNullException("mapObjectView"); }
+
+            this.mapObjectView = mapObjectView;
+
+            this.mapObjectSprites = new MapObjectSpriteGroup();
+            this.brushPalette = new BrushPaletteSpriteGroup();
+            this.selBoxBrush = null;
             this.CurrentMouseStatus = MouseStatus.None;
             this.selectionBoxStartPosition = RCIntVector.Undefined;
             this.selectionBoxCurrPosition = RCIntVector.Undefined;
@@ -84,40 +90,72 @@ namespace RC.App.PresLogic.Controls
             this.selectionBoxCurrPosition = RCIntVector.Undefined;
         }
 
-        /// <see cref="RCMapDisplayExtension.StartExtension_i"/>
-        protected override void StartExtension_i()
-        {
-        }
-
-        /// <see cref="RCMapDisplayExtension.StopExtension_i"/>
-        protected override void StopExtension_i()
-        {
-        }
-
         /// <see cref="RCMapDisplayExtension.StartExtensionProc_i"/>
         protected override void StartExtensionProc_i()
         {
-            this.rectBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
-            this.rectBrush.Upload();
+            this.selBoxBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.selBoxBrush.Upload();
+
+            this.mapObjectSprites.Load();
+            this.brushPalette.Load();
         }
 
         /// <see cref="RCMapDisplayExtension.StopExtensionProc_i"/>
         protected override void StopExtensionProc_i()
         {
-            UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(this.rectBrush);
-            this.rectBrush = null;
+            this.mapObjectSprites.Unload();
+            this.brushPalette.Unload();
+
+            UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(this.selBoxBrush);
+            this.selBoxBrush = null;
         }
 
         /// <see cref="RCMapDisplayExtension.RenderExtension_i"/>
         protected override void RenderExtension_i(IUIRenderContext renderContext)
         {
+            /// Retrieve the list of the visible map objects.
+            List<MapObjectInstance> mapObjects = this.mapObjectView.GetVisibleMapObjects(this.DisplayedArea);
+
+            /// Render the selection indicators and the object values.
+            foreach (MapObjectInstance obj in mapObjects)
+            {
+                if (obj.SelectionIndicatorColorIdx != -1 && obj.SelectionIndicator != RCIntRectangle.Undefined)
+                {
+                    renderContext.RenderRectangle(this.brushPalette[obj.SelectionIndicatorColorIdx],
+                                                  obj.SelectionIndicator);
+                    int row = obj.SelectionIndicator.Bottom;
+                    int col = obj.SelectionIndicator.Left;
+                    foreach (Tuple<int, RCNumber> val in obj.Values)
+                    {
+                        int width = ((RCNumber)obj.SelectionIndicator.Width * val.Item2).Round();
+                        if (width > 0)
+                        {
+                            renderContext.RenderRectangle(this.brushPalette[val.Item1],
+                                                          new RCIntRectangle(col, row, width, 1));
+                        }
+                        row++;
+                    }
+                }
+            }
+
+            /// Render the object sprites.
+            foreach (MapObjectInstance obj in mapObjects)
+            {
+                renderContext.RenderSprite(this.mapObjectSprites[obj.Sprite.Index],
+                                           obj.Sprite.DisplayCoords,
+                                           obj.Sprite.Section);
+            }
+
+            /// Render the selection box if necessary.
             if (this.CurrentMouseStatus == MouseStatus.Selecting)
             {
-                renderContext.RenderRectangle(this.rectBrush, this.CalculateSelectionBox());
+                renderContext.RenderRectangle(this.selBoxBrush, this.CalculateSelectionBox());
             }
         }
 
         #endregion Overrides
+
+        #region Mouse event handling
 
         /// <summary>
         /// Enumerates the possible mouse statuses of the display.
@@ -130,8 +168,6 @@ namespace RC.App.PresLogic.Controls
             Selecting = 3,
             DoubleClicked = 4
         }
-
-        #region Mouse event handling
 
         /// <summary>
         /// Called when a mouse button has been pushed over the display.
@@ -213,7 +249,7 @@ namespace RC.App.PresLogic.Controls
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
                 this.selectionBoxCurrPosition = RCIntVector.Undefined;
             }
-            else if (this.currentMouseStatus == MouseStatus.Selecting && evtArgs.Button == UIMouseButton.Left)
+            else if (this.CurrentMouseStatus == MouseStatus.Selecting && evtArgs.Button == UIMouseButton.Left)
             {
                 this.CurrentMouseStatus = MouseStatus.None;
 
@@ -286,9 +322,19 @@ namespace RC.App.PresLogic.Controls
         }
 
         /// <summary>
-        /// The brush for drawing the selection boxes.
+        /// Brush for drawing the selection box.
         /// </summary>
-        private UISprite rectBrush;
+        private UISprite selBoxBrush;
+
+        /// <summary>
+        /// The brush palette for drawing the selection indicators and value bars of map objects.
+        /// </summary>
+        private SpriteGroup brushPalette;
+
+        /// <summary>
+        /// This sprite-group contains the sprites of the map object.
+        /// </summary>
+        private SpriteGroup mapObjectSprites;
 
         /// <summary>
         /// The current mouse status of this display.
@@ -311,5 +357,10 @@ namespace RC.App.PresLogic.Controls
         /// This flag indicates whether the mouse handing of this display is active or not.
         /// </summary>
         private bool isMouseHandlingActive;
+
+        /// <summary>
+        /// Reference to the map object view.
+        /// </summary>
+        private IMapObjectView mapObjectView;
     }
 }

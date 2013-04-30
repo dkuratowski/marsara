@@ -34,6 +34,7 @@ namespace RC.App.PresLogic.Pages
         {
             this.gameplayBE = ComponentManager.GetInterface<IGameplayBE>();
             this.mapTerrainView = null;
+            this.mapObjectView = null;
             this.tilesetView = null;
 
             this.mapDisplay = null;
@@ -83,11 +84,12 @@ namespace RC.App.PresLogic.Pages
 
             /// Create the necessary views.
             this.mapTerrainView = this.gameplayBE.CreateMapTerrainView();
+            this.mapObjectView = this.gameplayBE.CreateMapObjectView();
             this.tilesetView = this.gameplayBE.CreateTileSetView();
 
             /// Create and start the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135), this.mapTerrainView, this.tilesetView);
-            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapTerrainView);
+            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.mapObjectDisplayEx, this.mapTerrainView);
             this.mapDisplay = this.objectPlacementDisplayEx;
             this.mapDisplay.Started += this.OnMapDisplayStarted;
@@ -196,6 +198,7 @@ namespace RC.App.PresLogic.Pages
 
             /// Remove the views.
             this.mapTerrainView = null;
+            this.mapObjectView = null;
             this.tilesetView = null;
 
             /// Remove the map display control.
@@ -298,6 +301,11 @@ namespace RC.App.PresLogic.Pages
         /// Reference to the map terrain view.
         /// </summary>
         private IMapTerrainView mapTerrainView;
+
+        /// <summary>
+        /// Reference to the map object view.
+        /// </summary>
+        private IMapObjectView mapObjectView;
 
         /// <summary>
         /// Reference to the tileset view.

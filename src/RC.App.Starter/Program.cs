@@ -162,7 +162,7 @@ namespace RC.App.Starter
 
                 /// Set the page references
                 mainMenuPage.AddReference("Credits", creditsPage);
-                mainMenuPage.AddReference("Registry", registryPage);
+                mainMenuPage.AddReference("Registry", gameplayPage/*registryPage*/); // TODO: restore
                 creditsPage.AddReference("MainMenu", mainMenuPage);
                 registryPage.AddReference("MainMenu", mainMenuPage);
                 registryPage.AddReference("SelectGame", selectGamePage);

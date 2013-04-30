@@ -86,6 +86,7 @@
     <Compile Include="PublicInterfaces\IMapTerrainView.cs" />
     <Compile Include="PublicInterfaces\IMapView.cs" />
     <Compile Include="PublicInterfaces\IObjectPlacementView.cs" />
+    <Compile Include="PublicInterfaces\MapObjectInstance.cs" />
     <Compile Include="PublicInterfaces\MapSpriteInstance.cs" />
     <Compile Include="PublicInterfaces\MapSpriteType.cs" />
     <Compile Include="PublicInterfaces\ITileSetView.cs" />

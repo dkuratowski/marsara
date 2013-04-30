@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BrushPaletteSpriteGroup.cs" />
     <Compile Include="Controls\RCIsoTileDisplay.cs" />
     <Compile Include="Controls\RCDropdownSelector.cs" />
     <Compile Include="Controls\RCListBox.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Controls\RCObjectPlacementDisplay.cs" />
     <Compile Include="Controls\IScrollableControl.cs" />
     <Compile Include="IsoTileSpriteGroup.cs" />
+    <Compile Include="MapObjectSpriteGroup.cs" />
     <Compile Include="PresLogicConstants.cs" />
     <Compile Include="ScrollHandler.cs" />
     <Compile Include="Panels\RCCommandPanel.cs" />

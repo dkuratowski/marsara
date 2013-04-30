@@ -47,7 +47,10 @@ namespace RC.UI
         /// </summary>
         /// <param name="sprite">The sprite to render.</param>
         /// <param name="position">The position where to render in the coordinate-system of the render context.</param>
-        /// <param name="section">The section of the sprite to render in the coordinate-system of the sprite.</param>
+        /// <param name="section">
+        /// The section of the sprite to render in the coordinate-system of the sprite or RCIntRectangle.Undefined if
+        /// the whole sprite has to be rendered.
+        /// </param>
         void RenderSprite(UISprite sprite, RCIntVector position, RCIntRectangle section);
 
         /// <summary>

@@ -42,10 +42,15 @@ namespace RC.UI
         /// <see cref="IUIRenderContext.RenderSprite"/>
         public void RenderSprite(UISprite sprite, RCIntVector position, RCIntRectangle section)
         {
+            if (section == RCIntRectangle.Undefined)
+            {
+                this.RenderSprite(sprite, position);
+                return;
+            }
+
             if (!this.enabled) { throw new InvalidOperationException("Render context is not enabled!"); }
             if (sprite == null) { throw new ArgumentNullException("sprite"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-            if (section == RCIntRectangle.Undefined) { throw new ArgumentNullException("section"); }
             if (sprite.PixelSize != this.targetObject.AbsolutePixelScaling) { throw new InvalidOperationException("Incompatible pixel size!"); }
 
             /// Render only if target object is not clipped

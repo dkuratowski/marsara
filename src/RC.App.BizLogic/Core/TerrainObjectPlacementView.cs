@@ -49,7 +49,8 @@ namespace RC.App.BizLogic.Core
                     Index = this.terrainObjectType.Index,
                     DisplayCoords = (this.Map.QuadToCellRect(new RCIntRectangle(topLeftQuadCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
                                   * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                  - displayOffset
+                                  - displayOffset,
+                    Section = RCIntRectangle.Undefined
                 };
 
             ObjectPlacementBox placementBox = new ObjectPlacementBox()

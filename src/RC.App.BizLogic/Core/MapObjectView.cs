@@ -24,16 +24,44 @@ namespace RC.App.BizLogic.Core
 
         #region IMapObjectView methods
 
-        /// <see cref="IMapObjectView.GetVisibleObjects"/>
-        public List<MapSpriteInstance> GetVisibleObjects(RCIntRectangle displayedArea)
+        /// <see cref="IMapObjectView.GetVisibleMapObjects"/>
+        public List<MapObjectInstance> GetVisibleMapObjects(RCIntRectangle displayedArea)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <see cref="IMapObjectView.GetVisibleSelectionIndicators"/>
-        public List<RCIntRectangle> GetVisibleSelectionIndicators(RCIntRectangle displayedArea)
-        {
-            throw new NotImplementedException();
+            /// TODO: this is a dummy implementation
+            List<MapObjectInstance> retList = new List<MapObjectInstance>();
+            retList.Add(new MapObjectInstance()
+            {
+                SelectionIndicator = new RCIntRectangle(30, 42, 7, 6),
+                SelectionIndicatorColorIdx = 0,
+                Sprite = new MapSpriteInstance()
+                {
+                    DisplayCoords = new RCIntVector(30, 34),
+                    Index = 0,
+                    Section = new RCIntRectangle(5, 2, 7, 13)
+                },
+                Values = new List<Tuple<int,RCNumber>>()
+                {
+                    new Tuple<int, RCNumber>(1, (RCNumber)30/(RCNumber)100),
+                    new Tuple<int, RCNumber>(3, (RCNumber)70/(RCNumber)100)
+                }
+            });
+            retList.Add(new MapObjectInstance()
+            {
+                SelectionIndicator = new RCIntRectangle(32, 47, 7, 6),
+                SelectionIndicatorColorIdx = 1,
+                Sprite = new MapSpriteInstance()
+                {
+                    DisplayCoords = new RCIntVector(32, 39),
+                    Index = 0,
+                    Section = new RCIntRectangle(5, 2, 7, 13)
+                },
+                Values = new List<Tuple<int, RCNumber>>()
+                {
+                    new Tuple<int, RCNumber>(1, (RCNumber)60/(RCNumber)100),
+                    new Tuple<int, RCNumber>(3, (RCNumber)20/(RCNumber)100)
+                }
+            });
+            return retList;
         }
 
         #endregion IMapObjectView methods

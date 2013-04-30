@@ -72,10 +72,15 @@ namespace RC.UI.XnaPlugin
         /// <see cref="IUIRenderContext.RenderSprite"/>
         public void RenderSprite(UISprite sprite, RCIntVector position, RCIntRectangle section)
         {
+            if (section == RCIntRectangle.Undefined)
+            {
+                this.RenderSprite(sprite, position);
+                return;
+            }
+
             if (this.isClosed) { throw new UIException("Render context unavailable!"); }
             if (sprite == null) { throw new ArgumentNullException("sprite"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-            if (section == RCIntRectangle.Undefined) { throw new ArgumentNullException("section"); }
 
             XnaSprite srcSprite = (XnaSprite)sprite;
             Bitmap sectionBmp = new Bitmap(section.Width * this.targetSprite.PixelSize.X,

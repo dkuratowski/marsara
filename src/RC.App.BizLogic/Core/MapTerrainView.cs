@@ -55,7 +55,8 @@ namespace RC.App.BizLogic.Core
                             Index = isotile.Variant.Index,
                             DisplayCoords = (isotile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
                                           * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                          - displayOffset
+                                          - displayOffset,
+                            Section = RCIntRectangle.Undefined
                         });
                 }
 
@@ -76,7 +77,8 @@ namespace RC.App.BizLogic.Core
                                     Index = isotile.Variant.Index,
                                     DisplayCoords = (isotile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
                                                   * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                                  - displayOffset
+                                                  - displayOffset,
+                                    Section = RCIntRectangle.Undefined
                                 });
                         }
                     }
@@ -98,7 +100,8 @@ namespace RC.App.BizLogic.Core
                                     Index = isotile.Variant.Index,
                                     DisplayCoords = (isotile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
                                                   * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                                  - displayOffset
+                                                  - displayOffset,
+                                    Section = RCIntRectangle.Undefined
                                 });
                         }
                     }
@@ -151,7 +154,8 @@ namespace RC.App.BizLogic.Core
                     Index = terrainObj.Type.Index,
                     DisplayCoords = (this.Map.QuadToCellRect(new RCIntRectangle(terrainObj.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
                                   * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                  - displayOffset
+                                  - displayOffset,
+                    Section = RCIntRectangle.Undefined
                 });
             }
             return retList;

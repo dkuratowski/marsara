@@ -148,11 +148,16 @@ namespace RC.UI
         /// <see cref="IUIRenderContext.RenderSprite"/>
         public void RenderSprite(UISprite sprite, RCIntVector position, RCIntRectangle section)
         {
+            if (section == RCIntRectangle.Undefined)
+            {
+                this.RenderSprite(sprite, position);
+                return;
+            }
+
             if (this.objectDisposed) { throw new ObjectDisposedException("UIRenderLoopBase"); }
             if (!this.isRendering) { throw new UIException("Access denied on screen render context!"); }
             if (sprite == null) { throw new ArgumentNullException("sprite"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-            if (section == RCIntRectangle.Undefined) { throw new ArgumentNullException("section"); }
 
             this.RenderSprite_i(sprite, position, section);
         }
