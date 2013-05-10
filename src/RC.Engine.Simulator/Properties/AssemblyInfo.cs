@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RC.Engine.Scenarios")]
+[assembly: AssemblyTitle("RC.Engine.Simulator")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Evosoft")]
-[assembly: AssemblyProduct("RC.Engine.Scenarios")]
+[assembly: AssemblyProduct("RC.Engine.Simulator")]
 [assembly: AssemblyCopyright("Copyright © Evosoft 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

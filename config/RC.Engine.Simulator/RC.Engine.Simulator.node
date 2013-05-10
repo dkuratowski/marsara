@@ -5,20 +5,20 @@
   </configNodeReferences>
 
   <configObjects>
-    <configObject namespace="RC.Engine.Scenarios" name="Constants">
+    <configObject namespace="RC.Engine.Simulator" name="Constants">
       <loader>
         <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
         <class>RC.Common.Configuration.ConstantsLoader</class>
       </loader>
-      <contents>RC.Engine.Scenarios.ConstantsConfig.xml</contents>
+      <contents>RC.Engine.Simulator.ConstantsConfig.xml</contents>
     </configObject>
 
-    <configObject namespace="RC.Engine.Scenarios" name="TraceConfig">
+    <configObject namespace="RC.Engine.Simulator" name="TraceConfig">
       <loader>
         <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
         <class>RC.Common.Configuration.TraceConfigLoader</class>
       </loader>
-      <contents>RC.Engine.Scenarios.TraceConfig.xml</contents>
+      <contents>RC.Engine.Simulator.TraceConfig.xml</contents>
     </configObject>
   </configObjects>
 </configNode>

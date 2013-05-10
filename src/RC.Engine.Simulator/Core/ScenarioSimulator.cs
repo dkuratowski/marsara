@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common.ComponentModel;
-using RC.Engine.Scenarios.ComponentInterfaces;
+using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Maps.PublicInterfaces;
 
-namespace RC.Engine.Scenarios.Core
+namespace RC.Engine.Simulator.Core
 {
     /// <summary>
     /// Implementation of the scenario simulator component.
     /// </summary>
-    [Component("RC.Engine.Scenarios.ScenarioSimulator")]
+    [Component("RC.Engine.Simulator.ScenarioSimulator")]
     class ScenarioSimulator : IScenarioSimulator
     {
         /// <summary>

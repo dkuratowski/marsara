@@ -12,6 +12,9 @@ using System.Drawing.Imaging;
 using RC.Common.ComponentModel;
 using RC.Engine.Maps.Core;
 using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Core;
+using RC.Engine.Simulator.InternalInterfaces;
+using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.Engine.Test
 {
@@ -19,7 +22,8 @@ namespace RC.Engine.Test
     {
         static void Main(string[] args)
         {
-            ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");            
+            TestSimulationHeap();
+            //ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");            
 
             //ComponentManager.RegisterComponents("RC.Engine.Test, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
             //                                    new string[3] { "C0", "C1", "C2" });
@@ -66,6 +70,74 @@ namespace RC.Engine.Test
 
             Console.WriteLine("Ready!");
             Console.ReadLine();
+        }
+
+        static void TestSimulationHeap()
+        {
+            Dictionary<string, Dictionary<string, string>> testMetadata = new Dictionary<string, Dictionary<string, string>>()
+            {
+                {
+                    "Unit",
+                    new Dictionary<string, string>
+                    {
+                        { "HitPoints", "short" },
+                        { "TestArray", "int*" },
+                        { "TestPtrArray", "Building**" },
+                        { "TestPtr", "Building*" },
+                    }
+                },
+                {
+                    "Building",
+                    new Dictionary<string, string>
+                    {
+                        { "HitPoints", "short" },
+                        { "BuildStatus", "short" },
+                    }
+                }
+            };
+
+            ISimulationHeap heap = new SimulationHeap(1024);
+            ISimulationHeapMgr heapMgr = new SimulationHeapMgr(heap, testMetadata);
+
+            int UNIT_TID = heapMgr.GetTypeID("Unit");
+            int UNIT_HP_IDX = heapMgr.GetFieldIdx(UNIT_TID, "HitPoints");
+            int UNIT_HP_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_HP_IDX);
+            int UNIT_TESTARRAY_IDX = heapMgr.GetFieldIdx(UNIT_TID, "TestArray");
+            int UNIT_TESTARRAY_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_TESTARRAY_IDX);
+            int UNIT_TESTPTRARRAY_IDX = heapMgr.GetFieldIdx(UNIT_TID, "TestPtrArray");
+            int UNIT_TESTPTRARRAY_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_TESTPTRARRAY_IDX);
+            int UNIT_TESTPTR_IDX = heapMgr.GetFieldIdx(UNIT_TID, "TestPtr");
+            int UNIT_TESTPTR_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_TESTPTR_IDX);
+
+            int BUILDING_TID = heapMgr.GetTypeID("Building");
+            int BUILDING_HP_IDX = heapMgr.GetFieldIdx(BUILDING_TID, "HitPoints");
+            int BUILDING_HP_TID = heapMgr.GetFieldTypeID(BUILDING_TID, BUILDING_HP_IDX);
+            int BUILDING_BUILDSTATUS_IDX = heapMgr.GetFieldIdx(BUILDING_TID, "BuildStatus");
+            int BUILDING_BUILDSTATUS_TID = heapMgr.GetFieldTypeID(BUILDING_TID, BUILDING_BUILDSTATUS_IDX);
+
+            ISimElement unit = heapMgr.New(UNIT_TID);
+            ISimElement building0 = heapMgr.New(BUILDING_TID);
+            ISimElement building1 = heapMgr.New(BUILDING_TID);
+
+            building0.AccessField(BUILDING_HP_IDX).Write<short>(100);
+            building0.AccessField(BUILDING_BUILDSTATUS_IDX).Write<short>(50);
+            building1.AccessField(BUILDING_HP_IDX).Write<short>(50);
+            building1.AccessField(BUILDING_BUILDSTATUS_IDX).Write<short>(100);
+
+            unit.AccessField(UNIT_HP_IDX).Write<short>(88);
+            unit.AccessField(UNIT_TESTPTR_IDX).PointTo(building0);
+
+            unit.AccessField(UNIT_TESTARRAY_IDX).PointTo(heapMgr.NewArray(heapMgr.GetTypeID("System.Int32"), 5));
+            for (int i = 0; i < 5; ++i)
+            {
+                unit.AccessField(UNIT_TESTARRAY_IDX).Dereference(i).Write<int>(i);
+            }
+
+            unit.AccessField(UNIT_TESTPTRARRAY_IDX).PointTo(heapMgr.NewArray(heapMgr.GetTypeID("Building*"), 5));
+            unit.AccessField(UNIT_TESTPTRARRAY_IDX).Dereference(0).PointTo(building0);
+            unit.AccessField(UNIT_TESTPTRARRAY_IDX).Dereference(1).PointTo(building1);
+
+            // TODO: test heap saving/loading
         }
 
         static void DrawFlood(FloodArea flood, string fileName)

@@ -5,7 +5,7 @@ using System.Text;
 using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
 
-namespace RC.Engine.Scenarios.ComponentInterfaces
+namespace RC.Engine.Simulator.ComponentInterfaces
 {
     /// <summary>
     /// Component interface for simulating RC-Scenarios (for example multiplayer games). Note that only one scenario can be simulated

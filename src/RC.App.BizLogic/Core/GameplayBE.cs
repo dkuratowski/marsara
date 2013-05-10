@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common.ComponentModel;
 using RC.App.BizLogic.PublicInterfaces;
-using RC.Engine.Scenarios.ComponentInterfaces;
+using RC.Engine.Simulator.ComponentInterfaces;
 using System.IO;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Maps.ComponentInterfaces;
@@ -63,7 +63,7 @@ namespace RC.App.BizLogic.Core
         #endregion IGameplayBE methods
 
         /// <summary>
-        /// Reference to the RC.Engine.Scenarios.ScenarioSimulator component.
+        /// Reference to the RC.Engine.Simulator.ScenarioSimulator component.
         /// </summary>
         [ComponentReference]
         private IScenarioSimulator scenarioSimulator;

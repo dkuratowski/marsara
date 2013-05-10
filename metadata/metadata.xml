@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SimulationMetadata>
+  <ElementType name="Unit">
+    <Field name="HitPoints" type="short" />
+    <Field name="TestArray" type="int*" />
+    <Field name="TestPtrArray" type="Building**" />
+    <Field name="TestPtr" type="Building*" />
+  </ElementType>
+  <ElementType name="Building">
+    <Field name="HitPoints" type="short" />
+    <Field name="BuildStatus" type="short" />
+  </ElementType>
+</SimulationMetadata>

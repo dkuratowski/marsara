@@ -155,14 +155,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.BspMapContentMgr.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.Maps", "RC.Engine.Maps\RC.Engine.Maps.csproj", "{2B1355DC-847B-4617-94AD-5423BC538B20}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.Engine.Scenarios", "RC.Engine.Scenarios", "{F3781BB8-F0E3-4D58-B5D0-C7978E1AB920}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.Engine.Simulator", "RC.Engine.Simulator", "{502CA8CF-06B7-4433-8C96-A42E0299825E}"
 	ProjectSection(SolutionItems) = preProject
-		..\config\RC.Engine.Scenarios\RC.Engine.Scenarios.ConstantsConfig.xml = ..\config\RC.Engine.Scenarios\RC.Engine.Scenarios.ConstantsConfig.xml
-		..\config\RC.Engine.Scenarios\RC.Engine.Scenarios.node = ..\config\RC.Engine.Scenarios\RC.Engine.Scenarios.node
-		..\config\RC.Engine.Scenarios\RC.Engine.Scenarios.TraceConfig.xml = ..\config\RC.Engine.Scenarios\RC.Engine.Scenarios.TraceConfig.xml
+		..\config\RC.Engine.Simulator\RC.Engine.Simulator.ConstantsConfig.xml = ..\config\RC.Engine.Simulator\RC.Engine.Simulator.ConstantsConfig.xml
+		..\config\RC.Engine.Simulator\RC.Engine.Simulator.node = ..\config\RC.Engine.Simulator\RC.Engine.Simulator.node
+		..\config\RC.Engine.Simulator\RC.Engine.Simulator.TraceConfig.xml = ..\config\RC.Engine.Simulator\RC.Engine.Simulator.TraceConfig.xml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.Scenarios", "RC.Engine.Scenarios\RC.Engine.Scenarios.csproj", "{2B041172-C0FC-42DB-A344-079F40491FE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.Simulator", "RC.Engine.Simulator\RC.Engine.Simulator.csproj", "{2B041172-C0FC-42DB-A344-079F40491FE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -488,6 +488,6 @@ Global
 		{F87F6A99-57CB-41AF-92F6-58E37CC3B4B6} = {55E93EA3-8642-4AA8-961D-1FD7458B04BB}
 		{0B4470F4-CC2A-4A36-906C-44218826BE83} = {55E93EA3-8642-4AA8-961D-1FD7458B04BB}
 		{74F9E3A0-7E98-41EE-BD37-252790F5052C} = {55E93EA3-8642-4AA8-961D-1FD7458B04BB}
-		{F3781BB8-F0E3-4D58-B5D0-C7978E1AB920} = {55E93EA3-8642-4AA8-961D-1FD7458B04BB}
+		{502CA8CF-06B7-4433-8C96-A42E0299825E} = {55E93EA3-8642-4AA8-961D-1FD7458B04BB}
 	EndGlobalSection
 EndGlobal
