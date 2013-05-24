@@ -22,8 +22,10 @@ namespace RC.Engine.Test
     {
         static void Main(string[] args)
         {
-            TestSimulationHeap();
-            //ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");            
+            ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
+            bool testResult = SimulationHeapTest.StressTest();
+            if (!testResult) { throw new Exception("Test failed!"); }
+            //TestSimulationHeap();
 
             //ComponentManager.RegisterComponents("RC.Engine.Test, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
             //                                    new string[3] { "C0", "C1", "C2" });
@@ -74,30 +76,29 @@ namespace RC.Engine.Test
 
         static void TestSimulationHeap()
         {
-            Dictionary<string, Dictionary<string, string>> testMetadata = new Dictionary<string, Dictionary<string, string>>()
+            Dictionary<string, List<KeyValuePair<string, string>>> testMetadata = new Dictionary<string, List<KeyValuePair<string, string>>>()
             {
                 {
                     "Unit",
-                    new Dictionary<string, string>
+                    new List<KeyValuePair<string, string>>()
                     {
-                        { "HitPoints", "short" },
-                        { "TestArray", "int*" },
-                        { "TestPtrArray", "Building**" },
-                        { "TestPtr", "Building*" },
+                        new KeyValuePair<string, string>("HitPoints", "short"),
+                        new KeyValuePair<string, string>("TestArray", "int*"),
+                        new KeyValuePair<string, string>("TestPtrArray", "Building**"),
+                        new KeyValuePair<string, string>("TestPtr", "Building*"),
                     }
                 },
                 {
                     "Building",
-                    new Dictionary<string, string>
+                    new List<KeyValuePair<string, string>>()
                     {
-                        { "HitPoints", "short" },
-                        { "BuildStatus", "short" },
+                        new KeyValuePair<string, string>("HitPoints", "short"),
+                        new KeyValuePair<string, string>("BuildStatus", "short"),
                     }
                 }
             };
 
-            ISimulationHeap heap = new SimulationHeap(1024);
-            ISimulationHeapMgr heapMgr = new SimulationHeapMgr(heap, testMetadata);
+            ISimulationHeapMgr heapMgr = new SimulationHeapMgr(testMetadata);
 
             int UNIT_TID = heapMgr.GetTypeID("Unit");
             int UNIT_HP_IDX = heapMgr.GetFieldIdx(UNIT_TID, "HitPoints");
@@ -115,28 +116,41 @@ namespace RC.Engine.Test
             int BUILDING_BUILDSTATUS_IDX = heapMgr.GetFieldIdx(BUILDING_TID, "BuildStatus");
             int BUILDING_BUILDSTATUS_TID = heapMgr.GetFieldTypeID(BUILDING_TID, BUILDING_BUILDSTATUS_IDX);
 
-            ISimElement unit = heapMgr.New(UNIT_TID);
-            ISimElement building0 = heapMgr.New(BUILDING_TID);
-            ISimElement building1 = heapMgr.New(BUILDING_TID);
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
 
-            building0.AccessField(BUILDING_HP_IDX).Write<short>(100);
-            building0.AccessField(BUILDING_BUILDSTATUS_IDX).Write<short>(50);
-            building1.AccessField(BUILDING_HP_IDX).Write<short>(50);
-            building1.AccessField(BUILDING_BUILDSTATUS_IDX).Write<short>(100);
-
-            unit.AccessField(UNIT_HP_IDX).Write<short>(88);
-            unit.AccessField(UNIT_TESTPTR_IDX).PointTo(building0);
-
-            unit.AccessField(UNIT_TESTARRAY_IDX).PointTo(heapMgr.NewArray(heapMgr.GetTypeID("System.Int32"), 5));
-            for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 100000; j++)
             {
-                unit.AccessField(UNIT_TESTARRAY_IDX).Dereference(i).Write<int>(i);
+                ISimDataAccess unit = heapMgr.New(UNIT_TID);
+                ISimDataAccess building0 = heapMgr.New(BUILDING_TID);
+                ISimDataAccess building1 = heapMgr.New(BUILDING_TID);
+
+                building0.AccessField(BUILDING_HP_IDX).WriteShort(100);
+                building0.AccessField(BUILDING_BUILDSTATUS_IDX).WriteShort(50);
+                building1.AccessField(BUILDING_HP_IDX).WriteShort(50);
+                building1.AccessField(BUILDING_BUILDSTATUS_IDX).WriteShort(100);
+
+                unit.AccessField(UNIT_HP_IDX).WriteShort(88);
+                unit.AccessField(UNIT_TESTPTR_IDX).PointTo(building0);
+
+                unit.AccessField(UNIT_TESTARRAY_IDX).PointTo(heapMgr.NewArray(heapMgr.GetTypeID("int"), 5));
+                for (int i = 0; i < 5; ++i)
+                {
+                    unit.AccessField(UNIT_TESTARRAY_IDX).Dereference().AccessArrayItem(i).WriteInt(i);
+                }
+
+                unit.AccessField(UNIT_TESTPTRARRAY_IDX).PointTo(heapMgr.NewArray(heapMgr.GetTypeID("Building*"), 5));
+                unit.AccessField(UNIT_TESTPTRARRAY_IDX).Dereference().AccessArrayItem(0).PointTo(building0);
+                unit.AccessField(UNIT_TESTPTRARRAY_IDX).Dereference().AccessArrayItem(1).PointTo(building1);
+
+                unit.AccessField(UNIT_TESTARRAY_IDX).Dereference().DeleteArray();
+                unit.AccessField(UNIT_TESTPTRARRAY_IDX).Dereference().DeleteArray();
+                unit.Delete();
+                building0.Delete();
+                building1.Delete();
             }
 
-            unit.AccessField(UNIT_TESTPTRARRAY_IDX).PointTo(heapMgr.NewArray(heapMgr.GetTypeID("Building*"), 5));
-            unit.AccessField(UNIT_TESTPTRARRAY_IDX).Dereference(0).PointTo(building0);
-            unit.AccessField(UNIT_TESTPTRARRAY_IDX).Dereference(1).PointTo(building1);
-
+            watch.Stop();
             // TODO: test heap saving/loading
         }
 

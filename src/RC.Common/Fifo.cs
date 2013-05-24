@@ -3,7 +3,7 @@
 namespace RC.Common
 {
     /// <summary>
-    /// This is a thread safe generic FIFO queue that has limited capacity.
+    /// This is a generic FIFO queue that has limited capacity.
     /// </summary>
     public class Fifo<T>
     {
@@ -15,7 +15,6 @@ namespace RC.Common
         {
             if (capacity < 1) { throw new ArgumentOutOfRangeException("capacity"); }
 
-            //this.lockObject = new object();
             this.items = new T[capacity];
             this.readIndex = 0;
             this.writeIndex = 0;
@@ -29,10 +28,6 @@ namespace RC.Common
         /// <exception cref="FifoException">If the FIFO is full.</exception>
         public void Push(T item)
         {
-            //if (item == null) { throw new ArgumentNullException("item"); }
-
-            //lock (this.lockObject)
-            //{
             if (this.fifoLength < this.items.Length)
             {
                 this.items[this.writeIndex] = item;
@@ -41,7 +36,6 @@ namespace RC.Common
                 this.fifoLength++;
             }
             else { throw new FifoException("The FIFO is full!"); }
-            //}
         }
 
         /// <summary>
@@ -51,8 +45,6 @@ namespace RC.Common
         /// <exception cref="FifoException">If the queue is empty.</exception>
         public T Get()
         {
-            //lock (this.lockObject)
-            //{
             if (this.fifoLength > 0)
             {
                 T retItem = this.items[this.readIndex];
@@ -63,7 +55,6 @@ namespace RC.Common
                 return retItem;
             }
             else { throw new FifoException("Unable to read from empty FIFO!"); }
-            //}
         }
 
         /// <summary>
@@ -73,10 +64,7 @@ namespace RC.Common
         {
             get
             {
-                //lock (this.lockObject)
-                //{
                 return this.fifoLength;
-                //}
             }
         }
 
@@ -99,10 +87,5 @@ namespace RC.Common
         /// The number of the items in the FIFO.
         /// </summary>
         private int fifoLength;
-
-        /// <summary>
-        /// This object is used as a mutex when multiple threads want to use this FIFO.
-        /// </summary>
-        //private object lockObject;
     }
 }

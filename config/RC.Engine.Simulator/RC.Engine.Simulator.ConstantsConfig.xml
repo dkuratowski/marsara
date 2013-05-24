@@ -1,2 +1,4 @@
 <constantsConfig>
+  <constant namespace="RC.Engine.Simulator" name="SimulationHeapPageSize" type="INT">1024</constant>
+  <constant namespace="RC.Engine.Simulator" name="SimulationHeapCapacity" type="INT">65536</constant>
 </constantsConfig>

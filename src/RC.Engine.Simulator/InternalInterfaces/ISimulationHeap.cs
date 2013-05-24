@@ -6,7 +6,7 @@ using System.Text;
 namespace RC.Engine.Simulator.InternalInterfaces
 {
     /// <summary>
-    /// Defines the interface of the simulation-heap where every simulation relevant information is stored.
+    /// Defines the interface of the simulation-heap where every simulation data is stored.
     /// </summary>
     public interface ISimulationHeap // TODO: make private
     {
@@ -65,5 +65,17 @@ namespace RC.Engine.Simulator.InternalInterfaces
         /// <param name="address">The address to read.</param>
         /// <returns>The value at the given address.</returns>
         long ReadLong(int address);
+
+        /// <summary>
+        /// Computes the hash value of the current state of the simulation heap.
+        /// </summary>
+        /// <returns>The byte array that contains the hash.</returns>
+        byte[] ComputeHash();
+
+        /// <summary>
+        /// Dumps the content of the heap into a byte array.
+        /// </summary>
+        /// <returns>The byte array with the contents of the heap.</returns>
+        byte[] Dump();
     }
 }

@@ -169,6 +169,19 @@ namespace RC.Common
         #region Public fields
 
         /// <summary>
+        /// Constructs an RCNumber initialized with the given raw value.
+        /// </summary>
+        /// <param name="bits">The raw value that contains the bits of the RCNumber.</param>
+        public RCNumber(long bits)
+        {
+            this.rawValue = bits;
+            this.roundedValueCache = default(CachedValue<int>);
+            this.castedValueCache = default(CachedValue<int>);
+            this.roundedValueCacheCreated = false;
+            this.castedValueCacheCreated = false;
+        }
+
+        /// <summary>
         /// Checks whether the specified object is an RCNumber and has the same value as this RCNumber.
         /// </summary>
         /// <param name="obj">The object to test.</param>
@@ -220,22 +233,14 @@ namespace RC.Common
             return this.RoundedValueCache.Value;
         }
 
+        /// <summary>
+        /// Gets the bits of this RCNumber.
+        /// </summary>
+        public int Bits { get { return (int)this.rawValue; } }
+
         #endregion Public fields
 
         #region Private fields
-
-        /// <summary>
-        /// Constructs an RCNumber initialized with the given raw value.
-        /// </summary>
-        /// <param name="rawValue">The initial raw value of the RCNumber.</param>
-        private RCNumber(long rawValue)
-        {
-            this.rawValue = rawValue;
-            this.roundedValueCache = default(CachedValue<int>);
-            this.castedValueCache = default(CachedValue<int>);
-            this.roundedValueCacheCreated = false;
-            this.castedValueCacheCreated = false;
-        }
 
         /// <summary>
         /// Workaround: structs doesn't allow to define parameterless constructors, so we have to guarantee that

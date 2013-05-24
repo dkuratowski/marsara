@@ -5,7 +5,7 @@ using System.Text;
 using RC.Common.Configuration;
 using RC.Common.Diagnostics;
 
-namespace RC.Engine.Maps
+namespace RC.Engine.Maps.Core
 {
     /// <summary>
     /// This static class is used to access the constants of the RC.Engine.Maps module.
