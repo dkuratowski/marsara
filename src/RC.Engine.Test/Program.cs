@@ -25,6 +25,7 @@ namespace RC.Engine.Test
             ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
             bool testResult = SimulationHeapTest.StressTest();
             if (!testResult) { throw new Exception("Test failed!"); }
+            PFTreeTest.PFTreeNeighbourTest();
             //TestSimulationHeap();
 
             //ComponentManager.RegisterComponents("RC.Engine.Test, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",

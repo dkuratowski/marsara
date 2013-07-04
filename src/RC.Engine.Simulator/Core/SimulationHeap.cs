@@ -12,7 +12,7 @@ namespace RC.Engine.Simulator.Core
     /// Implementation of the simulation-heap where every simulation data is stored.
     /// </summary>
     /// TODO: this implementation might have a possible performance issue!
-    public class SimulationHeap : ISimulationHeap // TODO: make private
+    class SimulationHeap : ISimulationHeap
     {
         /// <summary>
         /// Constructs an empty SimulationHeap with the given page size and capacity.

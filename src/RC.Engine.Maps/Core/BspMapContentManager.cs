@@ -39,7 +39,7 @@ namespace RC.Engine.Maps.Core
             return retList;
         }
 
-        #region IMapContentManager methods
+        #region IMapContentManager<T> methods
 
         /// <see cref="IMapContentManager<T>.GetContents"/>
         public HashSet<T> GetContents()
@@ -99,7 +99,7 @@ namespace RC.Engine.Maps.Core
             return this.attachedContents.Contains(content);
         }
 
-        #endregion IMapContentManager methods
+        #endregion IMapContentManager<T> methods
 
         /// <see cref="IMapContent.PositionChanging"/>
         private void OnContentPositionChanging(IMapContent sender)
