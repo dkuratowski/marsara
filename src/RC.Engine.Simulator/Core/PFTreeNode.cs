@@ -46,9 +46,9 @@ namespace RC.Engine.Simulator.Core
         /// <returns>The leaf node that contains the given cell.</returns>
         public PFTreeNode GetLeafNode(RCIntVector cellCoords)
         {
-            if (this.parent != null) { throw new InvalidOperationException("Non root node!"); }
+            if (this.parent != null) { return this.root.GetLeafNodeImpl(cellCoords); }
             if (!this.areaOnMap.Contains(cellCoords)) { throw new ArgumentOutOfRangeException("cellCoords"); }
-            return this.GetLeafNodeImpl(cellCoords);
+            else { return this.GetLeafNodeImpl(cellCoords); }
         }
 
         /// <summary>
@@ -57,9 +57,9 @@ namespace RC.Engine.Simulator.Core
         /// <returns>The list of the leaf nodes in the pathfinder tree.</returns>
         public HashSet<PFTreeNode> GetAllLeafNodes()
         {
-            if (this.parent != null) { throw new InvalidOperationException("Non root node!"); }
             HashSet<PFTreeNode> retList = new HashSet<PFTreeNode>();
-            this.GetAllLeafNodesImpl(retList);
+            if (this.parent != null) { this.root.GetAllLeafNodesImpl(retList); }
+            else { this.GetAllLeafNodesImpl(retList); }
             return retList;
         }
 

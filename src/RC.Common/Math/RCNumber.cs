@@ -223,6 +223,15 @@ namespace RC.Common
         }
 
         /// <summary>
+        /// Computes the absolute value of this RCNumber.
+        /// </summary>
+        /// <returns>The absolute value of this RCNumber.</returns>
+        public RCNumber Abs()
+        {
+            return new RCNumber(Math.Abs(this.rawValue));
+        }
+
+        /// <summary>
         /// Rounds this RCNumber to the nearest integer.
         /// </summary>
         /// <returns>

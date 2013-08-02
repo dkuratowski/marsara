@@ -65,8 +65,13 @@ namespace RC.Engine.Simulator.Core
         public IPath FindPath(RCIntVector fromCoords, RCIntVector toCoords, RCNumVector size)
         {
             if (this.map == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
+            if (fromCoords == RCIntVector.Undefined) { throw new ArgumentNullException("fromCoords"); }
+            if (toCoords == RCIntVector.Undefined) { throw new ArgumentNullException("toCoords"); }
+            if (size == RCNumVector.Undefined) { throw new ArgumentNullException("size"); }
 
-            throw new NotImplementedException();
+            PFTreeNode fromNode = this.pathfinderTreeRoot.GetLeafNode(fromCoords);
+            Path retPath = new Path(fromNode, toCoords, size);
+            return retPath;
         }
 
         /// <see cref="IPathFinder.FindAlternativePath"/>

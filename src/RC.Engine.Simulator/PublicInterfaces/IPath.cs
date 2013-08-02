@@ -19,5 +19,10 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <param name="mapContentMgr">The map content manager used for collision detection.</param>
         /// <returns>The list of the coordinates of the cells of the computed path section to follow.</returns>
         List<RCIntVector> FindPathSection<T>(RCIntVector fromCoords, IMapContentManager<T> mapContentMgr) where T : IMapContent;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        //void ForgetAbortedPaths();
     }
 }

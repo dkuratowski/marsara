@@ -6,6 +6,7 @@ using RC.Engine.Simulator.Core;
 using RC.Common;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 
 namespace RC.Engine.Test
 {
@@ -34,6 +35,17 @@ namespace RC.Engine.Test
                 outputGC.FillRectangle(leafNode.IsWalkable ? Brushes.Green : Brushes.Red,
                     nodeRect.X, nodeRect.Y, nodeRect.Width, nodeRect.Height);
                 outputGC.DrawRectangle(Pens.Black, nodeRect.X, nodeRect.Y, nodeRect.Width, nodeRect.Height);
+            }
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            Path testPath = new Path(pfTreeRoot.GetLeafNode(new RCIntVector(50, 240)), new RCIntVector(490, 119), new RCNumVector(2, 2));
+            watch.Stop();
+            Console.WriteLine(watch.ElapsedMilliseconds);
+            foreach (PFTreeNode nodeOnPath in testPath.ComputedPath)
+            {
+                RCIntRectangle nodeRect = nodeOnPath.AreaOnMap * new RCIntVector(CELL_SIZE, CELL_SIZE);
+                outputGC.FillRectangle(Brushes.Blue, nodeRect.X, nodeRect.Y, nodeRect.Width, nodeRect.Height);
             }
 
             foreach (PFTreeNode leafNode in leafNodes)
@@ -88,6 +100,7 @@ namespace RC.Engine.Test
                 }
             }
 
+            testMapBmp.Dispose();
             return pfTreeRoot;
         }
 
