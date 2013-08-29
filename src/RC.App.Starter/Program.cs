@@ -219,10 +219,11 @@ namespace RC.App.Starter
                                                     "RC.Engine.Maps.MapEditor"
                                                 });
 
-            ComponentManager.RegisterComponents("RC.Engine.Scenarios, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                    new string[1]
+            ComponentManager.RegisterComponents("RC.Engine.Simulator, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                                    new string[2]
                                                 {
-                                                    "RC.Engine.Scenarios.ScenarioSimulator"
+                                                    "RC.Engine.Simulator.ScenarioSimulator",
+                                                    "RC.Engine.Simulator.PathFinder"
                                                 });
 
             ComponentManager.RegisterComponents("RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",

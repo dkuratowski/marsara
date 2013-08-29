@@ -14,8 +14,15 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// <summary>
         /// Gets the list of the visible map objects at the given area in the order as they shall be displayed.
         /// </summary>
-        /// <param name="displayedArea">The area of the map to be displayed in pixels.</param>
+        /// <param name="displayedArea">The area of the map currently being displayed in pixels.</param>
         /// <returns>The list of display informations of the visible map objects.</returns>
         List<MapObjectInstance> GetVisibleMapObjects(RCIntRectangle displayedArea);
+
+        /// <summary>
+        /// Selects the objects inside the given selection box.
+        /// </summary>
+        /// <param name="displayedArea">The area of the map currently being displayed in pixels.</param>
+        /// <param name="selectionBox">The selection box inside the map displayed area in pixels.</param>
+        void SelectObjects(RCIntRectangle displayedArea, RCIntRectangle selectionBox);
     }
 }

@@ -40,5 +40,12 @@ namespace RC.Engine.Simulator.ComponentInterfaces
         /// <param name="fromCoords">The coordinates of the starting cell of the path.</param>
         /// <returns>The interface of the computed alternative path.</returns>
         IPath FindAlternativePath(IPath originalPath, RCIntVector fromCoords);
+
+        /// <summary>
+        /// Checks whether the given area intersects a map obstacle or not.
+        /// </summary>
+        /// <param name="area">The area to check.</param>
+        /// <returns>True if the area intersects any map obstacle, false otherwise.</returns>
+        bool CheckObstacleIntersection(RCNumRectangle area);
     }
 }

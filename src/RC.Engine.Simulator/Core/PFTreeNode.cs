@@ -64,6 +64,35 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
+        /// Checks whether the given area intersects a map obstacle or not.
+        /// </summary>
+        /// <param name="area">The area to check.</param>
+        /// <returns>True if the area intersects any map obstacle, false otherwise.</returns>
+        public bool CheckObstacleIntersection(RCIntRectangle area)
+        {
+            if (area == RCIntRectangle.Undefined) { throw new ArgumentNullException("area"); }
+
+            if (this.areaOnMap.IntersectsWith(area))
+            {
+                if (this.walkability == Walkability.Mixed)
+                {
+                    return this.children[0].CheckObstacleIntersection(area) ||
+                           this.children[1].CheckObstacleIntersection(area) ||
+                           this.children[2].CheckObstacleIntersection(area) ||
+                           this.children[3].CheckObstacleIntersection(area);
+                }
+                else
+                {
+                    return this.walkability == Walkability.NonWalkable;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Gets the neighbours of this node.
         /// </summary>
         public IEnumerable<PFTreeNode> Neighbours

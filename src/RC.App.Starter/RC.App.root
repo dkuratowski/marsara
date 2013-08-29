@@ -3,7 +3,7 @@
     <configNodeReference>./config/RC.UI.XnaPlugin/RC.UI.XnaPlugin.node</configNodeReference>
     <configNodeReference>./config/RC.UI/RC.UI.node</configNodeReference>
     <configNodeReference>./config/RC.Engine.Maps/RC.Engine.Maps.node</configNodeReference>
-    <configNodeReference>./config/RC.Engine.Scenarios/RC.Engine.Scenarios.node</configNodeReference>
+    <configNodeReference>./config/RC.Engine.Simulator/RC.Engine.Simulator.node</configNodeReference>
     <configNodeReference>./config/RC.App.PresLogic/RC.App.PresLogic.node</configNodeReference>
     <configNodeReference>./config/RC.App.BizLogic/RC.App.BizLogic.node</configNodeReference>
   </configNodeReferences>

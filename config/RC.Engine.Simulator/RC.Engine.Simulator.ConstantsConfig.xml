@@ -1,4 +1,11 @@
 <constantsConfig>
   <constant namespace="RC.Engine.Simulator" name="SimulationHeapPageSize" type="INT">1024</constant>
   <constant namespace="RC.Engine.Simulator" name="SimulationHeapCapacity" type="INT">65536</constant>
+  <constant namespace="RC.Engine.Simulator" name="BspNodeCapacity" type="INT">16</constant>
+  <constant namespace="RC.Engine.Simulator" name="BspMinNodeSize" type="INT">10</constant>
+
+  <constant namespace="RC.Engine.Simulator.Prototype" name="TestObjectNum" type="INT">30</constant> <!-- PROTOTYPE CODE -->
+  <constant namespace="RC.Engine.Simulator.Prototype" name="TestObjectMaxCoord" type="INT">64</constant> <!-- PROTOTYPE CODE -->
+  <constant namespace="RC.Engine.Simulator.Prototype" name="TestObjectMinSize" type="INT">2</constant> <!-- PROTOTYPE CODE -->
+  <constant namespace="RC.Engine.Simulator.Prototype" name="TestObjectMaxSize" type="INT">4</constant> <!-- PROTOTYPE CODE -->
 </constantsConfig>

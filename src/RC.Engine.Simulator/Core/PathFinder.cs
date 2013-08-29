@@ -82,6 +82,19 @@ namespace RC.Engine.Simulator.Core
             throw new NotImplementedException();
         }
 
+        /// <see cref="IPathFinder.CheckObstacleIntersection"/>
+        public bool CheckObstacleIntersection(RCNumRectangle area)
+        {
+            if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
+
+            int left = area.Left.Round();
+            int top = area.Top.Round();
+            int right = area.Right.Round();
+            int bottom = area.Bottom.Round();
+            RCIntRectangle areaCells = new RCIntRectangle(left, top, right - left + 1, bottom - top + 1);
+            return this.pathfinderTreeRoot.CheckObstacleIntersection(areaCells);
+        }
+
         /// <summary>
         /// Reference to the searched map.
         /// </summary>

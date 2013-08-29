@@ -36,7 +36,7 @@ namespace RC.App.BizLogic.Core
         /// <see cref="IGameplayBE.CreateMapObjectView"/>
         public IMapObjectView CreateMapObjectView()
         {
-            return new MapObjectView(this.scenarioSimulator.Map);
+            return new MapObjectView(this.scenarioSimulator.Map, this.scenarioSimulator.GameObjects);
         }
 
         /// <see cref="IGameplayBE.CreateTileSetView"/>

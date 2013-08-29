@@ -5,6 +5,7 @@ using System.Text;
 using RC.App.BizLogic.PublicInterfaces;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Common;
+using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.App.BizLogic.Core
 {
@@ -17,9 +18,12 @@ namespace RC.App.BizLogic.Core
         /// Constructs a MapObjectView instance.
         /// </summary>
         /// <param name="map">The subject of this view.</param>
-        public MapObjectView(IMapAccess map)
+        public MapObjectView(IMapAccess map, IMapContentManager<IGameObject> gameObjects)
             : base(map)
         {
+            if (gameObjects == null) { throw new ArgumentNullException("gameObjects"); }
+            this.gameObjects = gameObjects;
+            this.selectedObjects = new HashSet<IGameObject>();
         }
 
         #region IMapObjectView methods
@@ -27,43 +31,57 @@ namespace RC.App.BizLogic.Core
         /// <see cref="IMapObjectView.GetVisibleMapObjects"/>
         public List<MapObjectInstance> GetVisibleMapObjects(RCIntRectangle displayedArea)
         {
-            /// TODO: this is a dummy implementation
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
+
+            RCIntRectangle cellWindow;
+            RCIntVector displayOffset;
+            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+
             List<MapObjectInstance> retList = new List<MapObjectInstance>();
-            retList.Add(new MapObjectInstance()
+            HashSet<IGameObject> visibleGameObjects = this.gameObjects.GetContents(
+                new RCNumRectangle(cellWindow.X - (RCNumber)1 / (RCNumber)2,
+                                   cellWindow.Y - (RCNumber)1 / (RCNumber)2,
+                                   cellWindow.Width,
+                                   cellWindow.Height));
+            foreach (IGameObject gameObj in visibleGameObjects)
             {
-                SelectionIndicator = new RCIntRectangle(30, 42, 7, 6),
-                SelectionIndicatorColorIdx = 0,
-                Sprite = new MapSpriteInstance()
+                retList.Add(new MapObjectInstance()
                 {
-                    DisplayCoords = new RCIntVector(30, 34),
-                    Index = 0,
-                    Section = new RCIntRectangle(5, 2, 7, 13)
-                },
-                Values = new List<Tuple<int,RCNumber>>()
-                {
-                    new Tuple<int, RCNumber>(1, (RCNumber)30/(RCNumber)100),
-                    new Tuple<int, RCNumber>(3, (RCNumber)70/(RCNumber)100)
-                }
-            });
-            retList.Add(new MapObjectInstance()
-            {
-                SelectionIndicator = new RCIntRectangle(32, 47, 7, 6),
-                SelectionIndicatorColorIdx = 1,
-                Sprite = new MapSpriteInstance()
-                {
-                    DisplayCoords = new RCIntVector(32, 39),
-                    Index = 0,
-                    Section = new RCIntRectangle(5, 2, 7, 13)
-                },
-                Values = new List<Tuple<int, RCNumber>>()
-                {
-                    new Tuple<int, RCNumber>(1, (RCNumber)60/(RCNumber)100),
-                    new Tuple<int, RCNumber>(3, (RCNumber)20/(RCNumber)100)
-                }
-            });
+                    Sprite = new MapSpriteInstance() { Index = -1, DisplayCoords = RCIntVector.Undefined, Section = RCIntRectangle.Undefined },
+                    SelectionIndicatorColorIdx = this.selectedObjects.Contains(gameObj) ? 0 : 1,
+                    SelectionIndicator = (RCIntRectangle)((gameObj.Position - cellWindow.Location) * new RCNumVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)) - displayOffset,
+                    Values = null
+                });
+            }
             return retList;
         }
 
+        /// <see cref="IMapObjectView.SelectObjects"/>
+        public void SelectObjects(RCIntRectangle displayedArea, RCIntRectangle selectionBox)
+        {
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
+
+            RCIntRectangle cellWindow;
+            RCIntVector displayOffset;
+            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+
+            RCNumRectangle selectionBoxOnMap = ((RCNumRectangle)(selectionBox + displayOffset) / new RCNumVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)) + cellWindow.Location;
+            this.selectedObjects = this.gameObjects.GetContents(selectionBoxOnMap);
+        }
+
         #endregion IMapObjectView methods
+
+        /// <summary>
+        /// Reference to the map content manager that contains the game objects of the scenario currently being simulated.
+        /// </summary>
+        private IMapContentManager<IGameObject> gameObjects;
+
+        /// <summary>
+        /// PROTOTYPE CODE
+        /// TODO: Move selection handling to the engine!!!
+        /// </summary>
+        private HashSet<IGameObject> selectedObjects;
     }
 }
