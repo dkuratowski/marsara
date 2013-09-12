@@ -13,16 +13,20 @@ namespace RC.Engine.Simulator.PublicInterfaces
     public interface IPath
     {
         /// <summary>
-        /// Computes the section of this path from the cell with the given coordinates to the next region on the path.
+        /// Gets a section of the computed path.
         /// </summary>
-        /// <param name="fromCoords">The starting cell of the path section.</param>
-        /// <param name="mapContentMgr">The map content manager used for collision detection.</param>
-        /// <returns>The list of the coordinates of the cells of the computed path section to follow.</returns>
-        List<RCIntVector> FindPathSection<T>(RCIntVector fromCoords, IMapContentManager<T> mapContentMgr) where T : IMapContent;
+        /// <param name="index">The index of the section to get.</param>
+        /// <returns>The area of the section.</returns>
+        RCIntRectangle this[int index] { get; }
 
         /// <summary>
-        /// 
+        /// The total number of sections on this computed path.
         /// </summary>
-        //void ForgetAbortedPaths();
+        int Length { get; }
+
+        /// <summary>
+        /// Forgets every blocked edges used to compute this path.
+        /// </summary>
+        void ForgetBlockedEdges();
     }
 }

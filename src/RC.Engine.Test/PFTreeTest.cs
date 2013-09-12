@@ -42,9 +42,9 @@ namespace RC.Engine.Test
             Path testPath = new Path(pfTreeRoot.GetLeafNode(new RCIntVector(50, 240)), new RCIntVector(490, 119), new RCNumVector(2, 2));
             watch.Stop();
             Console.WriteLine(watch.ElapsedMilliseconds);
-            foreach (PFTreeNode nodeOnPath in testPath.ComputedPath)
+            for (int i = 0; i < testPath.Length; ++i)
             {
-                RCIntRectangle nodeRect = nodeOnPath.AreaOnMap * new RCIntVector(CELL_SIZE, CELL_SIZE);
+                RCIntRectangle nodeRect = testPath[i] * new RCIntVector(CELL_SIZE, CELL_SIZE);
                 outputGC.FillRectangle(Brushes.Blue, nodeRect.X, nodeRect.Y, nodeRect.Width, nodeRect.Height);
             }
 

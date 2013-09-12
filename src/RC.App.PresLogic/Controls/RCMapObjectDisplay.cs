@@ -186,6 +186,7 @@ namespace RC.App.PresLogic.Controls
                 {
                     /// TODO: send command to the selected units
                     TraceManager.WriteAllTrace("RIGHT_CLICK", PresLogicTraceFilters.INFO);
+                    this.mapObjectView.SendCommand(this.DisplayedArea, evtArgs.Position);
 
                     this.CurrentMouseStatus = MouseStatus.RightDown;
                 }
@@ -250,6 +251,7 @@ namespace RC.App.PresLogic.Controls
 
                 /// TODO: handle single unit selection
                 TraceManager.WriteAllTrace("LEFT_CLICK", PresLogicTraceFilters.INFO);
+                this.mapObjectView.SelectObject(this.DisplayedArea, evtArgs.Position);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;

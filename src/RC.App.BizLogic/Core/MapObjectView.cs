@@ -6,6 +6,7 @@ using RC.App.BizLogic.PublicInterfaces;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Common.Diagnostics;
 
 namespace RC.App.BizLogic.Core
 {
@@ -50,7 +51,7 @@ namespace RC.App.BizLogic.Core
                 {
                     Sprite = new MapSpriteInstance() { Index = -1, DisplayCoords = RCIntVector.Undefined, Section = RCIntRectangle.Undefined },
                     SelectionIndicatorColorIdx = this.selectedObjects.Contains(gameObj) ? 0 : 1,
-                    SelectionIndicator = (RCIntRectangle)((gameObj.Position - cellWindow.Location) * new RCNumVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)) - displayOffset,
+                    SelectionIndicator = (RCIntRectangle)((gameObj.Position - cellWindow.Location + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)) - displayOffset,
                     Values = null
                 });
             }
@@ -61,14 +62,54 @@ namespace RC.App.BizLogic.Core
         public void SelectObjects(RCIntRectangle displayedArea, RCIntRectangle selectionBox)
         {
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (selectionBox == RCIntRectangle.Undefined) { throw new ArgumentNullException("selectionBox"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
 
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
             this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
-            RCNumRectangle selectionBoxOnMap = ((RCNumRectangle)(selectionBox + displayOffset) / new RCNumVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)) + cellWindow.Location;
+            RCNumRectangle selectionBoxOnMap = ((RCNumRectangle)(selectionBox + displayOffset) / new RCNumVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)) + cellWindow.Location
+                                             - new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2);
+            TraceManager.WriteAllTrace(string.Format("SelectionBox: {0}", selectionBoxOnMap), BizLogicTraceFilters.INFO);
             this.selectedObjects = this.gameObjects.GetContents(selectionBoxOnMap);
+        }
+
+        /// <see cref="IMapObjectView.SelectObject"/>
+        public void SelectObject(RCIntRectangle displayedArea, RCIntVector selectionPoint)
+        {
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (selectionPoint == RCIntVector.Undefined) { throw new ArgumentNullException("selectionPoint"); }
+            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
+
+            RCIntRectangle cellWindow;
+            RCIntVector displayOffset;
+            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+
+            RCNumVector selectionPointOnMap = ((RCNumVector)(selectionPoint + displayOffset) / (RCNumber)BizLogicConstants.PIXEL_PER_NAVCELL) + cellWindow.Location
+                                            - new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2);
+            TraceManager.WriteAllTrace(string.Format("SelectionPoint: {0}", selectionPointOnMap), BizLogicTraceFilters.INFO);
+            this.selectedObjects = this.gameObjects.GetContents(selectionPointOnMap);
+        }
+
+        /// <see cref="IMapObjectView.SelectObject"/>
+        /// PROTOTYPE CODE
+        public void SendCommand(RCIntRectangle displayedArea, RCIntVector targetPoint)
+        {
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (targetPoint == RCIntVector.Undefined) { throw new ArgumentNullException("targetPoint"); }
+            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
+
+            RCIntRectangle cellWindow;
+            RCIntVector displayOffset;
+            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+
+            RCNumVector targetPointOnMap = ((RCNumVector)(targetPoint + displayOffset) / (RCNumber)BizLogicConstants.PIXEL_PER_NAVCELL) + cellWindow.Location
+                                         - new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2);
+            foreach (IGameObject gameObj in this.selectedObjects)
+            {
+                gameObj.SendCommand(targetPointOnMap);
+            }
         }
 
         #endregion IMapObjectView methods

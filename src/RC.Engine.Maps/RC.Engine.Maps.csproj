@@ -119,6 +119,7 @@
     <Compile Include="Core\TerrainType.cs" />
     <Compile Include="Core\TileSet.cs" />
     <Compile Include="PublicInterfaces\MapHeader.cs" />
+    <Compile Include="PublicInterfaces\MapUtils.cs" />
     <Compile Include="PublicInterfaces\PackageFormats.cs" />
     <Compile Include="PublicInterfaces\TerrainCombination.cs" />
     <Compile Include="PublicInterfaces\TileSetException.cs" />

@@ -24,42 +24,60 @@ namespace RC.Engine.Simulator.Core
             this.fromNode = fromNode;
             this.toCoords = toCoords;
             this.lastNodeOnPath = null;
+            this.nodesOnPath = null;
             this.toNode = this.fromNode.GetLeafNode(toCoords);
             this.objectSize = size;
+            this.blockedEdges = new Dictionary<PFTreeNode, HashSet<PFTreeNode>>();
 
             this.SearchPath();
+            this.CollectNodes();
+        }
+
+        /// <summary>
+        /// Constructs a new Path instance by computing an alternative path from the given section of the given original path.
+        /// </summary>
+        /// <param name="originalPath">The original path.</param>
+        /// <param name="abortedSectionIdx">The index of the aborted section of the original path.</param>
+        public Path(Path originalPath, int abortedSectionIdx)
+        {
+            this.fromNode = originalPath.nodesOnPath[abortedSectionIdx];
+            this.toCoords = originalPath.toCoords;
+            this.lastNodeOnPath = null;
+            this.nodesOnPath = null;
+            this.toNode = originalPath.toNode;
+            this.objectSize = originalPath.objectSize;
+            
+            this.blockedEdges = new Dictionary<PFTreeNode, HashSet<PFTreeNode>>();
+            foreach (KeyValuePair<PFTreeNode, HashSet<PFTreeNode>> item in originalPath.blockedEdges)
+            {
+                this.blockedEdges.Add(item.Key, new HashSet<PFTreeNode>(item.Value));
+            }
+            this.AddBlockedEdge(originalPath.nodesOnPath[abortedSectionIdx], originalPath.nodesOnPath[abortedSectionIdx + 1]);
+
+            this.SearchPath();
+            this.CollectNodes();
         }
 
         #region IPath methods
-
-        /// <see cref="IPath.FindPathSection<T>"/>
-        public List<RCIntVector> FindPathSection<T>(RCIntVector fromCoords, IMapContentManager<T> mapContentMgr) where T : IMapContent
+        
+        /// <see cref="IPath.this[]"/>
+        public RCIntRectangle this[int index]
         {
-            throw new NotImplementedException();
+            get { return this.nodesOnPath[index].AreaOnMap; }
+        }
+
+        /// <see cref="IPath.Length"/>
+        public int Length { get { return this.nodesOnPath.Count; } }
+
+        /// <see cref="IPath.ForgetBlockedEdges"/>
+        public void ForgetBlockedEdges()
+        {
+            this.blockedEdges.Clear();
         }
 
         #endregion IPath methods
 
-        /// <summary>
-        /// Gets the list of nodes along the computed path in a reverse order.
-        /// </summary>
-        /// <remarks>TODO: this is only for debugging!</remarks>
-        internal List<PFTreeNode> ComputedPath
-        {
-            get
-            {
-                List<PFTreeNode> retList = new List<PFTreeNode>();
-                PFTreeNode currNode = this.lastNodeOnPath;
-                retList.Add(currNode);
-                while (currNode != this.fromNode)
-                {
-                    PathNode currPathNode = this.completedNodesMap[currNode];
-                    currNode = currPathNode.PrevNode.Node;
-                    retList.Add(currNode);
-                }
-                return retList;
-            }
-        }
+        #region Methods for debugging
 
         /// <summary>
         /// Gets the list of nodes in the completed list.
@@ -73,6 +91,10 @@ namespace RC.Engine.Simulator.Core
             }
         }
 
+        #endregion Methods for debugging
+
+        #region Internal methods
+
         /// <summary>
         /// Implements the A* pathfinding algorithm.
         /// </summary>
@@ -82,7 +104,7 @@ namespace RC.Engine.Simulator.Core
             this.queuedNodes = new BinaryHeap<PathNode>(BinaryHeap<PathNode>.HeapType.MinHeap);
             this.queuedNodesMap = new Dictionary<PFTreeNode, PathNode>();
             this.completedNodesMap = new Dictionary<PFTreeNode, PathNode>();
-            RCNumber sourceEstimation = Path.ComputeDistance(this.fromNode.Center, this.toCoords);
+            RCNumber sourceEstimation = MapUtils.ComputeDistance(this.fromNode.Center, this.toCoords);
             this.queuedNodes.Insert(sourceEstimation.Bits,
                 new PathNode()
                 {
@@ -96,26 +118,31 @@ namespace RC.Engine.Simulator.Core
             /// TODO: We might have to limit the number of iterations.
             while (this.queuedNodes.Count != 0)
             {
-                /// Get the next node from the priority queue and add it to the completed set.
+                /// Get the current node from the priority queue and add it to the completed set.
                 PathNode currentPathNode = this.queuedNodes.MaxMinItem;
                 this.queuedNodes.DeleteMaxMin();
                 this.completedNodesMap.Add(currentPathNode.Node, currentPathNode);
 
                 /// Save it's reference if its distance to the target node is less than the minimum distance found.
                 if (this.lastNodeOnPath == null ||
-                    Path.ComputeDistance(currentPathNode.Node.Center, this.toCoords) < Path.ComputeDistance(this.lastNodeOnPath.Center, this.toCoords))
+                    MapUtils.ComputeDistance(currentPathNode.Node.Center, this.toCoords) < MapUtils.ComputeDistance(this.lastNodeOnPath.Center, this.toCoords))
                 {
                     this.lastNodeOnPath = currentPathNode.Node;
                 }
 
-                /// Process the neighbours of the next node.
+                /// Process the neighbours of the current node.
                 foreach (PFTreeNode neighbour in currentPathNode.Node.Neighbours)
                 {
-                    /// Process the current neighbour only if it is walkable and is not yet in the completed set.
-                    if (neighbour.IsWalkable && neighbour.AreaOnMap.Width >= this.objectSize.X && neighbour.AreaOnMap.Height >= this.objectSize.Y && !this.completedNodesMap.ContainsKey(neighbour))
+                    /// Process the current neighbour only if it is walkable, is not yet in the completed set, and the edge from the current node
+                    /// to that neighbour is not blocked.
+                    if (neighbour.IsWalkable &&
+                        neighbour.AreaOnMap.Width >= this.objectSize.X &&
+                        neighbour.AreaOnMap.Height >= this.objectSize.Y &&
+                        !this.completedNodesMap.ContainsKey(neighbour) &&
+                        !this.IsEdgeBlocked(currentPathNode.Node, neighbour))
                     {
                         /// Compute an estimated distance from the current neighbour to the target.
-                        RCNumber neighbourEstimation = Path.ComputeDistance(neighbour.Center, this.toCoords);
+                        RCNumber neighbourEstimation = MapUtils.ComputeDistance(neighbour.Center, this.toCoords);
                         PathNode neighbourPathNode = null;
                         bool newNode = false;
 
@@ -137,7 +164,7 @@ namespace RC.Engine.Simulator.Core
                         }
 
                         /// Reconsider the distance from source to the current neighbour and overwrite if necessary.
-                        RCNumber currentToNeighbourDist = Path.ComputeDistance(currentPathNode.Node.Center, neighbourPathNode.Node.Center);
+                        RCNumber currentToNeighbourDist = MapUtils.ComputeDistance(currentPathNode.Node.Center, neighbourPathNode.Node.Center);
                         if (neighbourPathNode.DistanceFromSource == -1 ||
                             neighbourPathNode.DistanceFromSource > currentPathNode.DistanceFromSource + currentToNeighbourDist)
                         {
@@ -160,18 +187,51 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Computes the distance between two points on the map.
+        /// Collects the list of nodes among this path.
         /// </summary>
-        /// <param name="fromCoords">The first point on the map.</param>
-        /// <param name="toCoords">The second point on the map.</param>
-        /// <returns>The computed distance between the given points.</returns>
-        private static RCNumber ComputeDistance(RCNumVector fromCoords, RCNumVector toCoords)
+        private void CollectNodes()
         {
-            RCNumber horz = (toCoords.X - fromCoords.X).Abs();
-            RCNumber vert = (toCoords.Y - fromCoords.Y).Abs();
-            RCNumber diff = (horz - vert).Abs();
-            return (horz < vert ? horz : vert) * ROOT_OF_TWO + diff;
+            this.nodesOnPath = new List<PFTreeNode>();
+            PFTreeNode currNode = this.lastNodeOnPath;
+            this.nodesOnPath.Add(currNode);
+            while (currNode != this.fromNode)
+            {
+                PathNode currPathNode = this.completedNodesMap[currNode];
+                currNode = currPathNode.PrevNode.Node;
+                this.nodesOnPath.Add(currNode);
+            }
+            this.nodesOnPath.Reverse();
         }
+
+        /// <summary>
+        /// Registers a blocked edge between two nodes in the pathfinder tree.
+        /// </summary>
+        /// <param name="nodeA">The first node of the blocked edge.</param>
+        /// <param name="nodeB">The second node of the blocked edge.</param>
+        private void AddBlockedEdge(PFTreeNode nodeA, PFTreeNode nodeB)
+        {
+            if (!this.blockedEdges.ContainsKey(nodeA))
+            {
+                this.blockedEdges.Add(nodeA, new HashSet<PFTreeNode>());
+                this.blockedEdges.Add(nodeB, new HashSet<PFTreeNode>());
+            }
+
+            this.blockedEdges[nodeA].Add(nodeB);
+            this.blockedEdges[nodeB].Add(nodeA);
+        }
+
+        /// <summary>
+        /// Checks whether the edge between the two given pathfinder tree nodes is blocked or not.
+        /// </summary>
+        /// <param name="nodeA">The first node of the edge.</param>
+        /// <param name="nodeB">The second node of the edge.</param>
+        /// <returns>True if the edge is blocked, false otherwise.</returns>
+        private bool IsEdgeBlocked(PFTreeNode nodeA, PFTreeNode nodeB)
+        {
+            return this.blockedEdges.ContainsKey(nodeA) && this.blockedEdges[nodeA].Contains(nodeB);
+        }
+
+        #endregion Internal methods
 
         /// <summary>
         /// The node that contains the starting cell of the path.
@@ -215,9 +275,14 @@ namespace RC.Engine.Simulator.Core
         private Dictionary<PFTreeNode, PathNode> completedNodesMap;
 
         /// <summary>
-        /// The square root of 2 used in distance calculations.
+        /// The list of the nodes among this path.
         /// </summary>
-        private static readonly RCNumber ROOT_OF_TWO = (RCNumber)14142 / (RCNumber)10000;
+        private List<PFTreeNode> nodesOnPath;
+
+        /// <summary>
+        /// List of the blocked edges in the pathfinding graph.
+        /// </summary>
+        private Dictionary<PFTreeNode, HashSet<PFTreeNode>> blockedEdges;
     }
 
     /// <summary>

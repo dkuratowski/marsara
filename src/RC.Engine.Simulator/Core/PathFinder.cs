@@ -59,6 +59,8 @@ namespace RC.Engine.Simulator.Core
                     }
                 }
             }
+
+            this.map = map;
         }
 
         /// <see cref="IPathFinder.FindPath"/>
@@ -75,11 +77,14 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <see cref="IPathFinder.FindAlternativePath"/>
-        public IPath FindAlternativePath(IPath originalPath, RCIntVector fromCoords)
+        public IPath FindAlternativePath(IPath originalPath, int abortedSectionIdx)
         {
             if (this.map == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
+            if (originalPath == null) { throw new ArgumentNullException("originalPath"); }
+            if (abortedSectionIdx < 0 || abortedSectionIdx >= originalPath.Length - 1) { throw new ArgumentOutOfRangeException("abortedSectionIdx"); }
 
-            throw new NotImplementedException();
+            Path retPath = new Path((Path)originalPath, abortedSectionIdx);
+            return retPath;
         }
 
         /// <see cref="IPathFinder.CheckObstacleIntersection"/>

@@ -45,6 +45,13 @@ namespace RC.App.BizLogic.Core
             return new TileSetView(this.scenarioSimulator.Map.Tileset);
         }
 
+        /// <see cref="IGameplayBE.CreateTileSetView"/>
+        /// PROTOTYPE CODE
+        public void UpdateSimulation()
+        {
+            this.scenarioSimulator.UpdateSimulation();
+        }
+
         /// TODO: Remove this section when no longer necessary *********************************************************
         public void StartTestScenario()
         {

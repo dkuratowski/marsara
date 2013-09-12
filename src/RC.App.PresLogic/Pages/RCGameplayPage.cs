@@ -185,6 +185,9 @@ namespace RC.App.PresLogic.Pages
             this.mapObjectDisplayEx.MouseActivityStarted += this.OnMouseActivityStarted;
             this.mapObjectDisplayEx.MouseActivityFinished += this.OnMouseActivityFinished;
 
+            /// PROTOTYPE CODE for start updating the simulation state (later the simulation shall be updated from the DSS-thread)
+            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.UpdateSimulation);
+
             /// The page is now online.
             this.CurrentConnectionStatus = ConnectionStatus.Online;
         }
@@ -208,8 +211,20 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplay = null;
             this.scrollHandler = null;
 
+            /// PROTOTYPE CODE for stop updating the simulation state (later the simulation shall be updated from the DSS-thread)
+            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.UpdateSimulation);
+
             /// The page is now offline.
             this.CurrentConnectionStatus = ConnectionStatus.Offline;
+        }
+
+        /// <summary>
+        /// PROTOTYPE CODE for updating the simulation state (later the simulation shall be updated from the DSS-thread)
+        /// </summary>
+        /// <param name="evtArgs"></param>
+        private void UpdateSimulation(UIUpdateSystemEventArgs evtArgs)
+        {
+            this.gameplayBE.UpdateSimulation();
         }
 
         /// <summary>

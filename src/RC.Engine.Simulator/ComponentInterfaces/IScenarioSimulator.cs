@@ -30,6 +30,12 @@ namespace RC.Engine.Simulator.ComponentInterfaces
         IMapAccess EndScenario();
 
         /// <summary>
+        /// PROTOTYPE CODE
+        /// Updates the state of the simulation and all of its elements.
+        /// </summary>
+        void UpdateSimulation();
+
+        /// <summary>
         /// Gets the map of the currently simulated scenario.
         /// </summary>
         /// <exception cref="InvalidOperationException">If there is no scenario currently being simulated.</exception>

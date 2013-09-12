@@ -60,6 +60,7 @@
     <Compile Include="PublicInterfaces\IPath.cs" />
     <Compile Include="ComponentInterfaces\IPathFinder.cs" />
     <Compile Include="PublicInterfaces\ISimDataAccess.cs" />
+    <Compile Include="PublicInterfaces\IElementOfSimulation.cs" />
     <Compile Include="PublicInterfaces\ISimulationHeapMgr.cs" />
     <Compile Include="PublicInterfaces\SimulationHeapException.cs" />
   </ItemGroup>

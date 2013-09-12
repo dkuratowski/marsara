@@ -38,5 +38,11 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// </summary>
         /// TODO: remove this method when no longer necessary.
         void StartTestScenario();
+
+        /// <summary>
+        /// PROTOTYPE CODE
+        /// Updates the simulation and all of its components. Later the simulation shall be executed from the DSS-thread.
+        /// </summary>
+        void UpdateSimulation();
     }
 }

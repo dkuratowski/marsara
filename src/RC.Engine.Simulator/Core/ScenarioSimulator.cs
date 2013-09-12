@@ -43,6 +43,7 @@ namespace RC.Engine.Simulator.Core
                                            map.CellSize.Y),
                                            Constants.BSP_NODE_CAPACITY,
                                            Constants.BSP_MIN_NODE_SIZE);
+            this.simulationElements = new HashSet<IElementOfSimulation>();
             this.pathFinder.Initialize(this.map);
             this.CreateTestObjects();
         }
@@ -56,10 +57,22 @@ namespace RC.Engine.Simulator.Core
             IMapAccess map = this.map;
             this.map = null;
             this.gameObjects = null;
+            this.simulationElements = null;
             return map;
         }
 
-        /// <see cref="IScenarioSimulator.BeginScenario"/>
+        /// <see cref="IScenarioSimulator.UpdateSimulation"/>
+        public void UpdateSimulation()
+        {
+            if (this.map == null) { throw new InvalidOperationException("There is no scenario currently being simulated!"); }
+
+            foreach (IElementOfSimulation simElement in this.simulationElements)
+            {
+                simElement.Update();
+            }
+        }
+
+        /// <see cref="IScenarioSimulator.Map"/>
         public IMapAccess Map
         {
             get
@@ -84,7 +97,12 @@ namespace RC.Engine.Simulator.Core
         /// **************** PROTOTYPE CODE *******************
         private void CreateTestObjects()
         {
-            for (int i = 0; i < Constants.TEST_OBJECT_NUM; i++)
+            RCNumRectangle r = new RCNumRectangle((RCNumber)(-1) / (RCNumber)2, (RCNumber)(-1) / (RCNumber)2, 1, 1);
+            GameObject o = new GameObject(r, (RCNumber)1 / (RCNumber)2, this.pathFinder);
+            gameObjects.AttachContent(o);
+            this.simulationElements.Add(o);
+
+            for (int i = 1; i < Constants.TEST_OBJECT_NUM; i++)
             {
                 RCNumVector testObjPos = new RCNumVector(
                     (RCNumber)RandomService.DefaultGenerator.Next(Constants.TEST_OBJECT_MAXCOORD * 1024) / (RCNumber)1024,
@@ -99,8 +117,9 @@ namespace RC.Engine.Simulator.Core
                     i--;
                     continue;
                 }
-                GameObject testObj = new GameObject(testObjRect);
+                GameObject testObj = new GameObject(testObjRect, (RCNumber)1 / (RCNumber)4, this.pathFinder);
                 gameObjects.AttachContent(testObj);
+                this.simulationElements.Add(testObj);
             }
         }
         /// ************ END OF PROTOTYPE CODE ****************
@@ -114,6 +133,12 @@ namespace RC.Engine.Simulator.Core
         /// Reference to the map content manager that contains the game objects of the scenario currently being simulated.
         /// </summary>
         private IMapContentManager<IGameObject> gameObjects;
+
+        /// <summary>
+        /// PROTOTYPE CODE
+        /// List of the elements of the simulation.
+        /// </summary>
+        private HashSet<IElementOfSimulation> simulationElements;
 
         /// <summary>
         /// Reference to the pathfinder component.

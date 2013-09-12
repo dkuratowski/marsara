@@ -34,12 +34,12 @@ namespace RC.Engine.Simulator.ComponentInterfaces
         IPath FindPath(RCIntVector fromCoords, RCIntVector toCoords, RCNumVector size);
 
         /// <summary>
-        /// Computes an alternative path to the target from the given cell on the given original path.
+        /// Computes an alternative path to the target from the given section on the given original path.
         /// </summary>
         /// <param name="originalPath">The original path.</param>
-        /// <param name="fromCoords">The coordinates of the starting cell of the path.</param>
+        /// <param name="abortedSectionIdx">The index of the aborted section on the original path.</param>
         /// <returns>The interface of the computed alternative path.</returns>
-        IPath FindAlternativePath(IPath originalPath, RCIntVector fromCoords);
+        IPath FindAlternativePath(IPath originalPath, int abortedSectionIdx);
 
         /// <summary>
         /// Checks whether the given area intersects a map obstacle or not.

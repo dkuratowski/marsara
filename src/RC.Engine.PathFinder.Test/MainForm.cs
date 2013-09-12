@@ -156,17 +156,17 @@ namespace RC.Engine.PathFinder.Test
                     this.currentPathImg = new Bitmap(this.pfTreeRoot.AreaOnMap.Width * CELL_SIZE, this.pfTreeRoot.AreaOnMap.Height * CELL_SIZE, PixelFormat.Format24bppRgb);
                     Graphics outputGC = Graphics.FromImage(this.currentPathImg);
                     outputGC.Clear(Color.FromArgb(255, 0, 255));
-                    HashSet<PFTreeNode> nodesOnPath = new HashSet<PFTreeNode>();
-                    foreach (PFTreeNode nodeOnPath in testPath.ComputedPath)
+                    HashSet<RCIntRectangle> sectionsOnPath = new HashSet<RCIntRectangle>();
+                    for (int i = 0; i < testPath.Length; ++i)
                     {
-                        RCIntRectangle nodeRect = nodeOnPath.AreaOnMap * new RCIntVector(CELL_SIZE, CELL_SIZE);
-                        outputGC.FillRectangle(Brushes.Blue, nodeRect.X, nodeRect.Y, nodeRect.Width, nodeRect.Height);
-                        outputGC.DrawRectangle(Pens.Black, nodeRect.X, nodeRect.Y, nodeRect.Width, nodeRect.Height);
-                        nodesOnPath.Add(nodeOnPath);
+                        RCIntRectangle sectionRect = testPath[i] * new RCIntVector(CELL_SIZE, CELL_SIZE);
+                        outputGC.FillRectangle(Brushes.Blue, sectionRect.X, sectionRect.Y, sectionRect.Width, sectionRect.Height);
+                        outputGC.DrawRectangle(Pens.Black, sectionRect.X, sectionRect.Y, sectionRect.Width, sectionRect.Height);
+                        sectionsOnPath.Add(sectionRect);
                     }
                     foreach (PFTreeNode completedNode in testPath.CompletedNodes)
                     {
-                        if (!nodesOnPath.Contains(completedNode))
+                        if (!sectionsOnPath.Contains(completedNode.AreaOnMap))
                         {
                             RCIntRectangle nodeRect = completedNode.AreaOnMap * new RCIntVector(CELL_SIZE, CELL_SIZE);
                             outputGC.FillRectangle(Brushes.Red, nodeRect.X, nodeRect.Y, nodeRect.Width, nodeRect.Height);
