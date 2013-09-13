@@ -34,11 +34,14 @@ namespace RC.App.PresLogic.Pages
         {
             this.gameplayBE = ComponentManager.GetInterface<IGameplayBE>();
             this.mapTerrainView = null;
+            this.mapDebugView = null;
             this.mapObjectView = null;
             this.tilesetView = null;
 
             this.mapDisplay = null;
             this.mapDisplayBasic = null;
+            this.mapDebugDisplayEx = null;
+            this.mapObjectDisplayEx = null;
             this.objectPlacementDisplayEx = null;
             this.currentConnectionStatus = ConnectionStatus.Offline;
 
@@ -84,12 +87,14 @@ namespace RC.App.PresLogic.Pages
 
             /// Create the necessary views.
             this.mapTerrainView = this.gameplayBE.CreateMapTerrainView();
+            this.mapDebugView = this.gameplayBE.CreateMapDebugView();
             this.mapObjectView = this.gameplayBE.CreateMapObjectView();
             this.tilesetView = this.gameplayBE.CreateTileSetView();
 
             /// Create and start the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135), this.mapTerrainView, this.tilesetView);
-            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView);
+            this.mapDebugDisplayEx = new RCMapDebugDisplay(this.mapDisplayBasic, this.mapDebugView);
+            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDebugDisplayEx, this.mapObjectView);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.mapObjectDisplayEx, this.mapTerrainView);
             this.mapDisplay = this.objectPlacementDisplayEx;
             this.mapDisplay.Started += this.OnMapDisplayStarted;
@@ -185,6 +190,9 @@ namespace RC.App.PresLogic.Pages
             this.mapObjectDisplayEx.MouseActivityStarted += this.OnMouseActivityStarted;
             this.mapObjectDisplayEx.MouseActivityFinished += this.OnMouseActivityFinished;
 
+            /// PROTOTYPE CODE for start updating the simulation state (later the simulation shall be updated from the DSS-thread)
+            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.UpdateSimulation);
+
             /// The page is now online.
             this.CurrentConnectionStatus = ConnectionStatus.Online;
         }
@@ -198,6 +206,7 @@ namespace RC.App.PresLogic.Pages
 
             /// Remove the views.
             this.mapTerrainView = null;
+            this.mapDebugView = null;
             this.mapObjectView = null;
             this.tilesetView = null;
 
@@ -208,8 +217,20 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplay = null;
             this.scrollHandler = null;
 
+            /// PROTOTYPE CODE for stop updating the simulation state (later the simulation shall be updated from the DSS-thread)
+            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.UpdateSimulation);
+
             /// The page is now offline.
             this.CurrentConnectionStatus = ConnectionStatus.Offline;
+        }
+
+        /// <summary>
+        /// PROTOTYPE CODE for updating the simulation state (later the simulation shall be updated from the DSS-thread)
+        /// </summary>
+        /// <param name="evtArgs"></param>
+        private void UpdateSimulation(UIUpdateSystemEventArgs evtArgs)
+        {
+            this.gameplayBE.UpdateSimulation();
         }
 
         /// <summary>
@@ -283,6 +304,11 @@ namespace RC.App.PresLogic.Pages
         private RCMapDisplayBasic mapDisplayBasic;
 
         /// <summary>
+        /// Extension of the map display that displays debug informations.
+        /// </summary>
+        private RCMapDebugDisplay mapDebugDisplayEx;
+
+        /// <summary>
         /// Extension of the map display that displays the map objects.
         /// </summary>
         private RCMapObjectDisplay mapObjectDisplayEx;
@@ -306,6 +332,11 @@ namespace RC.App.PresLogic.Pages
         /// Reference to the map object view.
         /// </summary>
         private IMapObjectView mapObjectView;
+
+        /// <summary>
+        /// Reference to the map debug view.
+        /// </summary>
+        private IMapDebugView mapDebugView;
 
         /// <summary>
         /// Reference to the tileset view.

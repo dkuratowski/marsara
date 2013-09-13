@@ -72,6 +72,7 @@
     <Compile Include="Controls\RCIsoTileDisplay.cs" />
     <Compile Include="Controls\RCDropdownSelector.cs" />
     <Compile Include="Controls\RCListBox.cs" />
+    <Compile Include="Controls\RCMapDebugDisplay.cs" />
     <Compile Include="Controls\RCMapDisplayBasic.cs" />
     <Compile Include="Controls\RCMapDisplayExtension.cs" />
     <Compile Include="Controls\RCMapObjectDisplay.cs" />

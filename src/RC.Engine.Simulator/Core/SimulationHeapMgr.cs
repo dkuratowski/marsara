@@ -10,7 +10,7 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// This class manages the allocations on the simulation-heap.
     /// </summary>
-    public class SimulationHeapMgr : ISimulationHeapMgr // TODO: make private
+    class SimulationHeapMgr : ISimulationHeapMgr
     {
         /// <summary>
         /// Constructs a SimulationHeapMgr object.

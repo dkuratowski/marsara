@@ -34,9 +34,22 @@ namespace RC.App.BizLogic.PublicInterfaces
         IMapObjectView CreateMapObjectView();
 
         /// <summary>
+        /// Creates a debug view on the map of the currently running game.
+        /// </summary>
+        /// <returns>The debug view on the map of the currently running game.</returns>
+        /// <exception cref="InvalidOperationException">If there is no running game.</exception>
+        IMapDebugView CreateMapDebugView();
+
+        /// <summary>
         /// Temporary method for testing.
         /// </summary>
         /// TODO: remove this method when no longer necessary.
         void StartTestScenario();
+
+        /// <summary>
+        /// PROTOTYPE CODE
+        /// Updates the simulation and all of its components. Later the simulation shall be executed from the DSS-thread.
+        /// </summary>
+        void UpdateSimulation();
     }
 }

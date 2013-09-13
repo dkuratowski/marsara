@@ -31,7 +31,6 @@ namespace RC.App.PresLogic.Controls
 
             this.mapObjectSprites = new MapObjectSpriteGroup();
             this.brushPalette = new BrushPaletteSpriteGroup();
-            this.selBoxBrush = null;
             this.CurrentMouseStatus = MouseStatus.None;
             this.selectionBoxStartPosition = RCIntVector.Undefined;
             this.selectionBoxCurrPosition = RCIntVector.Undefined;
@@ -93,9 +92,6 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="RCMapDisplayExtension.StartExtensionProc_i"/>
         protected override void StartExtensionProc_i()
         {
-            this.selBoxBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
-            this.selBoxBrush.Upload();
-
             this.mapObjectSprites.Load();
             this.brushPalette.Load();
         }
@@ -105,9 +101,6 @@ namespace RC.App.PresLogic.Controls
         {
             this.mapObjectSprites.Unload();
             this.brushPalette.Unload();
-
-            UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(this.selBoxBrush);
-            this.selBoxBrush = null;
         }
 
         /// <see cref="RCMapDisplayExtension.RenderExtension_i"/>
@@ -123,17 +116,20 @@ namespace RC.App.PresLogic.Controls
                 {
                     renderContext.RenderRectangle(this.brushPalette[obj.SelectionIndicatorColorIdx],
                                                   obj.SelectionIndicator);
-                    int row = obj.SelectionIndicator.Bottom;
-                    int col = obj.SelectionIndicator.Left;
-                    foreach (Tuple<int, RCNumber> val in obj.Values)
+                    if (obj.Values != null)
                     {
-                        int width = ((RCNumber)obj.SelectionIndicator.Width * val.Item2).Round();
-                        if (width > 0)
+                        int row = obj.SelectionIndicator.Bottom;
+                        int col = obj.SelectionIndicator.Left;
+                        foreach (Tuple<int, RCNumber> val in obj.Values)
                         {
-                            renderContext.RenderRectangle(this.brushPalette[val.Item1],
-                                                          new RCIntRectangle(col, row, width, 1));
+                            int width = ((RCNumber)obj.SelectionIndicator.Width * val.Item2).Round();
+                            if (width > 0)
+                            {
+                                renderContext.RenderRectangle(this.brushPalette[val.Item1],
+                                                              new RCIntRectangle(col, row, width, 1));
+                            }
+                            row++;
                         }
-                        row++;
                     }
                 }
             }
@@ -141,15 +137,18 @@ namespace RC.App.PresLogic.Controls
             /// Render the object sprites.
             foreach (MapObjectInstance obj in mapObjects)
             {
-                renderContext.RenderSprite(this.mapObjectSprites[obj.Sprite.Index],
-                                           obj.Sprite.DisplayCoords,
-                                           obj.Sprite.Section);
+                if (obj.Sprite.Index != -1)
+                {
+                    renderContext.RenderSprite(this.mapObjectSprites[obj.Sprite.Index],
+                                               obj.Sprite.DisplayCoords,
+                                               obj.Sprite.Section);
+                }
             }
 
             /// Render the selection box if necessary.
             if (this.CurrentMouseStatus == MouseStatus.Selecting)
             {
-                renderContext.RenderRectangle(this.selBoxBrush, this.CalculateSelectionBox());
+                renderContext.RenderRectangle(this.brushPalette[0], this.CalculateSelectionBox());
             }
         }
 
@@ -180,6 +179,7 @@ namespace RC.App.PresLogic.Controls
                 {
                     /// TODO: send command to the selected units
                     TraceManager.WriteAllTrace("RIGHT_CLICK", PresLogicTraceFilters.INFO);
+                    this.mapObjectView.SendCommand(this.DisplayedArea, evtArgs.Position);
 
                     this.CurrentMouseStatus = MouseStatus.RightDown;
                 }
@@ -244,6 +244,7 @@ namespace RC.App.PresLogic.Controls
 
                 /// TODO: handle single unit selection
                 TraceManager.WriteAllTrace("LEFT_CLICK", PresLogicTraceFilters.INFO);
+                this.mapObjectView.SelectObject(this.DisplayedArea, evtArgs.Position);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
@@ -254,7 +255,9 @@ namespace RC.App.PresLogic.Controls
                 this.CurrentMouseStatus = MouseStatus.None;
 
                 /// TODO: handle selection box
-                TraceManager.WriteAllTrace(string.Format("SELECTION {0}", this.CalculateSelectionBox()), PresLogicTraceFilters.INFO);
+                RCIntRectangle selectionBox = this.CalculateSelectionBox();
+                TraceManager.WriteAllTrace(string.Format("SELECTION {0}", selectionBox), PresLogicTraceFilters.INFO);
+                this.mapObjectView.SelectObjects(this.DisplayedArea, selectionBox);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
@@ -320,11 +323,6 @@ namespace RC.App.PresLogic.Controls
                 }
             }
         }
-
-        /// <summary>
-        /// Brush for drawing the selection box.
-        /// </summary>
-        private UISprite selBoxBrush;
 
         /// <summary>
         /// The brush palette for drawing the selection indicators and value bars of map objects.

@@ -36,13 +36,26 @@ namespace RC.App.BizLogic.Core
         /// <see cref="IGameplayBE.CreateMapObjectView"/>
         public IMapObjectView CreateMapObjectView()
         {
-            return new MapObjectView(this.scenarioSimulator.Map);
+            return new MapObjectView(this.scenarioSimulator.Map, this.scenarioSimulator.GameObjects);
+        }
+
+        /// <see cref="IGameplayBE.CreateMapDebugView"/>
+        public IMapDebugView CreateMapDebugView()
+        {
+            return new MapDebugView(this.scenarioSimulator.Map, this.pathFinder);
         }
 
         /// <see cref="IGameplayBE.CreateTileSetView"/>
         public ITileSetView CreateTileSetView()
         {
             return new TileSetView(this.scenarioSimulator.Map.Tileset);
+        }
+
+        /// <see cref="IGameplayBE.CreateTileSetView"/>
+        /// PROTOTYPE CODE
+        public void UpdateSimulation()
+        {
+            this.scenarioSimulator.UpdateSimulation();
         }
 
         /// TODO: Remove this section when no longer necessary *********************************************************
@@ -67,5 +80,11 @@ namespace RC.App.BizLogic.Core
         /// </summary>
         [ComponentReference]
         private IScenarioSimulator scenarioSimulator;
+
+        /// <summary>
+        /// Reference to the RC.Engine.Simulator.PathFinder component.
+        /// </summary>
+        [ComponentReference]
+        private IPathFinder pathFinder;
     }
 }
