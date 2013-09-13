@@ -39,6 +39,12 @@ namespace RC.App.BizLogic.Core
             return new MapObjectView(this.scenarioSimulator.Map, this.scenarioSimulator.GameObjects);
         }
 
+        /// <see cref="IGameplayBE.CreateMapDebugView"/>
+        public IMapDebugView CreateMapDebugView()
+        {
+            return new MapDebugView(this.scenarioSimulator.Map, this.pathFinder);
+        }
+
         /// <see cref="IGameplayBE.CreateTileSetView"/>
         public ITileSetView CreateTileSetView()
         {
@@ -74,5 +80,11 @@ namespace RC.App.BizLogic.Core
         /// </summary>
         [ComponentReference]
         private IScenarioSimulator scenarioSimulator;
+
+        /// <summary>
+        /// Reference to the RC.Engine.Simulator.PathFinder component.
+        /// </summary>
+        [ComponentReference]
+        private IPathFinder pathFinder;
     }
 }

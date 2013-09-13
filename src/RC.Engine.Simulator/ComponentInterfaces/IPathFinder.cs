@@ -47,5 +47,12 @@ namespace RC.Engine.Simulator.ComponentInterfaces
         /// <param name="area">The area to check.</param>
         /// <returns>True if the area intersects any map obstacle, false otherwise.</returns>
         bool CheckObstacleIntersection(RCNumRectangle area);
+
+        /// <summary>
+        /// Gets every leaf of the pathfinder tree having intersection with the given area.
+        /// </summary>
+        /// <param name="area">The area to intersect.</param>
+        /// <returns>The list of intersecting leaves.</returns>
+        List<RCIntRectangle> GetTreeNodes(RCIntRectangle area);
     }
 }

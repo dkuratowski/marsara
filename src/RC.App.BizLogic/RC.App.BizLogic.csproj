@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="Core\BizLogicConstants.cs" />
     <Compile Include="Core\GameplayBE.cs" />
+    <Compile Include="Core\MapDebugView.cs" />
     <Compile Include="Core\MapEditorBE.cs" />
     <Compile Include="Core\MapObjectView.cs" />
     <Compile Include="Core\MapTerrainView.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="InternalInterfaces\ITileSetStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicInterfaces\IGameplayBE.cs" />
+    <Compile Include="PublicInterfaces\IMapDebugView.cs" />
     <Compile Include="PublicInterfaces\IMapEditorBE.cs" />
     <Compile Include="PublicInterfaces\IMapObjectView.cs" />
     <Compile Include="PublicInterfaces\IMapTerrainView.cs" />

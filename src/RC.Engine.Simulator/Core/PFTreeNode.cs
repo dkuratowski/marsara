@@ -64,6 +64,19 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
+        /// Gets all the leaf nodes in the pathfinder tree having intersection with the given area.
+        /// </summary>
+        /// <param name="area">The area to intersect.</param>
+        /// <returns>The list of the intersecting leaf nodes in the pathfinder tree.</returns>
+        public HashSet<PFTreeNode> GetAllLeafNodes(RCIntRectangle area)
+        {
+            HashSet<PFTreeNode> retList = new HashSet<PFTreeNode>();
+            if (this.parent != null) { this.root.GetAllLeafNodesImpl(retList, area); }
+            else { this.GetAllLeafNodesImpl(retList, area); }
+            return retList;
+        }
+
+        /// <summary>
         /// Checks whether the given area intersects a map obstacle or not.
         /// </summary>
         /// <param name="area">The area to check.</param>
@@ -266,7 +279,7 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// The internal implementation of PFTreeNode.GetAllLeafNodes.
         /// </summary>
-        /// <param name="leafNodes">The list that contains the collected. leaf nodes.</param>
+        /// <param name="leafNodes">The list that contains the collected leaf nodes.</param>
         private void GetAllLeafNodesImpl(HashSet<PFTreeNode> leafNodes)
         {
             if (this.walkability != Walkability.Mixed)
@@ -280,6 +293,32 @@ namespace RC.Engine.Simulator.Core
             foreach (PFTreeNode child in this.children)
             {
                 child.GetAllLeafNodesImpl(leafNodes);
+            }
+        }
+
+        /// <summary>
+        /// The internal implementation of PFTreeNode.GetAllLeafNodes.
+        /// </summary>
+        /// <param name="leafNodes">The list that contains the collected leaf nodes.</param>
+        private void GetAllLeafNodesImpl(HashSet<PFTreeNode> leafNodes, RCIntRectangle area)
+        {
+            if (area == RCIntRectangle.Undefined) { throw new ArgumentNullException("area"); }
+
+            if (this.areaOnMap.IntersectsWith(area))
+            {
+                if (this.walkability == Walkability.Mixed)
+                {
+                    /// Not leaf node -> Call this method recursively on all children.
+                    foreach (PFTreeNode child in this.children)
+                    {
+                        child.GetAllLeafNodesImpl(leafNodes, area);
+                    }
+                }
+                else
+                {
+                    /// Leaf node -> Add to the list if walkable.
+                    if (this.walkability == Walkability.Walkable) { leafNodes.Add(this); }
+                }
             }
         }
 

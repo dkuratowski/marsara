@@ -65,6 +65,20 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IGameObject.IsStopped"/>
         public bool IsStopped { get { return this.currentPath == null; } }
 
+        /// TODO: only for debugging !!!
+        public List<RCNumRectangle> GetPathSections()
+        {
+            List<RCNumRectangle> retList = new List<RCNumRectangle>();
+            if (this.currentPath != null)
+            {
+                for (int i = 0; i < this.currentPath.Length; i++)
+                {
+                    retList.Add((RCNumRectangle)this.currentPath[i] - new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2));
+                }
+            }
+            return retList;
+        }
+
         #endregion IGameObject members
 
         #region IElementOfSimulation members

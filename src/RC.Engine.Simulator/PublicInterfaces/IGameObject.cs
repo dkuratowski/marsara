@@ -22,5 +22,8 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// Checks whether this game object is in a stopped state or not.
         /// </summary>
         bool IsStopped { get; }
+
+        /// TODO: only for debugging !!!
+        List<RCNumRectangle> GetPathSections();
     }
 }

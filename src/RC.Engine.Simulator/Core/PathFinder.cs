@@ -100,6 +100,19 @@ namespace RC.Engine.Simulator.Core
             return this.pathfinderTreeRoot.CheckObstacleIntersection(areaCells);
         }
 
+        /// <see cref="IPathFinder.GetTreeNodes"/>
+        public List<RCIntRectangle> GetTreeNodes(RCIntRectangle area)
+        {
+            if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
+
+            List<RCIntRectangle> retList = new List<RCIntRectangle>();
+            foreach (PFTreeNode treeNode in this.pathfinderTreeRoot.GetAllLeafNodes(area))
+            {
+                retList.Add(treeNode.AreaOnMap);
+            }
+            return retList;
+        }
+
         /// <summary>
         /// Reference to the searched map.
         /// </summary>

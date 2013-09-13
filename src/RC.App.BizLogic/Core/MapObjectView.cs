@@ -54,6 +54,21 @@ namespace RC.App.BizLogic.Core
                     SelectionIndicator = (RCIntRectangle)((gameObj.Position - cellWindow.Location + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)) - displayOffset,
                     Values = null
                 });
+
+                /// TODO: just for displaying the calculated path if exist
+                if (this.selectedObjects.Contains(gameObj))
+                {
+                    foreach (RCNumRectangle pathSection in gameObj.GetPathSections())
+                    {
+                        retList.Add(new MapObjectInstance()
+                        {
+                            Sprite = new MapSpriteInstance() { Index = -1, DisplayCoords = RCIntVector.Undefined, Section = RCIntRectangle.Undefined },
+                            SelectionIndicatorColorIdx = 2,
+                            SelectionIndicator = (RCIntRectangle)((pathSection - cellWindow.Location + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)) - displayOffset,
+                            Values = null
+                        });
+                    }
+                }
             }
             return retList;
         }

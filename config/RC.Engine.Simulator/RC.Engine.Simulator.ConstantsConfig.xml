@@ -6,6 +6,6 @@
 
   <constant namespace="RC.Engine.Simulator.Prototype" name="TestObjectNum" type="INT">30</constant> <!-- PROTOTYPE CODE -->
   <constant namespace="RC.Engine.Simulator.Prototype" name="TestObjectMaxCoord" type="INT">64</constant> <!-- PROTOTYPE CODE -->
-  <constant namespace="RC.Engine.Simulator.Prototype" name="TestObjectMinSize" type="INT">2</constant> <!-- PROTOTYPE CODE -->
-  <constant namespace="RC.Engine.Simulator.Prototype" name="TestObjectMaxSize" type="INT">4</constant> <!-- PROTOTYPE CODE -->
+  <constant namespace="RC.Engine.Simulator.Prototype" name="TestObjectMinSize" type="INT">1</constant> <!-- PROTOTYPE CODE -->
+  <constant namespace="RC.Engine.Simulator.Prototype" name="TestObjectMaxSize" type="INT">2</constant> <!-- PROTOTYPE CODE -->
 </constantsConfig>
