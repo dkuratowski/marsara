@@ -12,8 +12,9 @@ namespace RC.Engine.Maps.PublicInterfaces
     public interface ITerrainObjectConstraint
     {
         /// <summary>
-        /// Checks whether this constraint allows attaching the given terrain object to the map at it's
-        /// current position and collects all the violating quadratic coordinates.
+        /// Checks whether this constraint allows attaching the corresponding terrain object to the given map at the given
+        /// quadratic position and collects all the violating quadratic coordinates relative to the top-left corner of the
+		/// terrain object.
         /// </summary>
         /// <param name="terrainObj">The terrain object to be checked.</param>
         /// <returns>

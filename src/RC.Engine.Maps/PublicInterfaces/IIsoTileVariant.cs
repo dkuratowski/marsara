@@ -36,7 +36,7 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// Gets the value of a given property.
         /// </summary>
         /// <param name="propName">The name of the property to get.</param>
-        /// <returns>The value of the property of null if the property doesn't exists.</returns>
+        /// <returns>The value of the property or null if the property doesn't exists.</returns>
         string GetProperty(string propName);
     }
 }
