@@ -2,7 +2,7 @@
 using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
 
-namespace RC.App.BizLogic.InternalInterfaces
+namespace RC.App.BizLogic.ComponentInterfaces
 {
     /// <summary>
     /// This component interface is used to access informations about the available tilesets.

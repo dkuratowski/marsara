@@ -142,7 +142,8 @@ xcopy "$(SolutionDir)..\fonts" "$(TargetDir)fonts" /e /y /i /r
 xcopy "$(SolutionDir)..\sprites" "$(TargetDir)sprites" /e /y /i /r
 xcopy "$(SolutionDir)..\animations" "$(TargetDir)animations" /e /y /i /r
 xcopy "$(SolutionDir)..\tilesets" "$(TargetDir)tilesets" /e /y /i /r
-xcopy "$(SolutionDir)..\maps" "$(TargetDir)maps" /e /y /i /r</PostBuildEvent>
+xcopy "$(SolutionDir)..\maps" "$(TargetDir)maps" /e /y /i /r
+xcopy "$(SolutionDir)..\metadata" "$(TargetDir)metadata" /e /y /i /r</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

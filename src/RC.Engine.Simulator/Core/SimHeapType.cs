@@ -35,9 +35,9 @@ namespace RC.Engine.Simulator.Core
     }
 
     /// <summary>
-    /// Contains informations about a simulation data type.
+    /// Contains informations about a data type that can be stored on the simulation heap.
     /// </summary>
-    class SimDataType
+    class SimHeapType
     {
         #region Constructors
 
@@ -46,7 +46,7 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="name">The name of this composite type.</param>
         /// <param name="fields">The fields of this composite type.</param>
-        public SimDataType(string name, List<KeyValuePair<string, string>> fields)
+        public SimHeapType(string name, List<KeyValuePair<string, string>> fields)
         {
             if (name == null) { throw new ArgumentNullException("name"); }
             name = name.Trim();
@@ -86,7 +86,7 @@ namespace RC.Engine.Simulator.Core
         /// Constructs a built-in SimDataType.
         /// </summary>
         /// <param name="builtInType">The built-in type to be constructed.</param>
-        public SimDataType(BuiltInTypeEnum builtInType)
+        public SimHeapType(BuiltInTypeEnum builtInType)
         {
             /// Members filled at initialization.
             switch (builtInType)
@@ -135,7 +135,7 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="pointerTypeName">The name of this pointer type.</param>
         /// <param name="pointedTypeID">The ID of the pointed type.</param>
-        public SimDataType(string pointerTypeName, short pointedTypeID)
+        public SimHeapType(string pointerTypeName, short pointedTypeID)
         {
             if (pointerTypeName == null) { throw new ArgumentNullException("pointerTypeName"); }
             if (pointedTypeID < 0) { throw new ArgumentOutOfRangeException("", "ID of the pointed type must be non-negative!"); }
@@ -178,7 +178,7 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="typeIDs">The list of the type IDs mapped by their names.</param>
         /// <param name="types">The list of the types.</param>
-        public void RegisterPointerTypes(ref Dictionary<string, short> typeIDs, ref List<SimDataType> types)
+        public void RegisterPointerTypes(ref Dictionary<string, short> typeIDs, ref List<SimHeapType> types)
         {
             if (typeIDs == null) { throw new ArgumentNullException("typeIDs"); }
             if (types == null) { throw new ArgumentNullException("types"); }
@@ -213,7 +213,7 @@ namespace RC.Engine.Simulator.Core
         /// Computes the offsets of the fields if this is a composite type. Otherwise this function has no effect.
         /// </summary>
         /// <param name="types">The list of the types.</param>
-        public void ComputeFieldOffsets(List<SimDataType> types)
+        public void ComputeFieldOffsets(List<SimHeapType> types)
         {
             if (types == null) { throw new ArgumentNullException("types"); }
 
@@ -227,7 +227,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="pointedTypeName">The name of the pointed type.</param>
         /// <param name="typeIDs">The list of the type IDs mapped by their names.</param>
         /// <param name="types">The list of the types.</param>
-        private void RegisterPointer(string pointedTypeName, ref Dictionary<string, short> typeIDs, ref List<SimDataType> types)
+        private void RegisterPointer(string pointedTypeName, ref Dictionary<string, short> typeIDs, ref List<SimHeapType> types)
         {
             /// If the pointed type is also a pointer then continue the recursion.
             if (pointedTypeName.EndsWith("*"))
@@ -239,7 +239,7 @@ namespace RC.Engine.Simulator.Core
             if (typeIDs.ContainsKey(pointerTypeName)) { return; }
             if (types.Count == short.MaxValue) { throw new SimulationHeapException(string.Format("Number of possible types exceeded the limit of {0}!", short.MaxValue)); }
 
-            SimDataType ptrType = new SimDataType(pointerTypeName, typeIDs[pointedTypeName]);
+            SimHeapType ptrType = new SimHeapType(pointerTypeName, typeIDs[pointedTypeName]);
             ptrType.SetID((short)types.Count);
             typeIDs.Add(ptrType.Name, (short)types.Count);
             types.Add(ptrType);
@@ -250,7 +250,7 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="types">The list of the types.</param>
         /// <param name="triedTypeIDs">Used to avoid infinite loop.</param>
-        private void ComputeFieldOffsetsInternal(List<SimDataType> types, ref HashSet<short> triedTypeIDs)
+        private void ComputeFieldOffsetsInternal(List<SimHeapType> types, ref HashSet<short> triedTypeIDs)
         {
             if (this.fieldIndices == null) { return; }
 
@@ -260,7 +260,7 @@ namespace RC.Engine.Simulator.Core
             {
                 this.fieldOffsets[fieldIdx] = allocationSize;
                 short fieldTypeID = this.fieldTypeIDs[fieldIdx];
-                SimDataType fieldType = types[fieldTypeID];
+                SimHeapType fieldType = types[fieldTypeID];
                 if (fieldType.AllocationSize == -1)
                 {
                     /// Compute the allocation size of the field type first.

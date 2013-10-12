@@ -30,10 +30,18 @@ namespace RC.Engine.Simulator.ComponentInterfaces
         IMapAccess EndScenario();
 
         /// <summary>
-        /// PROTOTYPE CODE
-        /// Updates the state of the simulation and all of its elements.
+        /// Simulates the next frame of the scenario.
         /// </summary>
-        void UpdateSimulation();
+        void SimulateNextFrame();
+
+        /// <summary>
+        /// Gets the simulation element by its UID.
+        /// </summary>
+        /// <param name="uid">The UID of the simulation element to get.</param>
+        /// <returns>
+        /// The simulation element with the given UID or null if there is no simulation element with the given ID.
+        /// </returns>
+        ISimulationElement GetElementByUID(int uid);
 
         /// <summary>
         /// Gets the map of the currently simulated scenario.

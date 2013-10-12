@@ -13,7 +13,7 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Constructs a SimDataAccess instance.
         /// </summary>
-        public SimDataAccess(int dataAddress, SimDataType dataType, ISimulationHeap heap, List<SimDataType> allTypes, DeallocationFunc deallocFunc)
+        public SimDataAccess(int dataAddress, SimHeapType dataType, ISimulationHeap heap, List<SimHeapType> allTypes, DeallocationFunc deallocFunc)
         {
             this.dataAddress = dataAddress;
             this.dataType = dataType;
@@ -30,7 +30,7 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Gets the type of the data on the heap accessed by this instance.
         /// </summary>
-        public SimDataType DataType { get { return this.dataType; } }
+        public SimHeapType DataType { get { return this.dataType; } }
 
         /// <summary>
         /// Function declaration for performing deallocation procedures on deletion.
@@ -243,7 +243,7 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// The type of the data on the heap accessed by this instance.
         /// </summary>
-        private SimDataType dataType;
+        private SimHeapType dataType;
 
         /// <summary>
         /// Reference to the heap.
@@ -253,7 +253,7 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// List of all registered types.
         /// </summary>
-        private List<SimDataType> allTypes;
+        private List<SimHeapType> allTypes;
 
         /// <summary>
         /// Function reference for performing deallocation procedures on deletion.

@@ -5,7 +5,7 @@ using System.IO;
 using RC.Engine.Maps.ComponentInterfaces;
 using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
-using RC.App.BizLogic.InternalInterfaces;
+using RC.App.BizLogic.ComponentInterfaces;
 
 namespace RC.App.BizLogic.Core
 {
@@ -68,7 +68,7 @@ namespace RC.App.BizLogic.Core
             FileInfo[] tilesetFiles = rootDir.GetFiles("*.xml", SearchOption.AllDirectories);
             foreach (FileInfo tilesetFile in tilesetFiles)
             {
-                /// TODO: this is a hack!
+                /// TODO: this is a hack! Later we will have binary tileset format.
                 string xmlStr = File.ReadAllText(tilesetFile.FullName);
                 string imageDir = tilesetFile.DirectoryName;
                 RCPackage tilesetPackage = RCPackage.CreateCustomDataPackage(PackageFormats.TILESET_FORMAT);

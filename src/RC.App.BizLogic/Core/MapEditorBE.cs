@@ -2,7 +2,7 @@
 using RC.Common.ComponentModel;
 using RC.App.BizLogic.PublicInterfaces;
 using RC.Engine.Maps.ComponentInterfaces;
-using RC.App.BizLogic.InternalInterfaces;
+using RC.App.BizLogic.ComponentInterfaces;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Common;
 using System.IO;

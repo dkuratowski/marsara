@@ -15,14 +15,14 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Constructs a SimulationHeapMgr object.
         /// </summary>
-        /// <param name="metadata">The metadata of the simulation heap.</param>
-        public SimulationHeapMgr(Dictionary<string, List<KeyValuePair<string, string>>> metadata)
+        /// <param name="dataTypes">List of the data types.</param>
+        public SimulationHeapMgr(IEnumerable<SimHeapType> dataTypes)
         {
-            if (metadata == null) { throw new ArgumentNullException("metadata"); }
+            if (dataTypes == null) { throw new ArgumentNullException("dataTypes"); }
 
             this.heap = new SimulationHeap(Constants.SIM_HEAP_PAGESIZE, Constants.SIM_HEAP_CAPACITY);
             this.typeIDs = new Dictionary<string, short>();
-            this.types = new List<SimDataType>();
+            this.types = new List<SimHeapType>();
 
             this.sectionObjectPool = new Queue<SimHeapSection>();
             this.freeSectionsHead = new SimHeapSection()
@@ -34,7 +34,7 @@ namespace RC.Engine.Simulator.Core
             };
 
             this.RegisterBuiltInTypes();
-            this.ParseMetadata(metadata);
+            this.ParseMetadata(dataTypes);
         }
 
         #region ISimulationHeapMgr Members
@@ -53,7 +53,7 @@ namespace RC.Engine.Simulator.Core
             if (typeID < 0 || typeID >= this.types.Count) { throw new ArgumentOutOfRangeException("typeID"); }
             if (fieldName == null) { throw new ArgumentNullException("fieldName"); }
 
-            SimDataType type = this.types[typeID];
+            SimHeapType type = this.types[typeID];
             if (type.FieldIndices == null) { throw new SimulationHeapException(string.Format("The type '{0}' is not a composite type!", type.Name)); }
             if (!type.FieldIndices.ContainsKey(fieldName)) { throw new SimulationHeapException(string.Format("Field '{0}' in type '{1}' doesn't exist!", fieldName, type.Name)); }
 
@@ -71,7 +71,7 @@ namespace RC.Engine.Simulator.Core
         {
             if (typeID < 0 || typeID >= this.types.Count) { throw new ArgumentOutOfRangeException("typeID"); }
 
-            SimDataType type = this.types[typeID];
+            SimHeapType type = this.types[typeID];
             if (type.FieldTypeIDs == null) { throw new SimulationHeapException(string.Format("The type '{0}' is not a composite type!", type.Name)); }
             if (fieldIdx < 0 || fieldIdx >= type.FieldTypeIDs.Count) { throw new ArgumentOutOfRangeException("fieldIdx"); }
 
@@ -83,7 +83,7 @@ namespace RC.Engine.Simulator.Core
         {
             if (typeID < 0 || typeID >= this.types.Count) { throw new ArgumentOutOfRangeException("typeID"); }
 
-            SimDataType type = this.types[typeID];
+            SimHeapType type = this.types[typeID];
             SimHeapSection sectToAlloc = this.AllocateSection(type.AllocationSize);
             SimDataAccess accessObj = new SimDataAccess(sectToAlloc.Address, this.types[typeID], this.heap, this.types, this.DeallocateSection);
             return accessObj;
@@ -95,7 +95,7 @@ namespace RC.Engine.Simulator.Core
             if (typeID < 0 || typeID >= this.types.Count) { throw new ArgumentOutOfRangeException("typeID"); }
             if (count <= 0) { throw new ArgumentOutOfRangeException("count"); }
 
-            SimDataType type = this.types[typeID];
+            SimHeapType type = this.types[typeID];
             SimHeapSection sectToAlloc = this.AllocateSection(count * type.AllocationSize + 4); /// +4 is for storing the number of array-items.
             this.heap.WriteInt(sectToAlloc.Address, count);
             SimDataAccess accessObj = new SimDataAccess(sectToAlloc.Address + 4, this.types[typeID], this.heap, this.types, this.DeallocateSection);
@@ -375,8 +375,8 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Internal method for parsing the incoming metadata.
         /// </summary>
-        /// <param name="metadata">The metadata to be parsed.</param>
-        private void ParseMetadata(Dictionary<string, List<KeyValuePair<string, string>>> metadata)
+        /// <param name="dataTypes">List of the data types.</param>
+        private void ParseMetadata(IEnumerable<SimHeapType> dataTypes)
         {
             /// Register the internal types.
             List<KeyValuePair<string, string>> dumpRootFields = new List<KeyValuePair<string, string>>()
@@ -397,25 +397,25 @@ namespace RC.Engine.Simulator.Core
                 new KeyValuePair<string, string>(FREE_SECT_LENGTH, "int"),
                 new KeyValuePair<string, string>(FREE_SECT_NEXT, string.Format("{0}*", FREE_SECT_TYPE))
             };
-            this.RegisterType(new SimDataType(DUMP_ROOT_TYPE, dumpRootFields), ref this.typeIDs, ref this.types);
-            this.RegisterType(new SimDataType(EXT_REF_TYPE, extRefFields), ref this.typeIDs, ref this.types);
-            this.RegisterType(new SimDataType(FREE_SECT_TYPE, freeSectFields), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(DUMP_ROOT_TYPE, dumpRootFields), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(EXT_REF_TYPE, extRefFields), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(FREE_SECT_TYPE, freeSectFields), ref this.typeIDs, ref this.types);
 
             /// Register all the composite types.
-            foreach (KeyValuePair<string, List<KeyValuePair<string, string>>> element in metadata)
+            foreach (SimHeapType dataType in dataTypes)
             {
-                this.RegisterType(new SimDataType(element.Key, element.Value), ref this.typeIDs, ref this.types);
+                this.RegisterType(dataType, ref this.typeIDs, ref this.types);
             }
 
             /// Register all the pointer types.
-            List<SimDataType> allNonPointerTypes = new List<SimDataType>(this.types);
-            foreach (SimDataType element in allNonPointerTypes)
+            List<SimHeapType> allNonPointerTypes = new List<SimHeapType>(this.types);
+            foreach (SimHeapType element in allNonPointerTypes)
             {
                 element.RegisterPointerTypes(ref this.typeIDs, ref this.types);
             }
 
             /// Compute the missing allocation sizes and field offsets
-            foreach (SimDataType element in allNonPointerTypes)
+            foreach (SimHeapType element in allNonPointerTypes)
             {
                 element.ComputeFieldOffsets(this.types);
             }
@@ -426,15 +426,15 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         private void RegisterBuiltInTypes()
         {
-            this.RegisterType(new SimDataType(BuiltInTypeEnum.Byte), ref this.typeIDs, ref this.types);
-            this.RegisterType(new SimDataType(BuiltInTypeEnum.Short), ref this.typeIDs, ref this.types);
-            this.RegisterType(new SimDataType(BuiltInTypeEnum.Integer), ref this.typeIDs, ref this.types);
-            this.RegisterType(new SimDataType(BuiltInTypeEnum.Long), ref this.typeIDs, ref this.types);
-            this.RegisterType(new SimDataType(BuiltInTypeEnum.Number), ref this.typeIDs, ref this.types);
-            this.RegisterType(new SimDataType(BuiltInTypeEnum.IntVector), ref this.typeIDs, ref this.types);
-            this.RegisterType(new SimDataType(BuiltInTypeEnum.NumVector), ref this.typeIDs, ref this.types);
-            this.RegisterType(new SimDataType(BuiltInTypeEnum.IntRectangle), ref this.typeIDs, ref this.types);
-            this.RegisterType(new SimDataType(BuiltInTypeEnum.NumRectangle), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(BuiltInTypeEnum.Byte), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(BuiltInTypeEnum.Short), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(BuiltInTypeEnum.Integer), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(BuiltInTypeEnum.Long), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(BuiltInTypeEnum.Number), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(BuiltInTypeEnum.IntVector), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(BuiltInTypeEnum.NumVector), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(BuiltInTypeEnum.IntRectangle), ref this.typeIDs, ref this.types);
+            this.RegisterType(new SimHeapType(BuiltInTypeEnum.NumRectangle), ref this.typeIDs, ref this.types);
         }
 
         /// <summary>
@@ -443,7 +443,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="type">The type to be registered.</param>
         /// <param name="typeIDs">The list of the type IDs mapped by their names.</param>
         /// <param name="types">The list of the types.</param>
-        private void RegisterType(SimDataType type, ref Dictionary<string, short> typeIDs, ref List<SimDataType> types)
+        private void RegisterType(SimHeapType type, ref Dictionary<string, short> typeIDs, ref List<SimHeapType> types)
         {
             if (this.typeIDs.ContainsKey(type.Name)) { throw new SimulationHeapException(string.Format("Type '{0}' already defined!", type.Name)); }
             if (this.types.Count == short.MaxValue) { throw new SimulationHeapException(string.Format("Number of possible types exceeded the limit of {0}!", short.MaxValue)); }
@@ -463,7 +463,7 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// List of the types mapped by their IDs.
         /// </summary>
-        private List<SimDataType> types;
+        private List<SimHeapType> types;
 
         /// <summary>
         /// List of the type IDs mapped by their names.

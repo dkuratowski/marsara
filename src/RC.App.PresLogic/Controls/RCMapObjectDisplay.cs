@@ -179,8 +179,6 @@ namespace RC.App.PresLogic.Controls
                 {
                     /// TODO: send command to the selected units
                     TraceManager.WriteAllTrace("RIGHT_CLICK", PresLogicTraceFilters.INFO);
-                    this.mapObjectView.SendCommand(this.DisplayedArea, evtArgs.Position);
-
                     this.CurrentMouseStatus = MouseStatus.RightDown;
                 }
                 else if (evtArgs.Button == UIMouseButton.Left)
@@ -244,7 +242,6 @@ namespace RC.App.PresLogic.Controls
 
                 /// TODO: handle single unit selection
                 TraceManager.WriteAllTrace("LEFT_CLICK", PresLogicTraceFilters.INFO);
-                this.mapObjectView.SelectObject(this.DisplayedArea, evtArgs.Position);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
@@ -257,7 +254,6 @@ namespace RC.App.PresLogic.Controls
                 /// TODO: handle selection box
                 RCIntRectangle selectionBox = this.CalculateSelectionBox();
                 TraceManager.WriteAllTrace(string.Format("SELECTION {0}", selectionBox), PresLogicTraceFilters.INFO);
-                this.mapObjectView.SelectObjects(this.DisplayedArea, selectionBox);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;

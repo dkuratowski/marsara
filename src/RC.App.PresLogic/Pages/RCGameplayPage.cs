@@ -87,14 +87,14 @@ namespace RC.App.PresLogic.Pages
 
             /// Create the necessary views.
             this.mapTerrainView = this.gameplayBE.CreateMapTerrainView();
-            this.mapDebugView = this.gameplayBE.CreateMapDebugView();
+            //this.mapDebugView = this.gameplayBE.CreateMapDebugView();
             this.mapObjectView = this.gameplayBE.CreateMapObjectView();
             this.tilesetView = this.gameplayBE.CreateTileSetView();
 
             /// Create and start the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135), this.mapTerrainView, this.tilesetView);
-            this.mapDebugDisplayEx = new RCMapDebugDisplay(this.mapDisplayBasic, this.mapDebugView);
-            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDebugDisplayEx, this.mapObjectView);
+            //this.mapDebugDisplayEx = new RCMapDebugDisplay(this.mapDisplayBasic, this.mapDebugView);
+            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.mapObjectDisplayEx, this.mapTerrainView);
             this.mapDisplay = this.objectPlacementDisplayEx;
             this.mapDisplay.Started += this.OnMapDisplayStarted;

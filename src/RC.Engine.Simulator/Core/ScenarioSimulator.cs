@@ -8,6 +8,7 @@ using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Maps.Core;
 using RC.Common;
+using System.IO;
 
 namespace RC.Engine.Simulator.Core
 {
@@ -15,7 +16,7 @@ namespace RC.Engine.Simulator.Core
     /// Implementation of the scenario simulator component.
     /// </summary>
     [Component("RC.Engine.Simulator.ScenarioSimulator")]
-    class ScenarioSimulator : IScenarioSimulator
+    class ScenarioSimulator : IScenarioSimulator, IComponentStart
     {
         /// <summary>
         /// Constructs a ScenarioSimulator instance.
@@ -34,7 +35,6 @@ namespace RC.Engine.Simulator.Core
             if (map == null) { throw new ArgumentNullException("map"); }
             if (this.map != null) { throw new InvalidOperationException("Simulation of another scenario is currently running!"); }
 
-            /// TODO: this is a dummy implementation!
             this.map = map;
             this.gameObjects = new BspMapContentManager<IGameObject>(
                         new RCNumRectangle(-(RCNumber)1 / (RCNumber)2,
@@ -43,9 +43,8 @@ namespace RC.Engine.Simulator.Core
                                            map.CellSize.Y),
                                            Constants.BSP_NODE_CAPACITY,
                                            Constants.BSP_MIN_NODE_SIZE);
-            this.simulationElements = new HashSet<IElementOfSimulation>();
-            this.pathFinder.Initialize(this.map);
-            this.CreateTestObjects();
+            this.simulationElements = new Dictionary<int, ISimulationElement>();
+            this.simulationElementList = new List<ISimulationElement>();
         }
 
         /// <see cref="IScenarioSimulator.BeginScenario"/>
@@ -53,23 +52,31 @@ namespace RC.Engine.Simulator.Core
         {
             if (this.map == null) { throw new InvalidOperationException("There is no scenario currently being simulated!"); }
 
-            /// TODO: this is a dummy implementation!
             IMapAccess map = this.map;
             this.map = null;
             this.gameObjects = null;
             this.simulationElements = null;
+            this.simulationElementList = null;
             return map;
         }
 
-        /// <see cref="IScenarioSimulator.UpdateSimulation"/>
-        public void UpdateSimulation()
+        /// <see cref="IScenarioSimulator.SimulateNextFrame"/>
+        public void SimulateNextFrame()
         {
             if (this.map == null) { throw new InvalidOperationException("There is no scenario currently being simulated!"); }
 
-            foreach (IElementOfSimulation simElement in this.simulationElements)
+            foreach (ISimulationElement simElement in this.simulationElementList)
             {
-                simElement.Update();
+                simElement.SimulateNextFrame();
             }
+        }
+
+        /// <see cref="IScenarioSimulator.GetElementByUID"/>
+        public ISimulationElement GetElementByUID(int uid)
+        {
+            if (this.map == null) { throw new InvalidOperationException("There is no scenario currently being simulated!"); }
+
+            return this.simulationElements.ContainsKey(uid) ? this.simulationElements[uid] : null;
         }
 
         /// <see cref="IScenarioSimulator.Map"/>
@@ -87,42 +94,35 @@ namespace RC.Engine.Simulator.Core
         {
             get
             {
-                if (this.gameObjects == null) { throw new InvalidOperationException("There is no scenario currently being simulated!"); }
+                if (this.map == null) { throw new InvalidOperationException("There is no scenario currently being simulated!"); }
                 return this.gameObjects;
             }
         }
 
         #endregion IScenarioSimulator methods
 
-        /// **************** PROTOTYPE CODE *******************
-        private void CreateTestObjects()
+        #region IComponentStart methods
+
+        /// <see cref="IComponentStart.Start"/>
+        public void Start()
         {
-            RCNumRectangle r = new RCNumRectangle((RCNumber)(-1) / (RCNumber)2, (RCNumber)(-1) / (RCNumber)2, 1, 1);
-            GameObject o = new GameObject(r, (RCNumber)1 / (RCNumber)2, this.pathFinder);
-            gameObjects.AttachContent(o);
-            this.simulationElements.Add(o);
-
-            for (int i = 1; i < Constants.TEST_OBJECT_NUM; i++)
+            /// Load the tilesets from the configured directory
+            DirectoryInfo rootDir = new DirectoryInfo(Constants.METADATA_DIR);
+            FileInfo[] metadataFiles = rootDir.GetFiles("*.xml", SearchOption.AllDirectories);
+            this.metadata = new SimulationMetadata();
+            foreach (FileInfo metadataFile in metadataFiles)
             {
-                RCNumVector testObjPos = new RCNumVector(
-                    (RCNumber)RandomService.DefaultGenerator.Next(Constants.TEST_OBJECT_MAXCOORD * 1024) / (RCNumber)1024,
-                    (RCNumber)RandomService.DefaultGenerator.Next(Constants.TEST_OBJECT_MAXCOORD * 1024) / (RCNumber)1024);
-                RCNumVector testObjSize = new RCNumVector(
-                    (RCNumber)RandomService.DefaultGenerator.Next(Constants.TEST_OBJECT_MINSIZE * 1024, (Constants.TEST_OBJECT_MAXSIZE + 1) * 1024) / (RCNumber)1024,
-                    (RCNumber)RandomService.DefaultGenerator.Next(Constants.TEST_OBJECT_MINSIZE * 1024, (Constants.TEST_OBJECT_MAXSIZE + 1) * 1024) / (RCNumber)1024);
-                RCNumRectangle testObjRect = new RCNumRectangle(testObjPos - testObjSize / 2, testObjSize);
-
-                if (gameObjects.GetContents(testObjRect).Count != 0 || this.pathFinder.CheckObstacleIntersection(testObjRect))
-                {
-                    i--;
-                    continue;
-                }
-                GameObject testObj = new GameObject(testObjRect, (RCNumber)1 / (RCNumber)4, this.pathFinder);
-                gameObjects.AttachContent(testObj);
-                this.simulationElements.Add(testObj);
+                /// TODO: this is a hack! Later we will have binary metadata format.
+                string xmlStr = File.ReadAllText(metadataFile.FullName);
+                string imageDir = metadataFile.DirectoryName;
+                XmlMetadataReader.Read(xmlStr, imageDir, this.metadata);
             }
+            this.metadata.CheckAndFinalize();
+
+            this.simulationHeapMgr = new SimulationHeapMgr(this.metadata.CompositeTypes);
         }
-        /// ************ END OF PROTOTYPE CODE ****************
+
+        #endregion IComponentStart methods
 
         /// <summary>
         /// Reference to the map of the scenario currently being simulated.
@@ -135,15 +135,23 @@ namespace RC.Engine.Simulator.Core
         private IMapContentManager<IGameObject> gameObjects;
 
         /// <summary>
-        /// PROTOTYPE CODE
-        /// List of the elements of the simulation.
+        /// List of the simulation elements mapped by their UIDs.
         /// </summary>
-        private HashSet<IElementOfSimulation> simulationElements;
+        private Dictionary<int, ISimulationElement> simulationElements;
 
         /// <summary>
-        /// Reference to the pathfinder component.
+        /// List of the simulation elements in order of simulation.
         /// </summary>
-        [ComponentReference]
-        private IPathFinder pathFinder;
+        private List<ISimulationElement> simulationElementList;
+
+        /// <summary>
+        /// Reference to the simulation metadata.
+        /// </summary>
+        private SimulationMetadata metadata;
+
+        /// <summary>
+        /// Reference to the simulation heap manager.
+        /// </summary>
+        private ISimulationHeapMgr simulationHeapMgr;
     }
 }

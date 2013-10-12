@@ -77,26 +77,20 @@ namespace RC.Engine.Test
 
         static void TestSimulationHeap()
         {
-            Dictionary<string, List<KeyValuePair<string, string>>> testMetadata = new Dictionary<string, List<KeyValuePair<string, string>>>()
+            List<SimHeapType> testMetadata = new List<SimHeapType>()
             {
+                new SimHeapType("Unit", new List<KeyValuePair<string, string>>()
                 {
-                    "Unit",
-                    new List<KeyValuePair<string, string>>()
-                    {
-                        new KeyValuePair<string, string>("HitPoints", "short"),
-                        new KeyValuePair<string, string>("TestArray", "int*"),
-                        new KeyValuePair<string, string>("TestPtrArray", "Building**"),
-                        new KeyValuePair<string, string>("TestPtr", "Building*"),
-                    }
-                },
+                    new KeyValuePair<string, string>("HitPoints", "short"),
+                    new KeyValuePair<string, string>("TestArray", "int*"),
+                    new KeyValuePair<string, string>("TestPtrArray", "Building**"),
+                    new KeyValuePair<string, string>("TestPtr", "Building*"),
+                }),
+                new SimHeapType("Building", new List<KeyValuePair<string, string>>()
                 {
-                    "Building",
-                    new List<KeyValuePair<string, string>>()
-                    {
-                        new KeyValuePair<string, string>("HitPoints", "short"),
-                        new KeyValuePair<string, string>("BuildStatus", "short"),
-                    }
-                }
+                    new KeyValuePair<string, string>("HitPoints", "short"),
+                    new KeyValuePair<string, string>("BuildStatus", "short"),
+                }),
             };
 
             ISimulationHeapMgr heapMgr = new SimulationHeapMgr(testMetadata);

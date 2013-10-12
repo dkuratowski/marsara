@@ -287,25 +287,22 @@ namespace RC.Engine.Test
             TESTTYPE_NEXT_IDX = heapMgr.GetFieldIdx(TESTTYPE_ID, "Next");
         }
 
-        private static Dictionary<string, List<KeyValuePair<string, string>>> testMetadata = new Dictionary<string, List<KeyValuePair<string, string>>>()
+        private static List<SimHeapType> testMetadata = new List<SimHeapType>()
+        {
+            new SimHeapType("TestType", new List<KeyValuePair<string, string>>()
             {
-                {
-                    "TestType",
-                    new List<KeyValuePair<string, string>>()
-                    {
-                        new KeyValuePair<string, string>("ByteArray", "byte*"),
-                        new KeyValuePair<string, string>("ShortArray", "short*"),
-                        new KeyValuePair<string, string>("IntArray", "int*"),
-                        new KeyValuePair<string, string>("LongArray", "long*"),
-                        new KeyValuePair<string, string>("NumArray", "num*"),
-                        new KeyValuePair<string, string>("IntVectArray", "intvect*"),
-                        new KeyValuePair<string, string>("NumVectArray", "numvect*"),
-                        new KeyValuePair<string, string>("IntRectArray", "intrect*"),
-                        new KeyValuePair<string, string>("NumRectArray", "numrect*"),
-                        new KeyValuePair<string, string>("Next", "TestType*"),
-                    }
-                },
-            };
+                new KeyValuePair<string, string>("ByteArray", "byte*"),
+                new KeyValuePair<string, string>("ShortArray", "short*"),
+                new KeyValuePair<string, string>("IntArray", "int*"),
+                new KeyValuePair<string, string>("LongArray", "long*"),
+                new KeyValuePair<string, string>("NumArray", "num*"),
+                new KeyValuePair<string, string>("IntVectArray", "intvect*"),
+                new KeyValuePair<string, string>("NumVectArray", "numvect*"),
+                new KeyValuePair<string, string>("IntRectArray", "intrect*"),
+                new KeyValuePair<string, string>("NumRectArray", "numrect*"),
+                new KeyValuePair<string, string>("Next", "TestType*"),
+            }),
+        };
 
         private static int TESTTYPE_ID;
         private static int TESTTYPE_BYTEARRAY_IDX;

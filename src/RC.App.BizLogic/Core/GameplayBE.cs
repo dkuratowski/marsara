@@ -8,7 +8,7 @@ using RC.Engine.Simulator.ComponentInterfaces;
 using System.IO;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Maps.ComponentInterfaces;
-using RC.App.BizLogic.InternalInterfaces;
+using RC.App.BizLogic.ComponentInterfaces;
 
 namespace RC.App.BizLogic.Core
 {
@@ -55,7 +55,7 @@ namespace RC.App.BizLogic.Core
         /// PROTOTYPE CODE
         public void UpdateSimulation()
         {
-            this.scenarioSimulator.UpdateSimulation();
+            this.scenarioSimulator.SimulateNextFrame();
         }
 
         /// TODO: Remove this section when no longer necessary *********************************************************

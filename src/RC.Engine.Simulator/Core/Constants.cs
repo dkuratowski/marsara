@@ -16,12 +16,7 @@ namespace RC.Engine.Simulator.Core
         public static readonly int SIM_HEAP_CAPACITY = ConstantsTable.Get<int>("RC.Engine.Simulator.SimulationHeapCapacity");
         public static readonly int BSP_NODE_CAPACITY = ConstantsTable.Get<int>("RC.Engine.Simulator.BspNodeCapacity");
         public static readonly int BSP_MIN_NODE_SIZE = ConstantsTable.Get<int>("RC.Engine.Simulator.BspMinNodeSize");
-
-        // ********************** PROTOTYPE CODE *********************
-        public static readonly int TEST_OBJECT_NUM = ConstantsTable.Get<int>("RC.Engine.Simulator.Prototype.TestObjectNum");
-        public static readonly int TEST_OBJECT_MAXCOORD = ConstantsTable.Get<int>("RC.Engine.Simulator.Prototype.TestObjectMaxCoord");
-        public static readonly int TEST_OBJECT_MINSIZE = ConstantsTable.Get<int>("RC.Engine.Simulator.Prototype.TestObjectMinSize");
-        public static readonly int TEST_OBJECT_MAXSIZE = ConstantsTable.Get<int>("RC.Engine.Simulator.Prototype.TestObjectMaxSize");
+        public static readonly string METADATA_DIR = ConstantsTable.Get<string>("RC.Engine.Simulator.MetadataDir");
     }
 
     /// <summary>

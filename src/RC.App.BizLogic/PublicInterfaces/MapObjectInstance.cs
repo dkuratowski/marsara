@@ -30,8 +30,8 @@ namespace RC.App.BizLogic.PublicInterfaces
 
         /// <summary>
         /// List of the values to be displayed when the object is selected. The items in this list are
-        /// pairs of integers. The first number in this pair is the index of the value indicator's color
-        /// and the second number is the value itself normalized between 0 and 1.
+        /// pairs. The first number in this pair is the index of the value indicator's color and the
+        /// second number is the value itself normalized between 0 and 1.
         /// </summary>
         public List<Tuple<int, RCNumber>> Values { get; set; }
     }
