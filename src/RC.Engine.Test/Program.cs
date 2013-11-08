@@ -116,9 +116,9 @@ namespace RC.Engine.Test
 
             for (int j = 0; j < 100000; j++)
             {
-                ISimDataAccess unit = heapMgr.New(UNIT_TID);
-                ISimDataAccess building0 = heapMgr.New(BUILDING_TID);
-                ISimDataAccess building1 = heapMgr.New(BUILDING_TID);
+                ISimHeapAccess unit = heapMgr.New(UNIT_TID);
+                ISimHeapAccess building0 = heapMgr.New(BUILDING_TID);
+                ISimHeapAccess building1 = heapMgr.New(BUILDING_TID);
 
                 building0.AccessField(BUILDING_HP_IDX).WriteShort(100);
                 building0.AccessField(BUILDING_BUILDSTATUS_IDX).WriteShort(50);

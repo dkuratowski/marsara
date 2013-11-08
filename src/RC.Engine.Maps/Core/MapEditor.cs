@@ -108,12 +108,6 @@ namespace RC.Engine.Maps.Core
             targetMap.TerrainObjects.DetachContent(terrainObject);
         }
 
-        /// <see cref="IMapEditor.CheckTerrainObjectConstraints"/>
-        public IEnumerable<RCIntVector> CheckTerrainObjectConstraints(IMapAccess targetMap, IQuadTile targetTile, ITerrainObjectType type)
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion IMapEditor methods
 
         #region Internal helper methods

@@ -18,97 +18,76 @@ namespace RC.Engine.Simulator.Core
         public SimulationMetadata()
         {
             this.isFinalized = false;
-            this.compositeHeapTypes = new Dictionary<string, SimHeapType>();
-            this.indicatorDefinitions = new Dictionary<string, SimElemIndicatorDef>();
-            this.behaviorFactories = new Dictionary<string, ISimElemBehaviorFactory>();
-            this.behaviorFactoryInstances = new Dictionary<Type, ISimElemBehaviorFactory>();
-            this.behaviorTreeDefs = new Dictionary<string, List<SimElemBehaviorTreeNode>>();
+            this.buildingTypes = new Dictionary<string, BuildingType>();
+            this.addonTypes = new Dictionary<string, AddonType>();
+            this.unitTypes = new Dictionary<string, UnitType>();
+            this.upgradeTypes = new Dictionary<string, UpgradeType>();
         }
-
-        /// <summary>
-        /// Gets the list of all composite heap types defined in the metadata.
-        /// </summary>
-        public IEnumerable<SimHeapType> CompositeTypes { get { return this.compositeHeapTypes.Values; } }
 
         #region Metadata buildup methods
 
         /// <summary>
-        /// Adds a composite heap type to the metadata.
+        /// Adds a building type definition to the metadata.
         /// </summary>
-        /// <param name="heapType">The heap type to add.</param>
-        public void AddCompositeHeapType(SimHeapType heapType)
+        /// <param name="buildingType">The building type definition to add.</param>
+        public void AddBuildingType(BuildingType buildingType)
         {
             if (this.isFinalized) { throw new InvalidOperationException("Metadata object already finalized!"); }
-            if (heapType == null) { throw new ArgumentNullException("heapType"); }
-            if (heapType.BuiltInType != BuiltInTypeEnum.NonBuiltIn || heapType.PointedTypeID != -1) { throw new ArgumentException("The given type is not a composite heap type!", "heapType"); }
-            if (this.compositeHeapTypes.ContainsKey(heapType.Name)) { throw new InvalidOperationException(string.Format("Composite heap type '{0}' already defined!", heapType.Name)); }
+            if (buildingType == null) { throw new ArgumentNullException("buildingType"); }
+            if (this.buildingTypes.ContainsKey(buildingType.Name) ||
+                this.unitTypes.ContainsKey(buildingType.Name) ||
+                this.addonTypes.ContainsKey(buildingType.Name) ||
+                this.upgradeTypes.ContainsKey(buildingType.Name)) { throw new InvalidOperationException(string.Format("Metadata element with name '{0}' already defined!", buildingType.Name)); }
 
-            this.compositeHeapTypes.Add(heapType.Name, heapType);
+            this.buildingTypes.Add(buildingType.Name, buildingType);
         }
 
         /// <summary>
-        /// Adds an indicator definition to the metadata.
+        /// Adds a unit type definition to the metadata.
         /// </summary>
-        /// <param name="indicatorDef">The indicator definition to add.</param>
-        public void AddIndicatorDef(SimElemIndicatorDef indicatorDef)
+        /// <param name="buildingType">The unit type definition to add.</param>
+        public void AddUnitType(UnitType unitType)
         {
             if (this.isFinalized) { throw new InvalidOperationException("Metadata object already finalized!"); }
-            if (indicatorDef == null) { throw new ArgumentNullException("indicatorDef"); }
-            if (this.indicatorDefinitions.ContainsKey(indicatorDef.ElementType)) { throw new InvalidOperationException(string.Format("Indicator definition for element type '{0}' already exists!", indicatorDef.ElementType)); }
+            if (unitType == null) { throw new ArgumentNullException("unitType"); }
+            if (this.buildingTypes.ContainsKey(unitType.Name) ||
+                this.unitTypes.ContainsKey(unitType.Name) ||
+                this.addonTypes.ContainsKey(unitType.Name) ||
+                this.upgradeTypes.ContainsKey(unitType.Name)) { throw new InvalidOperationException(string.Format("Metadata element with name '{0}' already defined!", unitType.Name)); }
 
-            indicatorDef.SetIndex(this.indicatorDefinitions.Count);
-            this.indicatorDefinitions.Add(indicatorDef.ElementType, indicatorDef);
+            this.unitTypes.Add(unitType.Name, unitType);
         }
 
         /// <summary>
-        /// Adds a behavior tree definition to the metadata.
+        /// Adds a unit type definition to the metadata.
         /// </summary>
-        /// <param name="elementType">The name of the corresponding element type.</param>
-        /// <param name="rootNodes">List of the root nodes of the behavior tree.</param>
-        public void AddBehaviorTreeDef(string elementType, List<SimElemBehaviorTreeNode> rootNodes)
+        /// <param name="buildingType">The unit type definition to add.</param>
+        public void AddAddonType(AddonType addonType)
         {
             if (this.isFinalized) { throw new InvalidOperationException("Metadata object already finalized!"); }
-            if (elementType == null) { throw new ArgumentNullException("elementType"); }
-            if (rootNodes == null || rootNodes.Count == 0) { throw new ArgumentNullException("rootNodes"); }
-            if (this.behaviorTreeDefs.ContainsKey(elementType)) { throw new InvalidOperationException(string.Format("Behavior tree definition for element type '{0}' already exists!", elementType)); }
+            if (addonType == null) { throw new ArgumentNullException("addonType"); }
+            if (this.buildingTypes.ContainsKey(addonType.Name) ||
+                this.unitTypes.ContainsKey(addonType.Name) ||
+                this.addonTypes.ContainsKey(addonType.Name) ||
+                this.upgradeTypes.ContainsKey(addonType.Name)) { throw new InvalidOperationException(string.Format("Metadata element with name '{0}' already defined!", addonType.Name)); }
 
-            this.behaviorTreeDefs.Add(elementType, rootNodes);
+            this.addonTypes.Add(addonType.Name, addonType);
         }
 
         /// <summary>
-        /// Adds a behavior factory to this metadata object.
+        /// Adds a unit type definition to the metadata.
         /// </summary>
-        /// <param name="behaviorTypeName">The type of the behaviors created by the factory.</param>
-        /// <param name="assemblyName">The assembly in which the factory is implemented.</param>
-        /// <param name="className">The class that contains the implementation of the factory.</param>
-        /// <remarks>
-        /// Only 1 factory instance will be created from each factory class even if the same class were
-        /// given to more than one behavior types.
-        /// </remarks>
-        public void AddBehaviorFactory(string behaviorTypeName, string assemblyName, string className)
+        /// <param name="buildingType">The unit type definition to add.</param>
+        public void AddUpgradeType(UpgradeType upgradeType)
         {
             if (this.isFinalized) { throw new InvalidOperationException("Metadata object already finalized!"); }
-            if (behaviorTypeName == null) { throw new ArgumentNullException("behaviorTypeName"); }
-            if (assemblyName == null) { throw new ArgumentNullException("assemblyName"); }
-            if (className == null) { throw new ArgumentNullException("className"); }
-            if (this.behaviorFactories.ContainsKey(behaviorTypeName)) { throw new SimulatorException(string.Format("Behavior type '{0}' already defined!", behaviorTypeName)); }
+            if (upgradeType == null) { throw new ArgumentNullException("upgradeType"); }
+            if (this.buildingTypes.ContainsKey(upgradeType.Name) ||
+                this.unitTypes.ContainsKey(upgradeType.Name) ||
+                this.addonTypes.ContainsKey(upgradeType.Name) ||
+                this.upgradeTypes.ContainsKey(upgradeType.Name)) { throw new InvalidOperationException(string.Format("Metadata element with name '{0}' already defined!", upgradeType.Name)); }
 
-            /// Load the given class from the given assembly.
-            Assembly asm = Assembly.Load(assemblyName);
-            if (asm == null) { throw new SimulatorException(string.Format("Assembly '{0}' not found!", assemblyName)); }
-            Type factoryType = asm.GetType(className);
-            if (factoryType == null) { throw new SimulatorException(string.Format("Factory type '{0}' not found!", className)); }
-
-            /// Create a new factory instance if necessary.
-            if (!this.behaviorFactoryInstances.ContainsKey(factoryType))
-            {
-                ISimElemBehaviorFactory newFactory = Activator.CreateInstance(factoryType) as ISimElemBehaviorFactory;
-                if (newFactory == null) { throw new SimulatorException(string.Format("Factory type '{0}' doesn't implement RC.Engine.Simulator.PublicInterfaces.ISimElemBehaviorFactory!", className)); }
-                this.behaviorFactoryInstances.Add(factoryType, newFactory);
-            }
-
-            /// Assign the factory instance to the given behavior type.
-            this.behaviorFactories.Add(behaviorTypeName, this.behaviorFactoryInstances[factoryType]);
+            this.upgradeTypes.Add(upgradeType.Name, upgradeType);
         }
 
         /// <summary>
@@ -116,62 +95,31 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         public void CheckAndFinalize()
         {
-            foreach (SimElemIndicatorDef indicatorDef in this.indicatorDefinitions.Values)
-            {
-                indicatorDef.CheckAndFinalize();
-            }
-
-            foreach (List<SimElemBehaviorTreeNode> treeDef in this.behaviorTreeDefs.Values)
-            {
-                foreach (SimElemBehaviorTreeNode treeNode in treeDef)
-                {
-                    SetBehaviorFactory(treeNode);
-                }
-            }
+            /// TODO: check and finalize here.
             this.isFinalized = true;
-        }
-
-        /// <summary>
-        /// Sets the behavior factory for the given tree node.
-        /// </summary>
-        /// <param name="treeNode">The tree node whose factory will be set.</param>
-        private void SetBehaviorFactory(SimElemBehaviorTreeNode treeNode)
-        {
-            if (!this.behaviorFactories.ContainsKey(treeNode.BehaviorType)) { throw new SimulatorException(string.Format("Factory not found for behavior type '{0}'!", treeNode.BehaviorType)); }
-            treeNode.SetFactory(this.behaviorFactories[treeNode.BehaviorType]);
-
-            foreach (SimElemBehaviorTreeNode childNode in treeNode.Children)
-            {
-                SetBehaviorFactory(childNode);
-            }
         }
 
         #endregion Metadata buildup methods
 
         /// <summary>
-        /// List of the composite heap data types mapped by their names.
+        /// List of the defined building types mapped by their names.
         /// </summary>
-        private Dictionary<string, SimHeapType> compositeHeapTypes;
+        private Dictionary<string, BuildingType> buildingTypes;
 
         /// <summary>
-        /// List of the indicator definitions mapped by the names of the corresponding element types.
+        /// List of the defined addon types mapped by their names.
         /// </summary>
-        private Dictionary<string, SimElemIndicatorDef> indicatorDefinitions;
+        private Dictionary<string, AddonType> addonTypes;
 
         /// <summary>
-        /// List of the behavior tree definitions mapped by the names of the corresponding element types.
+        /// List of the defined unit types mapped by their names.
         /// </summary>
-        private Dictionary<string, List<SimElemBehaviorTreeNode>> behaviorTreeDefs;
+        private Dictionary<string, UnitType> unitTypes;
 
         /// <summary>
-        /// List of the registered behavior factories mapped by the names of the corresponding behavior types.
+        /// List of the defined upgrade types mapped by their names.
         /// </summary>
-        private Dictionary<string, ISimElemBehaviorFactory> behaviorFactories;
-
-        /// <summary>
-        /// List of the behavior factory instances mapped by their runtime types.
-        /// </summary>
-        private Dictionary<Type, ISimElemBehaviorFactory> behaviorFactoryInstances;
+        private Dictionary<string, UpgradeType> upgradeTypes;
 
         /// <summary>
         /// Becomes true when this metadata object is finalized.

@@ -79,18 +79,18 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <see cref="ISimulationHeapMgr.New"/>
-        public ISimDataAccess New(int typeID)
+        public ISimHeapAccess New(int typeID)
         {
             if (typeID < 0 || typeID >= this.types.Count) { throw new ArgumentOutOfRangeException("typeID"); }
 
             SimHeapType type = this.types[typeID];
             SimHeapSection sectToAlloc = this.AllocateSection(type.AllocationSize);
-            SimDataAccess accessObj = new SimDataAccess(sectToAlloc.Address, this.types[typeID], this.heap, this.types, this.DeallocateSection);
+            SimHeapAccess accessObj = new SimHeapAccess(sectToAlloc.Address, this.types[typeID], this.heap, this.types, this.DeallocateSection);
             return accessObj;
         }
 
         /// <see cref="ISimulationHeapMgr.NewArray"/>
-        public ISimDataAccess NewArray(int typeID, int count)
+        public ISimHeapAccess NewArray(int typeID, int count)
         {
             if (typeID < 0 || typeID >= this.types.Count) { throw new ArgumentOutOfRangeException("typeID"); }
             if (count <= 0) { throw new ArgumentOutOfRangeException("count"); }
@@ -98,7 +98,7 @@ namespace RC.Engine.Simulator.Core
             SimHeapType type = this.types[typeID];
             SimHeapSection sectToAlloc = this.AllocateSection(count * type.AllocationSize + 4); /// +4 is for storing the number of array-items.
             this.heap.WriteInt(sectToAlloc.Address, count);
-            SimDataAccess accessObj = new SimDataAccess(sectToAlloc.Address + 4, this.types[typeID], this.heap, this.types, this.DeallocateSection);
+            SimHeapAccess accessObj = new SimHeapAccess(sectToAlloc.Address + 4, this.types[typeID], this.heap, this.types, this.DeallocateSection);
             return accessObj;
         }
 
@@ -109,7 +109,7 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <see cref="ISimulationHeapMgr.SaveState"/>
-        public byte[] SaveState(List<ISimDataAccess> externalRefs)
+        public byte[] SaveState(List<ISimHeapAccess> externalRefs)
         {
             if (externalRefs == null) { throw new ArgumentNullException("externalRefs"); }
             
@@ -123,13 +123,13 @@ namespace RC.Engine.Simulator.Core
 
             /// Save the linked-list of the external references.
             int EXT_REF_ID = this.GetTypeID(EXT_REF_TYPE);
-            ISimDataAccess extRefListHead = null;
-            ISimDataAccess extRefListPrev = null;
-            foreach (ISimDataAccess extRef in externalRefs)
+            ISimHeapAccess extRefListHead = null;
+            ISimHeapAccess extRefListPrev = null;
+            foreach (ISimHeapAccess extRef in externalRefs)
             {
-                SimDataAccess extRefImpl = (SimDataAccess)extRef;
+                SimHeapAccess extRefImpl = (SimHeapAccess)extRef;
 
-                ISimDataAccess extRefSave = this.New(EXT_REF_ID);
+                ISimHeapAccess extRefSave = this.New(EXT_REF_ID);
                 extRefSave.AccessField(this.GetFieldIdx(EXT_REF_ID, EXT_REF_DATAADDRESS)).WriteInt(extRefImpl.DataAddress);
                 extRefSave.AccessField(this.GetFieldIdx(EXT_REF_ID, EXT_REF_TYPEID)).WriteShort(extRefImpl.DataType.ID);
 
@@ -144,11 +144,11 @@ namespace RC.Engine.Simulator.Core
 
             /// Save the linked-list of the free sections.
             int FREE_SECT_ID = this.GetTypeID(FREE_SECT_TYPE);
-            ISimDataAccess freeSectListHead = null;
-            ISimDataAccess freeSectListPrev = null;
+            ISimHeapAccess freeSectListHead = null;
+            ISimHeapAccess freeSectListPrev = null;
             foreach (Tuple<int, int> freeSect in freeSections)
             {
-                ISimDataAccess freeSectSave = this.New(FREE_SECT_ID);
+                ISimHeapAccess freeSectSave = this.New(FREE_SECT_ID);
                 freeSectSave.AccessField(this.GetFieldIdx(FREE_SECT_ID, FREE_SECT_ADDRESS)).WriteInt(freeSect.Item1);
                 freeSectSave.AccessField(this.GetFieldIdx(FREE_SECT_ID, FREE_SECT_LENGTH)).WriteInt(freeSect.Item2);
 
@@ -169,19 +169,19 @@ namespace RC.Engine.Simulator.Core
 
             /// Save the dump-root to the heap.
             int DUMP_ROOT_ID = this.GetTypeID(DUMP_ROOT_TYPE);
-            ISimDataAccess dumpRoot = this.New(DUMP_ROOT_ID);
+            ISimHeapAccess dumpRoot = this.New(DUMP_ROOT_ID);
             dumpRoot.AccessField(this.GetFieldIdx(DUMP_ROOT_ID, DUMP_ROOT_REFLISTHEAD)).PointTo(extRefListHead);
             dumpRoot.AccessField(this.GetFieldIdx(DUMP_ROOT_ID, DUMP_ROOT_FREESECTHEAD)).PointTo(freeSectListHead);
 
             /// Save the pointer to the dump-root at 0x00000000.
-            this.heap.WriteInt(0, ((SimDataAccess)dumpRoot).DataAddress);
+            this.heap.WriteInt(0, ((SimHeapAccess)dumpRoot).DataAddress);
 
             /// Dump the heap contents into a byte array.
             return this.heap.Dump();
         }
 
         /// <see cref="ISimulationHeapMgr.LoadState"/>
-        public List<ISimDataAccess> LoadState(byte[] heapContent)
+        public List<ISimHeapAccess> LoadState(byte[] heapContent)
         {
             if (heapContent == null) { throw new ArgumentNullException("heapContent"); }
 
@@ -192,13 +192,13 @@ namespace RC.Engine.Simulator.Core
 
             /// Load the dump-root from the heap.
             int DUMP_ROOT_ID = this.GetTypeID(DUMP_ROOT_TYPE);
-            ISimDataAccess dumpRoot = new SimDataAccess(this.heap.ReadInt(0), this.types[DUMP_ROOT_ID], this.heap, this.types, this.DeallocateSection);
+            ISimHeapAccess dumpRoot = new SimHeapAccess(this.heap.ReadInt(0), this.types[DUMP_ROOT_ID], this.heap, this.types, this.DeallocateSection);
             this.heap.WriteInt(0, 0);
 
             /// Load the free sections.
             int FREE_SECT_ID = this.GetTypeID(FREE_SECT_TYPE);
             SimHeapSection prevFreeSection = null;
-            ISimDataAccess currFreeSectAccess = dumpRoot.AccessField(this.GetFieldIdx(DUMP_ROOT_ID, DUMP_ROOT_FREESECTHEAD)).Dereference();
+            ISimHeapAccess currFreeSectAccess = dumpRoot.AccessField(this.GetFieldIdx(DUMP_ROOT_ID, DUMP_ROOT_FREESECTHEAD)).Dereference();
             while (currFreeSectAccess != null)
             {
                 SimHeapSection currFreeSection = new SimHeapSection()
@@ -216,11 +216,11 @@ namespace RC.Engine.Simulator.Core
 
             /// Load the external references
             int EXT_REF_ID = this.GetTypeID(EXT_REF_TYPE);
-            List<ISimDataAccess> retList = new List<ISimDataAccess>();
-            ISimDataAccess currExtRefAccess = dumpRoot.AccessField(this.GetFieldIdx(DUMP_ROOT_ID, DUMP_ROOT_REFLISTHEAD)).Dereference();
+            List<ISimHeapAccess> retList = new List<ISimHeapAccess>();
+            ISimHeapAccess currExtRefAccess = dumpRoot.AccessField(this.GetFieldIdx(DUMP_ROOT_ID, DUMP_ROOT_REFLISTHEAD)).Dereference();
             while (currExtRefAccess != null)
             {
-                retList.Add(new SimDataAccess(
+                retList.Add(new SimHeapAccess(
                     currExtRefAccess.AccessField(this.GetFieldIdx(EXT_REF_ID, EXT_REF_DATAADDRESS)).ReadInt(),
                     this.types[currExtRefAccess.AccessField(this.GetFieldIdx(EXT_REF_ID, EXT_REF_TYPEID)).ReadShort()],
                     this.heap,

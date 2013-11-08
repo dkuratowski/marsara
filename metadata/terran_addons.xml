@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<simulationMetadata>
+  <addonType name="ComsatStation">
+    <costs>
+      <mineral>50</mineral>
+      <gas>50</gas>
+      <buildTime>600</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area></area>
+      <maxHP>500</maxHP>
+      <maxEnergy>200</maxEnergy>
+      <armor>1</armor>
+      <sightRange>11</sightRange>
+    </generalData>
+    <mainBuilding>CommandCenter</mainBuilding>
+    <requires>Academy</requires>
+    <sprite image="terran_scv.png" />
+  </addonType>
+  <addonType name="NuclearSilo">
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>1200</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area></area>
+      <maxHP>600</maxHP>
+      <armor>1</armor>
+      <sightRange>11</sightRange>
+    </generalData>
+    <mainBuilding>CommandCenter</mainBuilding>
+    <requires>ScienceFacility-CovertOps</requires>
+    <sprite image="terran_scv.png" />
+  </addonType>
+  <addonType name="MachineShop">
+    <costs>
+      <mineral>50</mineral>
+      <gas>50</gas>
+      <buildTime>600</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area></area>
+      <maxHP>750</maxHP>
+      <armor>1</armor>
+      <sightRange>11</sightRange>
+    </generalData>
+    <mainBuilding>Factory</mainBuilding>
+    <sprite image="terran_scv.png" />
+  </addonType>
+  <addonType name="ControlTower">
+    <costs>
+      <mineral>50</mineral>
+      <gas>50</gas>
+      <buildTime>600</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area></area>
+      <maxHP>500</maxHP>
+      <armor>1</armor>
+      <sightRange>11</sightRange>
+    </generalData>
+    <mainBuilding>Starport</mainBuilding>
+    <sprite image="terran_scv.png" />
+  </addonType>
+  <addonType name="CovertOps">
+    <costs>
+      <mineral>50</mineral>
+      <gas>50</gas>
+      <buildTime>600</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area></area>
+      <maxHP>750</maxHP>
+      <armor>1</armor>
+      <sightRange>11</sightRange>
+    </generalData>
+    <mainBuilding>ScienceFacility</mainBuilding>
+    <sprite image="terran_scv.png" />
+  </addonType>
+  <addonType name="PhysicsLab">
+    <costs>
+      <mineral>50</mineral>
+      <gas>50</gas>
+      <buildTime>600</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area></area>
+      <maxHP>600</maxHP>
+      <armor>1</armor>
+      <sightRange>11</sightRange>
+    </generalData>
+    <mainBuilding>ScienceFacility</mainBuilding>
+    <sprite image="terran_scv.png" />
+  </addonType>
+</simulationMetadata>

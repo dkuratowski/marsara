@@ -40,14 +40,5 @@ namespace RC.Engine.Maps.ComponentInterfaces
         /// <param name="targetMap">The target map.</param>
         /// <param name="terrainObject">The terrain object to be removed.</param>
         void RemoveTerrainObject(IMapAccess targetMap, ITerrainObject terrainObject);
-
-        /// <summary>
-        /// Gets all the violating quadratic coordinates if a terrain object of the given type were placed at the given position on the given map.
-        /// </summary>
-        /// <param name="targetMap">The target map.</param>
-        /// <param name="targetTile">The position to be checked as if it was the top-left corner of the terrain object.</param>
-        /// <param name="type">The terrain object type to be checked.</param>
-        /// <returns>The violating quadratic coordinates relative to the top-left corner of the terrain object.</returns>
-        IEnumerable<RCIntVector> CheckTerrainObjectConstraints(IMapAccess targetMap, IQuadTile targetTile, ITerrainObjectType type);
     }
 }

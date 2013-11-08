@@ -31,197 +31,128 @@ namespace RC.Engine.Simulator.Core
             /// Load the XML document.
             XDocument xmlDoc = XDocument.Parse(xmlStr);
 
-            /// Load the datatype definitions.
-            foreach (XElement dataTypeElem in xmlDoc.Root.Elements(XmlMetadataConstants.DATATYPE_ELEM))
+            /// Load the building type definitions.
+            foreach (XElement buildingTypeElem in xmlDoc.Root.Elements(XmlMetadataConstants.BUILDINGTYPE_ELEM))
             {
-                LoadDataType(dataTypeElem, metadata);
+                LoadBuildingType(buildingTypeElem, metadata);
             }
 
-            /// Load the element type definitions.
-            foreach (XElement elemTypeElem in xmlDoc.Root.Elements(XmlMetadataConstants.ELEMENTTYPE_ELEM))
+            /// Load the unit type definitions.
+            foreach (XElement unitTypeElem in xmlDoc.Root.Elements(XmlMetadataConstants.UNITTYPE_ELEM))
             {
-                LoadElementType(elemTypeElem, metadata);
+                LoadUnitType(unitTypeElem, metadata);
             }
 
-            /// Load the behavior type definitions.
-            foreach (XElement behaviorTypeElem in xmlDoc.Root.Elements(XmlMetadataConstants.BEHAVIORTYPE_ELEM))
+            /// Load the addon type definitions.
+            foreach (XElement addonTypeElem in xmlDoc.Root.Elements(XmlMetadataConstants.ADDONTYPE_ELEM))
             {
-                LoadBehaviorType(behaviorTypeElem, metadata);
+                LoadAddonType(addonTypeElem, metadata);
+            }
+
+            /// Load the upgrade type definitions.
+            foreach (XElement upgradeTypeElem in xmlDoc.Root.Elements(XmlMetadataConstants.UPGRADETYPE_ELEM))
+            {
+                LoadUpgradeType(upgradeTypeElem, metadata);
             }
         }
 
         /// <summary>
-        /// Load a data type definition from the given XML node.
+        /// Loads a building type definition from the given XML node.
         /// </summary>
-        /// <param name="dataTypeElem">The XML node to load from.</param>
+        /// <param name="buildingTypeElem">The XML node to load from.</param>
         /// <param name="metadata">The metadata object being constructed.</param>
-        private static void LoadDataType(XElement dataTypeElem, SimulationMetadata metadata)
+        private static void LoadBuildingType(XElement buildingTypeElem, SimulationMetadata metadata)
         {
-            XAttribute nameAttr = dataTypeElem.Attribute(XmlMetadataConstants.DATATYPE_NAME_ATTR);
-            if (nameAttr == null) { throw new SimulatorException("DataType name not defined!"); }
+            XAttribute nameAttr = buildingTypeElem.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
+            if (nameAttr == null) { throw new SimulatorException("Building type name not defined!"); }
 
-            List<KeyValuePair<string, string>> fields = new List<KeyValuePair<string, string>>();
-            foreach (XElement fieldElem in dataTypeElem.Elements(XmlMetadataConstants.FIELD_ELEM))
-            {
-                fields.Add(LoadField(fieldElem));
-                // TODO: Load bit definitions!
-            }
-            metadata.AddCompositeHeapType(new SimHeapType(nameAttr.Value, fields));
+            /// Load the sprite palette of the building type.
+            XElement spritePaletteElem = buildingTypeElem.Element(XmlMetadataConstants.SPRITE_ELEM);
+            if (spritePaletteElem == null) { throw new SimulatorException("Sprite palette not defined for building type!"); }
+
+            BuildingType buildingType = new BuildingType(nameAttr.Value, LoadSpritePalette(spritePaletteElem));
+            XElement genDataElem = buildingTypeElem.Element(XmlMetadataConstants.GENERALDATA_ELEM);
+            if (genDataElem == null) { throw new SimulatorException("General data not found for building type!"); }
+            LoadGeneralData(genDataElem);
+
+            metadata.AddBuildingType(buildingType);
         }
 
         /// <summary>
-        /// Load an element type definition from the given XML node.
+        /// Loads a unit type definition from the given XML node.
         /// </summary>
-        /// <param name="elemTypeElem">The XML node to load from.</param>
+        /// <param name="unitTypeElem">The XML node to load from.</param>
         /// <param name="metadata">The metadata object being constructed.</param>
-        private static void LoadElementType(XElement elemTypeElem, SimulationMetadata metadata)
+        private static void LoadUnitType(XElement unitTypeElem, SimulationMetadata metadata)
         {
-            XAttribute nameAttr = elemTypeElem.Attribute(XmlMetadataConstants.ELEMENTTYPE_NAME_ATTR);
-            if (nameAttr == null) { throw new SimulatorException("ElementType name not defined!"); }
-
-            /// Load the data type definition of the element type.
-            List<KeyValuePair<string, string>> fields = new List<KeyValuePair<string, string>>();
-            foreach (XElement fieldElem in elemTypeElem.Elements(XmlMetadataConstants.FIELD_ELEM))
-            {
-                fields.Add(LoadField(fieldElem));
-                // TODO: Load bit definitions!
-            }
-            SimHeapType elemHeapType = new SimHeapType(nameAttr.Value, fields);
-            metadata.AddCompositeHeapType(elemHeapType);
-
-            /// Load the indicator definition of the element type if exists.
-            XElement indicatorElem = elemTypeElem.Element(XmlMetadataConstants.INDICATOR_ELEM);
-            if (indicatorElem != null)
-            {
-                SimElemIndicatorDef indicator = LoadIndicatorDef(nameAttr.Value, indicatorElem);
-                metadata.AddIndicatorDef(indicator);
-            }
-
-            /// Load behavior tree definition.
-            List<SimElemBehaviorTreeNode> rootNodes = new List<SimElemBehaviorTreeNode>();
-            foreach (XElement behaviorElem in elemTypeElem.Elements(XmlMetadataConstants.BEHAVIOR_ELEM))
-            {
-                rootNodes.Add(LoadBehaviorTreeNode(behaviorElem));
-            }
-            metadata.AddBehaviorTreeDef(nameAttr.Value, rootNodes);
+            XAttribute nameAttr = unitTypeElem.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
+            if (nameAttr == null) { throw new SimulatorException("Unit type name not defined!"); }
         }
 
         /// <summary>
-        /// Loads a behavior type definition from the given XML node.
+        /// Loads an addon type definition from the given XML node.
         /// </summary>
-        /// <param name="behaviorTypeElem">The XML node to load from.</param>
+        /// <param name="addonTypeElem">The XML node to load from.</param>
         /// <param name="metadata">The metadata object being constructed.</param>
-        private static void LoadBehaviorType(XElement behaviorTypeElem, SimulationMetadata metadata)
+        private static void LoadAddonType(XElement addonTypeElem, SimulationMetadata metadata)
         {
-            XAttribute nameAttr = behaviorTypeElem.Attribute(XmlMetadataConstants.BEHAVIORTYPE_NAME_ATTR);
-            if (nameAttr == null) { throw new SimulatorException("DataType name not defined!"); }
-
-            XElement factoryElem = behaviorTypeElem.Element(XmlMetadataConstants.FACTORY_ELEM);
-            if (factoryElem == null) { throw new SimulatorException(string.Format("<{0}> element not found!", XmlMetadataConstants.FACTORY_ELEM)); }
-
-            XElement assemblyElem = factoryElem.Element(XmlMetadataConstants.ASSEMBLY_ELEM);
-            if (assemblyElem == null) { throw new SimulatorException(string.Format("<{0}> element not found!", XmlMetadataConstants.ASSEMBLY_ELEM)); }
-
-            XElement classElem = factoryElem.Element(XmlMetadataConstants.CLASS_ELEM);
-            if (classElem == null) { throw new SimulatorException(string.Format("<{0}> element not found!", XmlMetadataConstants.CLASS_ELEM)); }
-
-            metadata.AddBehaviorFactory(nameAttr.Value, assemblyElem.Value, classElem.Value);
+            XAttribute nameAttr = addonTypeElem.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
+            if (nameAttr == null) { throw new SimulatorException("Addon type name not defined!"); }
         }
 
         /// <summary>
-        /// Loads a field definition of a data or element type from the given XML node.
+        /// Loads an upgrade type definition from the given XML node.
         /// </summary>
-        /// <param name="fieldElem">The XML node to load from.</param>
-        /// <returns>A pair that contains the name and the type of the field.</returns>
-        private static KeyValuePair<string, string> LoadField(XElement fieldElem)
+        /// <param name="upgradeTypeElem">The XML node to load from.</param>
+        /// <param name="metadata">The metadata object being constructed.</param>
+        private static void LoadUpgradeType(XElement upgradeTypeElem, SimulationMetadata metadata)
         {
-            XAttribute nameAttr = fieldElem.Attribute(XmlMetadataConstants.FIELD_NAME_ATTR);
-            XAttribute typeAttr = fieldElem.Attribute(XmlMetadataConstants.FIELD_TYPE_ATTR);
-            if (nameAttr == null) { throw new SimulatorException("Field name not defined!"); }
-            if (typeAttr == null) { throw new SimulatorException("Field type not defined!"); }
-
-            return new KeyValuePair<string, string>(nameAttr.Value, typeAttr.Value);
+            XAttribute nameAttr = upgradeTypeElem.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
+            if (nameAttr == null) { throw new SimulatorException("Upgrade type name not defined!"); }
         }
 
         /// <summary>
-        /// Loads an indicator definition from the given XML node.
+        /// Loads a sprite palette definition from the given XML node.
         /// </summary>
-        /// <param name="elementType">The name of the corresponding element type.</param>
-        /// <param name="indicatorElem">The XML node to load from.</param>
-        /// <returns>The constructed indicator definition.</returns>
-        private static SimElemIndicatorDef LoadIndicatorDef(string elementType, XElement indicatorElem)
+        /// <param name="spritePaletteElem">The XML node to load from.</param>
+        /// <returns>The constructed sprite palette definition.</returns>
+        private static SpritePalette LoadSpritePalette(XElement spritePaletteElem)
         {
-            XAttribute imageAttr = indicatorElem.Attribute(XmlMetadataConstants.INDICATOR_IMAGE_ATTR);
-            XAttribute transpColorAttr = indicatorElem.Attribute(XmlMetadataConstants.INDICATOR_TRANSPCOLOR_ATTR);
-            XAttribute ownerMaskColorAttr = indicatorElem.Attribute(XmlMetadataConstants.INDICATOR_OWNERMASKCOLOR_ATTR);
-            if (imageAttr == null) { throw new SimulatorException("Image not defined for indicator definition!"); }
+            XAttribute imageAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITE_IMAGE_ATTR);
+            XAttribute transpColorAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITE_TRANSPCOLOR_ATTR);
+            XAttribute ownerMaskColorAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITE_OWNERMASKCOLOR_ATTR);
+            if (imageAttr == null) { throw new SimulatorException("Image not defined for sprite palette!"); }
 
             /// Read the image data.
             string imagePath = System.IO.Path.Combine(tmpImageDir, imageAttr.Value);
             byte[] imageData = File.ReadAllBytes(imagePath);
 
-            /// Create the indicator definition object.
-            SimElemIndicatorDef indicatorDef = new SimElemIndicatorDef(elementType,
-                                                                       imageData,
-                                                                       transpColorAttr != null ? transpColorAttr.Value : null,
-                                                                       ownerMaskColorAttr != null ? ownerMaskColorAttr.Value : null);
+            /// Create the sprite palette object.
+            SpritePalette spritePalette = new SpritePalette(imageData,
+                                                            transpColorAttr != null ? transpColorAttr.Value : null,
+                                                            ownerMaskColorAttr != null ? ownerMaskColorAttr.Value : null);
 
-            /// Load the animations.
-            foreach (XElement animElem in indicatorElem.Elements(XmlMetadataConstants.ANIMATION_ELEM))
+            /// Load the frames.
+            foreach (XElement frameElem in spritePaletteElem.Elements(XmlMetadataConstants.FRAME_ELEM))
             {
-                LoadAnimation(animElem, indicatorDef);
-            }
-            return indicatorDef;
-        }
-
-        /// <summary>
-        /// Loads an animation of the given indicator definition from the given XML node.
-        /// </summary>
-        /// <param name="animElem">The XML node to load from.</param>
-        /// <param name="indicatorDef">The indicator definition.</param>
-        private static void LoadAnimation(XElement animElem, SimElemIndicatorDef indicatorDef)
-        {
-            XAttribute nameAttr = animElem.Attribute(XmlMetadataConstants.ANIMATION_NAME_ATTR);
-            if (nameAttr == null) { throw new SimulatorException("Animation name not defined!"); }
-
-            List<SimElemAnimFrame> frames = new List<SimElemAnimFrame>();
-            foreach (XElement frameElem in animElem.Elements(XmlMetadataConstants.FRAME_ELEM))
-            {
+                XAttribute frameNameAttr = frameElem.Attribute(XmlMetadataConstants.FRAME_NAME_ATTR);
                 XAttribute sourceRegionAttr = frameElem.Attribute(XmlMetadataConstants.FRAME_SOURCEREGION_ATTR);
                 XAttribute offsetAttr = frameElem.Attribute(XmlMetadataConstants.FRAME_OFFSET_ATTR);
-                XAttribute repeatAttr = frameElem.Attribute(XmlMetadataConstants.FRAME_REPEAT_ATTR);
-                if (sourceRegionAttr == null) { throw new SimulatorException("Source region not defined for animation frame!"); }
-
-                RCIntRectangle sourceRegion = XmlHelper.LoadRectangle(sourceRegionAttr.Value);
-                RCIntVector offset = offsetAttr != null ? XmlHelper.LoadVector(offsetAttr.Value) : new RCIntVector(0, 0);
-                int repeatCount = repeatAttr != null ? XmlHelper.LoadInt(repeatAttr.Value) : 1;
-                if (repeatCount <= 0) { throw new SimulatorException("Frame repeat count must be greater than 0!"); }
-
-                for (int i = 0; i < repeatCount; i++)
-                {
-                    frames.Add(new SimElemAnimFrame(sourceRegion, offset));
-                }
+                if (frameNameAttr == null) { throw new SimulatorException("Frame name not defined in sprite palette!"); }
+                if (sourceRegionAttr == null) { throw new SimulatorException("Source region not defined in sprite palette!"); }
+                if (offsetAttr == null) { throw new SimulatorException("Offset not defined in sprite palette!"); }
+                spritePalette.AddFrame(frameNameAttr.Value, XmlHelper.LoadRectangle(sourceRegionAttr.Value), XmlHelper.LoadVector(offsetAttr.Value));
             }
-
-            indicatorDef.AddAnimation(nameAttr.Value, frames);
+            return spritePalette;
         }
 
         /// <summary>
-        /// Loads a behavior tree node from the given XML node.
+        /// Loads the general data of a building/unit/addon type from the given element.
         /// </summary>
-        /// <param name="behaviorElem">The XML node to load from.</param>
-        /// <returns>The created behavior tree node.</returns>
-        private static SimElemBehaviorTreeNode LoadBehaviorTreeNode(XElement behaviorElem)
+        /// <param name="genDataElem">The XML element to load from.</param>
+        private static void LoadGeneralData(XElement genDataElem)
         {
-            XAttribute typeAttr = behaviorElem.Attribute(XmlMetadataConstants.BEHAVIOR_TYPE_ATTR);
-            if (typeAttr == null) { throw new SimulatorException("Behavior type attribute not defined!"); }
-
-            List<SimElemBehaviorTreeNode> children = new List<SimElemBehaviorTreeNode>();
-            foreach (XElement childBehaviorElem in behaviorElem.Elements(XmlMetadataConstants.BEHAVIOR_ELEM))
-            {
-                children.Add(LoadBehaviorTreeNode(childBehaviorElem));
-            }
-            return new SimElemBehaviorTreeNode(typeAttr.Value, children);
+            /// TODO: load general data
         }
 
         /// <summary>

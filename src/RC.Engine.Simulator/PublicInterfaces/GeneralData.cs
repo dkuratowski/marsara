@@ -6,9 +6,9 @@ using System.Text;
 namespace RC.Engine.Simulator.PublicInterfaces
 {
     /// <summary>
-    /// This interface must be implemented by every behavior factory classes.
+    /// Contains the general data of a building/unit/addon type.
     /// </summary>
-    public interface ISimElemBehaviorFactory
+    public class GeneralData
     {
     }
 }

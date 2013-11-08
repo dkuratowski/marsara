@@ -79,13 +79,13 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <param name="typeID">The ID of the type of the simulation data to to be stored.</param>
         /// <returns>An interface for accessing the allocated simulation data.</returns>
         /// <remarks>
-        /// Use the ISimDataAccess.Delete method on the returned interface for deleting the created simulation data when
+        /// Use the ISimHeapAccess.Delete method on the returned interface for deleting the created simulation data when
         /// no longer needed.
-        /// CAUTION!!! If a simulation data was allocated with ISimDataAccess.New it must be deleted with ISimDataAccess.Delete!
-        /// If a simulation data was allocated with ISimDataAccess.NewArray it must be deleted with ISimDataAccess.DeleteArray!
+        /// CAUTION!!! If a simulation data was allocated with ISimHeapAccess.New it must be deleted with ISimHeapAccess.Delete!
+        /// If a simulation data was allocated with ISimHeapAccess.NewArray it must be deleted with ISimHeapAccess.DeleteArray!
         /// Any other usage leads to undefined behavior.
         /// </remarks>
-        ISimDataAccess New(int typeID);
+        ISimHeapAccess New(int typeID);
 
         /// <summary>
         /// Allocates space on the simulation heap for storing an array of simulation data of the given type.
@@ -94,13 +94,13 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <param name="count">The count of the elements in the array.</param>
         /// <returns>An interface for accessing the first item in the array.</returns>
         /// <remarks>
-        /// Use the ISimDataAccess.DeleteArray method on the returned interface for deleting the created array when
+        /// Use the ISimHeapAccess.DeleteArray method on the returned interface for deleting the created array when
         /// no longer needed.
-        /// CAUTION!!! If a simulation data was allocated with ISimDataAccess.New it must be deleted with ISimDataAccess.Delete!
-        /// If a simulation data was allocated with ISimDataAccess.NewArray it must be deleted with ISimDataAccess.DeleteArray!
+        /// CAUTION!!! If a simulation data was allocated with ISimHeapAccess.New it must be deleted with ISimHeapAccess.Delete!
+        /// If a simulation data was allocated with ISimHeapAccess.NewArray it must be deleted with ISimHeapAccess.DeleteArray!
         /// Any other usage leads to undefined behavior.
         /// </remarks>
-        ISimDataAccess NewArray(int typeID, int count);
+        ISimHeapAccess NewArray(int typeID, int count);
 
         /// <summary>
         /// Computes the hash value of the current state of the simulation heap.
@@ -113,7 +113,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// </summary>
         /// <param name="externalRefs">The external references to save.</param>
         /// <returns>A byte array that contains the saved simulation heap.</returns>
-        byte[] SaveState(List<ISimDataAccess> externalRefs);
+        byte[] SaveState(List<ISimHeapAccess> externalRefs);
 
         /// <summary>
         /// Sets the state of the simulation heap as it is described in the given byte array.
@@ -121,6 +121,6 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <param name="heapContent">The content of the heap to be loaded.</param>
         /// <returns>The list of the external references to the loaded simulation heap.</returns>
         /// <remarks>The current state of the simulation heap will be lost if you call this method.</remarks>
-        List<ISimDataAccess> LoadState(byte[] heapContent);
+        List<ISimHeapAccess> LoadState(byte[] heapContent);
     }
 }

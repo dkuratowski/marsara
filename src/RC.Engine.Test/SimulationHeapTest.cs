@@ -20,23 +20,23 @@ namespace RC.Engine.Test
             Stopwatch watch = new Stopwatch();
             watch.Start();
 
-            ISimDataAccess prevObj = null;
+            ISimHeapAccess prevObj = null;
 
-            ISimDataAccess[] allObjects = new ISimDataAccess[100];
+            ISimHeapAccess[] allObjects = new ISimHeapAccess[100];
             for (int i = 0; i < 100; i++)
             {
-                ISimDataAccess currObj = CreateTestObj(heapMgr);
+                ISimHeapAccess currObj = CreateTestObj(heapMgr);
                 allObjects[i] = currObj;
                 if (prevObj != null) { prevObj.AccessField(TESTTYPE_NEXT_IDX).PointTo(currObj); }
                 prevObj = currObj;
             }
 
-            byte[] savedHeap = heapMgr.SaveState(new List<ISimDataAccess>() { allObjects[0] });
+            byte[] savedHeap = heapMgr.SaveState(new List<ISimHeapAccess>() { allObjects[0] });
 
-            List<ISimDataAccess> savedRefs = heapMgr.LoadState(savedHeap);
+            List<ISimHeapAccess> savedRefs = heapMgr.LoadState(savedHeap);
             if (savedRefs.Count != 1) { throw new Exception("Load error!"); }
 
-            ISimDataAccess curr = savedRefs[0];
+            ISimHeapAccess curr = savedRefs[0];
             int objIdx = 0;
             do
             {
@@ -68,9 +68,9 @@ namespace RC.Engine.Test
                    freeSectionsHead.Prev == null;
         }
 
-        private static ISimDataAccess CreateTestObj(ISimulationHeapMgr heapMgr)
+        private static ISimHeapAccess CreateTestObj(ISimulationHeapMgr heapMgr)
         {
-            ISimDataAccess retObj = heapMgr.New(TESTTYPE_ID);
+            ISimHeapAccess retObj = heapMgr.New(TESTTYPE_ID);
             retObj.AccessField(TESTTYPE_BYTEARRAY_IDX).PointTo(CreateByteArray(heapMgr, 1));
             retObj.AccessField(TESTTYPE_SHORTARRAY_IDX).PointTo(CreateShortArray(heapMgr, 2));
             retObj.AccessField(TESTTYPE_INTARRAY_IDX).PointTo(CreateIntArray(heapMgr, 3));
@@ -83,7 +83,7 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static void DeleteTestObj(ISimDataAccess obj)
+        private static void DeleteTestObj(ISimHeapAccess obj)
         {
             obj.AccessField(TESTTYPE_BYTEARRAY_IDX).Dereference().DeleteArray();
             obj.AccessField(TESTTYPE_SHORTARRAY_IDX).Dereference().DeleteArray();
@@ -97,7 +97,7 @@ namespace RC.Engine.Test
             obj.Delete();
         }
 
-        private static void CheckTestObj(ISimDataAccess obj)
+        private static void CheckTestObj(ISimHeapAccess obj)
         {
             CheckByteArray(obj.AccessField(TESTTYPE_BYTEARRAY_IDX).Dereference(), 1);
             CheckShortArray(obj.AccessField(TESTTYPE_SHORTARRAY_IDX).Dereference(), 2);
@@ -110,9 +110,9 @@ namespace RC.Engine.Test
             CheckNumRectArray(obj.AccessField(TESTTYPE_NUMRECTARRAY_IDX).Dereference(), 9);
         }
 
-        private static ISimDataAccess CreateByteArray(ISimulationHeapMgr heapMgr, int count)
+        private static ISimHeapAccess CreateByteArray(ISimulationHeapMgr heapMgr, int count)
         {
-            ISimDataAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("byte"), count);
+            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("byte"), count);
             for (int i = 0; i < count; i++)
             {
                 retObj.AccessArrayItem(i).WriteByte((byte)i);
@@ -120,9 +120,9 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static ISimDataAccess CreateShortArray(ISimulationHeapMgr heapMgr, int count)
+        private static ISimHeapAccess CreateShortArray(ISimulationHeapMgr heapMgr, int count)
         {
-            ISimDataAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("short"), count);
+            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("short"), count);
             for (int i = 0; i < count; i++)
             {
                 retObj.AccessArrayItem(i).WriteShort((short)i);
@@ -130,9 +130,9 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static ISimDataAccess CreateIntArray(ISimulationHeapMgr heapMgr, int count)
+        private static ISimHeapAccess CreateIntArray(ISimulationHeapMgr heapMgr, int count)
         {
-            ISimDataAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("int"), count);
+            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("int"), count);
             for (int i = 0; i < count; i++)
             {
                 retObj.AccessArrayItem(i).WriteInt(i);
@@ -140,9 +140,9 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static ISimDataAccess CreateLongArray(ISimulationHeapMgr heapMgr, int count)
+        private static ISimHeapAccess CreateLongArray(ISimulationHeapMgr heapMgr, int count)
         {
-            ISimDataAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("long"), count);
+            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("long"), count);
             for (int i = 0; i < count; i++)
             {
                 retObj.AccessArrayItem(i).WriteLong(i);
@@ -150,9 +150,9 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static ISimDataAccess CreateNumArray(ISimulationHeapMgr heapMgr, int count)
+        private static ISimHeapAccess CreateNumArray(ISimulationHeapMgr heapMgr, int count)
         {
-            ISimDataAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("num"), count);
+            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("num"), count);
             for (int i = 0; i < count; i++)
             {
                 retObj.AccessArrayItem(i).WriteNumber((RCNumber)i);
@@ -160,9 +160,9 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static ISimDataAccess CreateIntVectArray(ISimulationHeapMgr heapMgr, int count)
+        private static ISimHeapAccess CreateIntVectArray(ISimulationHeapMgr heapMgr, int count)
         {
-            ISimDataAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("intvect"), count);
+            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("intvect"), count);
             for (int i = 0; i < count; i++)
             {
                 retObj.AccessArrayItem(i).WriteIntVector(new RCIntVector(i, i+1));
@@ -170,9 +170,9 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static ISimDataAccess CreateNumVectArray(ISimulationHeapMgr heapMgr, int count)
+        private static ISimHeapAccess CreateNumVectArray(ISimulationHeapMgr heapMgr, int count)
         {
-            ISimDataAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("numvect"), count);
+            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("numvect"), count);
             for (int i = 0; i < count; i++)
             {
                 retObj.AccessArrayItem(i).WriteNumVector(new RCNumVector(i, i + 1));
@@ -180,9 +180,9 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static ISimDataAccess CreateIntRectArray(ISimulationHeapMgr heapMgr, int count)
+        private static ISimHeapAccess CreateIntRectArray(ISimulationHeapMgr heapMgr, int count)
         {
-            ISimDataAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("intrect"), count);
+            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("intrect"), count);
             for (int i = 0; i < count; i++)
             {
                 retObj.AccessArrayItem(i).WriteIntRectangle(new RCIntRectangle(i, i + 1, i + 2, i + 3));
@@ -190,9 +190,9 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static ISimDataAccess CreateNumRectArray(ISimulationHeapMgr heapMgr, int count)
+        private static ISimHeapAccess CreateNumRectArray(ISimulationHeapMgr heapMgr, int count)
         {
-            ISimDataAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("numrect"), count);
+            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("numrect"), count);
             for (int i = 0; i < count; i++)
             {
                 retObj.AccessArrayItem(i).WriteNumRectangle(new RCNumRectangle(i, i + 1, i + 2, i + 3));
@@ -200,7 +200,7 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static void CheckByteArray(ISimDataAccess arrayRef, int count)
+        private static void CheckByteArray(ISimHeapAccess arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -208,7 +208,7 @@ namespace RC.Engine.Test
             }
         }
 
-        private static void CheckShortArray(ISimDataAccess arrayRef, int count)
+        private static void CheckShortArray(ISimHeapAccess arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -216,7 +216,7 @@ namespace RC.Engine.Test
             }
         }
 
-        private static void CheckIntArray(ISimDataAccess arrayRef, int count)
+        private static void CheckIntArray(ISimHeapAccess arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -224,7 +224,7 @@ namespace RC.Engine.Test
             }
         }
 
-        private static void CheckLongArray(ISimDataAccess arrayRef, int count)
+        private static void CheckLongArray(ISimHeapAccess arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -232,7 +232,7 @@ namespace RC.Engine.Test
             }
         }
 
-        private static void CheckNumArray(ISimDataAccess arrayRef, int count)
+        private static void CheckNumArray(ISimHeapAccess arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -240,7 +240,7 @@ namespace RC.Engine.Test
             }
         }
 
-        private static void CheckIntVectArray(ISimDataAccess arrayRef, int count)
+        private static void CheckIntVectArray(ISimHeapAccess arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -248,7 +248,7 @@ namespace RC.Engine.Test
             }
         }
 
-        private static void CheckNumVectArray(ISimDataAccess arrayRef, int count)
+        private static void CheckNumVectArray(ISimHeapAccess arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -256,7 +256,7 @@ namespace RC.Engine.Test
             }
         }
 
-        private static void CheckIntRectArray(ISimDataAccess arrayRef, int count)
+        private static void CheckIntRectArray(ISimHeapAccess arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -264,7 +264,7 @@ namespace RC.Engine.Test
             }
         }
 
-        private static void CheckNumRectArray(ISimDataAccess arrayRef, int count)
+        private static void CheckNumRectArray(ISimHeapAccess arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {

@@ -43,8 +43,6 @@ namespace RC.Engine.Simulator.Core
                                            map.CellSize.Y),
                                            Constants.BSP_NODE_CAPACITY,
                                            Constants.BSP_MIN_NODE_SIZE);
-            this.simulationElements = new Dictionary<int, ISimulationElement>();
-            this.simulationElementList = new List<ISimulationElement>();
         }
 
         /// <see cref="IScenarioSimulator.BeginScenario"/>
@@ -55,8 +53,6 @@ namespace RC.Engine.Simulator.Core
             IMapAccess map = this.map;
             this.map = null;
             this.gameObjects = null;
-            this.simulationElements = null;
-            this.simulationElementList = null;
             return map;
         }
 
@@ -64,19 +60,6 @@ namespace RC.Engine.Simulator.Core
         public void SimulateNextFrame()
         {
             if (this.map == null) { throw new InvalidOperationException("There is no scenario currently being simulated!"); }
-
-            foreach (ISimulationElement simElement in this.simulationElementList)
-            {
-                simElement.SimulateNextFrame();
-            }
-        }
-
-        /// <see cref="IScenarioSimulator.GetElementByUID"/>
-        public ISimulationElement GetElementByUID(int uid)
-        {
-            if (this.map == null) { throw new InvalidOperationException("There is no scenario currently being simulated!"); }
-
-            return this.simulationElements.ContainsKey(uid) ? this.simulationElements[uid] : null;
         }
 
         /// <see cref="IScenarioSimulator.Map"/>
@@ -118,8 +101,6 @@ namespace RC.Engine.Simulator.Core
                 XmlMetadataReader.Read(xmlStr, imageDir, this.metadata);
             }
             this.metadata.CheckAndFinalize();
-
-            this.simulationHeapMgr = new SimulationHeapMgr(this.metadata.CompositeTypes);
         }
 
         #endregion IComponentStart methods
@@ -135,23 +116,8 @@ namespace RC.Engine.Simulator.Core
         private IMapContentManager<IGameObject> gameObjects;
 
         /// <summary>
-        /// List of the simulation elements mapped by their UIDs.
-        /// </summary>
-        private Dictionary<int, ISimulationElement> simulationElements;
-
-        /// <summary>
-        /// List of the simulation elements in order of simulation.
-        /// </summary>
-        private List<ISimulationElement> simulationElementList;
-
-        /// <summary>
         /// Reference to the simulation metadata.
         /// </summary>
         private SimulationMetadata metadata;
-
-        /// <summary>
-        /// Reference to the simulation heap manager.
-        /// </summary>
-        private ISimulationHeapMgr simulationHeapMgr;
     }
 }
