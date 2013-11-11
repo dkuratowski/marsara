@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 namespace RC.Common.Configuration
 {
@@ -37,6 +38,26 @@ namespace RC.Common.Configuration
         }
 
         /// <summary>
+        /// Loads an RCNumber from the given string.
+        /// </summary>
+        /// <param name="fromStr">The string to load from.</param>
+        /// <returns>The loaded RCNumber.</returns>
+        public static RCNumber LoadNum(string fromStr)
+        {
+            if (fromStr == null) { throw new ArgumentNullException("fromStr"); }
+            fromStr = fromStr.Trim();
+            if (!RCNUMBER_SYNTAX.IsMatch(fromStr)) { throw new ArgumentException("fromStr", "RCNumber syntax error!"); }
+
+            string[] numParts = fromStr.Split('.');
+            int integerPart = int.Parse(numParts[0]);
+            int fractionPart = int.Parse(numParts[1]);
+
+            return numParts[0].StartsWith("-") ?
+                (RCNumber)integerPart - (RCNumber)fractionPart / (RCNumber)Math.Pow(10, numParts[1].Length) :
+                (RCNumber)integerPart + (RCNumber)fractionPart / (RCNumber)Math.Pow(10, numParts[1].Length);
+        }
+
+        /// <summary>
         /// Loads a boolean value ('true' or 'false') from the given string.
         /// </summary>
         /// <param name="fromStr">The string to load from.</param>
@@ -63,7 +84,7 @@ namespace RC.Common.Configuration
         /// </summary>
         /// <param name="fromStr">The string to load from.</param>
         /// <returns>The loaded RCIntVector.</returns>
-        public static RCIntVector LoadVector(string fromStr)
+        public static RCIntVector LoadIntVector(string fromStr)
         {
             if (fromStr == null) { throw new ArgumentNullException("fromStr"); }
 
@@ -84,11 +105,28 @@ namespace RC.Common.Configuration
         }
 
         /// <summary>
+        /// Loads an RCNumVector defined in the given string.
+        /// </summary>
+        /// <param name="fromStr">The string to load from.</param>
+        /// <returns>The loaded RCNumVector.</returns>
+        public static RCNumVector LoadNumVector(string fromStr)
+        {
+            if (fromStr == null) { throw new ArgumentNullException("fromStr"); }
+
+            string[] componentStrings = fromStr.Split(';');
+            if (componentStrings.Length != 2) { throw new ConfigurationException("Vector format error!"); }
+
+            RCNumber vectorX = LoadNum(componentStrings[0]);
+            RCNumber vectorY = LoadNum(componentStrings[1]);
+            return new RCNumVector(vectorX, vectorY);
+        }
+
+        /// <summary>
         /// Loads an RCIntRectangle defined in the given string in format: "X;Y;Width;Height".
         /// </summary>
         /// <param name="fromStr">The string to load from.</param>
         /// <returns>The loaded RCIntRectangle.</returns>
-        public static RCIntRectangle LoadRectangle(string fromStr)
+        public static RCIntRectangle LoadIntRectangle(string fromStr)
         {
             if (fromStr == null) { throw new ArgumentNullException("fromStr"); }
 
@@ -111,5 +149,10 @@ namespace RC.Common.Configuration
                 throw new ConfigurationException("Rectangle format error!");
             }
         }
+
+        /// <summary>
+        /// Regular expression for checking the syntax of the RCNumbers.
+        /// </summary>
+        private static readonly Regex RCNUMBER_SYNTAX = new Regex("^[+-]?[0-9]{1,5}" + Regex.Escape(".") + "[0-9]{1,3}$");
     }
 }

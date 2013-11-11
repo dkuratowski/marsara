@@ -76,10 +76,10 @@ namespace RC.App.BizLogic.Core
         #endregion IGameplayBE methods
 
         /// <summary>
-        /// Reference to the RC.Engine.Simulator.ScenarioSimulator component.
+        /// Reference to the RC.Engine.Simulator.Simulator component.
         /// </summary>
         [ComponentReference]
-        private IScenarioSimulator scenarioSimulator;
+        private ISimulator scenarioSimulator;
 
         /// <summary>
         /// Reference to the RC.Engine.Simulator.PathFinder component.

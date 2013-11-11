@@ -1,9 +1,10 @@
-﻿using System;
+﻿using RC.Engine.Simulator.PublicInterfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RC.Engine.Simulator.PublicInterfaces
+namespace RC.Engine.Simulator.InternalInterfaces
 {
     /// <summary>
     /// This interface provides type-safe access to the simulation data stored on the simulation heap.
@@ -39,14 +40,14 @@ namespace RC.Engine.Simulator.PublicInterfaces
     /// access one of the fields of a composite data.
     /// The actual type IDs and field indices can be queried by their names using this interface.
     /// </summary>
-    public interface ISimulationHeapMgr
+    interface IHeapManager
     {
         /// <summary>
         /// Gets the ID that uniquely identifies the given type.
         /// </summary>
         /// <param name="type">The name of the type (e.g.: int, MyCompositeType, short*, etc.).</param>
         /// <returns>The ID of the given type.</returns>
-        int GetTypeID(string type);
+        short GetTypeID(string type);
 
         /// <summary>
         /// Gets the index of the given field in the given composite type.
@@ -54,8 +55,8 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <param name="typeID">The ID of the type.</param>
         /// <param name="fieldName">The name of the field.</param>
         /// <returns>The index of the field in the given composite type.</returns>
-        /// <exception cref="SimulationHeapException">In case of any error.</exception>
-        int GetFieldIdx(int typeID, string fieldName);
+        /// <exception cref="HeapException">In case of any error.</exception>
+        int GetFieldIdx(short typeID, string fieldName);
 
         /// <summary>
         /// Get the name of the type of the given field in the given composite type.
@@ -63,7 +64,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <param name="typeID">The ID of the composite type.</param>
         /// <param name="fieldIdx">The index of the field.</param>
         /// <returns>The name of type of the given field.</returns>
-        string GetFieldType(int typeID, int fieldIdx);
+        string GetFieldType(short typeID, int fieldIdx);
 
         /// <summary>
         /// Get the type ID of the given field in the given composite type.
@@ -71,7 +72,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <param name="typeID">The ID of the composite type.</param>
         /// <param name="fieldIdx">The index of the field.</param>
         /// <returns>The type ID of the given field.</returns>
-        int GetFieldTypeID(int typeID, int fieldIdx);
+        short GetFieldTypeID(short typeID, int fieldIdx);
 
         /// <summary>
         /// Allocates space on the simulation heap for storing simulation data of the given type.
@@ -79,13 +80,13 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <param name="typeID">The ID of the type of the simulation data to to be stored.</param>
         /// <returns>An interface for accessing the allocated simulation data.</returns>
         /// <remarks>
-        /// Use the ISimHeapAccess.Delete method on the returned interface for deleting the created simulation data when
+        /// Use the IHeapData.Delete method on the returned interface for deleting the created simulation data when
         /// no longer needed.
-        /// CAUTION!!! If a simulation data was allocated with ISimHeapAccess.New it must be deleted with ISimHeapAccess.Delete!
-        /// If a simulation data was allocated with ISimHeapAccess.NewArray it must be deleted with ISimHeapAccess.DeleteArray!
+        /// CAUTION!!! If a simulation data was allocated with IHeapData.New it must be deleted with IHeapData.Delete!
+        /// If a simulation data was allocated with IHeapData.NewArray it must be deleted with IHeapData.DeleteArray!
         /// Any other usage leads to undefined behavior.
         /// </remarks>
-        ISimHeapAccess New(int typeID);
+        IHeapData New(short typeID);
 
         /// <summary>
         /// Allocates space on the simulation heap for storing an array of simulation data of the given type.
@@ -94,13 +95,13 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <param name="count">The count of the elements in the array.</param>
         /// <returns>An interface for accessing the first item in the array.</returns>
         /// <remarks>
-        /// Use the ISimHeapAccess.DeleteArray method on the returned interface for deleting the created array when
+        /// Use the IHeapData.DeleteArray method on the returned interface for deleting the created array when
         /// no longer needed.
-        /// CAUTION!!! If a simulation data was allocated with ISimHeapAccess.New it must be deleted with ISimHeapAccess.Delete!
-        /// If a simulation data was allocated with ISimHeapAccess.NewArray it must be deleted with ISimHeapAccess.DeleteArray!
+        /// CAUTION!!! If a simulation data was allocated with IHeapData.New it must be deleted with IHeapData.Delete!
+        /// If a simulation data was allocated with IHeapData.NewArray it must be deleted with IHeapData.DeleteArray!
         /// Any other usage leads to undefined behavior.
         /// </remarks>
-        ISimHeapAccess NewArray(int typeID, int count);
+        IHeapData NewArray(short typeID, int count);
 
         /// <summary>
         /// Computes the hash value of the current state of the simulation heap.
@@ -113,7 +114,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// </summary>
         /// <param name="externalRefs">The external references to save.</param>
         /// <returns>A byte array that contains the saved simulation heap.</returns>
-        byte[] SaveState(List<ISimHeapAccess> externalRefs);
+        byte[] SaveState(List<IHeapData> externalRefs);
 
         /// <summary>
         /// Sets the state of the simulation heap as it is described in the given byte array.
@@ -121,6 +122,6 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <param name="heapContent">The content of the heap to be loaded.</param>
         /// <returns>The list of the external references to the loaded simulation heap.</returns>
         /// <remarks>The current state of the simulation heap will be lost if you call this method.</remarks>
-        List<ISimHeapAccess> LoadState(byte[] heapContent);
+        List<IHeapData> LoadState(byte[] heapContent);
     }
 }

@@ -77,61 +77,61 @@ namespace RC.Engine.Test
 
         static void TestSimulationHeap()
         {
-            List<SimHeapType> testMetadata = new List<SimHeapType>()
+            List<HeapType> testMetadata = new List<HeapType>()
             {
-                new SimHeapType("Unit", new List<KeyValuePair<string, string>>()
+                new HeapType("Unit", new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>("HitPoints", "short"),
                     new KeyValuePair<string, string>("TestArray", "int*"),
                     new KeyValuePair<string, string>("TestPtrArray", "Building**"),
                     new KeyValuePair<string, string>("TestPtr", "Building*"),
                 }),
-                new SimHeapType("Building", new List<KeyValuePair<string, string>>()
+                new HeapType("Building", new List<KeyValuePair<string, string>>()
                 {
                     new KeyValuePair<string, string>("HitPoints", "short"),
                     new KeyValuePair<string, string>("BuildStatus", "short"),
                 }),
             };
 
-            ISimulationHeapMgr heapMgr = new SimulationHeapMgr(testMetadata);
+            IHeapManager heapMgr = new HeapManager(testMetadata);
 
-            int UNIT_TID = heapMgr.GetTypeID("Unit");
+            short UNIT_TID = heapMgr.GetTypeID("Unit");
             int UNIT_HP_IDX = heapMgr.GetFieldIdx(UNIT_TID, "HitPoints");
-            int UNIT_HP_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_HP_IDX);
+            short UNIT_HP_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_HP_IDX);
             int UNIT_TESTARRAY_IDX = heapMgr.GetFieldIdx(UNIT_TID, "TestArray");
-            int UNIT_TESTARRAY_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_TESTARRAY_IDX);
+            short UNIT_TESTARRAY_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_TESTARRAY_IDX);
             int UNIT_TESTPTRARRAY_IDX = heapMgr.GetFieldIdx(UNIT_TID, "TestPtrArray");
-            int UNIT_TESTPTRARRAY_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_TESTPTRARRAY_IDX);
+            short UNIT_TESTPTRARRAY_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_TESTPTRARRAY_IDX);
             int UNIT_TESTPTR_IDX = heapMgr.GetFieldIdx(UNIT_TID, "TestPtr");
-            int UNIT_TESTPTR_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_TESTPTR_IDX);
+            short UNIT_TESTPTR_TID = heapMgr.GetFieldTypeID(UNIT_TID, UNIT_TESTPTR_IDX);
 
-            int BUILDING_TID = heapMgr.GetTypeID("Building");
+            short BUILDING_TID = heapMgr.GetTypeID("Building");
             int BUILDING_HP_IDX = heapMgr.GetFieldIdx(BUILDING_TID, "HitPoints");
-            int BUILDING_HP_TID = heapMgr.GetFieldTypeID(BUILDING_TID, BUILDING_HP_IDX);
+            short BUILDING_HP_TID = heapMgr.GetFieldTypeID(BUILDING_TID, BUILDING_HP_IDX);
             int BUILDING_BUILDSTATUS_IDX = heapMgr.GetFieldIdx(BUILDING_TID, "BuildStatus");
-            int BUILDING_BUILDSTATUS_TID = heapMgr.GetFieldTypeID(BUILDING_TID, BUILDING_BUILDSTATUS_IDX);
+            short BUILDING_BUILDSTATUS_TID = heapMgr.GetFieldTypeID(BUILDING_TID, BUILDING_BUILDSTATUS_IDX);
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
 
             for (int j = 0; j < 100000; j++)
             {
-                ISimHeapAccess unit = heapMgr.New(UNIT_TID);
-                ISimHeapAccess building0 = heapMgr.New(BUILDING_TID);
-                ISimHeapAccess building1 = heapMgr.New(BUILDING_TID);
+                IHeapData unit = heapMgr.New(UNIT_TID);
+                IHeapData building0 = heapMgr.New(BUILDING_TID);
+                IHeapData building1 = heapMgr.New(BUILDING_TID);
 
-                building0.AccessField(BUILDING_HP_IDX).WriteShort(100);
-                building0.AccessField(BUILDING_BUILDSTATUS_IDX).WriteShort(50);
-                building1.AccessField(BUILDING_HP_IDX).WriteShort(50);
-                building1.AccessField(BUILDING_BUILDSTATUS_IDX).WriteShort(100);
+                ((IValueWrite<short>)building0.AccessField(BUILDING_HP_IDX)).Write(100);
+                ((IValueWrite<short>)building0.AccessField(BUILDING_BUILDSTATUS_IDX)).Write(50);
+                ((IValueWrite<short>)building1.AccessField(BUILDING_HP_IDX)).Write(50);
+                ((IValueWrite<short>)building1.AccessField(BUILDING_BUILDSTATUS_IDX)).Write(100);
 
-                unit.AccessField(UNIT_HP_IDX).WriteShort(88);
+                ((IValueWrite<short>)unit.AccessField(UNIT_HP_IDX)).Write(88);
                 unit.AccessField(UNIT_TESTPTR_IDX).PointTo(building0);
 
                 unit.AccessField(UNIT_TESTARRAY_IDX).PointTo(heapMgr.NewArray(heapMgr.GetTypeID("int"), 5));
                 for (int i = 0; i < 5; ++i)
                 {
-                    unit.AccessField(UNIT_TESTARRAY_IDX).Dereference().AccessArrayItem(i).WriteInt(i);
+                    ((IValueWrite<int>)unit.AccessField(UNIT_TESTARRAY_IDX).Dereference().AccessArrayItem(i)).Write(i);
                 }
 
                 unit.AccessField(UNIT_TESTPTRARRAY_IDX).PointTo(heapMgr.NewArray(heapMgr.GetTypeID("Building*"), 5));

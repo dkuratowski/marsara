@@ -38,7 +38,7 @@ namespace RC.UI
         {
             this.loadedSprite =
                 UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(this.GetPath(IMAGE_FILE_PATH).FullName,
-                                                                          XmlHelper.LoadVector(this.pixelSizeStr.Value));
+                                                                          XmlHelper.LoadIntVector(this.pixelSizeStr.Value));
             this.loadedSprite.TransparentColor = this.transparentColor;
             this.loadedSprite.Upload();
         }

@@ -227,7 +227,7 @@ namespace RC.UI
             }
 
             char mappedChar = XmlHelper.LoadChar(mappingElem.Attribute(CHAR_ATTR).Value);
-            RCIntVector baseOfChar = XmlHelper.LoadVector(mappingElem.Attribute(BASE_ATTR).Value);
+            RCIntVector baseOfChar = XmlHelper.LoadIntVector(mappingElem.Attribute(BASE_ATTR).Value);
             int top = XmlHelper.LoadInt(mappingElem.Attribute(TOP_ATTR).Value);
             int bottom = XmlHelper.LoadInt(mappingElem.Attribute(BOTTOM_ATTR).Value);
             int width = XmlHelper.LoadInt(mappingElem.Attribute(WIDTH_ATTR).Value);

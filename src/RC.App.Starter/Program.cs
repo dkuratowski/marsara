@@ -78,7 +78,7 @@ namespace RC.App.Starter
                         Console.Write("Name of the default terrain of the new map: ");
                         MapEditorSetup.DefaultTerrain = Console.ReadLine();
                         Console.Write("Size of the new map: ");
-                        MapEditorSetup.MapSize = XmlHelper.LoadVector(Console.ReadLine());
+                        MapEditorSetup.MapSize = XmlHelper.LoadIntVector(Console.ReadLine());
                     }
                     else if (MapEditorSetup.Mode == MapEditorMode.LoadMap)
                     {
@@ -222,7 +222,7 @@ namespace RC.App.Starter
             ComponentManager.RegisterComponents("RC.Engine.Simulator, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                                     new string[2]
                                                 {
-                                                    "RC.Engine.Simulator.ScenarioSimulator",
+                                                    "RC.Engine.Simulator.Simulator",
                                                     "RC.Engine.Simulator.PathFinder"
                                                 });
 

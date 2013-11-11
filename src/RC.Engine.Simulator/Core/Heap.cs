@@ -12,14 +12,14 @@ namespace RC.Engine.Simulator.Core
     /// Implementation of the simulation-heap where every simulation data is stored.
     /// </summary>
     /// TODO: this implementation might have a possible performance issue!
-    class SimulationHeap : ISimulationHeap
+    class Heap : IHeap
     {
         /// <summary>
-        /// Constructs an empty SimulationHeap with the given page size and capacity.
+        /// Constructs an empty Heap with the given page size and capacity.
         /// </summary>
         /// <param name="pageSize">The size of the pages on the simulation-heap.</param>
         /// <param name="capacity">The capacity of the simulation-heap.</param>
-        public SimulationHeap(int pageSize, int capacity)
+        public Heap(int pageSize, int capacity)
         {
             if (pageSize < MIN_PAGESIZE || pageSize > MAX_PAGESIZE) { throw new ArgumentOutOfRangeException("pageSize"); }
             if (capacity < pageSize) { throw new ArgumentOutOfRangeException("capacity"); }
@@ -32,19 +32,19 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Constructs a SimulationHeap with the given content and capacity.
+        /// Constructs a Heap with the given content and capacity.
         /// </summary>
         /// <param name="content">The content of the simulation heap.</param>
         /// <param name="capacity">The capacity of the simulation-heap.</param>
-        public SimulationHeap(byte[] content, int capacity)
+        public Heap(byte[] content, int capacity)
         {
             if (content == null) { throw new ArgumentNullException("content"); }
 
             int pageSizeAddress = BitConverter.ToInt32(content, 0);
 
             int pageSize = BitConverter.ToInt32(content, pageSizeAddress);
-            if (pageSize < MIN_PAGESIZE || pageSize > MAX_PAGESIZE) { throw new SimulationHeapException("Page-size is out of bounds!"); }
-            if (content.Length % pageSize != 0) { throw new SimulationHeapException("The page-size must be a divisor of the size of the content array!"); }
+            if (pageSize < MIN_PAGESIZE || pageSize > MAX_PAGESIZE) { throw new HeapException("Page-size is out of bounds!"); }
+            if (content.Length % pageSize != 0) { throw new HeapException("The page-size must be a divisor of the size of the content array!"); }
             content[pageSizeAddress + 0] = content[pageSizeAddress + 1] = content[pageSizeAddress + 2] = content[pageSizeAddress + 3] = 0;
 
             this.pageSize = pageSize;
@@ -65,16 +65,16 @@ namespace RC.Engine.Simulator.Core
             this.maxAddress = content.Length - 1;
         }
 
-        #region ISimulationHeap methods
+        #region IHeap methods
 
-        /// <see cref="ISimulationHeap.WriteByte"/>
+        /// <see cref="IHeap.WriteByte"/>
         public void WriteByte(int address, byte newVal)
         {
             while (address > this.maxAddress) { ExtendHeap(); }
             this.pages[address / this.pageSize][address % this.pageSize] = newVal;
         }
 
-        /// <see cref="ISimulationHeap.WriteShort"/>
+        /// <see cref="IHeap.WriteShort"/>
         public void WriteShort(int address, short newVal)
         {
             while (address > this.maxAddress - 1) { ExtendHeap(); }
@@ -83,7 +83,7 @@ namespace RC.Engine.Simulator.Core
             this.pages[(address + 1) / this.pageSize][(address + 1) % this.pageSize] = newValBytes[1];
         }
 
-        /// <see cref="ISimulationHeap.WriteInt"/>
+        /// <see cref="IHeap.WriteInt"/>
         public void WriteInt(int address, int newVal)
         {
             while (address > this.maxAddress - 3) { ExtendHeap(); }
@@ -94,7 +94,7 @@ namespace RC.Engine.Simulator.Core
             this.pages[(address + 3) / this.pageSize][(address + 3) % this.pageSize] = newValBytes[3];
         }
 
-        /// <see cref="ISimulationHeap.WriteLong"/>
+        /// <see cref="IHeap.WriteLong"/>
         public void WriteLong(int address, long newVal)
         {
             while (address > this.maxAddress - 7) { ExtendHeap(); }
@@ -109,13 +109,13 @@ namespace RC.Engine.Simulator.Core
             this.pages[(address + 7) / this.pageSize][(address + 7) % this.pageSize] = newValBytes[7];
         }
 
-        /// <see cref="ISimulationHeap.ReadByte"/>
+        /// <see cref="IHeap.ReadByte"/>
         public byte ReadByte(int address)
         {
             return this.pages[address / this.pageSize][address % this.pageSize];
         }
 
-        /// <see cref="ISimulationHeap.ReadShort"/>
+        /// <see cref="IHeap.ReadShort"/>
         public short ReadShort(int address)
         {
             byte[] valueBytes = new byte[2];
@@ -124,7 +124,7 @@ namespace RC.Engine.Simulator.Core
             return BitConverter.ToInt16(valueBytes, 0);
         }
 
-        /// <see cref="ISimulationHeap.ReadInt"/>
+        /// <see cref="IHeap.ReadInt"/>
         public int ReadInt(int address)
         {
             byte[] valueBytes = new byte[4];
@@ -135,7 +135,7 @@ namespace RC.Engine.Simulator.Core
             return BitConverter.ToInt32(valueBytes, 0);
         }
 
-        /// <see cref="ISimulationHeap.ReadLong"/>
+        /// <see cref="IHeap.ReadLong"/>
         public long ReadLong(int address)
         {
             byte[] valueBytes = new byte[8];
@@ -150,7 +150,7 @@ namespace RC.Engine.Simulator.Core
             return BitConverter.ToInt64(valueBytes, 0);
         }
 
-        /// <see cref="ISimulationHeap.ComputeHash"/>
+        /// <see cref="IHeap.ComputeHash"/>
         public byte[] ComputeHash()
         {
             uint crc = 0xffffffff;
@@ -166,7 +166,7 @@ namespace RC.Engine.Simulator.Core
             return BitConverter.GetBytes(~crc);
         }
 
-        /// <see cref="ISimulationHeap.Dump"/>
+        /// <see cref="IHeap.Dump"/>
         public byte[] Dump()
         {
             int pageSizeAddress = this.ReadInt(0);
@@ -187,12 +187,12 @@ namespace RC.Engine.Simulator.Core
             return retArray;
         }
 
-        #endregion ISimulationHeap methods
+        #endregion IHeap methods
         
         /// <summary>
         /// Static class-level constructor for computing the helper CRC32-table.
         /// </summary>
-        static SimulationHeap()
+        static Heap()
         {
             CRC32_TABLE = new uint[256];
             uint temp = 0;
@@ -221,7 +221,7 @@ namespace RC.Engine.Simulator.Core
         {
             this.pages.Add(new byte[this.pageSize]);
             this.maxAddress += this.pageSize;
-            if (this.maxAddress >= this.capacity) { throw new SimulationHeapException("Simulation heap overflow!"); }
+            if (this.maxAddress >= this.capacity) { throw new HeapException("Simulation heap overflow!"); }
         }
 
         /// <summary>

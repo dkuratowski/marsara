@@ -1,229 +1,227 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <simulationMetadata>
-  <upgradeType name="InfantryWeapons">
-    <level>
-      <costs>
-        <mineral>100</mineral>
-        <gas>100</gas>
-        <buildTime>3990</buildTime>
-      </costs>
-    </level>
-    <level>
-      <costs>
-        <mineral>175</mineral>
-        <gas>175</gas>
-        <buildTime>4470</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
-    <level>
-      <costs>
-        <mineral>250</mineral>
-        <gas>250</gas>
-        <buildTime>4950</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
+  <upgradeType name="InfantryWeapons#1">
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>3990</buildTime>
+    </costs>
     <researchedIn>EngineeringBay</researchedIn>
   </upgradeType>
-  <upgradeType name="InfantryArmor">
-    <level>
-      <costs>
-        <mineral>100</mineral>
-        <gas>100</gas>
-        <buildTime>3990</buildTime>
-      </costs>
-    </level>
-    <level>
-      <costs>
-        <mineral>175</mineral>
-        <gas>175</gas>
-        <buildTime>4470</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
-    <level>
-      <costs>
-        <mineral>250</mineral>
-        <gas>250</gas>
-        <buildTime>4950</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
+  <upgradeType name="InfantryWeapons#2">
+    <costs>
+      <mineral>175</mineral>
+      <gas>175</gas>
+      <buildTime>4470</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
+    <researchedIn>EngineeringBay</researchedIn>
+    <previousLevel>InfantryWeapons#1</previousLevel>
+  </upgradeType>
+  <upgradeType name="InfantryWeapons#3">
+    <costs>
+      <mineral>250</mineral>
+      <gas>250</gas>
+      <buildTime>4950</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
+    <researchedIn>EngineeringBay</researchedIn>
+    <previousLevel>InfantryWeapons#2</previousLevel>
+  </upgradeType>
+  <upgradeType name="InfantryArmor#1">
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>3990</buildTime>
+    </costs>
     <researchedIn>EngineeringBay</researchedIn>
   </upgradeType>
-  <upgradeType name="VehicleWeapons">
-    <level>
-      <costs>
-        <mineral>100</mineral>
-        <gas>100</gas>
-        <buildTime>3990</buildTime>
-      </costs>
-    </level>
-    <level>
-      <costs>
-        <mineral>175</mineral>
-        <gas>175</gas>
-        <buildTime>4470</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
-    <level>
-      <costs>
-        <mineral>250</mineral>
-        <gas>250</gas>
-        <buildTime>4950</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
+  <upgradeType name="InfantryArmor#2">
+    <costs>
+      <mineral>175</mineral>
+      <gas>175</gas>
+      <buildTime>4470</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
+    <researchedIn>EngineeringBay</researchedIn>
+    <previousLevel>InfantryArmor#1</previousLevel>
+  </upgradeType>
+  <upgradeType name="InfantryArmor#3">
+    <costs>
+      <mineral>250</mineral>
+      <gas>250</gas>
+      <buildTime>4950</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
+    <researchedIn>EngineeringBay</researchedIn>
+    <previousLevel>InfantryArmor#2</previousLevel>
+  </upgradeType>
+  <upgradeType name="VehicleWeapons#1">
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>3990</buildTime>
+    </costs>
     <researchedIn>Armory</researchedIn>
   </upgradeType>
-  <upgradeType name="VehiclePlating">
-    <level>
-      <costs>
-        <mineral>100</mineral>
-        <gas>100</gas>
-        <buildTime>3990</buildTime>
-      </costs>
-    </level>
-    <level>
-      <costs>
-        <mineral>175</mineral>
-        <gas>175</gas>
-        <buildTime>4470</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
-    <level>
-      <costs>
-        <mineral>250</mineral>
-        <gas>250</gas>
-        <buildTime>4950</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
+  <upgradeType name="VehicleWeapons#2">
+    <costs>
+      <mineral>175</mineral>
+      <gas>175</gas>
+      <buildTime>4470</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
+    <researchedIn>Armory</researchedIn>
+    <previousLevel>VehicleWeapons#1</previousLevel>
+  </upgradeType>
+  <upgradeType name="VehicleWeapons#3">
+    <costs>
+      <mineral>250</mineral>
+      <gas>250</gas>
+      <buildTime>4950</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
+    <researchedIn>Armory</researchedIn>
+    <previousLevel>VehicleWeapons#2</previousLevel>
+  </upgradeType>
+  <upgradeType name="VehiclePlating#1">
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>3990</buildTime>
+    </costs>
     <researchedIn>Armory</researchedIn>
   </upgradeType>
-  <upgradeType name="ShipWeapons">
-    <level>
-      <costs>
-        <mineral>100</mineral>
-        <gas>100</gas>
-        <buildTime>3990</buildTime>
-      </costs>
-    </level>
-    <level>
-      <costs>
-        <mineral>175</mineral>
-        <gas>175</gas>
-        <buildTime>4470</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
-    <level>
-      <costs>
-        <mineral>250</mineral>
-        <gas>250</gas>
-        <buildTime>4950</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
+  <upgradeType name="VehiclePlating#2">
+    <costs>
+      <mineral>175</mineral>
+      <gas>175</gas>
+      <buildTime>4470</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
+    <researchedIn>Armory</researchedIn>
+    <previousLevel>VehiclePlating#1</previousLevel>
+  </upgradeType>
+  <upgradeType name="VehiclePlating#3">
+    <costs>
+      <mineral>250</mineral>
+      <gas>250</gas>
+      <buildTime>4950</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
+    <researchedIn>Armory</researchedIn>
+    <previousLevel>VehiclePlating#2</previousLevel>
+  </upgradeType>
+  <upgradeType name="ShipWeapons#1">
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>3990</buildTime>
+    </costs>
     <researchedIn>Armory</researchedIn>
   </upgradeType>
-  <upgradeType name="ShipPlating">
-    <level>
-      <costs>
-        <mineral>150</mineral>
-        <gas>150</gas>
-        <buildTime>3990</buildTime>
-      </costs>
-    </level>
-    <level>
-      <costs>
-        <mineral>225</mineral>
-        <gas>225</gas>
-        <buildTime>4470</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
-    <level>
-      <costs>
-        <mineral>300</mineral>
-        <gas>300</gas>
-        <buildTime>4950</buildTime>
-      </costs>
-      <requires>ScienceFacility</requires>
-    </level>
+  <upgradeType name="ShipWeapons#2">
+    <costs>
+      <mineral>175</mineral>
+      <gas>175</gas>
+      <buildTime>4470</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
     <researchedIn>Armory</researchedIn>
+    <previousLevel>ShipWeapons#1</previousLevel>
+  </upgradeType>
+  <upgradeType name="ShipWeapons#3">
+    <costs>
+      <mineral>250</mineral>
+      <gas>250</gas>
+      <buildTime>4950</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
+    <researchedIn>Armory</researchedIn>
+    <previousLevel>ShipWeapons#2</previousLevel>
+  </upgradeType>
+  <upgradeType name="ShipPlating#1">
+    <costs>
+      <mineral>150</mineral>
+      <gas>150</gas>
+      <buildTime>3990</buildTime>
+    </costs>
+    <researchedIn>Armory</researchedIn>
+  </upgradeType>
+  <upgradeType name="ShipPlating#2">
+    <costs>
+      <mineral>225</mineral>
+      <gas>225</gas>
+      <buildTime>4470</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
+    <researchedIn>Armory</researchedIn>
+    <previousLevel>ShipPlating#1</previousLevel>
+  </upgradeType>
+  <upgradeType name="ShipPlating#3">
+    <costs>
+      <mineral>300</mineral>
+      <gas>300</gas>
+      <buildTime>4950</buildTime>
+    </costs>
+    <requires>ScienceFacility</requires>
+    <researchedIn>Armory</researchedIn>
+    <previousLevel>ShipPlating#2</previousLevel>
   </upgradeType>
   <upgradeType name="U238Shells">
-    <level>
-      <costs>
-        <mineral>150</mineral>
-        <gas>150</gas>
-        <buildTime>1500</buildTime>
-      </costs>
-    </level>
+    <costs>
+      <mineral>150</mineral>
+      <gas>150</gas>
+      <buildTime>1500</buildTime>
+    </costs>
     <researchedIn>Academy</researchedIn>
   </upgradeType>
   <upgradeType name="IonThrusters">
-    <level>
-      <costs>
-        <mineral>100</mineral>
-        <gas>100</gas>
-        <buildTime>1500</buildTime>
-      </costs>
-    </level>
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>1500</buildTime>
+    </costs>
     <researchedIn>MachineShop</researchedIn>
   </upgradeType>
   <upgradeType name="TitanReactor">
-    <level>
-      <costs>
-        <mineral>150</mineral>
-        <gas>150</gas>
-        <buildTime>2490</buildTime>
-      </costs>
-    </level>
+    <costs>
+      <mineral>150</mineral>
+      <gas>150</gas>
+      <buildTime>2490</buildTime>
+    </costs>
     <researchedIn>ScienceFacility</researchedIn>
   </upgradeType>
   <upgradeType name="OcularImplants">
-    <level>
-      <costs>
-        <mineral>100</mineral>
-        <gas>100</gas>
-        <buildTime>2490</buildTime>
-      </costs>
-    </level>
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>2490</buildTime>
+    </costs>
     <researchedIn>CovertOps</researchedIn>
   </upgradeType>
   <upgradeType name="MoebiusReactor">
-    <level>
-      <costs>
-        <mineral>150</mineral>
-        <gas>150</gas>
-        <buildTime>2490</buildTime>
-      </costs>
-    </level>
+    <costs>
+      <mineral>150</mineral>
+      <gas>150</gas>
+      <buildTime>2490</buildTime>
+    </costs>
     <researchedIn>CovertOps</researchedIn>
   </upgradeType>
   <upgradeType name="ApolloReactor">
-    <level>
-      <costs>
-        <mineral>200</mineral>
-        <gas>200</gas>
-        <buildTime>2490</buildTime>
-      </costs>
-    </level>
+    <costs>
+      <mineral>200</mineral>
+      <gas>200</gas>
+      <buildTime>2490</buildTime>
+    </costs>
     <researchedIn>ControlTower</researchedIn>
   </upgradeType>
   <upgradeType name="ColossusReactor">
-    <level>
-      <costs>
-        <mineral>150</mineral>
-        <gas>150</gas>
-        <buildTime>2490</buildTime>
-      </costs>
-    </level>
+    <costs>
+      <mineral>150</mineral>
+      <gas>150</gas>
+      <buildTime>2490</buildTime>
+    </costs>
     <researchedIn>PhysicsLab</researchedIn>
   </upgradeType>
 </simulationMetadata>

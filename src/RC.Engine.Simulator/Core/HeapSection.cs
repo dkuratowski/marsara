@@ -9,7 +9,7 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Represents an item in a linked-list of simulation heap sections.
     /// </summary>
-    class SimHeapSection
+    class HeapSection
     {
         /// <summary>
         /// The start address of the section.
@@ -24,11 +24,11 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Reference to the next section in the list.
         /// </summary>
-        public SimHeapSection Next;
+        public HeapSection Next;
 
         /// <summary>
         /// Reference to the previous section in the list.
         /// </summary>
-        public SimHeapSection Prev;
+        public HeapSection Prev;
     }
 }

@@ -13,7 +13,7 @@ namespace RC.Engine.Simulator.ComponentInterfaces
     /// at a time.
     /// </summary>
     [ComponentInterface]
-    public interface IScenarioSimulator
+    public interface ISimulator
     {
         /// <summary>
         /// Begins a new scenario on the given map.

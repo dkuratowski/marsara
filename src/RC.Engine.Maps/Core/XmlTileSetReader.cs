@@ -216,7 +216,7 @@ namespace RC.Engine.Maps.Core
 
             tileset.CreateTerrainObjectType(nameAttr.Value,
                                             imageData,
-                                            XmlHelper.LoadVector(quadSizeAttr.Value));
+                                            XmlHelper.LoadIntVector(quadSizeAttr.Value));
             TerrainObjectType terrainObj = tileset.GetTerrainObjectTypeImpl(nameAttr.Value);
 
             /// Apply the defined area exclusions.
@@ -224,7 +224,7 @@ namespace RC.Engine.Maps.Core
             {
                 XAttribute rectAttr = excludeAreaElem.Attribute(XmlTileSetConstants.TERRAINOBJ_EXCLUDEAREA_RECT_ATTR);
                 if (rectAttr == null) { throw new TileSetException("The rectangle of the excluded area not defined!"); }
-                terrainObj.ExcludeArea(XmlHelper.LoadRectangle(rectAttr.Value));
+                terrainObj.ExcludeArea(XmlHelper.LoadIntRectangle(rectAttr.Value));
             }
 
             /// Load the constraints, the properties and the cell data changesets.
@@ -269,7 +269,7 @@ namespace RC.Engine.Maps.Core
             if (terrainAttr != null && (terrainAAttr != null || terrainBAttr != null || combinationsAttr != null)) { throw new TileSetException("Invalid attributes defined for tile constraint on a simple tile!"); }
             if (terrainAttr == null && (terrainAAttr == null || terrainBAttr == null || combinationsAttr == null)) { throw new TileSetException("Invalid attributes defined for tile constraint on a mixed tile!"); }
 
-            RCIntVector quadCoords = XmlHelper.LoadVector(quadCoordsAttr.Value);
+            RCIntVector quadCoords = XmlHelper.LoadIntVector(quadCoordsAttr.Value);
             if (terrainObj.IsExcluded(quadCoords)) { throw new TileSetException(string.Format("TileConstraint at excluded coordinates {0} cannot be defined!", quadCoords)); }
             if (terrainAttr != null)
             {
@@ -449,11 +449,11 @@ namespace RC.Engine.Maps.Core
                     /// Create the changeset object.
                     if (fieldType == CellDataType.BOOL)
                     {
-                        retObj = new CellChangeSet(XmlHelper.LoadVector(cellAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
+                        retObj = new CellChangeSet(XmlHelper.LoadIntVector(cellAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
                     }
                     else if (fieldType == CellDataType.INT)
                     {
-                        retObj = new CellChangeSet(XmlHelper.LoadVector(cellAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
+                        retObj = new CellChangeSet(XmlHelper.LoadIntVector(cellAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
                     }
                     break;
 
@@ -502,11 +502,11 @@ namespace RC.Engine.Maps.Core
                     /// Create the changeset object.
                     if (fieldType == CellDataType.BOOL)
                     {
-                        retObj = new RectangleChangeSet(XmlHelper.LoadRectangle(rectAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
+                        retObj = new RectangleChangeSet(XmlHelper.LoadIntRectangle(rectAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
                     }
                     else if (fieldType == CellDataType.INT)
                     {
-                        retObj = new RectangleChangeSet(XmlHelper.LoadRectangle(rectAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
+                        retObj = new RectangleChangeSet(XmlHelper.LoadIntRectangle(rectAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
                     }
                     break;
 

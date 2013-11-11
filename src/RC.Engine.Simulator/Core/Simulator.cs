@@ -13,23 +13,23 @@ using System.IO;
 namespace RC.Engine.Simulator.Core
 {
     /// <summary>
-    /// Implementation of the scenario simulator component.
+    /// Implementation of the simulator component.
     /// </summary>
-    [Component("RC.Engine.Simulator.ScenarioSimulator")]
-    class ScenarioSimulator : IScenarioSimulator, IComponentStart
+    [Component("RC.Engine.Simulator.Simulator")]
+    class Simulator : ISimulator, IComponentStart
     {
         /// <summary>
-        /// Constructs a ScenarioSimulator instance.
+        /// Constructs a Simulator instance.
         /// </summary>
-        public ScenarioSimulator()
+        public Simulator()
         {
             this.map = null;
             this.gameObjects = null;
         }
 
-        #region IScenarioSimulator methods
+        #region ISimulator methods
 
-        /// <see cref="IScenarioSimulator.BeginScenario"/>
+        /// <see cref="ISimulator.BeginScenario"/>
         public void BeginScenario(IMapAccess map)
         {
             if (map == null) { throw new ArgumentNullException("map"); }
@@ -45,7 +45,7 @@ namespace RC.Engine.Simulator.Core
                                            Constants.BSP_MIN_NODE_SIZE);
         }
 
-        /// <see cref="IScenarioSimulator.BeginScenario"/>
+        /// <see cref="ISimulator.BeginScenario"/>
         public IMapAccess EndScenario()
         {
             if (this.map == null) { throw new InvalidOperationException("There is no scenario currently being simulated!"); }
@@ -56,13 +56,13 @@ namespace RC.Engine.Simulator.Core
             return map;
         }
 
-        /// <see cref="IScenarioSimulator.SimulateNextFrame"/>
+        /// <see cref="ISimulator.SimulateNextFrame"/>
         public void SimulateNextFrame()
         {
             if (this.map == null) { throw new InvalidOperationException("There is no scenario currently being simulated!"); }
         }
 
-        /// <see cref="IScenarioSimulator.Map"/>
+        /// <see cref="ISimulator.Map"/>
         public IMapAccess Map
         {
             get
@@ -72,7 +72,7 @@ namespace RC.Engine.Simulator.Core
             }
         }
 
-        /// <see cref="IScenarioSimulator.GameObjects"/>
+        /// <see cref="ISimulator.GameObjects"/>
         public IMapContentManager<IGameObject> GameObjects
         {
             get
@@ -82,7 +82,7 @@ namespace RC.Engine.Simulator.Core
             }
         }
 
-        #endregion IScenarioSimulator methods
+        #endregion ISimulator methods
 
         #region IComponentStart methods
 
@@ -92,7 +92,7 @@ namespace RC.Engine.Simulator.Core
             /// Load the tilesets from the configured directory
             DirectoryInfo rootDir = new DirectoryInfo(Constants.METADATA_DIR);
             FileInfo[] metadataFiles = rootDir.GetFiles("*.xml", SearchOption.AllDirectories);
-            this.metadata = new SimulationMetadata();
+            this.metadata = new Metadata();
             foreach (FileInfo metadataFile in metadataFiles)
             {
                 /// TODO: this is a hack! Later we will have binary metadata format.
@@ -118,6 +118,6 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Reference to the simulation metadata.
         /// </summary>
-        private SimulationMetadata metadata;
+        private Metadata metadata;
     }
 }

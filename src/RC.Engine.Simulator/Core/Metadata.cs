@@ -10,12 +10,12 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Represents the metadata informations for the simulation.
     /// </summary>
-    class SimulationMetadata
+    class Metadata
     {
         /// <summary>
-        /// Constructs a SimulationMetadata object.
+        /// Constructs a Metadata object.
         /// </summary>
-        public SimulationMetadata()
+        public Metadata()
         {
             this.isFinalized = false;
             this.buildingTypes = new Dictionary<string, BuildingType>();
@@ -95,7 +95,79 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         public void CheckAndFinalize()
         {
-            /// TODO: check and finalize here.
+            /// Fill the missing data of the addon types.
+            foreach (AddonType addonType in this.addonTypes.Values)
+            {
+                if (!this.buildingTypes.ContainsKey(addonType.MainBuilding)) { throw new SimulatorException(string.Format("BuildingType with name '{0}' doesn't exist!", addonType.MainBuilding)); }
+                this.buildingTypes[addonType.MainBuilding].AddAddonType(addonType);
+            }
+
+            /// Fill the missing data of the unit types.
+            foreach (UnitType unitType in this.unitTypes.Values)
+            {
+                if (unitType.CreatedIn != null)
+                {
+                    if (!this.buildingTypes.ContainsKey(unitType.CreatedIn)) { throw new SimulatorException(string.Format("BuildingType with name '{0}' doesn't exist!", unitType.CreatedIn)); }
+                    if (unitType.NecessaryAddonName != null)
+                    {
+                        if (!this.addonTypes.ContainsKey(unitType.NecessaryAddonName)) { throw new SimulatorException(string.Format("AddonType with name '{0}' doesn't exist!", unitType.NecessaryAddonName)); }
+                        if (!this.buildingTypes[unitType.CreatedIn].HasAddonType(unitType.NecessaryAddonName)) { throw new SimulatorException(string.Format("BuildingType '{0}' doesn't have AddonType '{1}'!", unitType.CreatedIn, unitType.NecessaryAddonName)); }
+                        unitType.NecessaryAddon = this.addonTypes[unitType.NecessaryAddonName];
+                    }
+                    this.buildingTypes[unitType.CreatedIn].AddUnitType(unitType);
+                }
+            }
+
+            /// Fill the missing data of the upgrade types.
+            foreach (UpgradeType upgradeType in this.upgradeTypes.Values)
+            {
+                if (upgradeType.ResearchedIn != null)
+                {
+                    if (this.buildingTypes.ContainsKey(upgradeType.ResearchedIn))
+                    {
+                        this.buildingTypes[upgradeType.ResearchedIn].AddUpgradeType(upgradeType);
+                    }
+                    else if (this.addonTypes.ContainsKey(upgradeType.ResearchedIn))
+                    {
+                        this.addonTypes[upgradeType.ResearchedIn].AddUpgradeType(upgradeType);
+                    }
+                    else
+                    {
+                        throw new SimulatorException(string.Format("BuildingType or AddonType with name '{0}' doesn't exist!", upgradeType.ResearchedIn));
+                    }
+                }
+
+                if (upgradeType.PreviousLevelName != null)
+                {
+                    if (!this.upgradeTypes.ContainsKey(upgradeType.PreviousLevelName)) { throw new SimulatorException(string.Format("UpgradeType with name '{0}' doesn't exist!", upgradeType.PreviousLevelName)); }
+                    upgradeType.PreviousLevel = this.upgradeTypes[upgradeType.PreviousLevelName];
+                }
+            }
+
+            /// Finalize the unit types.
+            foreach (UnitType unitType in this.unitTypes.Values)
+            {
+                unitType.CheckAndFinalize();
+            }
+
+            /// Finalize the upgrade types.
+            foreach (UpgradeType upgradeType in this.upgradeTypes.Values)
+            {
+                upgradeType.CheckAndFinalize();
+            }
+
+            /// Finalize the addon types.
+            foreach (AddonType addonType in this.addonTypes.Values)
+            {
+                addonType.CheckAndFinalize();
+            }
+
+            /// Finalize the building types.
+            foreach (BuildingType buildingType in this.buildingTypes.Values)
+            {
+                buildingType.CheckAndFinalize();
+            }
+
             this.isFinalized = true;
         }
 

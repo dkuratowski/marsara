@@ -227,6 +227,7 @@
     </costs>
     <generalData>
       <size>Small</size>
+      <area>1.0;1.0</area>
       <maxHP>50</maxHP>
       <armor>1</armor>
       <sightRange>7</sightRange>
@@ -254,6 +255,7 @@
     </costs>
     <generalData>
       <size>Small</size>
+      <area>1.0;1.0</area>
       <maxHP>45</maxHP>
       <maxEnergy>200</maxEnergy>
       <sightRange>9</sightRange>
@@ -286,6 +288,7 @@
     </costs>
     <generalData>
       <size>Medium</size>
+      <area>1.0;1.0</area>
       <maxHP>80</maxHP>
       <sightRange>8</sightRange>
       <speed>0.834</speed>
@@ -310,6 +313,7 @@
     </costs>
     <generalData>
       <size>Large</size>
+      <area>1.0;1.0</area>
       <maxHP>150</maxHP>
       <armor>1</armor>
       <sightRange>10</sightRange>
@@ -335,6 +339,7 @@
     </costs>
     <generalData>
       <size>Large</size>
+      <area>1.0;1.0</area>
       <maxHP>125</maxHP>
       <armor>1</armor>
       <sightRange>8</sightRange>
@@ -368,6 +373,7 @@
     </costs>
     <generalData>
       <size>Large</size>
+      <area>1.0;1.0</area>
       <maxHP>120</maxHP>
       <maxEnergy>200</maxEnergy>
       <sightRange>7</sightRange>
@@ -400,6 +406,7 @@
     </costs>
     <generalData>
       <size>Large</size>
+      <area>1.0;1.0</area>
       <maxHP>150</maxHP>
       <armor>1</armor>
       <sightRange>8</sightRange>
@@ -418,6 +425,7 @@
     </costs>
     <generalData>
       <size>Large</size>
+      <area>1.0;1.0</area>
       <maxHP>200</maxHP>
       <armor>1</armor>
       <maxEnergy>200</maxEnergy>
@@ -438,6 +446,7 @@
     </costs>
     <generalData>
       <size>Large</size>
+      <area>1.0;1.0</area>
       <maxHP>500</maxHP>
       <armor>3</armor>
       <maxEnergy>200</maxEnergy>

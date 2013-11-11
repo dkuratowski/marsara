@@ -23,6 +23,7 @@ namespace RC.Engine.Simulator.Core
         public const string CREATEDIN_ELEM = "createdIn";
         public const string MAINBUILDING_ELEM = "mainBuilding";
         public const string RESEARCHEDIN_ELEM = "researchedIn";
+        public const string PREVIOUSLEVEL_ELEM = "previousLevel";
         public const string REQUIRES_ELEM = "requires";
         public const string SPRITE_ELEM = "sprite";
         public const string SPRITE_IMAGE_ATTR = "image";
@@ -50,6 +51,5 @@ namespace RC.Engine.Simulator.Core
         public const string WPN_RANGEMAX_ELEM = "rangeMax";
         public const string WPN_RANGEMIN_ELEM = "rangeMin";
         public const string WPN_SPLASHTYPE_ELEM = "splashType";
-        public const string UPG_LEVEL_ELEM = "level";
     }
 }

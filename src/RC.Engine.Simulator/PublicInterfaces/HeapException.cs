@@ -5,12 +5,12 @@ using System.Text;
 
 namespace RC.Engine.Simulator.PublicInterfaces
 {
-    public class SimulationHeapException : Exception
+    public class HeapException : Exception
     {
-        public SimulationHeapException() { }
-        public SimulationHeapException(string message) : base(message) { }
-        public SimulationHeapException(string message, Exception inner) : base(message, inner) { }
-        protected SimulationHeapException(
+        public HeapException() { }
+        public HeapException(string message) : base(message) { }
+        public HeapException(string message, Exception inner) : base(message, inner) { }
+        protected HeapException(
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }

@@ -7,6 +7,7 @@ using RC.Engine.Simulator.Core;
 using RC.Common;
 using System.Diagnostics;
 using System.Reflection;
+using RC.Engine.Simulator.InternalInterfaces;
 
 namespace RC.Engine.Test
 {
@@ -14,29 +15,29 @@ namespace RC.Engine.Test
     {
         public static bool StressTest()
         {
-            ISimulationHeapMgr heapMgr = new SimulationHeapMgr(testMetadata);
+            IHeapManager heapMgr = new HeapManager(testMetadata);
             GetIDs(heapMgr);
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
 
-            ISimHeapAccess prevObj = null;
+            IHeapData prevObj = null;
 
-            ISimHeapAccess[] allObjects = new ISimHeapAccess[100];
+            IHeapData[] allObjects = new IHeapData[100];
             for (int i = 0; i < 100; i++)
             {
-                ISimHeapAccess currObj = CreateTestObj(heapMgr);
+                IHeapData currObj = CreateTestObj(heapMgr);
                 allObjects[i] = currObj;
                 if (prevObj != null) { prevObj.AccessField(TESTTYPE_NEXT_IDX).PointTo(currObj); }
                 prevObj = currObj;
             }
 
-            byte[] savedHeap = heapMgr.SaveState(new List<ISimHeapAccess>() { allObjects[0] });
+            byte[] savedHeap = heapMgr.SaveState(new List<IHeapData>() { allObjects[0] });
 
-            List<ISimHeapAccess> savedRefs = heapMgr.LoadState(savedHeap);
+            List<IHeapData> savedRefs = heapMgr.LoadState(savedHeap);
             if (savedRefs.Count != 1) { throw new Exception("Load error!"); }
 
-            ISimHeapAccess curr = savedRefs[0];
+            IHeapData curr = savedRefs[0];
             int objIdx = 0;
             do
             {
@@ -59,8 +60,8 @@ namespace RC.Engine.Test
 
             watch.Stop();
 
-            FieldInfo freeSectionsHeadFI = typeof(SimulationHeapMgr).GetField("freeSectionsHead", BindingFlags.NonPublic | BindingFlags.Instance);
-            SimHeapSection freeSectionsHead = (SimHeapSection)freeSectionsHeadFI.GetValue(heapMgr);
+            FieldInfo freeSectionsHeadFI = typeof(HeapManager).GetField("freeSectionsHead", BindingFlags.NonPublic | BindingFlags.Instance);
+            HeapSection freeSectionsHead = (HeapSection)freeSectionsHeadFI.GetValue(heapMgr);
 
             return freeSectionsHead.Address == 4 &&
                    freeSectionsHead.Length == -1 &&
@@ -68,9 +69,9 @@ namespace RC.Engine.Test
                    freeSectionsHead.Prev == null;
         }
 
-        private static ISimHeapAccess CreateTestObj(ISimulationHeapMgr heapMgr)
+        private static IHeapData CreateTestObj(IHeapManager heapMgr)
         {
-            ISimHeapAccess retObj = heapMgr.New(TESTTYPE_ID);
+            IHeapData retObj = heapMgr.New(TESTTYPE_ID);
             retObj.AccessField(TESTTYPE_BYTEARRAY_IDX).PointTo(CreateByteArray(heapMgr, 1));
             retObj.AccessField(TESTTYPE_SHORTARRAY_IDX).PointTo(CreateShortArray(heapMgr, 2));
             retObj.AccessField(TESTTYPE_INTARRAY_IDX).PointTo(CreateIntArray(heapMgr, 3));
@@ -83,7 +84,7 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static void DeleteTestObj(ISimHeapAccess obj)
+        private static void DeleteTestObj(IHeapData obj)
         {
             obj.AccessField(TESTTYPE_BYTEARRAY_IDX).Dereference().DeleteArray();
             obj.AccessField(TESTTYPE_SHORTARRAY_IDX).Dereference().DeleteArray();
@@ -97,7 +98,7 @@ namespace RC.Engine.Test
             obj.Delete();
         }
 
-        private static void CheckTestObj(ISimHeapAccess obj)
+        private static void CheckTestObj(IHeapData obj)
         {
             CheckByteArray(obj.AccessField(TESTTYPE_BYTEARRAY_IDX).Dereference(), 1);
             CheckShortArray(obj.AccessField(TESTTYPE_SHORTARRAY_IDX).Dereference(), 2);
@@ -110,169 +111,169 @@ namespace RC.Engine.Test
             CheckNumRectArray(obj.AccessField(TESTTYPE_NUMRECTARRAY_IDX).Dereference(), 9);
         }
 
-        private static ISimHeapAccess CreateByteArray(ISimulationHeapMgr heapMgr, int count)
+        private static IHeapData CreateByteArray(IHeapManager heapMgr, int count)
         {
-            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("byte"), count);
+            IHeapData retObj = heapMgr.NewArray(heapMgr.GetTypeID("byte"), count);
             for (int i = 0; i < count; i++)
             {
-                retObj.AccessArrayItem(i).WriteByte((byte)i);
+                ((IValueWrite<byte>)retObj.AccessArrayItem(i)).Write((byte)i);
             }
             return retObj;
         }
 
-        private static ISimHeapAccess CreateShortArray(ISimulationHeapMgr heapMgr, int count)
+        private static IHeapData CreateShortArray(IHeapManager heapMgr, int count)
         {
-            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("short"), count);
+            IHeapData retObj = heapMgr.NewArray(heapMgr.GetTypeID("short"), count);
             for (int i = 0; i < count; i++)
             {
-                retObj.AccessArrayItem(i).WriteShort((short)i);
+                ((IValueWrite<short>)retObj.AccessArrayItem(i)).Write((short)i);
             }
             return retObj;
         }
 
-        private static ISimHeapAccess CreateIntArray(ISimulationHeapMgr heapMgr, int count)
+        private static IHeapData CreateIntArray(IHeapManager heapMgr, int count)
         {
-            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("int"), count);
+            IHeapData retObj = heapMgr.NewArray(heapMgr.GetTypeID("int"), count);
             for (int i = 0; i < count; i++)
             {
-                retObj.AccessArrayItem(i).WriteInt(i);
+                ((IValueWrite<int>)retObj.AccessArrayItem(i)).Write(i);
             }
             return retObj;
         }
 
-        private static ISimHeapAccess CreateLongArray(ISimulationHeapMgr heapMgr, int count)
+        private static IHeapData CreateLongArray(IHeapManager heapMgr, int count)
         {
-            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("long"), count);
+            IHeapData retObj = heapMgr.NewArray(heapMgr.GetTypeID("long"), count);
             for (int i = 0; i < count; i++)
             {
-                retObj.AccessArrayItem(i).WriteLong(i);
+                ((IValueWrite<long>)retObj.AccessArrayItem(i)).Write(i);
             }
             return retObj;
         }
 
-        private static ISimHeapAccess CreateNumArray(ISimulationHeapMgr heapMgr, int count)
+        private static IHeapData CreateNumArray(IHeapManager heapMgr, int count)
         {
-            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("num"), count);
+            IHeapData retObj = heapMgr.NewArray(heapMgr.GetTypeID("num"), count);
             for (int i = 0; i < count; i++)
             {
-                retObj.AccessArrayItem(i).WriteNumber((RCNumber)i);
+                ((IValueWrite<RCNumber>)retObj.AccessArrayItem(i)).Write((RCNumber)i);
             }
             return retObj;
         }
 
-        private static ISimHeapAccess CreateIntVectArray(ISimulationHeapMgr heapMgr, int count)
+        private static IHeapData CreateIntVectArray(IHeapManager heapMgr, int count)
         {
-            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("intvect"), count);
+            IHeapData retObj = heapMgr.NewArray(heapMgr.GetTypeID("intvect"), count);
             for (int i = 0; i < count; i++)
             {
-                retObj.AccessArrayItem(i).WriteIntVector(new RCIntVector(i, i+1));
+                ((IValueWrite<RCIntVector>)retObj.AccessArrayItem(i)).Write(new RCIntVector(i, i+1));
             }
             return retObj;
         }
 
-        private static ISimHeapAccess CreateNumVectArray(ISimulationHeapMgr heapMgr, int count)
+        private static IHeapData CreateNumVectArray(IHeapManager heapMgr, int count)
         {
-            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("numvect"), count);
+            IHeapData retObj = heapMgr.NewArray(heapMgr.GetTypeID("numvect"), count);
             for (int i = 0; i < count; i++)
             {
-                retObj.AccessArrayItem(i).WriteNumVector(new RCNumVector(i, i + 1));
+                ((IValueWrite<RCNumVector>)retObj.AccessArrayItem(i)).Write(new RCNumVector(i, i + 1));
             }
             return retObj;
         }
 
-        private static ISimHeapAccess CreateIntRectArray(ISimulationHeapMgr heapMgr, int count)
+        private static IHeapData CreateIntRectArray(IHeapManager heapMgr, int count)
         {
-            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("intrect"), count);
+            IHeapData retObj = heapMgr.NewArray(heapMgr.GetTypeID("intrect"), count);
             for (int i = 0; i < count; i++)
             {
-                retObj.AccessArrayItem(i).WriteIntRectangle(new RCIntRectangle(i, i + 1, i + 2, i + 3));
+                ((IValueWrite<RCIntRectangle>)retObj.AccessArrayItem(i)).Write(new RCIntRectangle(i, i + 1, i + 2, i + 3));
             }
             return retObj;
         }
 
-        private static ISimHeapAccess CreateNumRectArray(ISimulationHeapMgr heapMgr, int count)
+        private static IHeapData CreateNumRectArray(IHeapManager heapMgr, int count)
         {
-            ISimHeapAccess retObj = heapMgr.NewArray(heapMgr.GetTypeID("numrect"), count);
+            IHeapData retObj = heapMgr.NewArray(heapMgr.GetTypeID("numrect"), count);
             for (int i = 0; i < count; i++)
             {
-                retObj.AccessArrayItem(i).WriteNumRectangle(new RCNumRectangle(i, i + 1, i + 2, i + 3));
+                ((IValueWrite<RCNumRectangle>)retObj.AccessArrayItem(i)).Write(new RCNumRectangle(i, i + 1, i + 2, i + 3));
             }
             return retObj;
         }
 
-        private static void CheckByteArray(ISimHeapAccess arrayRef, int count)
+        private static void CheckByteArray(IHeapData arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                if (arrayRef.AccessArrayItem(i).ReadByte() != (byte)i) { throw new Exception("Mismatch!"); }
+                if (((IValueRead<byte>)arrayRef.AccessArrayItem(i)).Read() != (byte)i) { throw new Exception("Mismatch!"); }
             }
         }
 
-        private static void CheckShortArray(ISimHeapAccess arrayRef, int count)
+        private static void CheckShortArray(IHeapData arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                if (arrayRef.AccessArrayItem(i).ReadShort() != (short)i) { throw new Exception("Mismatch!"); }
+                if (((IValueRead<short>)arrayRef.AccessArrayItem(i)).Read() != (short)i) { throw new Exception("Mismatch!"); }
             }
         }
 
-        private static void CheckIntArray(ISimHeapAccess arrayRef, int count)
+        private static void CheckIntArray(IHeapData arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                if (arrayRef.AccessArrayItem(i).ReadInt() != i) { throw new Exception("Mismatch!"); }
+                if (((IValueRead<int>)arrayRef.AccessArrayItem(i)).Read() != i) { throw new Exception("Mismatch!"); }
             }
         }
 
-        private static void CheckLongArray(ISimHeapAccess arrayRef, int count)
+        private static void CheckLongArray(IHeapData arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                if (arrayRef.AccessArrayItem(i).ReadLong() != i) { throw new Exception("Mismatch!"); }
+                if (((IValueRead<long>)arrayRef.AccessArrayItem(i)).Read() != i) { throw new Exception("Mismatch!"); }
             }
         }
 
-        private static void CheckNumArray(ISimHeapAccess arrayRef, int count)
+        private static void CheckNumArray(IHeapData arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                if (arrayRef.AccessArrayItem(i).ReadNumber() != i) { throw new Exception("Mismatch!"); }
+                if (((IValueRead<RCNumber>)arrayRef.AccessArrayItem(i)).Read() != i) { throw new Exception("Mismatch!"); }
             }
         }
 
-        private static void CheckIntVectArray(ISimHeapAccess arrayRef, int count)
+        private static void CheckIntVectArray(IHeapData arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                if (arrayRef.AccessArrayItem(i).ReadIntVector() != new RCIntVector(i, i + 1)) { throw new Exception("Mismatch!"); }
+                if (((IValueRead<RCIntVector>)arrayRef.AccessArrayItem(i)).Read() != new RCIntVector(i, i + 1)) { throw new Exception("Mismatch!"); }
             }
         }
 
-        private static void CheckNumVectArray(ISimHeapAccess arrayRef, int count)
+        private static void CheckNumVectArray(IHeapData arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                if (arrayRef.AccessArrayItem(i).ReadNumVector() != new RCNumVector(i, i + 1)) { throw new Exception("Mismatch!"); }
+                if (((IValueRead<RCNumVector>)arrayRef.AccessArrayItem(i)).Read() != new RCNumVector(i, i + 1)) { throw new Exception("Mismatch!"); }
             }
         }
 
-        private static void CheckIntRectArray(ISimHeapAccess arrayRef, int count)
+        private static void CheckIntRectArray(IHeapData arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                if (arrayRef.AccessArrayItem(i).ReadIntRectangle() != new RCIntRectangle(i, i + 1, i + 2, i + 3)) { throw new Exception("Mismatch!"); }
+                if (((IValueRead<RCIntRectangle>)arrayRef.AccessArrayItem(i)).Read() != new RCIntRectangle(i, i + 1, i + 2, i + 3)) { throw new Exception("Mismatch!"); }
             }
         }
 
-        private static void CheckNumRectArray(ISimHeapAccess arrayRef, int count)
+        private static void CheckNumRectArray(IHeapData arrayRef, int count)
         {
             for (int i = 0; i < count; i++)
             {
-                if (arrayRef.AccessArrayItem(i).ReadNumRectangle() != new RCNumRectangle(i, i + 1, i + 2, i + 3)) { throw new Exception("Mismatch!"); }
+                if (((IValueRead<RCNumRectangle>)arrayRef.AccessArrayItem(i)).Read() != new RCNumRectangle(i, i + 1, i + 2, i + 3)) { throw new Exception("Mismatch!"); }
             }
         }
 
-        private static void GetIDs(ISimulationHeapMgr heapMgr)
+        private static void GetIDs(IHeapManager heapMgr)
         {
             TESTTYPE_ID = heapMgr.GetTypeID("TestType");
             TESTTYPE_BYTEARRAY_IDX = heapMgr.GetFieldIdx(TESTTYPE_ID, "ByteArray");
@@ -287,9 +288,9 @@ namespace RC.Engine.Test
             TESTTYPE_NEXT_IDX = heapMgr.GetFieldIdx(TESTTYPE_ID, "Next");
         }
 
-        private static List<SimHeapType> testMetadata = new List<SimHeapType>()
+        private static List<HeapType> testMetadata = new List<HeapType>()
         {
-            new SimHeapType("TestType", new List<KeyValuePair<string, string>>()
+            new HeapType("TestType", new List<KeyValuePair<string, string>>()
             {
                 new KeyValuePair<string, string>("ByteArray", "byte*"),
                 new KeyValuePair<string, string>("ShortArray", "short*"),
@@ -304,7 +305,7 @@ namespace RC.Engine.Test
             }),
         };
 
-        private static int TESTTYPE_ID;
+        private static short TESTTYPE_ID;
         private static int TESTTYPE_BYTEARRAY_IDX;
         private static int TESTTYPE_SHORTARRAY_IDX;
         private static int TESTTYPE_INTARRAY_IDX;

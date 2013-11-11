@@ -9,35 +9,9 @@ using RC.Common;
 namespace RC.Engine.Simulator.Core
 {
     /// <summary>
-    /// Enumerates the predefined built-in types.
-    /// </summary>
-    enum BuiltInTypeEnum
-    {
-        NonBuiltIn = 0,
-        [EnumMapping("byte")]
-        Byte = 1,
-        [EnumMapping("short")]
-        Short = 2,
-        [EnumMapping("int")]
-        Integer = 3,
-        [EnumMapping("long")]
-        Long = 4,
-        [EnumMapping("num")]
-        Number = 5,
-        [EnumMapping("intvect")]
-        IntVector = 6,
-        [EnumMapping("numvect")]
-        NumVector = 7,
-        [EnumMapping("intrect")]
-        IntRectangle = 8,
-        [EnumMapping("numrect")]
-        NumRectangle = 9
-    }
-
-    /// <summary>
     /// Contains informations about a data type that can be stored on the simulation heap.
     /// </summary>
-    class SimHeapType
+    class HeapType
     {
         #region Constructors
 
@@ -46,13 +20,13 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="name">The name of this composite type.</param>
         /// <param name="fields">The fields of this composite type.</param>
-        public SimHeapType(string name, List<KeyValuePair<string, string>> fields)
+        public HeapType(string name, List<KeyValuePair<string, string>> fields)
         {
             if (name == null) { throw new ArgumentNullException("name"); }
             name = name.Trim();
-            if (!IDENTIFIER_SYNTAX.IsMatch(name) || name.EndsWith("*")) { throw new SimulationHeapException(string.Format("Invalid type name '{0}'!", name)); }
+            if (!IDENTIFIER_SYNTAX.IsMatch(name) || name.EndsWith("*")) { throw new HeapException(string.Format("Invalid type name '{0}'!", name)); }
             if (fields == null) { throw new ArgumentNullException("fields"); }
-            if (fields.Count == 0) { throw new SimulationHeapException(string.Format("User defined type '{0}' doesn't define any fields!", name)); }
+            if (fields.Count == 0) { throw new HeapException(string.Format("User defined type '{0}' doesn't define any fields!", name)); }
 
             /// Members filled at initialization.
             this.name = name;
@@ -65,11 +39,11 @@ namespace RC.Engine.Simulator.Core
             foreach (KeyValuePair<string, string> field in fields)
             {
                 string fieldName = field.Key.Trim();
-                if (!IDENTIFIER_SYNTAX.IsMatch(fieldName) || fieldName.EndsWith("*")) { throw new SimulationHeapException(string.Format("Invalid field name '{0}' defined in type '{1}'!", fieldName, name)); }
+                if (!IDENTIFIER_SYNTAX.IsMatch(fieldName) || fieldName.EndsWith("*")) { throw new HeapException(string.Format("Invalid field name '{0}' defined in type '{1}'!", fieldName, name)); }
 
                 if (field.Value == null) { throw new ArgumentNullException(string.Format("fields[{0}]", fieldName)); }
                 string fieldType = field.Value.Trim();
-                if (!IDENTIFIER_SYNTAX.IsMatch(fieldType)) { throw new SimulationHeapException(string.Format("Invalid field type '{0}' defined for field '{1}' in type '{2}'!", fieldType, fieldName, name)); }
+                if (!IDENTIFIER_SYNTAX.IsMatch(fieldType)) { throw new HeapException(string.Format("Invalid field type '{0}' defined for field '{1}' in type '{2}'!", fieldType, fieldName, name)); }
 
                 this.fieldIndices.Add(fieldName, (short)this.fieldTypeIDs.Count);
                 this.fieldTypeIDs.Add(-1); /// Will be filled during validation
@@ -86,7 +60,7 @@ namespace RC.Engine.Simulator.Core
         /// Constructs a built-in SimDataType.
         /// </summary>
         /// <param name="builtInType">The built-in type to be constructed.</param>
-        public SimHeapType(BuiltInTypeEnum builtInType)
+        public HeapType(BuiltInTypeEnum builtInType)
         {
             /// Members filled at initialization.
             switch (builtInType)
@@ -117,7 +91,7 @@ namespace RC.Engine.Simulator.Core
             }
             string name;
             if (!EnumMap<BuiltInTypeEnum, string>.Map(builtInType, out name) || name == null) { throw new ArgumentException("No name defined for the built-in type!", "builtInType"); }
-            if (!IDENTIFIER_SYNTAX.IsMatch(name) || name.EndsWith("*")) { throw new SimulationHeapException(string.Format("Invalid built-in type name '{0}'!", name)); }
+            if (!IDENTIFIER_SYNTAX.IsMatch(name) || name.EndsWith("*")) { throw new HeapException(string.Format("Invalid built-in type name '{0}'!", name)); }
             this.name = name;
             this.builtInType = builtInType;
             this.pointedTypeID = -1;
@@ -135,12 +109,12 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="pointerTypeName">The name of this pointer type.</param>
         /// <param name="pointedTypeID">The ID of the pointed type.</param>
-        public SimHeapType(string pointerTypeName, short pointedTypeID)
+        public HeapType(string pointerTypeName, short pointedTypeID)
         {
             if (pointerTypeName == null) { throw new ArgumentNullException("pointerTypeName"); }
             if (pointedTypeID < 0) { throw new ArgumentOutOfRangeException("", "ID of the pointed type must be non-negative!"); }
             pointerTypeName = pointerTypeName.Trim();
-            if (!IDENTIFIER_SYNTAX.IsMatch(pointerTypeName)) { throw new SimulationHeapException(string.Format("Invalid type name '{0}'!", pointerTypeName)); }
+            if (!IDENTIFIER_SYNTAX.IsMatch(pointerTypeName)) { throw new HeapException(string.Format("Invalid type name '{0}'!", pointerTypeName)); }
 
             /// Members filled at initialization.
             this.name = pointerTypeName;
@@ -178,7 +152,7 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="typeIDs">The list of the type IDs mapped by their names.</param>
         /// <param name="types">The list of the types.</param>
-        public void RegisterPointerTypes(ref Dictionary<string, short> typeIDs, ref List<SimHeapType> types)
+        public void RegisterPointerTypes(ref Dictionary<string, short> typeIDs, ref List<HeapType> types)
         {
             if (typeIDs == null) { throw new ArgumentNullException("typeIDs"); }
             if (types == null) { throw new ArgumentNullException("types"); }
@@ -204,7 +178,7 @@ namespace RC.Engine.Simulator.Core
                 else
                 {
                     /// Error: undefined type.
-                    throw new SimulationHeapException(string.Format("Undefined type '{0}' of field '{1}' in '{2}'!", this.tmpFieldTypeNames[fieldIdx], fieldName, this.name));
+                    throw new HeapException(string.Format("Undefined type '{0}' of field '{1}' in '{2}'!", this.tmpFieldTypeNames[fieldIdx], fieldName, this.name));
                 }
             }
         }
@@ -213,7 +187,7 @@ namespace RC.Engine.Simulator.Core
         /// Computes the offsets of the fields if this is a composite type. Otherwise this function has no effect.
         /// </summary>
         /// <param name="types">The list of the types.</param>
-        public void ComputeFieldOffsets(List<SimHeapType> types)
+        public void ComputeFieldOffsets(List<HeapType> types)
         {
             if (types == null) { throw new ArgumentNullException("types"); }
 
@@ -227,7 +201,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="pointedTypeName">The name of the pointed type.</param>
         /// <param name="typeIDs">The list of the type IDs mapped by their names.</param>
         /// <param name="types">The list of the types.</param>
-        private void RegisterPointer(string pointedTypeName, ref Dictionary<string, short> typeIDs, ref List<SimHeapType> types)
+        private void RegisterPointer(string pointedTypeName, ref Dictionary<string, short> typeIDs, ref List<HeapType> types)
         {
             /// If the pointed type is also a pointer then continue the recursion.
             if (pointedTypeName.EndsWith("*"))
@@ -237,9 +211,9 @@ namespace RC.Engine.Simulator.Core
 
             string pointerTypeName = string.Format("{0}*", pointedTypeName);
             if (typeIDs.ContainsKey(pointerTypeName)) { return; }
-            if (types.Count == short.MaxValue) { throw new SimulationHeapException(string.Format("Number of possible types exceeded the limit of {0}!", short.MaxValue)); }
+            if (types.Count == short.MaxValue) { throw new HeapException(string.Format("Number of possible types exceeded the limit of {0}!", short.MaxValue)); }
 
-            SimHeapType ptrType = new SimHeapType(pointerTypeName, typeIDs[pointedTypeName]);
+            HeapType ptrType = new HeapType(pointerTypeName, typeIDs[pointedTypeName]);
             ptrType.SetID((short)types.Count);
             typeIDs.Add(ptrType.Name, (short)types.Count);
             types.Add(ptrType);
@@ -250,17 +224,17 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="types">The list of the types.</param>
         /// <param name="triedTypeIDs">Used to avoid infinite loop.</param>
-        private void ComputeFieldOffsetsInternal(List<SimHeapType> types, ref HashSet<short> triedTypeIDs)
+        private void ComputeFieldOffsetsInternal(List<HeapType> types, ref HashSet<short> triedTypeIDs)
         {
             if (this.fieldIndices == null) { return; }
 
-            if (!triedTypeIDs.Add(this.id)) { throw new SimulationHeapException(string.Format("Infinite cycle found in the layout of element '{0}'!", this.name)); }
+            if (!triedTypeIDs.Add(this.id)) { throw new HeapException(string.Format("Infinite cycle found in the layout of element '{0}'!", this.name)); }
             int allocationSize = 0;
             for (int fieldIdx = 0; fieldIdx < this.fieldTypeIDs.Count; fieldIdx++)
             {
                 this.fieldOffsets[fieldIdx] = allocationSize;
                 short fieldTypeID = this.fieldTypeIDs[fieldIdx];
-                SimHeapType fieldType = types[fieldTypeID];
+                HeapType fieldType = types[fieldTypeID];
                 if (fieldType.AllocationSize == -1)
                 {
                     /// Compute the allocation size of the field type first.
@@ -317,6 +291,32 @@ namespace RC.Engine.Simulator.Core
         public Dictionary<string, short> FieldIndices { get { return this.fieldIndices; } }
 
         #endregion Public properties
+
+        /// <summary>
+        /// Enumerates the predefined built-in types.
+        /// </summary>
+        public enum BuiltInTypeEnum
+        {
+            NonBuiltIn = 0,
+            [EnumMapping("byte")]
+            Byte = 1,
+            [EnumMapping("short")]
+            Short = 2,
+            [EnumMapping("int")]
+            Integer = 3,
+            [EnumMapping("long")]
+            Long = 4,
+            [EnumMapping("num")]
+            Number = 5,
+            [EnumMapping("intvect")]
+            IntVector = 6,
+            [EnumMapping("numvect")]
+            NumVector = 7,
+            [EnumMapping("intrect")]
+            IntRectangle = 8,
+            [EnumMapping("numrect")]
+            NumRectangle = 9
+        }
 
         /// <summary>
         /// The name of this type.

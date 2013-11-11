@@ -8,7 +8,7 @@ namespace RC.Engine.Simulator.InternalInterfaces
     /// <summary>
     /// Defines the interface of the simulation-heap where every simulation data is stored.
     /// </summary>
-    interface ISimulationHeap
+    interface IHeap
     {
         /// <summary>
         /// Writes a 8-bit byte at the given address.
