@@ -34,15 +34,18 @@ namespace RC.Engine.Simulator.Core
     }
 
     /// <summary>
-    /// Stores the data of a weapon of a building/unit type.
+    /// Stores the data of a weapon of an entity type.
     /// </summary>
     class WeaponData
     {
         /// <summary>
-        /// Constructs a weapon data struct for a building/unit type.
+        /// Constructs a weapon data struct for an entity type.
         /// </summary>
-        public WeaponData()
+        /// <param name="metadata">The metadata object that this weapon data belongs to.</param>
+        public WeaponData(SimMetadata metadata)
         {
+            if (metadata == null) { throw new ArgumentNullException("metadata"); }
+
             this.cooldown = null;
             this.damage = null;
             this.damageType = null;
@@ -51,105 +54,107 @@ namespace RC.Engine.Simulator.Core
             this.rangeMin = new ConstValue<int>(0);
             this.splashType = new ConstValue<SplashTypeEnum>(SplashTypeEnum.None);
 
-            this.isFinalized = false;
+            this.metadata = metadata;
         }
 
         /// <summary>
-        /// Gets the cooldown value of the weapon. No default value, must be set.
+        /// Gets the cooldown value of the weapon.
         /// </summary>
-        public ConstValue<int> Cooldown
+        public ConstValue<int> Cooldown { get { return this.cooldown; } }
+
+        /// <summary>
+        /// Gets the damage value of the weapon.
+        /// </summary>
+        public ConstValue<int> Damage { get { return this.damage; } }
+
+        /// <summary>
+        /// Gets the damage type of the weapon.
+        /// </summary>
+        public ConstValue<DamageTypeEnum> DamageType { get { return this.damageType; } }
+
+        /// <summary>
+        /// Gets the increment value of the weapon.
+        /// </summary>
+        public ConstValue<int> Increment { get { return this.increment; } }
+
+        /// <summary>
+        /// Gets the maximum range of the weapon.
+        /// </summary>
+        public ConstValue<int> RangeMax { get { return this.rangeMax; } }
+
+        /// <summary>
+        /// Gets the minimum range of the weapon.
+        /// </summary>
+        public ConstValue<int> RangeMin { get { return this.rangeMin; } }
+
+        /// <summary>
+        /// Gets the splash type of the weapon.
+        /// </summary>
+        public ConstValue<SplashTypeEnum> SplashType { get { return this.splashType; } }
+
+        #region WeaponData buildup methods
+
+        /// <summary>
+        /// Sets the cooldown value of the weapon. No default value, must be set.
+        /// </summary>
+        public void SetCooldown(int cooldown)
         {
-            get { return this.cooldown; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("Cooldown"); }
-                this.cooldown = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.cooldown = new ConstValue<int>(cooldown);
         }
 
         /// <summary>
-        /// Gets the damage value of the weapon. No default value, must be set.
+        /// Sets the damage value of the weapon. No default value, must be set.
         /// </summary>
-        public ConstValue<int> Damage
+        public void SetDamage(int damage)
         {
-            get { return this.damage; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("Damage"); }
-                this.damage = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.damage = new ConstValue<int>(damage);
         }
 
         /// <summary>
-        /// Gets the damage type of the weapon. No default value, must be set.
+        /// Sets the damage type of the weapon. No default value, must be set.
         /// </summary>
-        public ConstValue<DamageTypeEnum> DamageType
+        public void SetDamageType(DamageTypeEnum damageType)
         {
-            get { return this.damageType; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("DamageType"); }
-                this.damageType = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.damageType = new ConstValue<DamageTypeEnum>(damageType);
         }
 
         /// <summary>
-        /// Gets the increment value of the weapon. Default value is 0.
+        /// Sets the increment value of the weapon. Default value is 0.
         /// </summary>
-        public ConstValue<int> Increment
+        public void SetIncrement(int increment)
         {
-            get { return this.increment; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("Increment"); }
-                this.increment = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.increment = new ConstValue<int>(increment);
         }
 
         /// <summary>
-        /// Gets the maximum range of the weapon. No default value, must be set.
+        /// Sets the maximum range of the weapon. No default value, must be set.
         /// </summary>
-        public ConstValue<int> RangeMax
+        public void SetRangeMax(int rangeMax)
         {
-            get { return this.rangeMax; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("RangeMax"); }
-                this.rangeMax = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.rangeMax = new ConstValue<int>(rangeMax);
         }
 
         /// <summary>
-        /// Gets the minimum range of the weapon. Default value is 0.
+        /// Sets the minimum range of the weapon. Default value is 0.
         /// </summary>
-        public ConstValue<int> RangeMin
+        public void SetRangeMin(int rangeMin)
         {
-            get { return this.rangeMin; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("RangeMin"); }
-                this.rangeMin = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.rangeMin = new ConstValue<int>(rangeMin);
         }
 
         /// <summary>
-        /// Gets the splash type of the weapon. Default value is SplashType.None.
+        /// Sets the splash type of the weapon. Default value is SplashType.None.
         /// </summary>
-        public ConstValue<SplashTypeEnum> SplashType
+        public void SetSplashType(SplashTypeEnum splashType)
         {
-            get { return this.splashType; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("SplashType"); }
-                this.splashType = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.splashType = new ConstValue<SplashTypeEnum>(splashType);
         }
 
         /// <summary>
@@ -157,7 +162,7 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         public void CheckAndFinalize()
         {
-            if (!this.isFinalized)
+            if (!this.metadata.IsFinalized)
             {
                 if (this.cooldown == null) { throw new SimulatorException("Cooldown must be set!"); }
                 if (this.damage == null) { throw new SimulatorException("Damage must be set!"); }
@@ -173,10 +178,10 @@ namespace RC.Engine.Simulator.Core
                 if (this.rangeMax.Read() <= 0) { throw new SimulatorException("RangeMax cannot be 0 or less!"); }
                 if (this.rangeMin.Read() < 0) { throw new SimulatorException("RangeMin must be non-negative!"); }
                 if (this.rangeMin.Read() >= this.rangeMax.Read()) { throw new SimulatorException("RangeMin must be less than RangeMax!"); }
-
-                this.isFinalized = true;
             }
         }
+
+        #endregion WeaponData buildup methods
 
         /// <summary>
         /// The values of this weapon data struct.
@@ -190,8 +195,8 @@ namespace RC.Engine.Simulator.Core
         private ConstValue<SplashTypeEnum> splashType;
 
         /// <summary>
-        /// Indicates whether this weapon data struct has been finalized or not.
+        /// Reference to the metadata that this weapon data struct belongs to.
         /// </summary>
-        private bool isFinalized;
+        private SimMetadata metadata;
     }
 }

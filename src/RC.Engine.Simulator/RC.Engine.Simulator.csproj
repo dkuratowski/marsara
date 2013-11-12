@@ -55,14 +55,14 @@
     <Compile Include="Core\PFTreeNode.cs" />
     <Compile Include="Core\HeapData.cs" />
     <Compile Include="Core\Requirement.cs" />
-    <Compile Include="Core\SimulatedObjectType.cs" />
+    <Compile Include="Core\SimObjectType.cs" />
     <Compile Include="Core\SpritePalette.cs" />
     <Compile Include="Core\HeapSection.cs" />
     <Compile Include="Core\Simulator.cs" />
     <Compile Include="Core\HeapType.cs" />
     <Compile Include="Core\Heap.cs" />
     <Compile Include="Core\HeapManager.cs" />
-    <Compile Include="Core\Metadata.cs" />
+    <Compile Include="Core\SimMetadata.cs" />
     <Compile Include="Core\UnitType.cs" />
     <Compile Include="Core\UpgradeType.cs" />
     <Compile Include="Core\EntityType.cs" />

@@ -28,6 +28,15 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
+        /// Gets the string representation of this constant value.
+        /// </summary>
+        /// <returns>The string representation of this constant value.</returns>
+        public override string ToString()
+        {
+            return this.value.ToString();
+        }
+
+        /// <summary>
         /// The value of the constant.
         /// </summary>
         private T value;

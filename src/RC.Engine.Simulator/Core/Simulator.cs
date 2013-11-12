@@ -92,7 +92,7 @@ namespace RC.Engine.Simulator.Core
             /// Load the tilesets from the configured directory
             DirectoryInfo rootDir = new DirectoryInfo(Constants.METADATA_DIR);
             FileInfo[] metadataFiles = rootDir.GetFiles("*.xml", SearchOption.AllDirectories);
-            this.metadata = new Metadata();
+            this.metadata = new SimMetadata();
             foreach (FileInfo metadataFile in metadataFiles)
             {
                 /// TODO: this is a hack! Later we will have binary metadata format.
@@ -118,6 +118,6 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Reference to the simulation metadata.
         /// </summary>
-        private Metadata metadata;
+        private SimMetadata metadata;
     }
 }

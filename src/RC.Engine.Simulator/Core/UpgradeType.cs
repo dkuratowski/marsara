@@ -9,14 +9,15 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Contains the definition of an upgrade type.
     /// </summary>
-    class UpgradeType : SimulatedObjectType
+    class UpgradeType : SimObjectType
     {
         /// <summary>
         /// Constructs a new upgrade type.
         /// </summary>
         /// <param name="name">The name of this upgrade type.</param>
-        public UpgradeType(string name)
-            : base(name)
+        /// <param name="metadata">The metadata object that this upgrade type belongs to.</param>
+        public UpgradeType(string name, SimMetadata metadata)
+            : base(name, metadata)
         {
             this.previousLevel = null;
             this.nextLevel = null;
@@ -27,77 +28,65 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Gets the previous level of this upgrade type.
         /// </summary>
-        public UpgradeType PreviousLevel
-        {
-            get { return this.previousLevel; }
-            set
-            {
-                if (this.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == this.previousLevel) { return; }
-
-                if (value != null && this.previousLevel == null)
-                {
-                    this.CheckPotentialPreviousLevel(value);
-                    this.previousLevel = value;
-                    this.previousLevel.nextLevel = this;
-                }
-                else if (value == null && this.previousLevel != null)
-                {
-                    this.previousLevel.nextLevel = null;
-                    this.previousLevel = null;
-                }
-            }
-        }
+        public UpgradeType PreviousLevel { get { return this.previousLevel; } }
 
         /// <summary>
         /// Gets the next level of this upgrade type.
         /// </summary>
-        public UpgradeType NextLevel
-        {
-            get { return this.previousLevel; }
-            set
-            {
-                if (this.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == this.nextLevel) { return; }
+        public UpgradeType NextLevel { get { return this.previousLevel; } }
 
-                if (value != null && this.nextLevel == null)
-                {
-                    this.CheckPotentialNextLevel(value);
-                    this.nextLevel = value;
-                    this.nextLevel.previousLevel = this;
-                }
-                else if (value == null && this.nextLevel != null)
-                {
-                    this.nextLevel.previousLevel = null;
-                    this.nextLevel = null;
-                }
-            }
+        #region UpgradeType buildup methods
+
+        /// <summary>
+        /// Sets the name of the building/addon type that researches this type of upgrade.
+        /// </summary>
+        /// <param name="typeName">The name of the building/addon type that researches this type of upgrade.</param>
+        public void SetResearchedIn(string typeName)
+        {
+            if (this.Metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (typeName == null) { throw new ArgumentNullException("typeName"); }
+            this.researchedIn = typeName;
         }
 
         /// <summary>
-        /// Gets the name of the building/addon type that researches this type of upgrade or null if no such a
-        /// building/addon type exists.
+        /// Sets the name of the upgrade type that is the previous level of this upgrade type.
         /// </summary>
-        public string ResearchedIn
+        public void SetPreviousLevelName(string previousLevelName)
         {
-            get { return this.researchedIn; }
-            set
-            {
-                if (this.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                this.researchedIn = value;
-            }
+            if (this.Metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (previousLevelName == null) { throw new ArgumentNullException("previousLevelName"); }
+            this.previousLevelName = previousLevelName;
         }
 
-        /// <summary>
-        /// Gets the name of the upgrade type that is the previous level of this upgrade type.
-        /// </summary>
-        public string PreviousLevelName
+        /// <see cref="SimObjectType.BuildupReferencesImpl"/>
+        protected override void BuildupReferencesImpl()
         {
-            get { return this.previousLevelName; }
-            set
+            if (this.Metadata.IsFinalized) { return; }
+
+            if (this.researchedIn != null)
             {
-                if (this.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                this.previousLevelName = value;
+                if (this.Metadata.HasBuildingType(this.researchedIn))
+                {
+                    this.Metadata.GetBuildingType(this.researchedIn).AddUpgradeType(this);
+                }
+                else if (this.Metadata.HasAddonType(this.researchedIn))
+                {
+                    this.Metadata.GetAddonType(this.researchedIn).AddUpgradeType(this);
+                }
+                else
+                {
+                    throw new SimulatorException(string.Format("BuildingType or AddonType with name '{0}' doesn't exist!", this.researchedIn));
+                }
+            }
+
+            if (this.previousLevelName != null)
+            {
+                if (!this.Metadata.HasUpgradeType(this.previousLevelName)) { throw new SimulatorException(string.Format("UpgradeType with name '{0}' doesn't exist!", this.previousLevelName)); }
+
+                UpgradeType previousLevelUpg = this.Metadata.GetUpgradeType(this.previousLevelName);
+                this.CheckPotentialPreviousLevel(previousLevelUpg);
+                this.previousLevel = previousLevelUpg;
+                this.previousLevel.nextLevel = this;
             }
         }
 
@@ -121,25 +110,7 @@ namespace RC.Engine.Simulator.Core
             }
         }
 
-        /// <summary>
-        /// Checks the given upgrade type if it is OK to attach to this upgrade type as next level.
-        /// </summary>
-        /// <param name="potentialNextLevel">The upgrade type to check.</param>
-        private void CheckPotentialNextLevel(UpgradeType potentialNextLevel)
-        {
-            if (potentialNextLevel.previousLevel != null) { throw new SimulatorException(string.Format("UpgradeType '{0}' already has a previous level!", potentialNextLevel.Name)); }
-
-            HashSet<UpgradeType> levelPath = new HashSet<UpgradeType>();
-            levelPath.Add(this);
-            levelPath.Add(potentialNextLevel);
-            UpgradeType currPathNode = potentialNextLevel;
-            while (currPathNode.nextLevel != null)
-            {
-                if (levelPath.Contains(currPathNode.nextLevel)) { throw new SimulatorException(string.Format("Cycle found from UpgradeType '{0}' to '{1}'!", potentialNextLevel.Name, this.Name)); }
-                levelPath.Add(currPathNode.nextLevel);
-                currPathNode = currPathNode.nextLevel;
-            }
-        }
+        #endregion UpgradeType buildup methods
 
         /// <summary>
         /// Reference to the previous level of this upgrade type or null if this upgrade type has no previous level.

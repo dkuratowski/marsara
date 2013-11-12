@@ -22,16 +22,19 @@ namespace RC.Engine.Simulator.Core
         /// <param name="ownerMaskColorStr">
         /// The string that contains the owner mask color of the image data or null if no owner mask color is defined.
         /// </param>
-        public SpritePalette(byte[] imageData, string transpColorStr, string ownerMaskColorStr)
+        /// <param name="metadata">The metadata object that this sprite palette belongs to.</param>
+        public SpritePalette(byte[] imageData, string transpColorStr, string ownerMaskColorStr, SimMetadata metadata)
         {
+            if (metadata == null) { throw new ArgumentNullException("metadata"); }
             if (imageData == null || imageData.Length == 0) { throw new ArgumentNullException("imageData"); }
 
-            this.isFinalized = false;
             this.imageData = imageData;
             this.transparentColorStr = transpColorStr;
             this.ownerMaskColorStr = ownerMaskColorStr;
             this.sourceRegions = new Dictionary<string, RCIntRectangle>();
             this.offsets = new Dictionary<string, RCIntVector>();
+
+            this.metadata = metadata;
         }
 
         /// <summary>
@@ -40,7 +43,10 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         public void CheckAndFinalize()
         {
-            this.isFinalized = true;
+            if (!this.metadata.IsFinalized)
+            {
+
+            }
         }
 
         /// <summary>
@@ -49,7 +55,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="newIndex">The new index.</param>
         public void SetIndex(int newIndex)
         {
-            if (this.isFinalized) { throw new InvalidOperationException("SpritePalette already finalized!"); }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (newIndex < 0) { throw new ArgumentOutOfRangeException("newIndex", "The index of the sprite palettes must be non-negative!"); }
             this.index = newIndex;
         }
@@ -62,7 +68,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="offset">The offset of the frame to add.</param>
         public void AddFrame(string name, RCIntRectangle sourceRegion, RCIntVector offset)
         {
-            if (this.isFinalized) { throw new InvalidOperationException("SpritePalette already finalized!"); }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (name == null) { throw new ArgumentNullException("name"); }
             if (sourceRegion == RCIntRectangle.Undefined) { throw new ArgumentNullException("sourceRegion"); }
             if (offset == RCIntVector.Undefined) { throw new ArgumentNullException("offset"); }
@@ -123,8 +129,8 @@ namespace RC.Engine.Simulator.Core
         private Dictionary<string, RCIntVector> offsets;
 
         /// <summary>
-        /// Becomes true when this sprite palette is finalized.
+        /// Reference to the metadata object that this sprite palette belongs to.
         /// </summary>
-        private bool isFinalized;
+        private SimMetadata metadata;
     }
 }

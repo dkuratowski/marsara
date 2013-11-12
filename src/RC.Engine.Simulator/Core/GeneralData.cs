@@ -8,7 +8,7 @@ using RC.Engine.Simulator.PublicInterfaces;
 namespace RC.Engine.Simulator.Core
 {
     /// <summary>
-    /// Enumerates the possible sizes of a building/unit/addon.
+    /// Enumerates the possible sizes of an entity.
     /// </summary>
     enum SizeEnum
     {
@@ -21,15 +21,18 @@ namespace RC.Engine.Simulator.Core
     }
 
     /// <summary>
-    /// Represents the general data of a building/unit/addon type.
+    /// Represents the general data of an entity type.
     /// </summary>
     class GeneralData
     {
         /// <summary>
-        /// Constructs a general data struct for a building/unit/addon type.
+        /// Constructs a general data struct for an entity type.
         /// </summary>
-        public GeneralData()
+        /// <param name="metadata">The metadata object that this GeneralData belongs to.</param>
+        public GeneralData(SimMetadata metadata)
         {
+            if (metadata == null) { throw new ArgumentNullException("metadata"); }
+
             this.area = null;
             this.armor = new ConstValue<int>(0);
             this.maxEnergy = new ConstValue<int>(0);
@@ -38,105 +41,110 @@ namespace RC.Engine.Simulator.Core
             this.size = null;
             this.speed = new ConstValue<RCNumber>(0);
 
-            this.isFinalized = false;
+            this.metadata = metadata;
         }
 
         /// <summary>
-        /// Gets the area of the corresponding building/unit/addon type in map coordinates. No default value, must be set.
+        /// Gets the area of the corresponding entity type in map coordinates.
         /// </summary>
-        public ConstValue<RCNumVector> Area
+        public ConstValue<RCNumVector> Area { get { return this.area; }  }
+
+        /// <summary>
+        /// Gets the armor of the corresponding entity type.
+        /// </summary>
+        public ConstValue<int> Armor { get { return this.armor; } }
+
+        /// <summary>
+        /// Gets the maximum energy of the corresponding entity type.
+        /// </summary>
+        public ConstValue<int> MaxEnergy { get { return this.maxEnergy; } }
+
+        /// <summary>
+        /// Gets the maximum HP of the corresponding entity type.
+        /// </summary>
+        public ConstValue<int> MaxHP { get { return this.maxHP; } }
+
+        /// <summary>
+        /// Gets the sight range of the corresponding entity type.
+        /// </summary>
+        public ConstValue<int> SightRange { get { return this.sightRange; } }
+
+        /// <summary>
+        /// Gets the size of the corresponding entity type.
+        /// </summary>
+        public ConstValue<SizeEnum> Size { get { return this.size; } }
+
+        /// <summary>
+        /// Gets the speed of the corresponding entity type.
+        /// </summary>
+        public ConstValue<RCNumber> Speed { get { return this.speed; } }
+
+        #region GeneralData buildup methods
+
+        /// <summary>
+        /// Sets the area of the corresponding entity type in map coordinates. No default value, must be set.
+        /// </summary>
+        /// <param name="area">The area vector.</param>
+        public void SetArea(RCNumVector area)
         {
-            get { return this.area; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("Area"); }
-                this.area = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (area == RCNumVector.Undefined) { throw new ArgumentNullException("area"); }
+            this.area = new ConstValue<RCNumVector>(area);
         }
 
         /// <summary>
-        /// Gets the armor of the corresponding building/unit/addon type. Default value is 0.
+        /// Sets the armor of the corresponding entity type. Default value is 0.
         /// </summary>
-        public ConstValue<int> Armor
+        /// <param name="armor">The armor value.</param>
+        public void SetArmor(int armor)
         {
-            get { return this.armor; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("Armor"); }
-                this.armor = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.armor = new ConstValue<int>(armor);
         }
 
         /// <summary>
-        /// Gets the maximum energy of the corresponding building/unit/addon type. Default value is 0.
+        /// Sets the maximum energy of the corresponding entity type. Default value is 0.
         /// </summary>
-        public ConstValue<int> MaxEnergy
+        public void SetMaxEnergy(int maxEnergy)
         {
-            get { return this.maxEnergy; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("MaxEnergy"); }
-                this.maxEnergy = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.maxEnergy = new ConstValue<int>(maxEnergy);
         }
 
         /// <summary>
-        /// Gets the maximum HP of the corresponding building/unit/addon type. No default value, must be set.
+        /// Sets the maximum HP of the corresponding entity type. No default value, must be set.
         /// </summary>
-        public ConstValue<int> MaxHP
+        public void SetMaxHP(int maxHP)
         {
-            get { return this.maxHP; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("MaxHP"); }
-                this.maxHP = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.maxHP = new ConstValue<int>(maxHP);
         }
 
         /// <summary>
-        /// Gets the sight range of the corresponding building/unit/addon type. No default value, must be set.
+        /// Sets the sight range of the corresponding entity type. No default value, must be set.
         /// </summary>
-        public ConstValue<int> SightRange
+        public void SetSightRange(int sightRange)
         {
-            get { return this.sightRange; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("SightRange"); }
-                this.sightRange = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.sightRange = new ConstValue<int>(sightRange);
         }
 
         /// <summary>
-        /// Gets the size of the corresponding building/unit/addon type. No default value, must be set.
+        /// Sets the size of the corresponding entity type. No default value, must be set.
         /// </summary>
-        public ConstValue<SizeEnum> Size
+        public void SetSize(SizeEnum size)
         {
-            get { return this.size; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("Size"); }
-                this.size = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.size = new ConstValue<SizeEnum>(size);
         }
 
         /// <summary>
-        /// Gets the speed of the corresponding building/unit/addon type. Default value is 0.
+        /// Sets the speed of the corresponding entity type. Default value is 0.
         /// </summary>
-        public ConstValue<RCNumber> Speed
+        public void SetSpeed(RCNumber speed)
         {
-            get { return this.speed; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("Speed"); }
-                this.speed = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.speed = new ConstValue<RCNumber>(speed);
         }
 
         /// <summary>
@@ -144,7 +152,7 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         public void CheckAndFinalize()
         {
-            if (!this.isFinalized)
+            if (!this.metadata.IsFinalized)
             {
                 if (this.area == null) { throw new SimulatorException("Area must be set!"); }
                 if (this.armor == null) { throw new SimulatorException("Armor must be set!"); }
@@ -160,10 +168,10 @@ namespace RC.Engine.Simulator.Core
                 if (this.maxHP.Read() <= 0) { throw new SimulatorException("MaxHP cannot be 0 or less!"); }
                 if (this.sightRange.Read() < 0) { throw new SimulatorException("SightRange must be non-negative!"); }
                 if (this.speed.Read() < 0) { throw new SimulatorException("Speed must be non-negative!"); }
-
-                this.isFinalized = true;
             }
         }
+
+        #endregion GeneralData buildup methods
 
         /// <summary>
         /// The values of this general data struct.
@@ -177,8 +185,8 @@ namespace RC.Engine.Simulator.Core
         private ConstValue<RCNumber> speed;
 
         /// <summary>
-        /// Indicates whether this general data struct has been finalized or not.
+        /// The metadata object that this GeneralData belongs to.
         /// </summary>
-        private bool isFinalized;
+        private SimMetadata metadata;
     }
 }

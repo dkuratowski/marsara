@@ -12,72 +12,77 @@ namespace RC.Engine.Simulator.Core
     class CostsData
     {
         /// <summary>
-        /// Constructs a costs data struct for a building/unit/addon/upgrade type.
+        /// Constructs a costs data struct for an object type.
         /// </summary>
-        public CostsData()
+        /// <param name="metadata">The metadata object that this cost information belongs to.</param>
+        public CostsData(SimMetadata metadata)
         {
+            if (metadata == null) { throw new ArgumentNullException("metadata"); }
+
             this.buildTime = null;
             this.foodCost = new ConstValue<int>(0);
             this.mineralCost = new ConstValue<int>(0);
             this.gasCost = new ConstValue<int>(0);
 
-            this.isFinalized = false;
+            this.metadata = metadata;
         }
 
         /// <summary>
-        /// Gets the build time. No default value, must be set.
+        /// Gets the build time.
         /// </summary>
-        public ConstValue<int> BuildTime
+        public ConstValue<int> BuildTime { get { return this.buildTime; } }
+
+        /// <summary>
+        /// Gets the food cost.
+        /// </summary>
+        public ConstValue<int> FoodCost { get { return this.foodCost; } }
+
+        /// <summary>
+        /// Gets the mineral cost.
+        /// </summary>
+        public ConstValue<int> MineralCost { get { return this.mineralCost; } }
+
+        /// <summary>
+        /// Gets the gas cost.
+        /// </summary>
+        public ConstValue<int> GasCost { get { return this.gasCost; } }
+
+        #region CostsData buildup methods
+
+        /// <summary>
+        /// Sets the build time. No default value, must be set.
+        /// </summary>
+        public void SetBuildTime(int buildTime)
         {
-            get { return this.buildTime; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("BuildTime"); }
-                this.buildTime = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.buildTime = new ConstValue<int>(buildTime);
         }
 
         /// <summary>
-        /// Gets the food cost. Default value is 0.
+        /// Sets the food cost. Default value is 0.
         /// </summary>
-        public ConstValue<int> FoodCost
+        public void SetFoodCost(int foodCost)
         {
-            get { return this.foodCost; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("FoodCost"); }
-                this.foodCost = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.foodCost = new ConstValue<int>(foodCost);
         }
 
         /// <summary>
-        /// Gets the mineral cost. Default value is 0.
+        /// Sets the mineral cost. Default value is 0.
         /// </summary>
-        public ConstValue<int> MineralCost
+        public void SetMineralCost(int mineralCost)
         {
-            get { return this.mineralCost; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("MineralCost"); }
-                this.mineralCost = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.mineralCost = new ConstValue<int>(mineralCost);
         }
 
         /// <summary>
-        /// Gets the gas cost. Default value is 0.
+        /// Sets the gas cost. Default value is 0.
         /// </summary>
-        public ConstValue<int> GasCost
+        public void SetGasCost(int gasCost)
         {
-            get { return this.gasCost; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                if (value == null) { throw new ArgumentNullException("GasCost"); }
-                this.gasCost = value;
-            }
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.gasCost = new ConstValue<int>(gasCost);
         }
 
         /// <summary>
@@ -85,7 +90,7 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         public void CheckAndFinalize()
         {
-            if (!this.isFinalized)
+            if (!this.metadata.IsFinalized)
             {
                 if (this.buildTime == null) { throw new SimulatorException("BuildTime must be set!"); }
                 if (this.foodCost == null) { throw new SimulatorException("FoodCost must be set!"); }
@@ -96,10 +101,10 @@ namespace RC.Engine.Simulator.Core
                 if (this.foodCost.Read() < 0) { throw new SimulatorException("FoodCost must be non-negative!"); }
                 if (this.mineralCost.Read() < 0) { throw new SimulatorException("MineralCost must be non-negative!"); }
                 if (this.gasCost.Read() < 0) { throw new SimulatorException("GasCost must be non-negative!"); }
-
-                this.isFinalized = true;
             }
         }
+
+        #endregion CostsData uuildup methods
 
         /// <summary>
         /// The values of this costs data struct.
@@ -110,8 +115,8 @@ namespace RC.Engine.Simulator.Core
         private ConstValue<int> gasCost;
 
         /// <summary>
-        /// Indicates whether this costs data struct has been finalized or not.
+        /// Reference to the metadata object that this cost information belongs to.
         /// </summary>
-        private bool isFinalized;
+        private SimMetadata metadata;
     }
 }

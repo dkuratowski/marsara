@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Core
 {
@@ -17,73 +18,45 @@ namespace RC.Engine.Simulator.Core
         /// <param name="addonTypeName">
         /// The name of the required addon type or null if there is no addon type defined in this requirement.
         /// </param>
-        public Requirement(string buildingTypeName, string addonTypeName)
+        /// <param name="metadata">The metadata object that this requirement belongs to.</param>
+        public Requirement(string buildingTypeName, string addonTypeName, SimMetadata metadata)
         {
+            if (metadata == null) { throw new ArgumentNullException("metadata"); }
             if (buildingTypeName == null) { throw new ArgumentNullException("buildingTypeName"); }
 
             this.requiredBuildingTypeName = buildingTypeName;
             this.requiredAddonTypeName = addonTypeName;
+
+            this.metadata = metadata;
         }
 
         /// <summary>
         /// Gets the required building type defined by this requirement.
         /// </summary>
-        public BuildingType RequiredBuildingType
-        {
-            get { return this.requiredBuildingType; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                this.requiredBuildingType = value;
-            }
-        }
+        public BuildingType RequiredBuildingType { get { return this.requiredBuildingType; } }
 
         /// <summary>
         /// Gets the required addon type defined by this requirement.
         /// </summary>
-        public AddonType RequiredAddonType
-        {
-            get { return this.requiredAddonType; }
-            set
-            {
-                if (this.isFinalized) { throw new InvalidOperationException("Already finalized!"); }
-                this.requiredAddonType = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets the name of the required building type defined by this requirement.
-        /// </summary>
-        public string RequiredBuildingTypeName
-        {
-            get { return this.requiredBuildingTypeName; }
-        }
-
-        /// <summary>
-        /// Gets the name of the required addon type defined by this requirement.
-        /// </summary>
-        public string RequiredAddonTypeName
-        {
-            get { return this.requiredBuildingTypeName; }
-        }
+        public AddonType RequiredAddonType { get { return this.requiredAddonType; } }
 
         /// <summary>
         /// Checks and finalizes this requirement definition.
         /// </summary>
         public void CheckAndFinalize()
         {
-            this.isFinalized = true;
+            if (!this.metadata.IsFinalized)
+            {
+                if (!this.metadata.HasBuildingType(this.requiredBuildingTypeName)) { throw new SimulatorException(string.Format("BuildingType '{0}' doesn't exist!", this.requiredBuildingTypeName)); }
+                this.requiredBuildingType = this.metadata.GetBuildingType(this.requiredBuildingTypeName);
+
+                if (this.requiredAddonTypeName != null)
+                {
+                    if (!this.requiredBuildingType.HasAddonType(this.requiredAddonTypeName)) { throw new SimulatorException(string.Format("BuildingType '{0}' doesn't have AddonType '{1}'!", this.requiredBuildingTypeName, this.requiredAddonTypeName)); }
+                    this.requiredAddonType = this.requiredBuildingType.GetAddonType(this.requiredAddonTypeName);
+                }
+            }
         }
-
-        /// <summary>
-        /// Name of the required building type.
-        /// </summary>
-        private string requiredBuildingTypeName;
-
-        /// <summary>
-        /// Name of the required addon type.
-        /// </summary>
-        private string requiredAddonTypeName;
 
         /// <summary>
         /// Reference to the required building type.
@@ -96,8 +69,18 @@ namespace RC.Engine.Simulator.Core
         private AddonType requiredAddonType;
 
         /// <summary>
-        /// Indicates whether this requirement definition has been finalized or not.
+        /// Name of the required building type.
         /// </summary>
-        private bool isFinalized;
+        private string requiredBuildingTypeName;
+
+        /// <summary>
+        /// Name of the required addon type.
+        /// </summary>
+        private string requiredAddonTypeName;
+
+        /// <summary>
+        /// Reference to the metadata object that this requirement belongs to.
+        /// </summary>
+        private SimMetadata metadata;
     }
 }
