@@ -16,7 +16,7 @@ namespace RC.Engine.Simulator.Core
     /// Implementation of the simulator component.
     /// </summary>
     [Component("RC.Engine.Simulator.Simulator")]
-    class Simulator : ISimulator, IComponentStart
+    class Simulator : ISimulator, ISimulatorPluginInstall, IComponent
     {
         /// <summary>
         /// Constructs a Simulator instance.
@@ -25,6 +25,7 @@ namespace RC.Engine.Simulator.Core
         {
             this.map = null;
             this.gameObjects = null;
+            this.metadata = null;
         }
 
         #region ISimulator methods
@@ -84,9 +85,9 @@ namespace RC.Engine.Simulator.Core
 
         #endregion ISimulator methods
 
-        #region IComponentStart methods
+        #region IComponent methods
 
-        /// <see cref="IComponentStart.Start"/>
+        /// <see cref="IComponent.Start"/>
         public void Start()
         {
             /// Load the tilesets from the configured directory
@@ -103,7 +104,13 @@ namespace RC.Engine.Simulator.Core
             this.metadata.CheckAndFinalize();
         }
 
-        #endregion IComponentStart methods
+        /// <see cref="IComponent.Stop"/>
+        public void Stop()
+        {
+            /// Do nothing
+        }
+
+        #endregion IComponent methods
 
         /// <summary>
         /// Reference to the map of the scenario currently being simulated.

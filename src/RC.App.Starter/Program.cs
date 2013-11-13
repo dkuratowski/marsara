@@ -105,7 +105,7 @@ namespace RC.App.Starter
                 root.Dispose();
 
                 ComponentManager.StopComponents();
-                ComponentManager.UnregisterComponents();
+                ComponentManager.UnregisterComponentsAndPlugins();
 
                 /// End of RC application
                 if (ConsoleHelper.IsConsoleHidden)
@@ -233,6 +233,7 @@ namespace RC.App.Starter
                                                     "RC.App.BizLogic.MapEditorBE",
                                                     "RC.App.BizLogic.GameplayBE"
                                                 });
+            ComponentManager.RegisterPluginAssembly("RC.Engine.Simulator.Terran, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
             ComponentManager.StartComponents();
         }
     }

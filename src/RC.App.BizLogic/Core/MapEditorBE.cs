@@ -13,7 +13,7 @@ namespace RC.App.BizLogic.Core
     /// The implementation of the map editor backend component.
     /// </summary>
     [Component("RC.App.BizLogic.MapEditorBE")]
-    class MapEditorBE : IMapEditorBE
+    class MapEditorBE : IMapEditorBE, IComponent
     {
         /// <summary>
         /// Constructs a MapEditorBE instance.
@@ -22,6 +22,24 @@ namespace RC.App.BizLogic.Core
         {
             this.activeMap = null;
         }
+
+        #region IComponent methods
+
+        /// <see cref="IComponent.Start"/>
+        public void Start()
+        {
+            this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
+            this.mapEditor = ComponentManager.GetInterface<IMapEditor>();
+            this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
+        }
+
+        /// <see cref="IComponent.Stop"/>
+        public void Stop()
+        {
+            /// Do nothing
+        }
+
+        #endregion IComponent methods
 
         #region IMapEditorBE methods
 
@@ -153,19 +171,16 @@ namespace RC.App.BizLogic.Core
         /// <summary>
         /// Reference to the RC.App.BizLogic.TileSetStore component.
         /// </summary>
-        [ComponentReference]
         private ITileSetStore tilesetStore;
 
         /// <summary>
         /// Reference to the RC.Engine.Maps.MapEditor component.
         /// </summary>
-        [ComponentReference]
         private IMapEditor mapEditor;
 
         /// <summary>
         /// Reference to the RC.Engine.Maps.MapLoader component.
         /// </summary>
-        [ComponentReference]
         private IMapLoader mapLoader;
 
         /// <summary>

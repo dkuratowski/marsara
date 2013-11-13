@@ -77,7 +77,8 @@
     <Compile Include="ComponentModel\Attributes.cs" />
     <Compile Include="ComponentModel\ComponentManager.cs" />
     <Compile Include="ComponentModel\ComponentModelException.cs" />
-    <Compile Include="ComponentModel\IComponentStart.cs" />
+    <Compile Include="ComponentModel\IPlugin.cs" />
+    <Compile Include="ComponentModel\IComponent.cs" />
     <Compile Include="Configuration\ConfigObjectContents.cs" />
     <Compile Include="Configuration\DynamicString.cs" />
     <Compile Include="Configuration\ConfigurationException.cs" />

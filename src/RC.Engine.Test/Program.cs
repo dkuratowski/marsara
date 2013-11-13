@@ -28,35 +28,6 @@ namespace RC.Engine.Test
             PFTreeTest.PFTreeNeighbourTest();
             //TestSimulationHeap();
 
-            //ComponentManager.RegisterComponents("RC.Engine.Test, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-            //                                    new string[3] { "C0", "C1", "C2" });
-            //ComponentManager.StartComponents();
-            //A0 a0 = ComponentManager.GetInterface<A0>();
-            //B0 b0 = ComponentManager.GetInterface<B0>();
-            //C0 c0 = ComponentManager.GetInterface<C0>();
-            //A1 a1 = ComponentManager.GetInterface<A1>();
-            //A2 a2 = ComponentManager.GetInterface<A2>();
-            //B2 b2 = ComponentManager.GetInterface<B2>();
-
-            //Callback0 callback0 = new Callback0();
-            //Callback1 callback1 = new Callback1();
-            //ComponentManager.ConnectToComponent<A0>(callback0);
-            //ComponentManager.ConnectToComponent<A1>(callback0);
-            //ComponentManager.ConnectToComponent<A2>(callback0);
-            //ComponentManager.ConnectToComponent<A0>(callback1);
-            //ComponentManager.ConnectToComponent<A1>(callback1);
-            //ComponentManager.ConnectToComponent<A2>(callback1);
-
-            //ComponentManager.DisconnectFromComponent<A0>(callback0);
-            //ComponentManager.DisconnectFromComponent<A1>(callback0);
-            //ComponentManager.DisconnectFromComponent<A2>(callback0);
-            //ComponentManager.DisconnectFromComponent<A0>(callback1);
-            //ComponentManager.DisconnectFromComponent<A1>(callback1);
-            //ComponentManager.DisconnectFromComponent<A2>(callback1);
-
-            //ComponentManager.StopComponents();
-            //ComponentManager.UnregisterComponents();
-
             //Stopwatch watch = new Stopwatch();
             //watch.Start();
             //engineRoot.MapLoader.Initialize();

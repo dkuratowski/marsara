@@ -12,22 +12,10 @@ namespace RC.Common.ComponentModel
     public class ComponentInterfaceAttribute : Attribute { }
 
     /// <summary>
-    /// This attribute is be used to indicate callback interfaces.
+    /// This attribute is be used to indicate plugin install interfaces.
     /// </summary>
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
-    public class CallbackInterfaceAttribute : Attribute { }
-
-    /// <summary>
-    /// This attribute is be used to indicate a reference from a component to another.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-    public class ComponentReferenceAttribute : Attribute { }
-
-    /// <summary>
-    /// This attribute is be used to indicate a reference from a component to a callback reference.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
-    public class CallbackReferenceAttribute : Attribute { }
+    public class PluginInstallInterfaceAttribute : Attribute { }
 
     /// <summary>
     /// This attribute is used to indicate component classes.
@@ -38,20 +26,46 @@ namespace RC.Common.ComponentModel
         /// <summary>
         /// Creates a ComponentAttribute instance.
         /// </summary>
-        /// <param name="name">The name of the component class.</param>
+        /// <param name="name">The name of the component.</param>
         public ComponentAttribute(string name)
         {
             this.name = name;
         }
 
         /// <summary>
-        /// Gets the name of the component classes.
+        /// Gets the name of the component.
         /// </summary>
         public string Name { get { return this.name; } }
 
         /// <summary>
-        /// The name of the component class.
+        /// The name of the component.
         /// </summary>
         private string name;
+    }
+
+    /// <summary>
+    /// This attribute is used to indicate plugin classes.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    public class PluginAttribute : Attribute
+    {
+        /// <summary>
+        /// Creates a PluginAttribute instance.
+        /// </summary>
+        /// <param name="componentInterface">The interface of the component that the plugin extends.</param>
+        public PluginAttribute(Type componentInterface)
+        {
+            this.componentInterface = componentInterface;
+        }
+
+        /// <summary>
+        /// Gets the interface of the component that the plugin extends.
+        /// </summary>
+        public Type ComponentInterface { get { return this.componentInterface; } }
+
+        /// <summary>
+        /// The interface of the component that the plugin extends.
+        /// </summary>
+        private Type componentInterface;
     }
 }

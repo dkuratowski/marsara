@@ -10,11 +10,16 @@ namespace RC.Common.ComponentModel
     /// the Start method will automatically be called by the ComponentManager after the instantiation of the
     /// registered components has been finished and all references between the components has been set.
     /// </summary>
-    public interface IComponentStart
+    public interface IComponent
     {
         /// <summary>
-        /// Starts the component. When this method is called, the references between the components are valid.
+        /// Starts this component.
         /// </summary>
         void Start();
+
+        /// <summary>
+        /// Stops this component.
+        /// </summary>
+        void Stop();
     }
 }

@@ -166,6 +166,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.Simulator", "RC.E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.PathFinder.Test", "RC.Engine.PathFinder.Test\RC.Engine.PathFinder.Test.csproj", "{AF5BE22E-9D47-4397-BA68-661F92B6AE6D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.Simulator.Terran", "RC.Engine.Simulator.Terran\RC.Engine.Simulator.Terran.csproj", "{5160E423-3740-4882-A26A-66B3F9B48632}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -482,6 +484,18 @@ Global
 		{AF5BE22E-9D47-4397-BA68-661F92B6AE6D}.Release|x64.ActiveCfg = Release|x86
 		{AF5BE22E-9D47-4397-BA68-661F92B6AE6D}.Release|x86.ActiveCfg = Release|x86
 		{AF5BE22E-9D47-4397-BA68-661F92B6AE6D}.Release|x86.Build.0 = Release|x86
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Release|x64.ActiveCfg = Release|Any CPU
+		{5160E423-3740-4882-A26A-66B3F9B48632}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

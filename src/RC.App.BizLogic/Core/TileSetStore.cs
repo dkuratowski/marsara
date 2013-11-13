@@ -13,7 +13,7 @@ namespace RC.App.BizLogic.Core
     /// The implementation of the TileSetStore component.
     /// </summary>
     [Component("RC.App.BizLogic.TileSetStore")]
-    class TileSetStore : ITileSetStore, IComponentStart
+    class TileSetStore : ITileSetStore, IComponent
     {
         /// <summary>
         /// Constructs a TileSetStore instance.
@@ -58,11 +58,13 @@ namespace RC.App.BizLogic.Core
 
         #endregion ITileSetStore methods
 
-        #region IComponentStart methods
+        #region IComponent methods
 
-        /// <see cref="IComponentStart.Start"/>
+        /// <see cref="IComponent.Start"/>
         public void Start()
         {
+            this.tilesetLoader = ComponentManager.GetInterface<ITileSetLoader>();
+
             /// Load the tilesets from the configured directory
             DirectoryInfo rootDir = new DirectoryInfo(BizLogicConstants.TILESET_DIR);
             FileInfo[] tilesetFiles = rootDir.GetFiles("*.xml", SearchOption.AllDirectories);
@@ -88,12 +90,17 @@ namespace RC.App.BizLogic.Core
             }
         }
 
-        #endregion IComponentStart methods
+        /// <see cref="IComponent.Stop"/>
+        public void Stop()
+        {
+            /// Do nothing
+        }
+
+        #endregion IComponent methods
 
         /// <summary>
         /// Reference to the RC.Engine.Maps.TileSetLoader component.
         /// </summary>
-        [ComponentReference]
         private ITileSetLoader tilesetLoader;
 
         /// <summary>

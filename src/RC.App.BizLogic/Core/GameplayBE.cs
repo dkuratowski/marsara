@@ -16,7 +16,7 @@ namespace RC.App.BizLogic.Core
     /// The implementation of the gameplay backend component.
     /// </summary>
     [Component("RC.App.BizLogic.GameplayBE")]
-    class GameplayBE : IGameplayBE
+    class GameplayBE : IGameplayBE, IComponent
     {
         /// <summary>
         /// Constructs a GameplayBE instance.
@@ -24,6 +24,25 @@ namespace RC.App.BizLogic.Core
         public GameplayBE()
         {
         }
+
+        #region IComponent methods
+
+        /// <see cref="IComponent.Start"/>
+        public void Start()
+        {
+            this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
+            this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
+            this.scenarioSimulator = ComponentManager.GetInterface<ISimulator>();
+            this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
+        }
+
+        /// <see cref="IComponent.Stop"/>
+        public void Stop()
+        {
+            /// Do nothing
+        }
+
+        #endregion IComponent methods
 
         #region IGameplayBE methods
 
@@ -67,9 +86,7 @@ namespace RC.App.BizLogic.Core
             this.scenarioSimulator.BeginScenario(testMap);
         }
 
-        [ComponentReference]
         private IMapLoader mapLoader;
-        [ComponentReference]
         private ITileSetStore tilesetStore;
         /// TODO_END ***************************************************************************************************
 
@@ -78,13 +95,11 @@ namespace RC.App.BizLogic.Core
         /// <summary>
         /// Reference to the RC.Engine.Simulator.Simulator component.
         /// </summary>
-        [ComponentReference]
         private ISimulator scenarioSimulator;
 
         /// <summary>
         /// Reference to the RC.Engine.Simulator.PathFinder component.
         /// </summary>
-        [ComponentReference]
         private IPathFinder pathFinder;
     }
 }

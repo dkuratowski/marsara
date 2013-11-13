@@ -15,7 +15,7 @@ namespace RC.Engine.Maps.Core
     /// Implementation of the map loader component.
     /// </summary>
     [Component("RC.Engine.Maps.MapLoader")]
-    class MapLoader : IMapLoader, IComponentStart
+    class MapLoader : IMapLoader, IComponent
     {
         /// <summary>
         /// Constructs a MapLoader object.
@@ -27,9 +27,9 @@ namespace RC.Engine.Maps.Core
             this.initThreadStarted = false;
         }
 
-        #region IComponentStart methods
+        #region IComponent methods
 
-        /// <see cref="IComponentStart.Start"/>
+        /// <see cref="IComponent.Start"/>
         public void Start()
         {
             if (!this.initThreadStarted)
@@ -37,6 +37,12 @@ namespace RC.Engine.Maps.Core
                 this.initThreadStarted = true;
                 this.initThread.Start();
             }
+        }
+
+        /// <see cref="IComponent.Stop"/>
+        public void Stop()
+        {
+            /// Do nothing
         }
 
         /// <summary>
@@ -52,7 +58,7 @@ namespace RC.Engine.Maps.Core
             TraceManager.WriteAllTrace("RC.Engine.Maps.MapLoader initialization finished.", TraceFilters.INFO);
         }
 
-        #endregion IComponentStart methods
+        #endregion IComponent methods
 
         #region IMapLoader methods
 

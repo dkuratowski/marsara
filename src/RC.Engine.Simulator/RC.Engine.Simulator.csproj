@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentInterfaces\ISimulator.cs" />
+    <Compile Include="ComponentInterfaces\ISimulatorPluginInstall.cs" />
     <Compile Include="Core\AddonType.cs" />
     <Compile Include="Core\BinaryHeap.cs" />
     <Compile Include="Core\BuildingType.cs" />
