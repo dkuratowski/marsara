@@ -91,6 +91,10 @@
       <Project>{2B1355DC-847B-4617-94AD-5423BC538B20}</Project>
       <Name>RC.Engine.Maps</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RC.Engine.Simulator.Terran\RC.Engine.Simulator.Terran.csproj">
+      <Project>{5160E423-3740-4882-A26A-66B3F9B48632}</Project>
+      <Name>RC.Engine.Simulator.Terran</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RC.Engine.Simulator\RC.Engine.Simulator.csproj">
       <Project>{2B041172-C0FC-42DB-A344-079F40491FE5}</Project>
       <Name>RC.Engine.Simulator</Name>

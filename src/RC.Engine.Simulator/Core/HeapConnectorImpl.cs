@@ -11,12 +11,12 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Class for accessing bytes on the simulation heap.
     /// </summary>
-    class HeapByte : HeapData, IValueRead<byte>, IValueWrite<byte>
+    class HeapByteConnector : HeapConnector, IValue<byte>
     {
-        public HeapByte(int dataAddress, HeapType dataType, IHeap heap, IHeapDataFactory heapDataFactory, DeallocationFunc deallocFunc)
+        public HeapByteConnector(int dataAddress, HeapType dataType, IHeap heap, IHeapConnectorFactory heapDataFactory, DeallocationFunc deallocFunc)
             : base(dataAddress, dataType, heap, heapDataFactory, deallocFunc)
         {
-            if (dataType.BuiltInType != HeapType.BuiltInTypeEnum.Byte) { throw new InvalidOperationException("Invalid heap type!"); }
+            if (dataType.BuiltInType != BuiltInTypeEnum.Byte) { throw new InvalidOperationException("Invalid heap type!"); }
         }
 
         #region IValueRead<T> methods
@@ -43,12 +43,12 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Class for accessing shorts on the simulation heap.
     /// </summary>
-    class HeapShort : HeapData, IValueRead<short>, IValueWrite<short>
+    class HeapShortConnector : HeapConnector, IValue<short>
     {
-        public HeapShort(int dataAddress, HeapType dataType, IHeap heap, IHeapDataFactory heapDataFactory, DeallocationFunc deallocFunc)
+        public HeapShortConnector(int dataAddress, HeapType dataType, IHeap heap, IHeapConnectorFactory heapDataFactory, DeallocationFunc deallocFunc)
             : base(dataAddress, dataType, heap, heapDataFactory, deallocFunc)
         {
-            if (dataType.BuiltInType != HeapType.BuiltInTypeEnum.Short) { throw new InvalidOperationException("Invalid heap type!"); }
+            if (dataType.BuiltInType != BuiltInTypeEnum.Short) { throw new InvalidOperationException("Invalid heap type!"); }
         }
 
         #region IValueRead<T> methods
@@ -75,12 +75,12 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Class for accessing ints on the simulation heap.
     /// </summary>
-    class HeapInt : HeapData, IValueRead<int>, IValueWrite<int>
+    class HeapIntConnector : HeapConnector, IValue<int>
     {
-        public HeapInt(int dataAddress, HeapType dataType, IHeap heap, IHeapDataFactory heapDataFactory, DeallocationFunc deallocFunc)
+        public HeapIntConnector(int dataAddress, HeapType dataType, IHeap heap, IHeapConnectorFactory heapDataFactory, DeallocationFunc deallocFunc)
             : base(dataAddress, dataType, heap, heapDataFactory, deallocFunc)
         {
-            if (dataType.BuiltInType != HeapType.BuiltInTypeEnum.Integer) { throw new InvalidOperationException("Invalid heap type!"); }
+            if (dataType.BuiltInType != BuiltInTypeEnum.Integer) { throw new InvalidOperationException("Invalid heap type!"); }
         }
 
         #region IValueRead<T> methods
@@ -107,12 +107,12 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Class for accessing longs on the simulation heap.
     /// </summary>
-    class HeapLong : HeapData, IValueRead<long>, IValueWrite<long>
+    class HeapLongConnector : HeapConnector, IValue<long>
     {
-        public HeapLong(int dataAddress, HeapType dataType, IHeap heap, IHeapDataFactory heapDataFactory, DeallocationFunc deallocFunc)
+        public HeapLongConnector(int dataAddress, HeapType dataType, IHeap heap, IHeapConnectorFactory heapDataFactory, DeallocationFunc deallocFunc)
             : base(dataAddress, dataType, heap, heapDataFactory, deallocFunc)
         {
-            if (dataType.BuiltInType != HeapType.BuiltInTypeEnum.Long) { throw new InvalidOperationException("Invalid heap type!"); }
+            if (dataType.BuiltInType != BuiltInTypeEnum.Long) { throw new InvalidOperationException("Invalid heap type!"); }
         }
 
         #region IValueRead<T> methods
@@ -139,12 +139,12 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Class for accessing RCNumbers on the simulation heap.
     /// </summary>
-    class HeapNumber : HeapData, IValueRead<RCNumber>, IValueWrite<RCNumber>
+    class HeapNumberConnector : HeapConnector, IValue<RCNumber>
     {
-        public HeapNumber(int dataAddress, HeapType dataType, IHeap heap, IHeapDataFactory heapDataFactory, DeallocationFunc deallocFunc)
+        public HeapNumberConnector(int dataAddress, HeapType dataType, IHeap heap, IHeapConnectorFactory heapDataFactory, DeallocationFunc deallocFunc)
             : base(dataAddress, dataType, heap, heapDataFactory, deallocFunc)
         {
-            if (dataType.BuiltInType != HeapType.BuiltInTypeEnum.Number) { throw new InvalidOperationException("Invalid heap type!"); }
+            if (dataType.BuiltInType != BuiltInTypeEnum.Number) { throw new InvalidOperationException("Invalid heap type!"); }
         }
 
         #region IValueRead<T> methods
@@ -171,12 +171,12 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Class for accessing RCIntVectors on the simulation heap.
     /// </summary>
-    class HeapIntVector : HeapData, IValueRead<RCIntVector>, IValueWrite<RCIntVector>
+    class HeapIntVectorConnector : HeapConnector, IValue<RCIntVector>
     {
-        public HeapIntVector(int dataAddress, HeapType dataType, IHeap heap, IHeapDataFactory heapDataFactory, DeallocationFunc deallocFunc)
+        public HeapIntVectorConnector(int dataAddress, HeapType dataType, IHeap heap, IHeapConnectorFactory heapDataFactory, DeallocationFunc deallocFunc)
             : base(dataAddress, dataType, heap, heapDataFactory, deallocFunc)
         {
-            if (dataType.BuiltInType != HeapType.BuiltInTypeEnum.IntVector) { throw new InvalidOperationException("Invalid heap type!"); }
+            if (dataType.BuiltInType != BuiltInTypeEnum.IntVector) { throw new InvalidOperationException("Invalid heap type!"); }
         }
 
         #region IValueRead<T> methods
@@ -205,12 +205,12 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Class for accessing RCNumVectors on the simulation heap.
     /// </summary>
-    class HeapNumVector : HeapData, IValueRead<RCNumVector>, IValueWrite<RCNumVector>
+    class HeapNumVectorConnector : HeapConnector, IValue<RCNumVector>
     {
-        public HeapNumVector(int dataAddress, HeapType dataType, IHeap heap, IHeapDataFactory heapDataFactory, DeallocationFunc deallocFunc)
+        public HeapNumVectorConnector(int dataAddress, HeapType dataType, IHeap heap, IHeapConnectorFactory heapDataFactory, DeallocationFunc deallocFunc)
             : base(dataAddress, dataType, heap, heapDataFactory, deallocFunc)
         {
-            if (dataType.BuiltInType != HeapType.BuiltInTypeEnum.NumVector) { throw new InvalidOperationException("Invalid heap type!"); }
+            if (dataType.BuiltInType != BuiltInTypeEnum.NumVector) { throw new InvalidOperationException("Invalid heap type!"); }
         }
 
         #region IValueRead<T> methods
@@ -239,12 +239,12 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Class for accessing RCIntRectangles on the simulation heap.
     /// </summary>
-    class HeapIntRectangle : HeapData, IValueRead<RCIntRectangle>, IValueWrite<RCIntRectangle>
+    class HeapIntRectangleConnector : HeapConnector, IValue<RCIntRectangle>
     {
-        public HeapIntRectangle(int dataAddress, HeapType dataType, IHeap heap, IHeapDataFactory heapDataFactory, DeallocationFunc deallocFunc)
+        public HeapIntRectangleConnector(int dataAddress, HeapType dataType, IHeap heap, IHeapConnectorFactory heapDataFactory, DeallocationFunc deallocFunc)
             : base(dataAddress, dataType, heap, heapDataFactory, deallocFunc)
         {
-            if (dataType.BuiltInType != HeapType.BuiltInTypeEnum.IntRectangle) { throw new InvalidOperationException("Invalid heap type!"); }
+            if (dataType.BuiltInType != BuiltInTypeEnum.IntRectangle) { throw new InvalidOperationException("Invalid heap type!"); }
         }
 
         #region IValueRead<T> methods
@@ -277,12 +277,12 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Class for accessing RCNumRectangles on the simulation heap.
     /// </summary>
-    class HeapNumRectangle : HeapData, IValueRead<RCNumRectangle>, IValueWrite<RCNumRectangle>
+    class HeapNumRectangleConnector : HeapConnector, IValue<RCNumRectangle>
     {
-        public HeapNumRectangle(int dataAddress, HeapType dataType, IHeap heap, IHeapDataFactory heapDataFactory, DeallocationFunc deallocFunc)
+        public HeapNumRectangleConnector(int dataAddress, HeapType dataType, IHeap heap, IHeapConnectorFactory heapDataFactory, DeallocationFunc deallocFunc)
             : base(dataAddress, dataType, heap, heapDataFactory, deallocFunc)
         {
-            if (dataType.BuiltInType != HeapType.BuiltInTypeEnum.NumRectangle) { throw new InvalidOperationException("Invalid heap type!"); }
+            if (dataType.BuiltInType != BuiltInTypeEnum.NumRectangle) { throw new InvalidOperationException("Invalid heap type!"); }
         }
 
         #region IValueRead<T> methods

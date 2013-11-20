@@ -11,12 +11,12 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// This class provides methods for accessing data stored on the simulation heap.
     /// </summary>
-    class HeapData : IHeapData
+    class HeapConnector : IHeapConnector
     {
         /// <summary>
-        /// Constructs a HeapData instance.
+        /// Constructs a HeapConnector instance.
         /// </summary>
-        public HeapData(int dataAddress, HeapType dataType, IHeap heap, IHeapDataFactory heapDataFactory, DeallocationFunc deallocFunc)
+        public HeapConnector(int dataAddress, HeapType dataType, IHeap heap, IHeapConnectorFactory heapDataFactory, DeallocationFunc deallocFunc)
         {
             this.dataAddress = dataAddress;
             this.dataType = dataType;
@@ -42,14 +42,14 @@ namespace RC.Engine.Simulator.Core
         /// <param name="length">The length of the section to be deallocated.</param>
         public delegate void DeallocationFunc(int address, int length);
 
-        #region IHeapData methods
+        #region IHeapConnector methods
 
-        /// <see cref="IHeapData.PointTo"/>
-        public void PointTo(IHeapData target)
+        /// <see cref="IHeapConnector.PointTo"/>
+        public void PointTo(IHeapConnector target)
         {
             if (target != null)
             {
-                HeapData targetInstance = (HeapData)target;
+                HeapConnector targetInstance = (HeapConnector)target;
                 if (this.dataType.PointedTypeID != targetInstance.dataType.ID) { throw new HeapException("Type mismatch!"); }
                 this.heap.WriteInt(this.dataAddress, targetInstance.dataAddress);
             }
@@ -59,44 +59,44 @@ namespace RC.Engine.Simulator.Core
             }
         }
 
-        /// <see cref="IHeapData.Dereference"/>
-        public IHeapData Dereference()
+        /// <see cref="IHeapConnector.Dereference"/>
+        public IHeapConnector Dereference()
         {
             if (this.dataType.PointedTypeID == -1) { throw new HeapException("Type mismatch!"); }
 
             int targetAddress = this.heap.ReadInt(this.dataAddress);
             return targetAddress != 0 ?
-                   this.heapDataFactory.CreateHeapData(targetAddress, this.dataType.PointedTypeID) :
+                   this.heapDataFactory.CreateHeapConnector(targetAddress, this.dataType.PointedTypeID) :
                    null;
         }
 
-        /// <see cref="IHeapData.Delete"/>
+        /// <see cref="IHeapConnector.Delete"/>
         public void Delete()
         {
             this.deallocationFunc(this.dataAddress, this.dataType.AllocationSize);
         }
 
-        /// <see cref="IHeapData.DeleteArray"/>
+        /// <see cref="IHeapConnector.DeleteArray"/>
         public void DeleteArray()
         {
             int count = this.heap.ReadInt(this.dataAddress - 4);
             this.deallocationFunc(this.dataAddress - 4, count * this.dataType.AllocationSize + 4);
         }
 
-        /// <see cref="IHeapData.AccessField"/>
-        public IHeapData AccessField(int fieldIdx)
+        /// <see cref="IHeapConnector.AccessField"/>
+        public IHeapConnector AccessField(int fieldIdx)
         {
             if (this.dataType.FieldOffsets == null) { throw new HeapException("Type mismatch!"); }
-            return this.heapDataFactory.CreateHeapData(this.dataAddress + this.dataType.FieldOffsets[fieldIdx], this.dataType.FieldTypeIDs[fieldIdx]);
+            return this.heapDataFactory.CreateHeapConnector(this.dataAddress + this.dataType.FieldOffsets[fieldIdx], this.dataType.FieldTypeIDs[fieldIdx]);
         }
 
-        /// <see cref="IHeapData.AccessArrayItem"/>
-        public IHeapData AccessArrayItem(int itemIdx)
+        /// <see cref="IHeapConnector.AccessArrayItem"/>
+        public IHeapConnector AccessArrayItem(int itemIdx)
         {
-            return this.heapDataFactory.CreateHeapData(this.dataAddress + itemIdx * this.dataType.AllocationSize, this.dataType.ID);
+            return this.heapDataFactory.CreateHeapConnector(this.dataAddress + itemIdx * this.dataType.AllocationSize, this.dataType.ID);
         }
 
-        #endregion IHeapData methods
+        #endregion IHeapConnector methods
 
         /// <summary>
         /// Gets a reference to the simulation heap.
@@ -121,7 +121,7 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Reference to the factory object.
         /// </summary>
-        private IHeapDataFactory heapDataFactory;
+        private IHeapConnectorFactory heapDataFactory;
 
         /// <summary>
         /// Function reference for performing deallocation procedures on deletion.

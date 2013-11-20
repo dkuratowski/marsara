@@ -5,18 +5,19 @@ using System.Text;
 using System.Text.RegularExpressions;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Common;
+using RC.Engine.Simulator.InternalInterfaces;
 
 namespace RC.Engine.Simulator.Core
 {
     /// <summary>
     /// Contains informations about a data type that can be stored on the simulation heap.
     /// </summary>
-    class HeapType
+    class HeapType : IHeapType
     {
         #region Constructors
 
         /// <summary>
-        /// Constructs a composite SimDataType.
+        /// Constructs a composite HeapType.
         /// </summary>
         /// <param name="name">The name of this composite type.</param>
         /// <param name="fields">The fields of this composite type.</param>
@@ -57,7 +58,7 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Constructs a built-in SimDataType.
+        /// Constructs a built-in HeapType.
         /// </summary>
         /// <param name="builtInType">The built-in type to be constructed.</param>
         public HeapType(BuiltInTypeEnum builtInType)
@@ -105,7 +106,7 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Creates a pointer SimDataType that points to the given type.
+        /// Creates a pointer HeapType that points to the given type.
         /// </summary>
         /// <param name="pointerTypeName">The name of this pointer type.</param>
         /// <param name="pointedTypeID">The ID of the pointed type.</param>
@@ -135,7 +136,7 @@ namespace RC.Engine.Simulator.Core
         #region Internal metadata parsing methods
 
         /// <summary>
-        /// Sets the ID of this SimDataType.
+        /// Sets the ID of this HeapType.
         /// </summary>
         /// <param name="id">The ID to be set.</param>
         /// <exception cref="InvalidOperationException">If the ID has already been set.</exception>
@@ -248,32 +249,59 @@ namespace RC.Engine.Simulator.Core
 
         #endregion Internal metadata parsing methods
 
-        #region Public properties
+        #region IHeapType methods
 
-        /// <summary>
-        /// Gets the name of this type.
-        /// </summary>
+        /// <see cref="IHeapType.Name"/>
         public string Name { get { return this.name; } }
 
-        /// <summary>
-        /// Gets the ID of this type.
-        /// </summary>
+        /// <see cref="IHeapType.ID"/>
         public short ID { get { return this.id; } }
 
-        /// <summary>
-        /// Gets the ID of the type pointed by this type if this type is a pointer; otherwise -1.
-        /// </summary>
+        /// <see cref="IHeapType.PointedTypeID"/>
         public short PointedTypeID { get { return this.pointedTypeID; } }
+
+        /// <see cref="IHeapType.BuiltInType"/>
+        public BuiltInTypeEnum BuiltInType { get { return this.builtInType; } }
+
+        /// <see cref="IHeapType.FieldNames"/>
+        public IEnumerable<string> FieldNames { get { return this.fieldIndices.Keys; } }
+
+        /// <see cref="IHeapType.GetFieldTypeID"/>
+        public short GetFieldTypeID(string fieldName)
+        {
+            if (this.fieldTypeIDs == null) { throw new HeapException(string.Format("The type '{0}' is not a composite type!", this.name)); }
+            if (!this.fieldIndices.ContainsKey(fieldName)) { throw new HeapException(string.Format("The type '{0}' doesn't contain field '{1}'!", this.name, fieldName)); }
+
+            return this.fieldTypeIDs[this.fieldIndices[fieldName]];
+        }
+
+        /// <see cref="IHeapType.GetFieldIdx"/>
+        public int GetFieldIdx(string fieldName)
+        {
+            if (fieldName == null) { throw new ArgumentNullException("fieldName"); }
+
+            if (this.fieldIndices == null) { throw new HeapException(string.Format("The type '{0}' is not a composite type!", this.name)); }
+            if (!this.fieldIndices.ContainsKey(fieldName)) { throw new HeapException(string.Format("Field '{0}' in type '{1}' doesn't exist!", fieldName, this.name)); }
+
+            return this.fieldIndices[fieldName];
+        }
+
+        /// <see cref="IHeapType.HasField"/>
+        public bool HasField(string fieldName)
+        {
+            if (fieldName == null) { throw new ArgumentNullException("fieldName"); }
+            if (this.fieldIndices == null) { throw new HeapException(string.Format("The type '{0}' is not a composite type!", this.name)); }
+            return this.fieldIndices.ContainsKey(fieldName);
+        }
+
+        #endregion IHeapType methods
+
+        #region Public properties
 
         /// <summary>
         /// Gets he size to be allocated if this type is instantiated on the simulation heap.
         /// </summary>
         public int AllocationSize { get { return this.allocationSize; } }
-
-        /// <summary>
-        /// Gets the appropriate value if this is a built-in type; otherwise BuiltInType.NonBuiltIn.
-        /// </summary>
-        public BuiltInTypeEnum BuiltInType { get { return this.builtInType; } }
 
         /// <summary>
         /// Gets the list of the type IDs of the fields mapped by their indices if this is a composite type; otherwise null.
@@ -293,29 +321,12 @@ namespace RC.Engine.Simulator.Core
         #endregion Public properties
 
         /// <summary>
-        /// Enumerates the predefined built-in types.
+        /// Gets the string representation of this heap type definition.
         /// </summary>
-        public enum BuiltInTypeEnum
+        /// <returns>The string representation of this heap type definition.</returns>
+        public override string ToString()
         {
-            NonBuiltIn = 0,
-            [EnumMapping("byte")]
-            Byte = 1,
-            [EnumMapping("short")]
-            Short = 2,
-            [EnumMapping("int")]
-            Integer = 3,
-            [EnumMapping("long")]
-            Long = 4,
-            [EnumMapping("num")]
-            Number = 5,
-            [EnumMapping("intvect")]
-            IntVector = 6,
-            [EnumMapping("numvect")]
-            NumVector = 7,
-            [EnumMapping("intrect")]
-            IntRectangle = 8,
-            [EnumMapping("numrect")]
-            NumRectangle = 9
+            return string.Format("{0}({1})", this.name, this.id);
         }
 
         /// <summary>

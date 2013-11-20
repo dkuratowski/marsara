@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComponentInterfaces\IHeapedObjectFactoryHelper.cs" />
     <Compile Include="ComponentInterfaces\ISimulator.cs" />
     <Compile Include="ComponentInterfaces\ISimulatorPluginInstall.cs" />
     <Compile Include="Core\AddonType.cs" />
@@ -49,12 +50,14 @@
     <Compile Include="Core\Constants.cs" />
     <Compile Include="Core\ConstValue.cs" />
     <Compile Include="Core\CostsData.cs" />
-    <Compile Include="Core\HeapValues.cs" />
+    <Compile Include="Core\HeapedArrayImpl.cs" />
+    <Compile Include="Core\HeapedValueImpl.cs" />
+    <Compile Include="Core\HeapConnectorImpl.cs" />
     <Compile Include="Core\GeneralData.cs" />
     <Compile Include="Core\Path.cs" />
     <Compile Include="Core\PathFinder.cs" />
     <Compile Include="Core\PFTreeNode.cs" />
-    <Compile Include="Core\HeapData.cs" />
+    <Compile Include="Core\HeapConnector.cs" />
     <Compile Include="Core\Requirement.cs" />
     <Compile Include="Core\SimObjectType.cs" />
     <Compile Include="Core\SpritePalette.cs" />
@@ -70,15 +73,19 @@
     <Compile Include="Core\WeaponData.cs" />
     <Compile Include="Core\XmlMetadataConstants.cs" />
     <Compile Include="Core\XmlMetadataReader.cs" />
-    <Compile Include="InternalInterfaces\IHeapDataFactory.cs" />
-    <Compile Include="PublicInterfaces\GeneralData.cs" />
+    <Compile Include="InternalInterfaces\IHeapConnectorFactory.cs" />
+    <Compile Include="InternalInterfaces\IHeapedFieldAccessor.cs" />
+    <Compile Include="InternalInterfaces\IHeapType.cs" />
+    <Compile Include="PublicInterfaces\HeapedArray.cs" />
+    <Compile Include="PublicInterfaces\HeapedValue.cs" />
+    <Compile Include="PublicInterfaces\HeapedObject.cs" />
     <Compile Include="PublicInterfaces\ValueInterfaces.cs" />
     <Compile Include="PublicInterfaces\IGameObject.cs" />
     <Compile Include="InternalInterfaces\IHeap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicInterfaces\IPath.cs" />
     <Compile Include="ComponentInterfaces\IPathFinder.cs" />
-    <Compile Include="PublicInterfaces\IHeapData.cs" />
+    <Compile Include="InternalInterfaces\IHeapConnector.cs" />
     <Compile Include="InternalInterfaces\IHeapManager.cs" />
     <Compile Include="PublicInterfaces\HeapException.cs" />
     <Compile Include="PublicInterfaces\SimulatorException.cs" />

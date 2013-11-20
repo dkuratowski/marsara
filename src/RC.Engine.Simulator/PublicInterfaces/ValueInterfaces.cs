@@ -7,7 +7,7 @@ using System.Text;
 namespace RC.Engine.Simulator.PublicInterfaces
 {
     /// <summary>
-    /// Read interface of simulation data of a built-in type.
+    /// Read interface of simulation data.
     /// </summary>
     /// <typeparam name="T">The type of the simulation data.</typeparam>
     public interface IValueRead<T>
@@ -21,7 +21,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
     }
 
     /// <summary>
-    /// Write interface of simulation data of a built-in type.
+    /// Write interface of simulation data.
     /// </summary>
     /// <typeparam name="T">The type of the simulation data.</typeparam>
     public interface IValueWrite<T>
@@ -33,4 +33,10 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <exception cref="SimulatorException">In case of type mismatch.</exception>
         void Write(T newVal);
     }
+
+    /// <summary>
+    /// Read/write interface of simulation data.
+    /// </summary>
+    /// <typeparam name="T">The type of the simulation data.</typeparam>
+    public interface IValue<T> : IValueRead<T>, IValueWrite<T> { }
 }

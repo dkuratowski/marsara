@@ -17,6 +17,11 @@ namespace RC.Engine.Simulator.Core
         public static readonly int BSP_NODE_CAPACITY = ConstantsTable.Get<int>("RC.Engine.Simulator.BspNodeCapacity");
         public static readonly int BSP_MIN_NODE_SIZE = ConstantsTable.Get<int>("RC.Engine.Simulator.BspMinNodeSize");
         public static readonly string METADATA_DIR = ConstantsTable.Get<string>("RC.Engine.Simulator.MetadataDir");
+
+        /// <summary>
+        /// The name of the field of the composite heap types that contains the data from the base class.
+        /// </summary>
+        public const string NAME_OF_BASE_TYPE_FIELD = "base";
     }
 
     /// <summary>

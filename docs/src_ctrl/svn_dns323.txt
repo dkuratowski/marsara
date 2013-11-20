@@ -1,0 +1,51 @@
+Install Subversion to DNS-323:
+==============================
+1. Install Fonz Fun Plug from http://www.inreto.de/dns323/fun-plug/0.5/
+2. Download and install the following packages from http://www.inreto.de/dns323/fun-plug/0.5/packages/
+	- apr-1.2.12-2.tgz
+	- apr-util-1.2.12-1.tgz
+	- neon-0.25.5-1.tgz
+	- subversion-1.5.2-1.tgz
+	Commands:
+		cd /mnt/HD_a2/ffp/pkg/packages/
+		funpkg -i apr-1.2.12-2.tgz
+		funpkg -i apr-util-1.2.12-1.tgz
+		funpkg -i neon-0.25.5-1.tgz
+		funpkg -i subversion-1.5.2-1.tgz
+
+3. Edit the svnserve.sh (for example with vi):
+	mkdir /mnt/HD_a2/{SVNDIR}
+	cd /mnt/HD_a2/ffp/start/
+	vi svnserve.sh
+
+4. Create the repository:
+	svnadmin create /mnt/HD_a2/svn
+	cd /mnt/HD_a2/svn
+	cd conf
+	joe svnserve.conf
+
+This will open the repository config file, where everything is commented out (with #). You need to uncomment the lines and setup whatever you need. This is what I (user aleck) did:
+[general]
+anon-access = read
+auth-access = write
+password-db = passwd
+authz-db = authz
+realm = <repository-name>
+
+“realm” can be anything you want. Just about anything. Save this file with Ctrl+K, then W. Exit joe with Ctrl+K, then Q. 
+
+
+5. Edit the password file, using joe or any other editor. In this file add lines in the form user = pass, whatever you want to use to access svn server. Save the file and exit from the editor:
+
+6. Edit the authorisation file:
+	joe authz
+	Edit the file to be similar to the following:
+	[/]
+	* = rw
+
+7. Restart the subversion server, in order to load the changes in the configuration files:
+ /mnt/HD_a2/fun_plug.d/start/svnserve.sh restart
+
+8. Now start you SVN client, on your machine and access svn server using:
+	svn://nas/
+	or whatever is the URL/IP for your DNS-323.

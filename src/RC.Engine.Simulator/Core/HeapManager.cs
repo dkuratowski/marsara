@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Simulator.InternalInterfaces;
+using RC.Common.ComponentModel;
 
 namespace RC.Engine.Simulator.Core
 {
     /// <summary>
     /// This class manages the allocations on the simulation-heap.
     /// </summary>
-    class HeapManager : IHeapManager, IHeapDataFactory
+    class HeapManager : IHeapManager, IHeapConnectorFactory
     {
         /// <summary>
         /// Constructs a HeapManager object.
@@ -34,62 +35,38 @@ namespace RC.Engine.Simulator.Core
             };
 
             this.RegisterBuiltInTypes();
-            this.ParseMetadata(dataTypes);
+            this.RegisterNonBuiltInTypes(dataTypes);
         }
 
         #region IHeapManager members
 
-        /// <see cref="IHeapManager.GetTypeID"/>
-        public short GetTypeID(string type)
+        /// <see cref="IHeapManager.GetHeapType"/>
+        public IHeapType GetHeapType(string typeName)
         {
-            if (type == null) { throw new ArgumentNullException("type"); }
-            if (!this.typeIDs.ContainsKey(type)) { throw new HeapException(string.Format("Unknown type '{0}'!", type)); }
-            return this.typeIDs[type];
+            if (typeName == null) { throw new ArgumentNullException("typeName"); }
+            if (!this.typeIDs.ContainsKey(typeName)) { throw new HeapException(string.Format("Unknown type '{0}'!", typeName)); }
+            return this.types[this.typeIDs[typeName]];
         }
 
-        /// <see cref="IHeapManager.GetFieldIdx"/>
-        public int GetFieldIdx(short typeID, string fieldName)
+        /// <see cref="IHeapManager.GetHeapType"/>
+        public IHeapType GetHeapType(short typeID)
         {
             if (typeID < 0 || typeID >= this.types.Count) { throw new ArgumentOutOfRangeException("typeID"); }
-            if (fieldName == null) { throw new ArgumentNullException("fieldName"); }
-
-            HeapType type = this.types[typeID];
-            if (type.FieldIndices == null) { throw new HeapException(string.Format("The type '{0}' is not a composite type!", type.Name)); }
-            if (!type.FieldIndices.ContainsKey(fieldName)) { throw new HeapException(string.Format("Field '{0}' in type '{1}' doesn't exist!", fieldName, type.Name)); }
-
-            return type.FieldIndices[fieldName];
-        }
-
-        /// <see cref="IHeapManager.GetFieldType"/>
-        public string GetFieldType(short typeID, int fieldIdx)
-        {
-            return this.types[this.GetFieldTypeID(typeID, fieldIdx)].Name;
-        }
-
-        /// <see cref="IHeapManager.GetFieldTypeID"/>
-        public short GetFieldTypeID(short typeID, int fieldIdx)
-        {
-            if (typeID < 0 || typeID >= this.types.Count) { throw new ArgumentOutOfRangeException("typeID"); }
-
-            HeapType type = this.types[typeID];
-            if (type.FieldTypeIDs == null) { throw new HeapException(string.Format("The type '{0}' is not a composite type!", type.Name)); }
-            if (fieldIdx < 0 || fieldIdx >= type.FieldTypeIDs.Count) { throw new ArgumentOutOfRangeException("fieldIdx"); }
-
-            return type.FieldTypeIDs[fieldIdx];
+            return this.types[typeID];
         }
 
         /// <see cref="IHeapManager.New"/>
-        public IHeapData New(short typeID)
+        public IHeapConnector New(short typeID)
         {
             if (typeID < 0 || typeID >= this.types.Count) { throw new ArgumentOutOfRangeException("typeID"); }
 
             HeapType type = this.types[typeID];
             HeapSection sectToAlloc = this.AllocateSection(type.AllocationSize);
-            return this.CreateHeapData(sectToAlloc.Address, typeID);
+            return this.CreateHeapConnector(sectToAlloc.Address, typeID);
         }
 
         /// <see cref="IHeapManager.NewArray"/>
-        public IHeapData NewArray(short typeID, int count)
+        public IHeapConnector NewArray(short typeID, int count)
         {
             if (typeID < 0 || typeID >= this.types.Count) { throw new ArgumentOutOfRangeException("typeID"); }
             if (count <= 0) { throw new ArgumentOutOfRangeException("count"); }
@@ -97,7 +74,7 @@ namespace RC.Engine.Simulator.Core
             HeapType type = this.types[typeID];
             HeapSection sectToAlloc = this.AllocateSection(count * type.AllocationSize + 4); /// +4 is for storing the number of array-items.
             this.heap.WriteInt(sectToAlloc.Address, count);
-            return this.CreateHeapData(sectToAlloc.Address + 4, typeID);
+            return this.CreateHeapConnector(sectToAlloc.Address + 4, typeID);
         }
 
         /// <see cref="IHeapManager.ComputeHash"/>
@@ -107,7 +84,7 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <see cref="IHeapManager.SaveState"/>
-        public byte[] SaveState(List<IHeapData> externalRefs)
+        public byte[] SaveState(List<IHeapConnector> externalRefs)
         {
             if (externalRefs == null) { throw new ArgumentNullException("externalRefs"); }
             
@@ -120,35 +97,35 @@ namespace RC.Engine.Simulator.Core
             } while (currFreeSect.Next != null);
 
             /// Save the linked-list of the external references.
-            short EXT_REF_ID = this.GetTypeID(EXT_REF_TYPE);
-            IHeapData extRefListHead = null;
-            IHeapData extRefListPrev = null;
-            foreach (IHeapData extRef in externalRefs)
+            IHeapType extRefType = this.GetHeapType(EXT_REF_TYPE);
+            IHeapConnector extRefListHead = null;
+            IHeapConnector extRefListPrev = null;
+            foreach (IHeapConnector extRef in externalRefs)
             {
-                HeapData extRefImpl = (HeapData)extRef;
+                HeapConnector extRefImpl = (HeapConnector)extRef;
 
-                IHeapData extRefSave = this.New(EXT_REF_ID);
-                ((IValueWrite<int>)extRefSave.AccessField(this.GetFieldIdx(EXT_REF_ID, EXT_REF_DATAADDRESS))).Write(extRefImpl.DataAddress);
-                ((IValueWrite<short>)extRefSave.AccessField(this.GetFieldIdx(EXT_REF_ID, EXT_REF_TYPEID))).Write(extRefImpl.DataType.ID);
+                IHeapConnector extRefSave = this.New(extRefType.ID);
+                ((IValueWrite<int>)extRefSave.AccessField(extRefType.GetFieldIdx(EXT_REF_DATAADDRESS))).Write(extRefImpl.DataAddress);
+                ((IValueWrite<short>)extRefSave.AccessField(extRefType.GetFieldIdx(EXT_REF_TYPEID))).Write(extRefImpl.DataType.ID);
 
                 /// Set the head if necessary.
                 if (extRefListHead == null) { extRefListHead = extRefSave; }
 
                 /// Set the "next" pointer of the previous element if necessary.
-                if (extRefListPrev != null) { extRefListPrev.AccessField(this.GetFieldIdx(EXT_REF_ID, EXT_REF_NEXT)).PointTo(extRefSave); }
+                if (extRefListPrev != null) { extRefListPrev.AccessField(extRefType.GetFieldIdx(EXT_REF_NEXT)).PointTo(extRefSave); }
 
                 extRefListPrev = extRefSave;
             }
 
             /// Save the linked-list of the free sections.
-            short FREE_SECT_ID = this.GetTypeID(FREE_SECT_TYPE);
-            IHeapData freeSectListHead = null;
-            IHeapData freeSectListPrev = null;
+            IHeapType freeSectType = this.GetHeapType(FREE_SECT_TYPE);
+            IHeapConnector freeSectListHead = null;
+            IHeapConnector freeSectListPrev = null;
             foreach (Tuple<int, int> freeSect in freeSections)
             {
-                IHeapData freeSectSave = this.New(FREE_SECT_ID);
-                ((IValueWrite<int>)freeSectSave.AccessField(this.GetFieldIdx(FREE_SECT_ID, FREE_SECT_ADDRESS))).Write(freeSect.Item1);
-                ((IValueWrite<int>)freeSectSave.AccessField(this.GetFieldIdx(FREE_SECT_ID, FREE_SECT_LENGTH))).Write(freeSect.Item2);
+                IHeapConnector freeSectSave = this.New(freeSectType.ID);
+                ((IValueWrite<int>)freeSectSave.AccessField(freeSectType.GetFieldIdx(FREE_SECT_ADDRESS))).Write(freeSect.Item1);
+                ((IValueWrite<int>)freeSectSave.AccessField(freeSectType.GetFieldIdx(FREE_SECT_LENGTH))).Write(freeSect.Item2);
 
                 /// Set the head if necessary.
                 if (freeSectListHead == null) { freeSectListHead = freeSectSave; }
@@ -156,30 +133,30 @@ namespace RC.Engine.Simulator.Core
                 /// Set the "next" pointer of the previous element if necessary.
                 if (freeSectListPrev != null)
                 {
-                    freeSectListPrev.AccessField(this.GetFieldIdx(FREE_SECT_ID, FREE_SECT_NEXT)).PointTo(freeSectSave);
+                    freeSectListPrev.AccessField(freeSectType.GetFieldIdx(FREE_SECT_NEXT)).PointTo(freeSectSave);
                 }
 
                 freeSectListPrev = freeSectSave;
             }
 
             /// Set the "next" pointer of the last element to null.
-            freeSectListPrev.AccessField(this.GetFieldIdx(FREE_SECT_ID, FREE_SECT_NEXT)).PointTo(null);
+            freeSectListPrev.AccessField(freeSectType.GetFieldIdx(FREE_SECT_NEXT)).PointTo(null);
 
             /// Save the dump-root to the heap.
-            short DUMP_ROOT_ID = this.GetTypeID(DUMP_ROOT_TYPE);
-            IHeapData dumpRoot = this.New(DUMP_ROOT_ID);
-            dumpRoot.AccessField(this.GetFieldIdx(DUMP_ROOT_ID, DUMP_ROOT_REFLISTHEAD)).PointTo(extRefListHead);
-            dumpRoot.AccessField(this.GetFieldIdx(DUMP_ROOT_ID, DUMP_ROOT_FREESECTHEAD)).PointTo(freeSectListHead);
+            IHeapType dumpRootType = this.GetHeapType(DUMP_ROOT_TYPE);
+            IHeapConnector dumpRoot = this.New(dumpRootType.ID);
+            dumpRoot.AccessField(dumpRootType.GetFieldIdx(DUMP_ROOT_REFLISTHEAD)).PointTo(extRefListHead);
+            dumpRoot.AccessField(dumpRootType.GetFieldIdx(DUMP_ROOT_FREESECTHEAD)).PointTo(freeSectListHead);
 
             /// Save the pointer to the dump-root at 0x00000000.
-            this.heap.WriteInt(0, ((HeapData)dumpRoot).DataAddress);
+            this.heap.WriteInt(0, ((HeapConnector)dumpRoot).DataAddress);
 
             /// Dump the heap contents into a byte array.
             return this.heap.Dump();
         }
 
         /// <see cref="IHeapManager.LoadState"/>
-        public List<IHeapData> LoadState(byte[] heapContent)
+        public List<IHeapConnector> LoadState(byte[] heapContent)
         {
             if (heapContent == null) { throw new ArgumentNullException("heapContent"); }
 
@@ -189,80 +166,79 @@ namespace RC.Engine.Simulator.Core
             this.freeSectionsHead = null;
 
             /// Load the dump-root from the heap.
-            short DUMP_ROOT_ID = this.GetTypeID(DUMP_ROOT_TYPE);
-            IHeapData dumpRoot = this.CreateHeapData(this.heap.ReadInt(0), DUMP_ROOT_ID);
-            //new HeapData(this.heap.ReadInt(0), this.types[DUMP_ROOT_ID], this.heap, this.types, this.DeallocateSection);
+            IHeapType dumpRootType = this.GetHeapType(DUMP_ROOT_TYPE);
+            IHeapConnector dumpRoot = this.CreateHeapConnector(this.heap.ReadInt(0), dumpRootType.ID);
             this.heap.WriteInt(0, 0);
 
             /// Load the free sections.
-            short FREE_SECT_ID = this.GetTypeID(FREE_SECT_TYPE);
+            IHeapType freeSectType = this.GetHeapType(FREE_SECT_TYPE);
             HeapSection prevFreeSection = null;
-            IHeapData currFreeSectAccess = dumpRoot.AccessField(this.GetFieldIdx(DUMP_ROOT_ID, DUMP_ROOT_FREESECTHEAD)).Dereference();
+            IHeapConnector currFreeSectAccess = dumpRoot.AccessField(dumpRootType.GetFieldIdx(DUMP_ROOT_FREESECTHEAD)).Dereference();
             while (currFreeSectAccess != null)
             {
                 HeapSection currFreeSection = new HeapSection()
                 {
-                    Address = ((IValueRead<int>)currFreeSectAccess.AccessField(this.GetFieldIdx(FREE_SECT_ID, FREE_SECT_ADDRESS))).Read(),
-                    Length = ((IValueRead<int>)currFreeSectAccess.AccessField(this.GetFieldIdx(FREE_SECT_ID, FREE_SECT_LENGTH))).Read(),
+                    Address = ((IValueRead<int>)currFreeSectAccess.AccessField(freeSectType.GetFieldIdx(FREE_SECT_ADDRESS))).Read(),
+                    Length = ((IValueRead<int>)currFreeSectAccess.AccessField(freeSectType.GetFieldIdx(FREE_SECT_LENGTH))).Read(),
                     Next = null,
                     Prev = prevFreeSection
                 };
                 if (this.freeSectionsHead == null) { this.freeSectionsHead = currFreeSection; }
                 if (prevFreeSection != null) { prevFreeSection.Next = currFreeSection; }
                 prevFreeSection = currFreeSection;
-                currFreeSectAccess = currFreeSectAccess.AccessField(this.GetFieldIdx(FREE_SECT_ID, FREE_SECT_NEXT)).Dereference();
+                currFreeSectAccess = currFreeSectAccess.AccessField(freeSectType.GetFieldIdx(FREE_SECT_NEXT)).Dereference();
             }
 
             /// Load the external references
-            short EXT_REF_ID = this.GetTypeID(EXT_REF_TYPE);
-            List<IHeapData> retList = new List<IHeapData>();
-            IHeapData currExtRefAccess = dumpRoot.AccessField(this.GetFieldIdx(DUMP_ROOT_ID, DUMP_ROOT_REFLISTHEAD)).Dereference();
+            IHeapType extRefType = this.GetHeapType(EXT_REF_TYPE);
+            List<IHeapConnector> retList = new List<IHeapConnector>();
+            IHeapConnector currExtRefAccess = dumpRoot.AccessField(dumpRootType.GetFieldIdx(DUMP_ROOT_REFLISTHEAD)).Dereference();
             while (currExtRefAccess != null)
             {
                 retList.Add(
-                    this.CreateHeapData(((IValueRead<int>)currExtRefAccess.AccessField(this.GetFieldIdx(EXT_REF_ID, EXT_REF_DATAADDRESS))).Read(),
-                    ((IValueRead<short>)currExtRefAccess.AccessField(this.GetFieldIdx(EXT_REF_ID, EXT_REF_TYPEID))).Read()));
-                currExtRefAccess = currExtRefAccess.AccessField(this.GetFieldIdx(EXT_REF_ID, EXT_REF_NEXT)).Dereference();
+                    this.CreateHeapConnector(((IValueRead<int>)currExtRefAccess.AccessField(extRefType.GetFieldIdx(EXT_REF_DATAADDRESS))).Read(),
+                    ((IValueRead<short>)currExtRefAccess.AccessField(extRefType.GetFieldIdx(EXT_REF_TYPEID))).Read()));
+                currExtRefAccess = currExtRefAccess.AccessField(extRefType.GetFieldIdx(EXT_REF_NEXT)).Dereference();
             }
             return retList;
         }
 
         #endregion IHeapManager members
 
-        #region IHeapDataFactory members
+        #region IHeapConnectorFactory members
 
-        /// <see cref="IHeapDataFactory.CreateHeapData"/>
-        public IHeapData CreateHeapData(int address, short typeID)
+        /// <see cref="IHeapConnectorFactory.CreateHeapConnector"/>
+        public IHeapConnector CreateHeapConnector(int address, short typeID)
         {
             HeapType type = this.types[typeID];
             switch (type.BuiltInType)
             {
-                case HeapType.BuiltInTypeEnum.NonBuiltIn:
-                    return new HeapData(address, type, this.heap, this, this.DeallocateSection);
-                case HeapType.BuiltInTypeEnum.Byte:
-                    return new HeapByte(address, type, this.heap, this, this.DeallocateSection);
-                case HeapType.BuiltInTypeEnum.Short:
-                    return new HeapShort(address, type, this.heap, this, this.DeallocateSection);
-                case HeapType.BuiltInTypeEnum.Integer:
-                    return new HeapInt(address, type, this.heap, this, this.DeallocateSection);
-                case HeapType.BuiltInTypeEnum.Long:
-                    return new HeapLong(address, type, this.heap, this, this.DeallocateSection);
-                case HeapType.BuiltInTypeEnum.Number:
-                    return new HeapNumber(address, type, this.heap, this, this.DeallocateSection);
-                case HeapType.BuiltInTypeEnum.IntVector:
-                    return new HeapIntVector(address, type, this.heap, this, this.DeallocateSection);
-                case HeapType.BuiltInTypeEnum.NumVector:
-                    return new HeapNumVector(address, type, this.heap, this, this.DeallocateSection);
-                case HeapType.BuiltInTypeEnum.IntRectangle:
-                    return new HeapIntRectangle(address, type, this.heap, this, this.DeallocateSection);
-                case HeapType.BuiltInTypeEnum.NumRectangle:
-                    return new HeapNumRectangle(address, type, this.heap, this, this.DeallocateSection);
+                case BuiltInTypeEnum.NonBuiltIn:
+                    return new HeapConnector(address, type, this.heap, this, this.DeallocateSection);
+                case BuiltInTypeEnum.Byte:
+                    return new HeapByteConnector(address, type, this.heap, this, this.DeallocateSection);
+                case BuiltInTypeEnum.Short:
+                    return new HeapShortConnector(address, type, this.heap, this, this.DeallocateSection);
+                case BuiltInTypeEnum.Integer:
+                    return new HeapIntConnector(address, type, this.heap, this, this.DeallocateSection);
+                case BuiltInTypeEnum.Long:
+                    return new HeapLongConnector(address, type, this.heap, this, this.DeallocateSection);
+                case BuiltInTypeEnum.Number:
+                    return new HeapNumberConnector(address, type, this.heap, this, this.DeallocateSection);
+                case BuiltInTypeEnum.IntVector:
+                    return new HeapIntVectorConnector(address, type, this.heap, this, this.DeallocateSection);
+                case BuiltInTypeEnum.NumVector:
+                    return new HeapNumVectorConnector(address, type, this.heap, this, this.DeallocateSection);
+                case BuiltInTypeEnum.IntRectangle:
+                    return new HeapIntRectangleConnector(address, type, this.heap, this, this.DeallocateSection);
+                case BuiltInTypeEnum.NumRectangle:
+                    return new HeapNumRectangleConnector(address, type, this.heap, this, this.DeallocateSection);
                 default:
                     throw new InvalidOperationException("Impossible case happened!");
             }
         }
 
-        #endregion IHeapDataFactory members
+        #endregion IHeapConnectorFactory members
 
         #region Internal allocation management methods
 
@@ -406,35 +382,12 @@ namespace RC.Engine.Simulator.Core
         /// Internal method for parsing the incoming metadata.
         /// </summary>
         /// <param name="dataTypes">List of the data types.</param>
-        private void ParseMetadata(IEnumerable<HeapType> dataTypes)
+        private void RegisterNonBuiltInTypes(IEnumerable<HeapType> dataTypes)
         {
-            /// Register the internal types.
-            List<KeyValuePair<string, string>> dumpRootFields = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>(DUMP_ROOT_PAGESIZE, "int"),
-                new KeyValuePair<string, string>(DUMP_ROOT_REFLISTHEAD, string.Format("{0}*", EXT_REF_TYPE)),
-                new KeyValuePair<string, string>(DUMP_ROOT_FREESECTHEAD, string.Format("{0}*", FREE_SECT_TYPE))
-            };
-            List<KeyValuePair<string, string>> extRefFields = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>(EXT_REF_DATAADDRESS, "int"),
-                new KeyValuePair<string, string>(EXT_REF_TYPEID, "short"),
-                new KeyValuePair<string, string>(EXT_REF_NEXT, string.Format("{0}*", EXT_REF_TYPE))
-            };
-            List<KeyValuePair<string, string>> freeSectFields = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>(FREE_SECT_ADDRESS, "int"),
-                new KeyValuePair<string, string>(FREE_SECT_LENGTH, "int"),
-                new KeyValuePair<string, string>(FREE_SECT_NEXT, string.Format("{0}*", FREE_SECT_TYPE))
-            };
-            this.RegisterType(new HeapType(DUMP_ROOT_TYPE, dumpRootFields), ref this.typeIDs, ref this.types);
-            this.RegisterType(new HeapType(EXT_REF_TYPE, extRefFields), ref this.typeIDs, ref this.types);
-            this.RegisterType(new HeapType(FREE_SECT_TYPE, freeSectFields), ref this.typeIDs, ref this.types);
-
             /// Register all the composite types.
             foreach (HeapType dataType in dataTypes)
             {
-                this.RegisterType(dataType, ref this.typeIDs, ref this.types);
+                this.RegisterType(dataType);
             }
 
             /// Register all the pointer types.
@@ -456,15 +409,38 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         private void RegisterBuiltInTypes()
         {
-            this.RegisterType(new HeapType(HeapType.BuiltInTypeEnum.Byte), ref this.typeIDs, ref this.types);
-            this.RegisterType(new HeapType(HeapType.BuiltInTypeEnum.Short), ref this.typeIDs, ref this.types);
-            this.RegisterType(new HeapType(HeapType.BuiltInTypeEnum.Integer), ref this.typeIDs, ref this.types);
-            this.RegisterType(new HeapType(HeapType.BuiltInTypeEnum.Long), ref this.typeIDs, ref this.types);
-            this.RegisterType(new HeapType(HeapType.BuiltInTypeEnum.Number), ref this.typeIDs, ref this.types);
-            this.RegisterType(new HeapType(HeapType.BuiltInTypeEnum.IntVector), ref this.typeIDs, ref this.types);
-            this.RegisterType(new HeapType(HeapType.BuiltInTypeEnum.NumVector), ref this.typeIDs, ref this.types);
-            this.RegisterType(new HeapType(HeapType.BuiltInTypeEnum.IntRectangle), ref this.typeIDs, ref this.types);
-            this.RegisterType(new HeapType(HeapType.BuiltInTypeEnum.NumRectangle), ref this.typeIDs, ref this.types);
+            this.RegisterType(new HeapType(BuiltInTypeEnum.Byte));
+            this.RegisterType(new HeapType(BuiltInTypeEnum.Short));
+            this.RegisterType(new HeapType(BuiltInTypeEnum.Integer));
+            this.RegisterType(new HeapType(BuiltInTypeEnum.Long));
+            this.RegisterType(new HeapType(BuiltInTypeEnum.Number));
+            this.RegisterType(new HeapType(BuiltInTypeEnum.IntVector));
+            this.RegisterType(new HeapType(BuiltInTypeEnum.NumVector));
+            this.RegisterType(new HeapType(BuiltInTypeEnum.IntRectangle));
+            this.RegisterType(new HeapType(BuiltInTypeEnum.NumRectangle));
+
+            /// Register the internal types.
+            List<KeyValuePair<string, string>> dumpRootFields = new List<KeyValuePair<string, string>>()
+            {
+                new KeyValuePair<string, string>(DUMP_ROOT_PAGESIZE, "int"),
+                new KeyValuePair<string, string>(DUMP_ROOT_REFLISTHEAD, string.Format("{0}*", EXT_REF_TYPE)),
+                new KeyValuePair<string, string>(DUMP_ROOT_FREESECTHEAD, string.Format("{0}*", FREE_SECT_TYPE))
+            };
+            List<KeyValuePair<string, string>> extRefFields = new List<KeyValuePair<string, string>>()
+            {
+                new KeyValuePair<string, string>(EXT_REF_DATAADDRESS, "int"),
+                new KeyValuePair<string, string>(EXT_REF_TYPEID, "short"),
+                new KeyValuePair<string, string>(EXT_REF_NEXT, string.Format("{0}*", EXT_REF_TYPE))
+            };
+            List<KeyValuePair<string, string>> freeSectFields = new List<KeyValuePair<string, string>>()
+            {
+                new KeyValuePair<string, string>(FREE_SECT_ADDRESS, "int"),
+                new KeyValuePair<string, string>(FREE_SECT_LENGTH, "int"),
+                new KeyValuePair<string, string>(FREE_SECT_NEXT, string.Format("{0}*", FREE_SECT_TYPE))
+            };
+            this.RegisterType(new HeapType(DUMP_ROOT_TYPE, dumpRootFields));
+            this.RegisterType(new HeapType(EXT_REF_TYPE, extRefFields));
+            this.RegisterType(new HeapType(FREE_SECT_TYPE, freeSectFields));
         }
 
         /// <summary>
@@ -473,7 +449,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="type">The type to be registered.</param>
         /// <param name="typeIDs">The list of the type IDs mapped by their names.</param>
         /// <param name="types">The list of the types.</param>
-        private void RegisterType(HeapType type, ref Dictionary<string, short> typeIDs, ref List<HeapType> types)
+        private void RegisterType(HeapType type)
         {
             if (this.typeIDs.ContainsKey(type.Name)) { throw new HeapException(string.Format("Type '{0}' already defined!", type.Name)); }
             if (this.types.Count == short.MaxValue) { throw new HeapException(string.Format("Number of possible types exceeded the limit of {0}!", short.MaxValue)); }
