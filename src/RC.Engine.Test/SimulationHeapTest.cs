@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Simulator.Core;
 using RC.Common;
 using System.Diagnostics;
 using System.Reflection;
 using RC.Engine.Simulator.InternalInterfaces;
+using RC.Engine.Simulator.ComponentInterfaces;
 
 namespace RC.Engine.Test
 {
@@ -15,7 +14,8 @@ namespace RC.Engine.Test
     {
         public static bool StressTest()
         {
-            IHeapManager heapMgr = new HeapManager(testMetadata);
+            HeapManager heapMgr = new HeapManager(testMetadata);
+            heapMgr.CreateHeap();
             GetIDs(heapMgr);
 
             Stopwatch watch = new Stopwatch();
@@ -32,20 +32,20 @@ namespace RC.Engine.Test
                 prevObj = currObj;
             }
 
-            byte[] savedHeap = heapMgr.SaveState(new List<IHeapConnector>() { allObjects[0] });
+            //byte[] savedHeap = heapMgr.UnloadHeap(new List<IHeapConnector>() { allObjects[0] });
 
-            List<IHeapConnector> savedRefs = heapMgr.LoadState(savedHeap);
-            if (savedRefs.Count != 1) { throw new Exception("Load error!"); }
+            //List<IHeapConnector> savedRefs = heapMgr.LoadHeap(savedHeap);
+            //if (savedRefs.Count != 1) { throw new Exception("Load error!"); }
 
-            IHeapConnector curr = savedRefs[0];
-            int objIdx = 0;
-            do
-            {
-                allObjects[objIdx] = curr;
-                objIdx++;
-                CheckTestObj(curr);
-                curr = curr.AccessField(TESTTYPE_NEXT_IDX).Dereference();
-            } while (curr != null);
+            //IHeapConnector curr = savedRefs[0];
+            //int objIdx = 0;
+            //do
+            //{
+            //    allObjects[objIdx] = curr;
+            //    objIdx++;
+            //    CheckTestObj(curr);
+            //    curr = curr.AccessField(TESTTYPE_NEXT_IDX).Dereference();
+            //} while (curr != null);
 
             for (int i = 0; i < 50; i++)
             {
@@ -69,7 +69,7 @@ namespace RC.Engine.Test
                    freeSectionsHead.Prev == null;
         }
 
-        private static IHeapConnector CreateTestObj(IHeapManager heapMgr)
+        private static IHeapConnector CreateTestObj(IHeapManagerInternals heapMgr)
         {
             IHeapConnector retObj = heapMgr.New(testType.ID);
             retObj.AccessField(TESTTYPE_BYTEARRAY_IDX).PointTo(CreateByteArray(heapMgr, 1));
@@ -111,7 +111,7 @@ namespace RC.Engine.Test
             CheckNumRectArray(obj.AccessField(TESTTYPE_NUMRECTARRAY_IDX).Dereference(), 9);
         }
 
-        private static IHeapConnector CreateByteArray(IHeapManager heapMgr, int count)
+        private static IHeapConnector CreateByteArray(IHeapManagerInternals heapMgr, int count)
         {
             IHeapConnector retObj = heapMgr.NewArray(heapMgr.GetHeapType("byte").ID, count);
             for (int i = 0; i < count; i++)
@@ -121,7 +121,7 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static IHeapConnector CreateShortArray(IHeapManager heapMgr, int count)
+        private static IHeapConnector CreateShortArray(IHeapManagerInternals heapMgr, int count)
         {
             IHeapConnector retObj = heapMgr.NewArray(heapMgr.GetHeapType("short").ID, count);
             for (int i = 0; i < count; i++)
@@ -131,7 +131,7 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static IHeapConnector CreateIntArray(IHeapManager heapMgr, int count)
+        private static IHeapConnector CreateIntArray(IHeapManagerInternals heapMgr, int count)
         {
             IHeapConnector retObj = heapMgr.NewArray(heapMgr.GetHeapType("int").ID, count);
             for (int i = 0; i < count; i++)
@@ -141,7 +141,7 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static IHeapConnector CreateLongArray(IHeapManager heapMgr, int count)
+        private static IHeapConnector CreateLongArray(IHeapManagerInternals heapMgr, int count)
         {
             IHeapConnector retObj = heapMgr.NewArray(heapMgr.GetHeapType("long").ID, count);
             for (int i = 0; i < count; i++)
@@ -151,7 +151,7 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static IHeapConnector CreateNumArray(IHeapManager heapMgr, int count)
+        private static IHeapConnector CreateNumArray(IHeapManagerInternals heapMgr, int count)
         {
             IHeapConnector retObj = heapMgr.NewArray(heapMgr.GetHeapType("num").ID, count);
             for (int i = 0; i < count; i++)
@@ -161,7 +161,7 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static IHeapConnector CreateIntVectArray(IHeapManager heapMgr, int count)
+        private static IHeapConnector CreateIntVectArray(IHeapManagerInternals heapMgr, int count)
         {
             IHeapConnector retObj = heapMgr.NewArray(heapMgr.GetHeapType("intvect").ID, count);
             for (int i = 0; i < count; i++)
@@ -171,7 +171,7 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static IHeapConnector CreateNumVectArray(IHeapManager heapMgr, int count)
+        private static IHeapConnector CreateNumVectArray(IHeapManagerInternals heapMgr, int count)
         {
             IHeapConnector retObj = heapMgr.NewArray(heapMgr.GetHeapType("numvect").ID, count);
             for (int i = 0; i < count; i++)
@@ -181,7 +181,7 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static IHeapConnector CreateIntRectArray(IHeapManager heapMgr, int count)
+        private static IHeapConnector CreateIntRectArray(IHeapManagerInternals heapMgr, int count)
         {
             IHeapConnector retObj = heapMgr.NewArray(heapMgr.GetHeapType("intrect").ID, count);
             for (int i = 0; i < count; i++)
@@ -191,7 +191,7 @@ namespace RC.Engine.Test
             return retObj;
         }
 
-        private static IHeapConnector CreateNumRectArray(IHeapManager heapMgr, int count)
+        private static IHeapConnector CreateNumRectArray(IHeapManagerInternals heapMgr, int count)
         {
             IHeapConnector retObj = heapMgr.NewArray(heapMgr.GetHeapType("numrect").ID, count);
             for (int i = 0; i < count; i++)
@@ -273,7 +273,7 @@ namespace RC.Engine.Test
             }
         }
 
-        private static void GetIDs(IHeapManager heapMgr)
+        private static void GetIDs(IHeapManagerInternals heapMgr)
         {
             testType = heapMgr.GetHeapType("TestType");
             TESTTYPE_BYTEARRAY_IDX = testType.GetFieldIdx("ByteArray");

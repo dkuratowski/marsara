@@ -20,9 +20,20 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <see cref="IValue<T>.Read"/>
         public abstract T Read();
 
+        /// <see cref="IValue<T>.ValueChanged"/>
+        public event EventHandler ValueChanged;
+
         /// <see cref="IValue<T>.Write"/>
         public abstract void Write(T newVal);
 
         #endregion IValue<T> members
+
+        /// <summary>
+        /// Raises the ValueChanged event if anybody is subscribed to it.
+        /// </summary>
+        protected internal void RaiseValueChangedEvt()
+        {
+            if (this.ValueChanged != null) { this.ValueChanged(this, null); }
+        }
     }
 }

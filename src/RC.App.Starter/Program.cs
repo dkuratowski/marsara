@@ -220,9 +220,10 @@ namespace RC.App.Starter
                                                 });
 
             ComponentManager.RegisterComponents("RC.Engine.Simulator, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                    new string[2]
+                                    new string[3]
                                                 {
                                                     "RC.Engine.Simulator.Simulator",
+                                                    "RC.Engine.Simulator.HeapManager",
                                                     "RC.Engine.Simulator.PathFinder"
                                                 });
 

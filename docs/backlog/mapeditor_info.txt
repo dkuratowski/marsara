@@ -1,0 +1,11 @@
+A térképszerkesztõ indítása új térkép létrehozásához: rc.exe /newmap
+A felhasználótól a konzolon bekért adatok:
+	- Az új térképfile neve
+	- Az új térkép neve
+	- Az új térkép alapját képezõ tileset neve
+	- Az alapértelmezett tereptípus neve
+	- Az új térkép mérete <width>;<height> formátumban
+
+A térképszerkesztõ indítása egy létezõ térkép módosításához: rc.exe /loadmap
+A felhasználótól a konzolon bekért adatok:
+	- A térképfile neve

@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 namespace RC.Engine.Simulator.Terran
 {
     /// <summary>
-    /// This class represents the simulator plugin for the Terran race.
+    /// This class represents the heap manager plugin for the Terran race.
     /// </summary>
-    [Plugin(typeof(ISimulator))]
-    class TerranPlugin : IPlugin<ISimulatorPluginInstall>
+    [Plugin(typeof(IHeapManager))]
+    class TerranPlugin : IPlugin<IHeapManagerPluginInstall>
     {
         /// <summary>
         /// Constructs a TerranPlugin instance.
@@ -23,13 +23,13 @@ namespace RC.Engine.Simulator.Terran
         }
 
         /// <see cref="IPlugin<T>.Install"/>
-        public void Install(ISimulatorPluginInstall extendedComponent)
+        public void Install(IHeapManagerPluginInstall extendedComponent)
         {
             extendedComponent.RegisterHeapTypeContainer(this.GetType().Assembly);
         }
 
         /// <see cref="IPlugin<T>.Uninstall"/>
-        public void Uninstall(ISimulatorPluginInstall extendedComponent)
+        public void Uninstall(IHeapManagerPluginInstall extendedComponent)
         {
             /// TODO: Write uninstallation code here!
         }

@@ -41,9 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComponentInterfaces\IHeapedObjectFactoryHelper.cs" />
+    <Compile Include="ComponentInterfaces\IHeapManager.cs" />
     <Compile Include="ComponentInterfaces\ISimulator.cs" />
-    <Compile Include="ComponentInterfaces\ISimulatorPluginInstall.cs" />
+    <Compile Include="ComponentInterfaces\IHeapManagerPluginInstall.cs" />
     <Compile Include="Core\AddonType.cs" />
     <Compile Include="Core\BinaryHeap.cs" />
     <Compile Include="Core\BuildingType.cs" />
@@ -86,7 +86,7 @@
     <Compile Include="PublicInterfaces\IPath.cs" />
     <Compile Include="ComponentInterfaces\IPathFinder.cs" />
     <Compile Include="InternalInterfaces\IHeapConnector.cs" />
-    <Compile Include="InternalInterfaces\IHeapManager.cs" />
+    <Compile Include="ComponentInterfaces\IHeapManagerInternals.cs" />
     <Compile Include="PublicInterfaces\HeapException.cs" />
     <Compile Include="PublicInterfaces\SimulatorException.cs" />
   </ItemGroup>

@@ -31,11 +31,6 @@ namespace RC.Engine.Simulator.Core
         public int DataAddress { get { return this.dataAddress; } }
 
         /// <summary>
-        /// Gets the type of the data on the heap accessed by this instance.
-        /// </summary>
-        public HeapType DataType { get { return this.dataType; } }
-
-        /// <summary>
         /// Function declaration for performing deallocation procedures on deletion.
         /// </summary>
         /// <param name="address">The start address of the section to be deallocated.</param>
@@ -43,6 +38,9 @@ namespace RC.Engine.Simulator.Core
         public delegate void DeallocationFunc(int address, int length);
 
         #region IHeapConnector methods
+
+        /// <see cref="IHeapConnector.DataType"/>
+        public IHeapType DataType { get { return this.dataType; } }
 
         /// <see cref="IHeapConnector.PointTo"/>
         public void PointTo(IHeapConnector target)

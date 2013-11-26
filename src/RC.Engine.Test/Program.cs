@@ -17,6 +17,7 @@ using RC.Engine.Simulator.InternalInterfaces;
 using RC.Engine.Simulator.PublicInterfaces;
 using System.Collections;
 using RC.Engine.Simulator.Terran.TestHeapedObjects;
+using RC.Engine.Simulator.ComponentInterfaces;
 
 namespace RC.Engine.Test
 {
@@ -25,14 +26,56 @@ namespace RC.Engine.Test
         static void Main(string[] args)
         {
             ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
-            ComponentManager.RegisterComponents("RC.Engine.Simulator, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", new string[1] { "RC.Engine.Simulator.Simulator" });
+            ComponentManager.RegisterComponents("RC.Engine.Simulator, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", new string[1] { "RC.Engine.Simulator.HeapManager" });
             ComponentManager.RegisterPluginAssembly("RC.Engine.Simulator.Terran, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
             ComponentManager.StartComponents();
 
             bool testResult = SimulationHeapTest.StressTest();
             if (!testResult) { throw new Exception("Test failed!"); }
 
-            MyType testObj = new MyType();
+            IHeapManager heapMgr = ComponentManager.GetInterface<IHeapManager>();
+            heapMgr.CreateHeap();
+
+            TreeBranch node0 = new TreeBranch();
+            TreeBranch node1 = new TreeBranch();
+            TreeBranch node2 = new TreeBranch();
+            TreeBranch node3 = new TreeBranch();
+            TreeLeaf node4 = new TreeLeaf();
+            TreeLeaf node5 = new TreeLeaf();
+            TreeLeaf node6 = new TreeLeaf();
+            TreeLeaf node7 = new TreeLeaf();
+            TreeLeaf node8 = new TreeLeaf();
+            node0.Children.New(3);
+            node0.Children[0].Write(node1);
+            node0.Children[1].Write(node2);
+            node0.Children[2].Write(node3);
+
+            node1.Children.New(2);
+            node1.Children[0].Write(node4);
+            node1.Children[1].Write(node5);
+
+            node2.Children.New(1);
+            node2.Children[0].Write(node6);
+
+            node3.Children.New(2);
+            node3.Children[0].Write(node7);
+            node3.Children[1].Write(node8);
+
+            node4.Values.New(3);
+            node4.Values[0].Write(4);
+            node4.Values[1].Write(5);
+            node4.Values[2].Write(6);
+
+            node0.Dispose();
+            node1.Dispose();
+            node2.Dispose();
+            node3.Dispose();
+            node4.Dispose();
+            node5.Dispose();
+            node6.Dispose();
+            node7.Dispose();
+            node8.Dispose();
+
             //PFTreeTest.PFTreeNeighbourTest();
             //TestSimulationHeap();
 
@@ -72,7 +115,7 @@ namespace RC.Engine.Test
                 }),
             };
 
-            IHeapManager heapMgr = new HeapManager(testMetadata);
+            IHeapManagerInternals heapMgr = new HeapManager(testMetadata);
 
             IHeapType unitType = heapMgr.GetHeapType("Unit");
             int UNIT_HP_IDX = unitType.GetFieldIdx("HitPoints");

@@ -1,11 +1,9 @@
-﻿using RC.Engine.Simulator.PublicInterfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using RC.Common.ComponentModel;
+using RC.Engine.Simulator.InternalInterfaces;
 
-namespace RC.Engine.Simulator.InternalInterfaces
+namespace RC.Engine.Simulator.ComponentInterfaces
 {
     /// <summary>
     /// This interface provides type-safe access to the simulation data stored on the simulation heap.
@@ -41,8 +39,38 @@ namespace RC.Engine.Simulator.InternalInterfaces
     /// access one of the fields of a composite data.
     /// Informations of a type can be queried by its name or ID using this interface.
     /// </summary>
-    interface IHeapManager
+    [ComponentInterface]
+    interface IHeapManagerInternals
     {
+        /// <summary>
+        /// Gets the inheritence hierarchy of the given type starting from the base class.
+        /// </summary>
+        /// <param name="typeName">The name of the type.</param>
+        IHeapType[] GetInheritenceHierarchy(string typeName);
+
+        /// <summary>
+        /// Gets whether the simulation heap is currently attached or not.
+        /// </summary>
+        bool IsHeapAttached { get; }
+
+        /// <summary>
+        /// This event is raised when a new simulation heap has been created and the HeapedObjects must be
+        /// attached to the heap.
+        /// </summary>
+        event EventHandler AttachingHeapedObjects;
+
+        /// <summary>
+        /// This event is raised when a new simulation heap has been created and the HeapedObjects must
+        /// synchronize their fields to the heap.
+        /// </summary>
+        event EventHandler SynchronizingHeapedObjects;
+
+        /// <summary>
+        /// This event is raised when the simulation heap has been destroyed and the HeapedObjects must be
+        /// detached from the heap.
+        /// </summary>
+        event EventHandler DetachingHeapedObjects;
+
         /// <summary>
         /// Gets the heap type with the given name.
         /// </summary>
@@ -69,6 +97,7 @@ namespace RC.Engine.Simulator.InternalInterfaces
         /// If a simulation data was allocated with IHeapConnector.NewArray it must be deleted with IHeapConnector.DeleteArray!
         /// Any other usage leads to undefined behavior.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">If there is no simulation heap created or loaded currently.</exception>
         IHeapConnector New(short typeID);
 
         /// <summary>
@@ -84,27 +113,7 @@ namespace RC.Engine.Simulator.InternalInterfaces
         /// If a simulation data was allocated with IHeapConnector.NewArray it must be deleted with IHeapConnector.DeleteArray!
         /// Any other usage leads to undefined behavior.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">If there is no simulation heap created or loaded currently.</exception>
         IHeapConnector NewArray(short typeID, int count);
-
-        /// <summary>
-        /// Computes the hash value of the current state of the simulation heap.
-        /// </summary>
-        /// <returns>The byte array that contains the hash.</returns>
-        byte[] ComputeHash();
-
-        /// <summary>
-        /// Saves the current state of the simulation heap and the given external references to it.
-        /// </summary>
-        /// <param name="externalRefs">The external references to save.</param>
-        /// <returns>A byte array that contains the saved simulation heap.</returns>
-        byte[] SaveState(List<IHeapConnector> externalRefs);
-
-        /// <summary>
-        /// Sets the state of the simulation heap as it is described in the given byte array.
-        /// </summary>
-        /// <param name="heapContent">The content of the heap to be loaded.</param>
-        /// <returns>The list of the external references to the loaded simulation heap.</returns>
-        /// <remarks>The current state of the simulation heap will be lost if you call this method.</remarks>
-        List<IHeapConnector> LoadState(byte[] heapContent);
     }
 }

@@ -42,8 +42,7 @@
   <ItemGroup>
     <Compile Include="TerranPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestHeapedObjects\MyBaseType.cs" />
-    <Compile Include="TestHeapedObjects\MyType.cs" />
+    <Compile Include="TestHeapedObjects\TreeNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj">

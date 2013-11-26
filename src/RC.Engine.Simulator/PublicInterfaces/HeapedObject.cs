@@ -20,12 +20,13 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// </summary>
         public HeapedObject()
         {
-            this.factoryHelper = ComponentManager.GetInterface<IHeapedObjectFactoryHelper>();
+            this.heapManager = ComponentManager.GetInterface<IHeapManagerInternals>();
             
             this.isDisposed = false;
             this.ctorIndex = -1;
+            this.heapConnectors = null;
 
-            this.inheritenceHierarchy = this.factoryHelper.GetInheritenceHierarchy(this.GetType().Name);
+            this.inheritenceHierarchy = this.heapManager.GetInheritenceHierarchy(this.GetType().Name);
             this.heapedFields = new Dictionary<string, IHeapedFieldAccessor>[this.inheritenceHierarchy.Length];
             for (int i = 0; i < this.inheritenceHierarchy.Length; i++)
             {
@@ -40,7 +41,16 @@ namespace RC.Engine.Simulator.PublicInterfaces
                 }
             }
             if (this.ctorIndex == -1) { throw new InvalidOperationException("Impossible case!"); }
+
+            this.heapManager.AttachingHeapedObjects += this.OnAttachingHeapedObject;
+            this.heapManager.SynchronizingHeapedObjects += this.OnSynchronizingFields;
+            this.heapManager.DetachingHeapedObjects += this.OnDetachingHeapedObject;
         }
+
+        /// <summary>
+        /// Gets the heap connectors of this object on the simulation heap starting from the base class.
+        /// </summary>
+        internal IEnumerable<IHeapConnector> HeapConnectors { get { return this.heapConnectors; } }
 
         #region Field construction methods for the constructors
 
@@ -60,10 +70,10 @@ namespace RC.Engine.Simulator.PublicInterfaces
             Type typeOfRequestedValue = typeof(T);
 
             HeapedValueImpl<T> retObj = null;
-            IHeapType fieldType = this.factoryHelper.HeapManager.GetHeapType(this.inheritenceHierarchy[this.ctorIndex].GetFieldTypeID(name));
+            IHeapType fieldType = this.heapManager.GetHeapType(this.inheritenceHierarchy[this.ctorIndex].GetFieldTypeID(name));
             if (fieldType.PointedTypeID != -1)
             {
-                IHeapType pointedType = this.factoryHelper.HeapManager.GetHeapType(fieldType.PointedTypeID);
+                IHeapType pointedType = this.heapManager.GetHeapType(fieldType.PointedTypeID);
                 if (pointedType.PointedTypeID != -1 || typeOfRequestedValue.Name != pointedType.Name) { throw new InvalidOperationException(string.Format("Field '{0}' in type '{1}' is not '{2}'!", name, this.inheritenceHierarchy[this.ctorIndex].Name, typeOfRequestedValue.Name)); }
                 retObj = new HeapedValueImpl<T>();
             }
@@ -108,15 +118,15 @@ namespace RC.Engine.Simulator.PublicInterfaces
             Type typeOfRequestedValue = typeof(T);
 
             HeapedArrayImpl<T> retObj = null;
-            IHeapType fieldType = this.factoryHelper.HeapManager.GetHeapType(this.inheritenceHierarchy[this.ctorIndex].GetFieldTypeID(name));
+            IHeapType fieldType = this.heapManager.GetHeapType(this.inheritenceHierarchy[this.ctorIndex].GetFieldTypeID(name));
             if (fieldType.PointedTypeID == -1) { throw new InvalidOperationException(string.Format("Field '{0}' of type '{1}' is not an array!", name, this.inheritenceHierarchy[this.ctorIndex].Name)); }
 
-            IHeapType pointedType = this.factoryHelper.HeapManager.GetHeapType(fieldType.PointedTypeID);
+            IHeapType pointedType = this.heapManager.GetHeapType(fieldType.PointedTypeID);
             if (pointedType.PointedTypeID != -1)
             {
-                IHeapType arrayItemType = this.factoryHelper.HeapManager.GetHeapType(pointedType.PointedTypeID);
+                IHeapType arrayItemType = this.heapManager.GetHeapType(pointedType.PointedTypeID);
                 if (arrayItemType.PointedTypeID != -1 || typeOfRequestedValue.Name != arrayItemType.Name) { throw new InvalidOperationException(string.Format("Array field '{0}' in type '{1}' is not '{2}'!", name, this.inheritenceHierarchy[this.ctorIndex].Name, typeOfRequestedValue.Name)); }
-                retObj = new HeapedArrayImpl<T>();
+                retObj = new HeapedArrayImpl<T>(this.heapManager);
             }
             else
             {
@@ -130,7 +140,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
                  || (pointedType.BuiltInType == BuiltInTypeEnum.IntRectangle && typeOfRequestedValue == TYPE_OF_INTRECT)
                  || (pointedType.BuiltInType == BuiltInTypeEnum.NumRectangle && typeOfRequestedValue == TYPE_OF_NUMRECT))
                 {
-                    retObj = new HeapedArrayImpl<T>();
+                    retObj = new HeapedArrayImpl<T>(this.heapManager);
                 }
                 else
                 {
@@ -166,6 +176,13 @@ namespace RC.Engine.Simulator.PublicInterfaces
                     fieldAccessor.ReadyToUse();
                 }
             }
+
+            /// Attach this instance to the heap if necessary.
+            if (this.heapManager.IsHeapAttached)
+            {
+                this.AttachToHeap();
+                this.SynchToHeap();
+            }
         }
 
         #endregion Field construction methods for the constructors
@@ -178,7 +195,9 @@ namespace RC.Engine.Simulator.PublicInterfaces
             if (this.ctorIndex != this.inheritenceHierarchy.Length) { throw new InvalidOperationException("Last constructor not yet finished!"); }
             if (!this.isDisposed)
             {
-                /// TODO: put disposing code here!
+                /// Detach from the heap if necessary.
+                if (this.heapManager.IsHeapAttached) { this.DetachFromHeap(); }
+
                 for (int i = 0; i < this.inheritenceHierarchy.Length; i++)
                 {
                     foreach (IHeapedFieldAccessor fieldAccessor in this.heapedFields[i].Values)
@@ -186,11 +205,111 @@ namespace RC.Engine.Simulator.PublicInterfaces
                         fieldAccessor.Dispose();
                     }
                 }
+                this.heapManager.AttachingHeapedObjects -= this.OnAttachingHeapedObject;
+                this.heapManager.SynchronizingHeapedObjects -= this.OnSynchronizingFields;
+                this.heapManager.DetachingHeapedObjects -= this.OnDetachingHeapedObject;
                 this.isDisposed = true;
             }
         }
 
         #endregion IDisposable methods
+
+        #region Heap event handlers
+
+        /// <summary>
+        /// Handler of the IHeapConnectionService.AttachingHeapedObjects event.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        private void OnAttachingHeapedObject(object sender, EventArgs args)
+        {
+            if (this.isDisposed) { throw new ObjectDisposedException("HeapedObject"); }
+            if (this.ctorIndex != this.inheritenceHierarchy.Length) { throw new InvalidOperationException("Not every fields have been constructed yet!"); }
+            if (this.heapConnectors != null) { throw new InvalidOperationException("Heaped object already attached to the simulation heap!"); }
+
+            this.AttachToHeap();
+        }
+
+        /// <summary>
+        /// Handler of the IHeapConnectionService.SynchronizingHeapedObjects event.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        private void OnSynchronizingFields(object sender, EventArgs args)
+        {
+            if (this.isDisposed) { throw new ObjectDisposedException("HeapedObject"); }
+            if (this.ctorIndex != this.inheritenceHierarchy.Length) { throw new InvalidOperationException("Not every fields have been constructed yet!"); }
+
+            this.SynchToHeap();
+        }
+
+        /// <summary>
+        /// Handler of the IHeapConnectionService.DetachingHeapedObjects event.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="args">The arguments of the event.</param>
+        private void OnDetachingHeapedObject(object sender, EventArgs args)
+        {
+            if (this.isDisposed) { throw new ObjectDisposedException("HeapedObject"); }
+            if (this.ctorIndex != this.inheritenceHierarchy.Length) { throw new InvalidOperationException("Not every fields have been constructed yet!"); }
+            if (this.heapConnectors == null) { throw new InvalidOperationException("Heaped object not attached to the simulation heap!"); }
+
+            this.DetachFromHeap();
+        }
+
+        /// <summary>
+        /// Attaches this instance to the heap.
+        /// </summary>
+        private void AttachToHeap()
+        {
+            /// Construct the data structure on the heap for this object.
+            this.heapConnectors = new IHeapConnector[this.inheritenceHierarchy.Length];
+            this.heapConnectors[this.inheritenceHierarchy.Length - 1] = this.heapManager.New(this.inheritenceHierarchy[this.inheritenceHierarchy.Length - 1].ID);
+
+            /// Create heap connectors for every level in the inheritence hierarchy.
+            for (int i = this.inheritenceHierarchy.Length - 1; i >= 0; i--)
+            {
+                /// Create the heap connector for current level.
+                if (i != this.inheritenceHierarchy.Length - 1)
+                {
+                    int baseFieldIdx = this.inheritenceHierarchy[i + 1].GetFieldIdx(Constants.NAME_OF_BASE_TYPE_FIELD);
+                    this.heapConnectors[i] = this.heapConnectors[i + 1].AccessField(baseFieldIdx);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Synchronizes the fields of this instance to the heap.
+        /// </summary>
+        private void SynchToHeap()
+        {
+            /// Create the heap connectors for the fields of every level in the inheritence hierarchy.
+            for (int i = this.inheritenceHierarchy.Length - 1; i >= 0; i--)
+            {
+                foreach (KeyValuePair<string, IHeapedFieldAccessor> field in this.heapedFields[i])
+                {
+                    field.Value.AttachToHeap(this.heapConnectors[i].AccessField(this.inheritenceHierarchy[i].GetFieldIdx(field.Key)));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Detaches this instance from the heap.
+        /// </summary>
+        private void DetachFromHeap()
+        {
+            /// Detach the field accessors from the heap.
+            for (int i = this.inheritenceHierarchy.Length - 1; i >= 0; i--)
+            {
+                foreach (KeyValuePair<string, IHeapedFieldAccessor> field in this.heapedFields[i])
+                {
+                    field.Value.DetachFromHeap();
+                }
+            }
+            this.heapConnectors[this.inheritenceHierarchy.Length - 1].Delete();
+        }
+
+        #endregion Heap event handlers
 
         /// <summary>
         /// The index of the currently running constructor.
@@ -209,9 +328,15 @@ namespace RC.Engine.Simulator.PublicInterfaces
         private IHeapType[] inheritenceHierarchy;
 
         /// <summary>
-        /// Reference to the factory helper component.
+        /// Reference to the heap manager.
         /// </summary>
-        private IHeapedObjectFactoryHelper factoryHelper;
+        private IHeapManagerInternals heapManager;
+
+        /// <summary>
+        /// Reference to the heap connectors of this heaped object starting from the base class if this heaped object is
+        /// connected to the heap; otherwise null.
+        /// </summary>
+        private IHeapConnector[] heapConnectors;
 
         /// <summary>
         /// Indicates whether this object has already been disposed or not.

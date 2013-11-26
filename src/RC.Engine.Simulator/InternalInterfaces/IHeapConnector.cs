@@ -15,6 +15,11 @@ namespace RC.Engine.Simulator.InternalInterfaces
     interface IHeapConnector
     {
         /// <summary>
+        /// Gets the type of the data referred by the connector.
+        /// </summary>
+        IHeapType DataType { get; }
+
+        /// <summary>
         /// Writes the address of the given simulation data to the pointer on the heap referred by the connector.
         /// </summary>
         /// <param name="target">The given simulation data or null for setting null-pointer.</param>

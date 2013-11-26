@@ -8,10 +8,10 @@ using System.Reflection;
 namespace RC.Engine.Simulator.ComponentInterfaces
 {
     /// <summary>
-    /// This interface is used by the plugins of the simulator to install themselves.
+    /// This interface is used by the plugins of the heap manager to install themselves.
     /// </summary>
     [PluginInstallInterface]
-    public interface ISimulatorPluginInstall
+    public interface IHeapManagerPluginInstall
     {
         /// <summary>
         /// Registers the given assembly as a container of heap types.
