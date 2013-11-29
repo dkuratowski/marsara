@@ -16,7 +16,6 @@ using RC.Engine.Simulator.Core;
 using RC.Engine.Simulator.InternalInterfaces;
 using RC.Engine.Simulator.PublicInterfaces;
 using System.Collections;
-using RC.Engine.Simulator.Terran.TestHeapedObjects;
 using RC.Engine.Simulator.ComponentInterfaces;
 
 namespace RC.Engine.Test

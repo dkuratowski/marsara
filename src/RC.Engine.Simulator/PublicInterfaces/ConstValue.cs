@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.PublicInterfaces
 {
     /// <summary>
     /// Represents a constant value that is readonly and cannot be changed.
     /// </summary>
     /// <typeparam name="T">The data type of the constant.</typeparam>
-    class ConstValue<T> : IValueRead<T>
+    public class ConstValue<T> : IValueRead<T>
     {
         /// <summary>
         /// Constructs a ConstValue instance.

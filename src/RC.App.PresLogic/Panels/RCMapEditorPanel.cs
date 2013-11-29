@@ -24,7 +24,8 @@ namespace RC.App.PresLogic.Panels
         {
             DrawTerrain = 0,
             PlaceTerrainObject = 1,
-            PlaceStartingPoint = 2
+            PlaceStartLocation = 2,
+            PlaceResource = 3
         }
 
         /// <summary>
@@ -61,10 +62,10 @@ namespace RC.App.PresLogic.Panels
             this.tilesetView = tilesetView;
 
             /// Create the controls.
-            this.editModeSelector = new RCDropdownSelector(new RCIntVector(4, 4), 85, new string[3] { "Draw terrain", "Place terrain object", "Place starting point" });
-            this.paletteListbox = new RCListBox(new RCIntVector(4, 22), 85, 9, 100);
-            this.saveButton = new RCMenuButton("Save", new RCIntRectangle(4, 144, 41, 15));
-            this.exitButton = new RCMenuButton("Exit", new RCIntRectangle(48, 144, 41, 15));
+            this.editModeSelector = new RCDropdownSelector(new RCIntVector(6, 6), 85, new string[4] { "Draw terrain", "Place terrain object", "Place start location", "Place resource" });
+            this.paletteListbox = new RCListBox(new RCIntVector(6, 24), 85, 11, 100);
+            this.saveButton = new RCMenuButton("Save", new RCIntRectangle(6, 180, 41, 15));
+            this.exitButton = new RCMenuButton("Exit", new RCIntRectangle(50, 180, 41, 15));
 
             this.editModeSelector.SelectedIndexChanged += this.OnEditModeSelectionChanged;
             this.paletteListbox.SelectedIndexChanged += this.OnPaletteListboxSelectionChanged;
@@ -93,9 +94,14 @@ namespace RC.App.PresLogic.Panels
         public EditMode SelectedMode { get { return (EditMode)this.editModeSelector.SelectedIndex; } }
 
         /// <summary>
-        /// Gets the currently selected listbox item or null if none of the listbox items are selected.
+        /// Gets the currently selected listbox item or null if none of the listbox items is selected.
         /// </summary>
         public string SelectedItem { get { return this.paletteListbox.SelectedIndex != -1 ? this.paletteListbox[this.paletteListbox.SelectedIndex] : null; } }
+
+        /// <summary>
+        /// Gets the index of the currently selected listbox item or -1 if none of the listbox items is selected.
+        /// </summary>
+        public int SelectedIndex { get { return this.paletteListbox.SelectedIndex; } }
 
         /// <summary>
         /// Resets the controls of the panel.
@@ -118,11 +124,17 @@ namespace RC.App.PresLogic.Panels
                     this.editModeSelector.IsEnabled = true;
                     this.paletteListbox.IsEnabled = true;
                     break;
-                case EditMode.PlaceStartingPoint:
-                    this.paletteListbox.SetItems(new string[0] { });
+                case EditMode.PlaceStartLocation:
+                    this.paletteListbox.SetItems(new string[8] { "Player 1 (Red)", "Player 2 (Blue)", "Player 3 (Teal)", "Player 4 (Purple)", "Player 5 (Magenta)", "Player 6 (Green)", "Player 7 (White)", "Player 8 (Yellow)" });
                     this.saveButton.IsEnabled = true;
                     this.editModeSelector.IsEnabled = true;
-                    this.paletteListbox.IsEnabled = false;
+                    this.paletteListbox.IsEnabled = true;
+                    break;
+                case EditMode.PlaceResource:
+                    this.paletteListbox.SetItems(new string[2] { "MineralField", "VespeneGeyser" });
+                    this.saveButton.IsEnabled = true;
+                    this.editModeSelector.IsEnabled = true;
+                    this.paletteListbox.IsEnabled = true;
                     break;
                 default:
                     throw new InvalidOperationException("Invalid EditMode!");

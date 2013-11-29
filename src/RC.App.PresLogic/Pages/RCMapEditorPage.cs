@@ -9,6 +9,7 @@ using RC.Common.ComponentModel;
 using RC.App.BizLogic.PublicInterfaces;
 using RC.App.PresLogic.Panels;
 using RC.App.PresLogic.Controls;
+using RC.App.BizLogic.ComponentInterfaces;
 
 namespace RC.App.PresLogic.Pages
 {
@@ -100,11 +101,14 @@ namespace RC.App.PresLogic.Pages
 
             /// Create the necessary views.
             this.mapTerrainView = this.mapEditorBE.CreateMapTerrainView();
+            this.mapObjectView = this.mapEditorBE.CreateMapObjectView();
             this.tilesetView = this.mapEditorBE.CreateTileSetView();
+            this.metadataView = this.mapEditorBE.CreateMetadataView();
 
             /// Create the map display control.
-            this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize, this.mapTerrainView, this.tilesetView);
-            this.isotileDisplayEx = new RCIsoTileDisplay(this.mapDisplayBasic, this.mapTerrainView);
+            this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize - new RCIntVector(97, 0), this.mapTerrainView, this.tilesetView);
+            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView, this.metadataView);
+            this.isotileDisplayEx = new RCIsoTileDisplay(this.mapObjectDisplayEx, this.mapTerrainView);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.isotileDisplayEx, this.mapTerrainView);
             this.mapDisplay = this.objectPlacementDisplayEx;
             this.mapDisplay.Started += this.OnMapDisplayStarted;
@@ -132,10 +136,10 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplay.MouseSensor.ButtonUp += this.OnMouseUp;
 
             /// Create and register the map editor panel.
-            this.mapEditorPanel = new RCMapEditorPanel(new RCIntRectangle(213, 0, 107, 190),
-                                                       new RCIntRectangle(0, 25, 90, 165),
-                                                       UIPanel.ShowMode.DriftFromRight, UIPanel.HideMode.DriftToRight,
-                                                       300, 300,
+            this.mapEditorPanel = new RCMapEditorPanel(new RCIntRectangle(223, 0, 97, 200),
+                                                       new RCIntRectangle(0, 0, 97, 200),
+                                                       UIPanel.ShowMode.Appear, UIPanel.HideMode.Disappear,
+                                                       0, 0,
                                                        "RC.MapEditor.Sprites.CtrlPanel",
                                                        this.tilesetView);
             this.RegisterPanel(this.mapEditorPanel);
@@ -194,9 +198,24 @@ namespace RC.App.PresLogic.Pages
             
             if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
             {
+                this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateTerrainObjectPlacementView(this.mapEditorPanel.SelectedItem),
                     this.mapDisplayBasic.TerrainObjectSprites);
+            }
+            else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
+            {
+                this.objectPlacementDisplayEx.StopPlacingObject();
+                this.objectPlacementDisplayEx.StartPlacingObject(
+                    this.mapEditorBE.CreateMapObjectPlacementView("StartLocation"),
+                    this.mapObjectDisplayEx.GetMapObjectSprites((Player)(this.mapEditorPanel.SelectedIndex + 1)));
+            }
+            else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
+            {
+                this.objectPlacementDisplayEx.StopPlacingObject();
+                this.objectPlacementDisplayEx.StartPlacingObject(
+                    this.mapEditorBE.CreateMapObjectPlacementView(this.mapEditorPanel.SelectedItem),
+                    this.mapObjectDisplayEx.GetMapObjectSprites(Player.Neutral));
             }
             else
             {
@@ -215,6 +234,20 @@ namespace RC.App.PresLogic.Pages
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateTerrainObjectPlacementView(this.mapEditorPanel.SelectedItem),
                     this.mapDisplayBasic.TerrainObjectSprites);
+            }
+            else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
+            {
+                this.objectPlacementDisplayEx.StopPlacingObject();
+                this.objectPlacementDisplayEx.StartPlacingObject(
+                    this.mapEditorBE.CreateMapObjectPlacementView("StartLocation"),
+                    this.mapObjectDisplayEx.GetMapObjectSprites((Player)(this.mapEditorPanel.SelectedIndex + 1)));
+            }
+            else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
+            {
+                this.objectPlacementDisplayEx.StopPlacingObject();
+                this.objectPlacementDisplayEx.StartPlacingObject(
+                    this.mapEditorBE.CreateMapObjectPlacementView(this.mapEditorPanel.SelectedItem),
+                    this.mapObjectDisplayEx.GetMapObjectSprites(Player.Neutral));
             }
         }
 
@@ -341,9 +374,19 @@ namespace RC.App.PresLogic.Pages
         private IMapTerrainView mapTerrainView;
 
         /// <summary>
+        /// Reference to the map object view.
+        /// </summary>
+        private IMapObjectView mapObjectView;
+
+        /// <summary>
         /// Reference to the tileset view.
         /// </summary>
         private ITileSetView tilesetView;
+
+        /// <summary>
+        /// Reference to the metadata view.
+        /// </summary>
+        private IMetadataView metadataView;
 
         /// <summary>
         /// Reference to the map display.
@@ -354,6 +397,11 @@ namespace RC.App.PresLogic.Pages
         /// The basic part of the map display.
         /// </summary>
         private RCMapDisplayBasic mapDisplayBasic;
+
+        /// <summary>
+        /// Extension of the map display that displays the map objects.
+        /// </summary>
+        private RCMapObjectDisplay mapObjectDisplayEx;
 
         /// <summary>
         /// Extension of the map display that displays the isometric tiles.

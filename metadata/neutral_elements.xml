@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+  <customType name="MineralField">
+    <generalData>
+      <area>8.0;4.0</area>
+    </generalData>
+    <sprite image="mineral_field.png" transparentColor="255;0;255">
+      <frame name="Amount_100_200" sourceRegion="1;52;32;16" offset="0;0" />
+      <frame name="Amount_300_400" sourceRegion="1;35;32;16" offset="0;0" />
+      <frame name="Amount_500_700" sourceRegion="1;18;32;16" offset="0;0" />
+      <frame name="Amount_Full" sourceRegion="1;1;32;16" offset="0;0" />
+    </sprite>
+  </customType>
+  <customType name="VespeneGeyser">
+    <generalData>
+      <area>16.0;8.0</area>
+    </generalData>
+    <sprite image="vespene_geyser.png" transparentColor="255;0;255">
+      <frame name="Normal0" sourceRegion="1;34;64;32" offset="0;0" />
+      <frame name="Normal1" sourceRegion="1;67;64;32" offset="0;0" />
+      <frame name="Normal2" sourceRegion="1;100;64;32" offset="0;0" />
+      <frame name="Depleted0" sourceRegion="66;34;64;32" offset="0;0" />
+      <frame name="Depleted1" sourceRegion="66;67;64;32" offset="0;0" />
+      <frame name="Depleted2" sourceRegion="66;100;64;32" offset="0;0" />
+    </sprite>
+  </customType>
+  <customType name="StartLocation">
+    <generalData>
+      <area>16.0;12.0</area>
+    </generalData>
+    <sprite image="start_location.png" transparentColor="255;0;255">
+      <frame name="Normal" sourceRegion="0;0;64;48" offset="0;0" />
+    </sprite>
+  </customType>
+</metadata>

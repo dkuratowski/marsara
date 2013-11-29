@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<simulationMetadata>
+<metadata>
   <upgradeType name="InfantryWeapons#1">
     <costs>
       <mineral>100</mineral>
@@ -224,4 +224,4 @@
     </costs>
     <researchedIn>PhysicsLab</researchedIn>
   </upgradeType>
-</simulationMetadata>
+</metadata>

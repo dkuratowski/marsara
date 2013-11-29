@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<simulationMetadata>
+<metadata>
   <buildingType name="CommandCenter">
     <costs>
       <mineral>400</mineral>
@@ -73,7 +73,7 @@
       <armor>1</armor>
       <sightRange>11</sightRange>
     </generalData>
-    <sprite image="terran_commandcenter.png" />
+    <!--sprite image="terran_commandcenter.png" /-->
   </buildingType>
   <buildingType name="Refinery">
     <costs>
@@ -87,7 +87,7 @@
       <armor>1</armor>
       <sightRange>11</sightRange>
     </generalData>
-    <sprite image="terran_commandcenter.png" />
+    <!--sprite image="terran_commandcenter.png" /-->
   </buildingType>
   <buildingType name="Barracks">
     <costs>
@@ -103,7 +103,7 @@
       <speed>0.25</speed>
     </generalData>
     <requires>CommandCenter</requires>
-    <sprite image="terran_commandcenter.png" />
+    <!--sprite image="terran_commandcenter.png" /-->
   </buildingType>
   <buildingType name="Academy">
     <costs>
@@ -118,7 +118,7 @@
       <sightRange>11</sightRange>
     </generalData>
     <requires>Barracks</requires>
-    <sprite image="terran_commandcenter.png" />
+    <!--sprite image="terran_commandcenter.png" /-->
   </buildingType>
   <buildingType name="Factory">
     <costs>
@@ -135,7 +135,7 @@
       <speed>0.25</speed>
     </generalData>
     <requires>Barracks</requires>
-    <sprite image="terran_commandcenter.png" />
+    <!--sprite image="terran_commandcenter.png" /-->
   </buildingType>
   <buildingType name="Starport">
     <costs>
@@ -152,7 +152,7 @@
       <speed>0.25</speed>
     </generalData>
     <requires>Factory</requires>
-    <sprite image="terran_commandcenter.png" />
+    <!--sprite image="terran_commandcenter.png" /-->
   </buildingType>
   <buildingType name="ScienceFacility">
     <costs>
@@ -169,7 +169,7 @@
       <speed>0.25</speed>
     </generalData>
     <requires>Starport</requires>
-    <sprite image="terran_commandcenter.png" />
+    <!--sprite image="terran_commandcenter.png" /-->
   </buildingType>
   <buildingType name="EngineeringBay">
     <costs>
@@ -184,7 +184,7 @@
       <sightRange>11</sightRange>
     </generalData>
     <requires>CommandCenter</requires>
-    <sprite image="terran_commandcenter.png" />
+    <!--sprite image="terran_commandcenter.png" /-->
   </buildingType>
   <buildingType name="Armory">
     <costs>
@@ -200,7 +200,7 @@
       <sightRange>11</sightRange>
     </generalData>
     <requires>Factory</requires>
-    <sprite image="terran_commandcenter.png" />
+    <!--sprite image="terran_commandcenter.png" /-->
   </buildingType>
   <buildingType name="MissileTurret">
     <costs>
@@ -220,7 +220,7 @@
       <cooldown>15</cooldown>
     </airWeapon>
     <requires>EngineeringBay</requires>
-    <sprite image="terran_commandcenter.png" />
+    <!--sprite image="terran_commandcenter.png" /-->
   </buildingType>
   <buildingType name="Bunker">
     <costs>
@@ -235,6 +235,6 @@
       <sightRange>11</sightRange>
     </generalData>
     <requires>Barracks</requires>
-    <sprite image="terran_commandcenter.png" />
+    <!--sprite image="terran_commandcenter.png" /-->
   </buildingType>
-</simulationMetadata>
+</metadata>

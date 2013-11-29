@@ -1,7 +1,8 @@
 ﻿using RC.Common.ComponentModel;
 using RC.Common;
+using RC.App.BizLogic.PublicInterfaces;
 
-namespace RC.App.BizLogic.PublicInterfaces
+namespace RC.App.BizLogic.ComponentInterfaces
 {
     /// <summary>
     /// Interface to the backend component of the map editor. The UI of the map editor communicates directly with this interface.
@@ -54,12 +55,33 @@ namespace RC.App.BizLogic.PublicInterfaces
         ITileSetView CreateTileSetView();
 
         /// <summary>
+        /// Creates a view on the game engine metadata.
+        /// </summary>
+        /// <returns>The view on the game engine metadata.</returns>
+        IMetadataView CreateMetadataView();
+
+        /// <summary>
+        /// Creates a view on the currently opened scenario.
+        /// </summary>
+        /// <returns>The view on the currently opened scenario.</returns>
+        /// <exception cref="InvalidOperationException">If there is no opened scenario.</exception>
+        IMapObjectView CreateMapObjectView();
+
+        /// <summary>
         /// Creates a terrain object placement view on the currently opened map.
         /// </summary>
         /// <param name="terrainObjectName">The name of the terrain object to be placed.</param>
         /// <returns>The terrain object placement view on the currently opened map.</returns>
         /// <exception cref="InvalidOperationException">If there is no opened map.</exception>
         IObjectPlacementView CreateTerrainObjectPlacementView(string terrainObjectName);
+
+        /// <summary>
+        /// Creates a map object placement view on the currently opened map.
+        /// </summary>
+        /// <param name="objectTypeName">The name of the object type to be placed.</param>
+        /// <returns>The map object placement view on the currently opened map.</returns>
+        /// <exception cref="InvalidOperationException">If there is no opened map.</exception>
+        IObjectPlacementView CreateMapObjectPlacementView(string objectTypeName);
 
         /// <summary>
         /// Draws the given terrain type on the isometric tile at the given position.

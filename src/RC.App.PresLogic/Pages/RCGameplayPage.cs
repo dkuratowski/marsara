@@ -8,6 +8,7 @@ using RC.Common.ComponentModel;
 using RC.App.PresLogic.Panels;
 using RC.Common;
 using RC.UI;
+using RC.App.BizLogic.ComponentInterfaces;
 
 namespace RC.App.PresLogic.Pages
 {
@@ -37,6 +38,7 @@ namespace RC.App.PresLogic.Pages
             this.mapDebugView = null;
             this.mapObjectView = null;
             this.tilesetView = null;
+            this.metadataView = null;
 
             this.mapDisplay = null;
             this.mapDisplayBasic = null;
@@ -90,11 +92,12 @@ namespace RC.App.PresLogic.Pages
             //this.mapDebugView = this.gameplayBE.CreateMapDebugView();
             this.mapObjectView = this.gameplayBE.CreateMapObjectView();
             this.tilesetView = this.gameplayBE.CreateTileSetView();
+            this.metadataView = this.gameplayBE.CreateMetadataView();
 
             /// Create and start the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135), this.mapTerrainView, this.tilesetView);
             //this.mapDebugDisplayEx = new RCMapDebugDisplay(this.mapDisplayBasic, this.mapDebugView);
-            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView);
+            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView, this.metadataView);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.mapObjectDisplayEx, this.mapTerrainView);
             this.mapDisplay = this.objectPlacementDisplayEx;
             this.mapDisplay.Started += this.OnMapDisplayStarted;
@@ -209,6 +212,7 @@ namespace RC.App.PresLogic.Pages
             this.mapDebugView = null;
             this.mapObjectView = null;
             this.tilesetView = null;
+            this.metadataView = null;
 
             /// Remove the map display control.
             this.mapDisplayBasic = null;
@@ -342,6 +346,11 @@ namespace RC.App.PresLogic.Pages
         /// Reference to the tileset view.
         /// </summary>
         private ITileSetView tilesetView;
+
+        /// <summary>
+        /// Reference to the metadata view.
+        /// </summary>
+        private IMetadataView metadataView;
 
         /// <summary>
         /// The current connection status of the page.

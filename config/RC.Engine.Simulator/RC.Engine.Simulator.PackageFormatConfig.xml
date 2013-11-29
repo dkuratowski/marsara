@@ -1,0 +1,23 @@
+<packageFormatConfig>
+
+  <packageFormat namespace="RC.Engine.Simulator" name="MineralField">
+    <description>Contains informations about a mineral field.</description>
+    <field type="SHORT">Quadratic coordinate of the mineral field (X component).</field>
+    <field type="SHORT">Quadratic coordinate of the mineral field (Y component).</field>
+    <field type="SHORT">The amount of minerals on the field.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Engine.Simulator" name="VespeneGeyser">
+    <description>Contains informations about a vespene geyser.</description>
+    <field type="SHORT">Quadratic coordinate of the vespene geyser (X component).</field>
+    <field type="SHORT">Quadratic coordinate of the vespene geyser (Y component).</field>
+    <field type="SHORT">The amount of vespene gas in the geyser.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Engine.Simulator" name="StartLocation">
+    <description>Contains informations about a start location.</description>
+    <field type="SHORT">Quadratic coordinate of the start location (X component).</field>
+    <field type="SHORT">Quadratic coordinate of the start location (Y component).</field>
+  </packageFormat>
+
+</packageFormatConfig>

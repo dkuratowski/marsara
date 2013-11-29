@@ -77,6 +77,12 @@ namespace RC.Engine.Maps.Core
             return this.mapStructure.QuadToCellRect(quadRect);
         }
 
+        /// <see cref="IMapAccess.CellToQuadSize"/>
+        public RCIntVector CellToQuadSize(RCNumVector cellSize)
+        {
+            return this.mapStructure.CellToQuadSize(cellSize);
+        }
+
         /// <see cref="IMapAccess.BeginExchangingTiles"/>
         public void BeginExchangingTiles()
         {

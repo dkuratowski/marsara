@@ -1,21 +1,22 @@
-﻿using System;
+﻿using RC.Engine.Simulator.PublicInterfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.Scenarios
 {
     /// <summary>
     /// Contains the definition of a building type.
     /// </summary>
-    class BuildingType : EntityType
+    class BuildingType : ScenarioElementType, IBuildingType
     {
         /// <summary>
         /// Constructs a new building type.
         /// </summary>
         /// <param name="name">The name of this building type.</param>
         /// <param name="metadata">The metadata object that this building type belongs to.</param>
-        public BuildingType(string name, SimMetadata metadata)
+        public BuildingType(string name, ScenarioMetadata metadata)
             : base(name, metadata)
         {
             this.unitTypes = new Dictionary<string, UnitType>();
@@ -23,71 +24,73 @@ namespace RC.Engine.Simulator.Core
             this.upgradeTypes = new Dictionary<string, UpgradeType>();
         }
 
-        /// <summary>
-        /// Checks whether this building type has an addon type with the given name.
-        /// </summary>
-        /// <param name="addonTypeName">The name of the searched addon type.</param>
-        /// <returns>True if this building type has an addon type with the given name, false otherwise.</returns>
+        #region IBuildingType members
+
+        /// <see cref="IBuildingType.HasAddonType"/>
         public bool HasAddonType(string addonTypeName)
         {
             if (addonTypeName == null) { throw new ArgumentNullException("addonTypeName"); }
             return this.addonTypes.ContainsKey(addonTypeName);
         }
 
-        /// <summary>
-        /// Checks whether this building type has a unit type with the given name.
-        /// </summary>
-        /// <param name="unitTypeName">The name of the searched unit type.</param>
-        /// <returns>True if this building type has a unit type with the given name, false otherwise.</returns>
+        /// <see cref="IBuildingType.HasUnitType"/>
         public bool HasUnitType(string unitTypeName)
         {
             if (unitTypeName == null) { throw new ArgumentNullException("unitTypeName"); }
             return this.unitTypes.ContainsKey(unitTypeName);
         }
 
-        /// <summary>
-        /// Checks whether this building type has an upgrade type with the given name.
-        /// </summary>
-        /// <param name="upgradeTypeName">The name of the searched upgrade type.</param>
-        /// <returns>True if this building type has an upgrade type with the given name, false otherwise.</returns>
+        /// <see cref="IBuildingType.HasUpgradeType"/>
         public bool HasUpgradeType(string upgradeTypeName)
         {
             if (upgradeTypeName == null) { throw new ArgumentNullException("upgradeTypeName"); }
             return this.upgradeTypes.ContainsKey(upgradeTypeName);
         }
 
-        /// <summary>
-        /// Gets the addon type of this building type with the given name.
-        /// </summary>
-        /// <param name="addonTypeName">The name of the addon type.</param>
-        /// <returns>The addon type with the given name.</returns>
-        public AddonType GetAddonType(string addonTypeName)
+        /// <see cref="IBuildingType.GetAddonType"/>
+        public IAddonType GetAddonType(string addonTypeName)
+        {
+            return this.GetAddonTypeImpl(addonTypeName);
+        }
+
+        /// <see cref="IBuildingType.GetUnitType"/>
+        public IUnitType GetUnitType(string unitTypeName)
+        {
+            return this.GetUnitTypeImpl(unitTypeName);
+        }
+
+        /// <see cref="IBuildingType.GetUpgradeType"/>
+        public IUpgradeType GetUpgradeType(string upgradeTypeName)
+        {
+            return this.GetUpgradeTypeImpl(upgradeTypeName);
+        }
+        
+        #endregion IBuildingType members
+
+        #region Internal public methods
+
+        /// <see cref="IBuildingType.GetAddonType"/>
+        public AddonType GetAddonTypeImpl(string addonTypeName)
         {
             if (addonTypeName == null) { throw new ArgumentNullException("addonTypeName"); }
             return this.addonTypes[addonTypeName];
         }
 
-        /// <summary>
-        /// Gets the unit type of this building type with the given name.
-        /// </summary>
-        /// <param name="unitTypeName">The name of the unit type.</param>
-        /// <returns>The unit type with the given name.</returns>
-        public UnitType GetUnitType(string unitTypeName)
+        /// <see cref="IBuildingType.GetUnitType"/>
+        public UnitType GetUnitTypeImpl(string unitTypeName)
         {
             if (unitTypeName == null) { throw new ArgumentNullException("unitTypeName"); }
             return this.unitTypes[unitTypeName];
         }
 
-        /// <summary>
-        /// Gets the upgrade type of this building type with the given name.
-        /// </summary>
-        /// <param name="upgradeTypeName">The name of the upgrade type.</param>
-        /// <returns>The upgrade type with the given name.</returns>
-        public UpgradeType GetUpgradeType(string upgradeTypeName)
+        /// <see cref="IBuildingType.GetUpgradeType"/>
+        public UpgradeType GetUpgradeTypeImpl(string upgradeTypeName)
         {
             if (upgradeTypeName == null) { throw new ArgumentNullException("upgradeTypeName"); }
             return this.upgradeTypes[upgradeTypeName];
         }
+        
+        #endregion Internal public methods
 
         #region BuildingType buildup methods
 

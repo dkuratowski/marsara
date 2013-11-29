@@ -6,6 +6,8 @@ using RC.App.BizLogic.ComponentInterfaces;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Common;
 using System.IO;
+using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.ComponentInterfaces;
 
 namespace RC.App.BizLogic.Core
 {
@@ -21,6 +23,7 @@ namespace RC.App.BizLogic.Core
         public MapEditorBE()
         {
             this.activeMap = null;
+            this.activeScenario = null;
         }
 
         #region IComponent methods
@@ -29,6 +32,7 @@ namespace RC.App.BizLogic.Core
         public void Start()
         {
             this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
+            this.scenarioLoader = ComponentManager.GetInterface<IScenarioLoader>();
             this.mapEditor = ComponentManager.GetInterface<IMapEditor>();
             this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
         }
@@ -49,6 +53,7 @@ namespace RC.App.BizLogic.Core
             if (this.activeMap != null) { throw new InvalidOperationException("Another map is already opened!"); }
 
             this.activeMap = this.mapLoader.NewMap(mapName, this.tilesetStore.GetTileSet(tilesetName), defaultTerrain, mapSize);
+            this.activeScenario = this.scenarioLoader.NewScenario(this.activeMap);
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
@@ -60,6 +65,7 @@ namespace RC.App.BizLogic.Core
             byte[] mapBytes = File.ReadAllBytes(filename);
             MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
             this.activeMap = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
+            this.activeScenario = this.scenarioLoader.LoadScenario(this.activeMap, mapBytes);
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
@@ -69,7 +75,13 @@ namespace RC.App.BizLogic.Core
             if (filename == null) { throw new ArgumentNullException("fileName"); }
 
             byte[] mapBytes = this.mapLoader.SaveMap(this.activeMap);
-            File.WriteAllBytes(filename, mapBytes);
+            byte[] scenarioBytes = this.scenarioLoader.SaveScenario(this.activeScenario);
+
+            int outIdx = 0;
+            byte[] outputBytes = new byte[mapBytes.Length + scenarioBytes.Length];
+            for (int i = 0; i < mapBytes.Length; i++, outIdx++) { outputBytes[outIdx] = mapBytes[i]; }
+            for (int i = 0; i < scenarioBytes.Length; i++, outIdx++) { outputBytes[outIdx] = scenarioBytes[i]; }
+            File.WriteAllBytes(filename, outputBytes);
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
@@ -79,6 +91,7 @@ namespace RC.App.BizLogic.Core
             {
                 this.activeMap.Close();
                 this.activeMap = null;
+                this.activeScenario = null;
             }
         }
 
@@ -89,11 +102,24 @@ namespace RC.App.BizLogic.Core
             return new MapTerrainView(this.activeMap);
         }
 
+        /// <see cref="IMapEditorBE.CreateMapObjectView"/>
+        public IMapObjectView CreateMapObjectView()
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            return new MapObjectView(this.activeScenario);
+        }
+
         /// <see cref="IMapEditorBE.CreateTileSetView"/>
         public ITileSetView CreateTileSetView()
         {
             if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
             return new TileSetView(this.activeMap.Tileset);
+        }
+
+        /// <see cref="IMapEditorBE.CreateMetadataView"/>
+        public IMetadataView CreateMetadataView()
+        {
+            return new MetadataView(this.scenarioLoader.Metadata);
         }
 
         /// <see cref="IMapEditorBE.CreateTerrainObjectPlacementView"/>
@@ -104,6 +130,16 @@ namespace RC.App.BizLogic.Core
 
             ITerrainObjectType terrainObjectType = this.activeMap.Tileset.GetTerrainObjectType(terrainObjectName);
             return new TerrainObjectPlacementView(terrainObjectType, this.activeMap);
+        }
+
+        /// <see cref="IMapEditorBE.CreateMapObjectPlacementView"/>
+        public IObjectPlacementView CreateMapObjectPlacementView(string mapObjectTypeName)
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (mapObjectTypeName == null) { throw new ArgumentNullException("mapObjectTypeName"); }
+
+            IScenarioElementType elementType = this.scenarioLoader.Metadata.GetElementType(mapObjectTypeName);
+            return new MapObjectPlacementView(elementType, this.activeScenario);
         }
 
         /// <see cref="IMapEditorBE.DrawTerrain"/>
@@ -184,8 +220,18 @@ namespace RC.App.BizLogic.Core
         private IMapLoader mapLoader;
 
         /// <summary>
+        /// Reference to the RC.Engine.Scenarios.ScenarioLoader component.
+        /// </summary>
+        private IScenarioLoader scenarioLoader;
+
+        /// <summary>
         /// Reference to the currently active map.
         /// </summary>
         private IMapAccess activeMap;
+
+        /// <summary>
+        /// Reference to the currently active scenario.
+        /// </summary>
+        private IScenario activeScenario;
     }
 }

@@ -34,4 +34,14 @@ namespace RC.Engine.Simulator.Core
         public static readonly int INFO = TraceManager.GetTraceFilterID("RC.Engine.Simulator.Info");
         public static readonly int DETAILS = TraceManager.GetTraceFilterID("RC.Engine.Simulator.Details");
     }
+
+    /// <summary>
+    /// Package format definitions of the scenario files.
+    /// </summary>
+    static class ScenarioFileFormat
+    {
+        public static readonly int MINERAL_FIELD = RCPackageFormatMap.Get("RC.Engine.Simulator.MineralField");
+        public static readonly int VESPENE_GEYSER = RCPackageFormatMap.Get("RC.Engine.Simulator.VespeneGeyser");
+        public static readonly int START_LOCATION = RCPackageFormatMap.Get("RC.Engine.Simulator.StartLocation");
+    }
 }

@@ -41,7 +41,7 @@ namespace RC.App.PresLogic
 
             foreach (UISprite sprite in this.spriteList)
             {
-                UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(sprite);
+                if (sprite != null) { UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(sprite); }
             }
             this.spriteList.Clear();
             this.isLoaded = false;

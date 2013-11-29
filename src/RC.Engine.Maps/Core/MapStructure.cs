@@ -358,6 +358,29 @@ namespace RC.Engine.Maps.Core
             return quadRect * new RCIntVector(MapStructure.NAVCELL_PER_QUAD, MapStructure.NAVCELL_PER_QUAD);
         }
 
+        /// <summary>
+        /// Computes the minimum size of a quadratic rectangle that can cover an area on the map with the given size.
+        /// </summary>
+        /// <param name="cellSize">The size of the area in cells.</param>
+        /// <returns>The minimum size of a covering quadratic rectangle.</returns>
+        public RCIntVector CellToQuadSize(RCNumVector cellSize)
+        {
+            if (cellSize == RCNumVector.Undefined) { throw new ArgumentNullException("cellSize"); }
+            if (cellSize.X <= 0 || cellSize.Y <= 0) { throw new ArgumentOutOfRangeException("cellSize", "Both component of cellSize must be positive!"); }
+
+            RCIntVector cellSizeInt = (RCIntVector)cellSize;
+            if (cellSizeInt.X != cellSize.X && cellSizeInt.Y != cellSize.Y) { cellSizeInt += new RCIntVector(1, 1); }
+            else if (cellSizeInt.X != cellSize.X && cellSizeInt.Y == cellSize.Y) { cellSizeInt += new RCIntVector(1, 0); }
+            else if (cellSizeInt.X == cellSize.X && cellSizeInt.Y != cellSize.Y) { cellSizeInt += new RCIntVector(0, 1); }
+
+            RCIntVector quadSize = cellSizeInt / MapStructure.NAVCELL_PER_QUAD;
+            if (cellSizeInt.X % MapStructure.NAVCELL_PER_QUAD != 0 && cellSizeInt.Y % MapStructure.NAVCELL_PER_QUAD != 0) { quadSize += new RCIntVector(1, 1); }
+            else if (cellSizeInt.X % MapStructure.NAVCELL_PER_QUAD != 0 && cellSizeInt.Y % MapStructure.NAVCELL_PER_QUAD == 0) { quadSize += new RCIntVector(1, 0); }
+            else if (cellSizeInt.X % MapStructure.NAVCELL_PER_QUAD == 0 && cellSizeInt.Y % MapStructure.NAVCELL_PER_QUAD != 0) { quadSize += new RCIntVector(0, 1); }
+
+            return quadSize;
+        }
+
         #endregion Internal public methods
 
         #region Static constants

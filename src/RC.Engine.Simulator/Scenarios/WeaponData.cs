@@ -5,12 +5,12 @@ using System.Text;
 using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.Scenarios
 {
     /// <summary>
     /// Enumerates the possible damage types of a weapon.
     /// </summary>
-    enum DamageTypeEnum
+    public enum DamageTypeEnum
     {
         [EnumMapping("Normal")]
         Normal = 0,
@@ -23,7 +23,7 @@ namespace RC.Engine.Simulator.Core
     /// <summary>
     /// Enumerates the possible splash types of a weapon.
     /// </summary>
-    enum SplashTypeEnum
+    public enum SplashTypeEnum
     {
         [EnumMapping("None")]
         None = 0,
@@ -34,15 +34,15 @@ namespace RC.Engine.Simulator.Core
     }
 
     /// <summary>
-    /// Stores the data of a weapon of an entity type.
+    /// Stores the data of a weapon of an element type.
     /// </summary>
-    class WeaponData
+    class WeaponData : IWeaponData
     {
         /// <summary>
-        /// Constructs a weapon data struct for an entity type.
+        /// Constructs a weapon data struct for an element type.
         /// </summary>
         /// <param name="metadata">The metadata object that this weapon data belongs to.</param>
-        public WeaponData(SimMetadata metadata)
+        public WeaponData(ScenarioMetadata metadata)
         {
             if (metadata == null) { throw new ArgumentNullException("metadata"); }
 
@@ -197,6 +197,6 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Reference to the metadata that this weapon data struct belongs to.
         /// </summary>
-        private SimMetadata metadata;
+        private ScenarioMetadata metadata;
     }
 }

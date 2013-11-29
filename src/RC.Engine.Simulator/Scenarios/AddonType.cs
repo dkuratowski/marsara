@@ -4,19 +4,19 @@ using System.Linq;
 using System.Text;
 using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.Scenarios
 {
     /// <summary>
     /// Contains the definition of an addon type.
     /// </summary>
-    class AddonType : EntityType
+    class AddonType : ScenarioElementType, IAddonType
     {
         /// <summary>
         /// Constructs a new addon type.
         /// </summary>
         /// <param name="name">The name of this addon type.</param>
         /// <param name="metadata">The metadata object that this addon type belongs to.</param>
-        public AddonType(string name, SimMetadata metadata)
+        public AddonType(string name, ScenarioMetadata metadata)
             : base(name, metadata)
         {
             this.upgradeTypes = new HashSet<UpgradeType>();
@@ -47,14 +47,14 @@ namespace RC.Engine.Simulator.Core
             this.mainBuilding = mainBuilding;
         }
         
-        /// <see cref="SimObjectType.BuildupReferencesImpl"/>
+        /// <see cref="ScenarioElementType.BuildupReferencesImpl"/>
         protected override void BuildupReferencesImpl()
         {
             if (this.Metadata.IsFinalized) { return; }
             if (this.mainBuilding == null) { throw new SimulatorException(string.Format("Main building not defined for AddonType '{0}'!", this.Name)); }
 
             if (!this.Metadata.HasBuildingType(this.mainBuilding)) { throw new SimulatorException(string.Format("BuildingType with name '{0}' doesn't exist!", this.mainBuilding)); }
-            this.Metadata.GetBuildingType(this.mainBuilding).AddAddonType(this);
+            this.Metadata.GetBuildingTypeImpl(this.mainBuilding).AddAddonType(this);
         }
 
         #endregion AddonType buildup methods

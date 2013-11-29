@@ -7,6 +7,7 @@ using RC.Engine.Simulator.PublicInterfaces;
 using System.IO;
 using RC.Common;
 using RC.Common.Configuration;
+using RC.Engine.Simulator.Scenarios;
 
 namespace RC.Engine.Simulator.Core
 {
@@ -21,7 +22,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="xmlStr">The string that contains the XML document to read.</param>
         /// <param name="imageDir">The directory where the referenced images can be found. (TODO: this is a hack!)</param>
         /// <param name="metadata">Reference to the metadata object being constructed.</param>
-        public static void Read(string xmlStr, string imageDir, SimMetadata metadata)
+        public static void Read(string xmlStr, string imageDir, ScenarioMetadata metadata)
         {
             if (xmlStr == null) { throw new ArgumentNullException("xmlStr"); }
             if (imageDir == null) { throw new ArgumentNullException("imageDir"); }
@@ -31,28 +32,34 @@ namespace RC.Engine.Simulator.Core
             /// Load the XML document.
             XDocument xmlDoc = XDocument.Parse(xmlStr);
 
-            /// Load the building type definitions.
-            foreach (XElement buildingTypeElem in xmlDoc.Root.Elements(XmlMetadataConstants.BUILDINGTYPE_ELEM))
+            /// Load the scenario element type definitions.
+            foreach (XElement scenarioElementTypeElem in xmlDoc.Root.Elements())
             {
-                LoadBuildingType(buildingTypeElem, metadata);
-            }
+                if (scenarioElementTypeElem.Name == XmlMetadataConstants.BUILDINGTYPE_ELEM)
+                {
+                    LoadBuildingType(scenarioElementTypeElem, metadata);
+                }
+                else if (scenarioElementTypeElem.Name == XmlMetadataConstants.UNITTYPE_ELEM)
+                {
+                    LoadUnitType(scenarioElementTypeElem, metadata);
+                }
+                else if (scenarioElementTypeElem.Name == XmlMetadataConstants.ADDONTYPE_ELEM)
+                {
+                    LoadAddonType(scenarioElementTypeElem, metadata);
+                }
+                else if (scenarioElementTypeElem.Name == XmlMetadataConstants.UPGRADETYPE_ELEM)
+                {
+                    LoadUpgradeType(scenarioElementTypeElem, metadata);
+                }
+                else if (scenarioElementTypeElem.Name == XmlMetadataConstants.CUSTOMTYPE_ELEM)
+                {
+                    XAttribute nameAttr = scenarioElementTypeElem.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
+                    if (nameAttr == null) { throw new SimulatorException("Custom type name not defined!"); }
 
-            /// Load the unit type definitions.
-            foreach (XElement unitTypeElem in xmlDoc.Root.Elements(XmlMetadataConstants.UNITTYPE_ELEM))
-            {
-                LoadUnitType(unitTypeElem, metadata);
-            }
-
-            /// Load the addon type definitions.
-            foreach (XElement addonTypeElem in xmlDoc.Root.Elements(XmlMetadataConstants.ADDONTYPE_ELEM))
-            {
-                LoadAddonType(addonTypeElem, metadata);
-            }
-
-            /// Load the upgrade type definitions.
-            foreach (XElement upgradeTypeElem in xmlDoc.Root.Elements(XmlMetadataConstants.UPGRADETYPE_ELEM))
-            {
-                LoadUpgradeType(upgradeTypeElem, metadata);
+                    ScenarioElementType elementType = new ScenarioElementType(nameAttr.Value, metadata);
+                    LoadScenarioElementType(scenarioElementTypeElem, elementType, metadata);
+                    metadata.AddCustomType(elementType);
+                }
             }
         }
 
@@ -61,14 +68,13 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="buildingTypeElem">The XML node to load from.</param>
         /// <param name="metadata">The metadata object being constructed.</param>
-        private static void LoadBuildingType(XElement buildingTypeElem, SimMetadata metadata)
+        private static void LoadBuildingType(XElement buildingTypeElem, ScenarioMetadata metadata)
         {
             XAttribute nameAttr = buildingTypeElem.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
             if (nameAttr == null) { throw new SimulatorException("Building type name not defined!"); }
 
             BuildingType buildingType = new BuildingType(nameAttr.Value, metadata);
-            LoadSimObjectTypeData(buildingTypeElem, buildingType, metadata);
-            LoadEntityTypeData(buildingTypeElem, buildingType, metadata);
+            LoadScenarioElementType(buildingTypeElem, buildingType, metadata);
 
             metadata.AddBuildingType(buildingType);
         }
@@ -78,14 +84,13 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="unitTypeElem">The XML node to load from.</param>
         /// <param name="metadata">The metadata object being constructed.</param>
-        private static void LoadUnitType(XElement unitTypeElem, SimMetadata metadata)
+        private static void LoadUnitType(XElement unitTypeElem, ScenarioMetadata metadata)
         {
             XAttribute nameAttr = unitTypeElem.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
             if (nameAttr == null) { throw new SimulatorException("Unit type name not defined!"); }
 
             UnitType unitType = new UnitType(nameAttr.Value, metadata);
-            LoadSimObjectTypeData(unitTypeElem, unitType, metadata);
-            LoadEntityTypeData(unitTypeElem, unitType, metadata);
+            LoadScenarioElementType(unitTypeElem, unitType, metadata);
 
             XElement createdInElem = unitTypeElem.Element(XmlMetadataConstants.CREATEDIN_ELEM);
             if (createdInElem != null)
@@ -103,14 +108,13 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="addonTypeElem">The XML node to load from.</param>
         /// <param name="metadata">The metadata object being constructed.</param>
-        private static void LoadAddonType(XElement addonTypeElem, SimMetadata metadata)
+        private static void LoadAddonType(XElement addonTypeElem, ScenarioMetadata metadata)
         {
             XAttribute nameAttr = addonTypeElem.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
             if (nameAttr == null) { throw new SimulatorException("Addon type name not defined!"); }
 
             AddonType addonType = new AddonType(nameAttr.Value, metadata);
-            LoadSimObjectTypeData(addonTypeElem, addonType, metadata);
-            LoadEntityTypeData(addonTypeElem, addonType, metadata);
+            LoadScenarioElementType(addonTypeElem, addonType, metadata);
 
             XElement mainBuildingElem = addonTypeElem.Element(XmlMetadataConstants.MAINBUILDING_ELEM);
             if (mainBuildingElem == null) { throw new SimulatorException("Main building not found for addon type!"); }
@@ -124,13 +128,13 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="upgradeTypeElem">The XML node to load from.</param>
         /// <param name="metadata">The metadata object being constructed.</param>
-        private static void LoadUpgradeType(XElement upgradeTypeElem, SimMetadata metadata)
+        private static void LoadUpgradeType(XElement upgradeTypeElem, ScenarioMetadata metadata)
         {
             XAttribute nameAttr = upgradeTypeElem.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
             if (nameAttr == null) { throw new SimulatorException("Upgrade type name not defined!"); }
 
             UpgradeType upgradeType = new UpgradeType(nameAttr.Value, metadata);
-            LoadSimObjectTypeData(upgradeTypeElem, upgradeType, metadata);
+            LoadScenarioElementType(upgradeTypeElem, upgradeType, metadata);
 
             XElement researchedInElem = upgradeTypeElem.Element(XmlMetadataConstants.RESEARCHEDIN_ELEM);
             if (researchedInElem != null) { upgradeType.SetResearchedIn(researchedInElem.Value); }
@@ -142,29 +146,35 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Loads the necessary data of a simulated object type.
+        /// Loads the necessary data of a scenario element type.
         /// </summary>
-        /// <param name="simObjTypeElem">The XML node to load from.</param>
-        /// <param name="simObjType">The simulated object type being constructed.</param>
+        /// <param name="elementTypeElem">The XML node to load from.</param>
+        /// <param name="elementType">The scenario element type being constructed.</param>
         /// <param name="metadata">The metadata object.</param>
-        private static void LoadSimObjectTypeData(XElement simObjTypeElem, SimObjectType simObjType, SimMetadata metadata)
+        private static void LoadScenarioElementType(XElement elementTypeElem, ScenarioElementType elementType, ScenarioMetadata metadata)
         {
-            /// Load the sprite palette of the object type.
-            XElement spritePaletteElem = simObjTypeElem.Element(XmlMetadataConstants.SPRITE_ELEM);
-            if (spritePaletteElem != null)
-            {
-                simObjType.SetSpritePalette(LoadSpritePalette(spritePaletteElem, metadata));
-            }
+            /// Load the sprite palette of the element type.
+            XElement spritePaletteElem = elementTypeElem.Element(XmlMetadataConstants.SPRITE_ELEM);
+            if (spritePaletteElem != null) { elementType.SetSpritePalette(LoadSpritePalette(spritePaletteElem, metadata)); }
 
-            /// Load the cost data of the object type.
-            XElement costsDataElem = simObjTypeElem.Element(XmlMetadataConstants.COSTS_ELEM);
-            if (costsDataElem != null)
-            {
-                simObjType.SetCostsData(LoadCostsData(costsDataElem, metadata));
-            }
+            /// Load the cost data of the element type.
+            XElement costsDataElem = elementTypeElem.Element(XmlMetadataConstants.COSTS_ELEM);
+            if (costsDataElem != null) { LoadCostsData(costsDataElem, elementType, metadata); }
 
-            /// Load the requirements of the object type.
-            XElement requiresElem = simObjTypeElem.Element(XmlMetadataConstants.REQUIRES_ELEM);
+            /// Load the general data of the element type.
+            XElement genDataElem = elementTypeElem.Element(XmlMetadataConstants.GENERALDATA_ELEM);
+            if (genDataElem != null) { LoadGeneralData(genDataElem, elementType, metadata); }
+
+            /// Load the ground weapon definition of the element type.
+            XElement gndWeaponElem = elementTypeElem.Element(XmlMetadataConstants.GROUNDWEAPON_ELEM);
+            if (gndWeaponElem != null) { elementType.SetGroundWeapon(LoadWeaponData(gndWeaponElem, metadata)); }
+
+            /// Load the air weapon definition of the element type.
+            XElement airWeaponElem = elementTypeElem.Element(XmlMetadataConstants.AIRWEAPON_ELEM);
+            if (airWeaponElem != null) { elementType.SetAirWeapon(LoadWeaponData(airWeaponElem, metadata)); }
+
+            /// Load the requirements of the element type.
+            XElement requiresElem = elementTypeElem.Element(XmlMetadataConstants.REQUIRES_ELEM);
             if (requiresElem != null)
             {
                 string reqListStr = requiresElem.Value.Trim();
@@ -172,27 +182,9 @@ namespace RC.Engine.Simulator.Core
                 foreach (string reqStr in requirementStrings)
                 {
                     Tuple<string, string> buildingAddonPair = ParseBuildingAddonStr(reqStr);
-                    simObjType.AddRequirement(new Requirement(buildingAddonPair.Item1, buildingAddonPair.Item2, metadata));
+                    elementType.AddRequirement(new Requirement(buildingAddonPair.Item1, buildingAddonPair.Item2, metadata));
                 }
             }
-        }
-
-        /// <summary>
-        /// Loads the necessary data of an entity type.
-        /// </summary>
-        /// <param name="entityTypeElem">The XML node to load from.</param>
-        /// <param name="entityType">The entity type being constructed.</param>
-        /// <param name="metadata">The metadata object.</param>
-        private static void LoadEntityTypeData(XElement entityTypeElem, EntityType entityType, SimMetadata metadata)
-        {
-            XElement genDataElem = entityTypeElem.Element(XmlMetadataConstants.GENERALDATA_ELEM);
-            if (genDataElem != null) { entityType.SetGeneralData(LoadGeneralData(genDataElem, metadata)); }
-
-            XElement gndWeaponElem = entityTypeElem.Element(XmlMetadataConstants.GROUNDWEAPON_ELEM);
-            if (gndWeaponElem != null) { entityType.SetGroundWeapon(LoadWeaponData(gndWeaponElem, metadata)); }
-
-            XElement airWeaponElem = entityTypeElem.Element(XmlMetadataConstants.AIRWEAPON_ELEM);
-            if (airWeaponElem != null) { entityType.SetAirWeapon(LoadWeaponData(airWeaponElem, metadata)); }
         }
 
         /// <summary>
@@ -201,7 +193,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="spritePaletteElem">The XML node to load from.</param>
         /// <param name="metadata">The metadata object.</param>
         /// <returns>The constructed sprite palette definition.</returns>
-        private static SpritePalette LoadSpritePalette(XElement spritePaletteElem, SimMetadata metadata)
+        private static SpritePalette LoadSpritePalette(XElement spritePaletteElem, ScenarioMetadata metadata)
         {
             XAttribute imageAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITE_IMAGE_ATTR);
             XAttribute transpColorAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITE_TRANSPCOLOR_ATTR);
@@ -233,11 +225,12 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Loads the general data of a building/unit/addon type from the given element.
+        /// Loads the general data of a scenario element type type from the given element.
         /// </summary>
         /// <param name="genDataElem">The XML element to load from.</param>
+        /// <param name="elementType">The scenario element type being constructed.</param>
         /// <param name="metadata">The metadata object.</param>
-        private static GeneralData LoadGeneralData(XElement genDataElem, SimMetadata metadata)
+        private static void LoadGeneralData(XElement genDataElem, ScenarioElementType elementType, ScenarioMetadata metadata)
         {
             XElement areaElem = genDataElem.Element(XmlMetadataConstants.GENDATA_AREA_ELEM);
             XElement armorElem = genDataElem.Element(XmlMetadataConstants.GENDATA_ARMOR_ELEM);
@@ -247,52 +240,41 @@ namespace RC.Engine.Simulator.Core
             XElement sizeElem = genDataElem.Element(XmlMetadataConstants.GENDATA_SIZE_ELEM);
             XElement speedElem = genDataElem.Element(XmlMetadataConstants.GENDATA_SPEED_ELEM);
 
-            if (areaElem == null) { throw new SimulatorException("Area not defined!"); }
-            if (maxHPElem == null) { throw new SimulatorException("MaxHP not defined!"); }
-            if (sightRangeElem == null) { throw new SimulatorException("SightRange not defined!"); }
-            if (sizeElem == null) { throw new SimulatorException("Size not defined!"); }
+            if (areaElem != null) { elementType.SetArea(XmlHelper.LoadNumVector(areaElem.Value)); }
+            if (armorElem != null) { elementType.SetArmor(XmlHelper.LoadInt(armorElem.Value)); }
+            if (maxEnergyElem != null) { elementType.SetMaxEnergy(XmlHelper.LoadInt(maxEnergyElem.Value)); }
+            if (maxHPElem != null) { elementType.SetMaxHP(XmlHelper.LoadInt(maxHPElem.Value)); }
+            if (sightRangeElem != null) { elementType.SetSightRange(XmlHelper.LoadInt(sightRangeElem.Value)); }
+            if (speedElem != null) { elementType.SetSpeed(XmlHelper.LoadNum(speedElem.Value)); }
 
-            GeneralData genData = new GeneralData(metadata);
-            genData.SetArea(XmlHelper.LoadNumVector(areaElem.Value));
-            genData.SetMaxHP(XmlHelper.LoadInt(maxHPElem.Value));
-            genData.SetSightRange(XmlHelper.LoadInt(sightRangeElem.Value));
-
-            SizeEnum size;
-            if (!EnumMap<SizeEnum, string>.Demap(sizeElem.Value, out size))
+            if (sizeElem != null)
             {
-                throw new SimulatorException(string.Format("Unexpected size '{0}' defined in general data!", sizeElem.Value));
+                SizeEnum size;
+                if (!EnumMap<SizeEnum, string>.Demap(sizeElem.Value, out size))
+                {
+                    throw new SimulatorException(string.Format("Unexpected size '{0}' defined in general data!", sizeElem.Value));
+                }
+                elementType.SetSize(size);
             }
-            genData.SetSize(size);
-
-            if (armorElem != null) { genData.SetArmor(XmlHelper.LoadInt(armorElem.Value)); }
-            if (maxEnergyElem != null) { genData.SetMaxEnergy(XmlHelper.LoadInt(maxEnergyElem.Value)); }
-            if (speedElem != null) { genData.SetSpeed(XmlHelper.LoadNum(speedElem.Value)); }
-
-            return genData;
         }
 
         /// <summary>
-        /// Loads the costs data of a building/unit/addon/upgrade type from the given element.
+        /// Loads the costs data of a scenario element type type from the given element.
         /// </summary>
         /// <param name="costsDataElem">The XML element to load from.</param>
+        /// <param name="elementType">The scenario element type being constructed.</param>
         /// <param name="metadata">The metadata object.</param>
-        private static CostsData LoadCostsData(XElement costsDataElem, SimMetadata metadata)
+        private static void LoadCostsData(XElement costsDataElem, ScenarioElementType elementType, ScenarioMetadata metadata)
         {
             XElement buildTimeElem = costsDataElem.Element(XmlMetadataConstants.COSTS_BUILDTIME_ELEM);
             XElement foodCostElem = costsDataElem.Element(XmlMetadataConstants.COSTS_FOODCOST_ELEM);
             XElement mineralCostElem = costsDataElem.Element(XmlMetadataConstants.COSTS_MINERALCOST_ELEM);
             XElement gasCostElem = costsDataElem.Element(XmlMetadataConstants.COSTS_GASCOST_ELEM);
 
-            if (buildTimeElem == null) { throw new SimulatorException("BuildTime not defined!"); }
-
-            CostsData costsData = new CostsData(metadata);
-            costsData.SetBuildTime(XmlHelper.LoadInt(buildTimeElem.Value));
-
-            if (foodCostElem != null) { costsData.SetFoodCost(XmlHelper.LoadInt(foodCostElem.Value)); }
-            if (mineralCostElem != null) { costsData.SetMineralCost(XmlHelper.LoadInt(mineralCostElem.Value)); }
-            if (gasCostElem != null) { costsData.SetGasCost(XmlHelper.LoadInt(gasCostElem.Value)); }
-
-            return costsData;
+            if (buildTimeElem != null) { elementType.SetBuildTime(XmlHelper.LoadInt(buildTimeElem.Value)); }
+            if (foodCostElem != null) { elementType.SetFoodCost(XmlHelper.LoadInt(foodCostElem.Value)); }
+            if (mineralCostElem != null) { elementType.SetMineralCost(XmlHelper.LoadInt(mineralCostElem.Value)); }
+            if (gasCostElem != null) { elementType.SetGasCost(XmlHelper.LoadInt(gasCostElem.Value)); }
         }
 
         /// <summary>
@@ -300,7 +282,7 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="weaponDataElem">The XML element to load from.</param>
         /// <param name="metadata">The metadata object.</param>
-        private static WeaponData LoadWeaponData(XElement weaponDataElem, SimMetadata metadata)
+        private static WeaponData LoadWeaponData(XElement weaponDataElem, ScenarioMetadata metadata)
         {
             XElement cooldownElem = weaponDataElem.Element(XmlMetadataConstants.WPN_COOLDOWN_ELEM);
             XElement damageElem = weaponDataElem.Element(XmlMetadataConstants.WPN_DAMAGE_ELEM);

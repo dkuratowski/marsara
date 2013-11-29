@@ -22,20 +22,39 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
         /// <param name="mapObjectView">Reference to a map object view.</param>
-        public RCMapObjectDisplay(RCMapDisplay extendedControl, IMapObjectView mapObjectView)
+        /// <param name="metadataView">Reference to the metadata view.</param>
+        public RCMapObjectDisplay(RCMapDisplay extendedControl, IMapObjectView mapObjectView, IMetadataView metadataView)
             : base(extendedControl, mapObjectView)
         {
             if (mapObjectView == null) { throw new ArgumentNullException("mapObjectView"); }
+            if (metadataView == null) { throw new ArgumentNullException("metadataView"); }
 
             this.mapObjectView = mapObjectView;
 
-            this.mapObjectSprites = new MapObjectSpriteGroup();
+            this.mapObjectSprites = new List<SpriteGroup>();
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Neutral));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player1));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player2));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player3));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player4));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player5));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player6));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player7));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player8));
+
             this.brushPalette = new BrushPaletteSpriteGroup();
             this.CurrentMouseStatus = MouseStatus.None;
             this.selectionBoxStartPosition = RCIntVector.Undefined;
             this.selectionBoxCurrPosition = RCIntVector.Undefined;
             this.isMouseHandlingActive = false;
         }
+
+        /// <summary>
+        /// Gets the sprite group of the map object types for the given player.
+        /// </summary>
+        /// <param name="player">The player that owns the sprite group..</param>
+        /// <returns>The sprite group of the map object types for the given player.</returns>
+        public SpriteGroup GetMapObjectSprites(Player player) { return this.mapObjectSprites[(int)player]; }
 
         /// <summary>
         /// This event is raised when a mouse handling activity has been started on this display.
@@ -92,14 +111,20 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="RCMapDisplayExtension.StartExtensionProc_i"/>
         protected override void StartExtensionProc_i()
         {
-            this.mapObjectSprites.Load();
+            foreach (SpriteGroup spriteGroup in this.mapObjectSprites)
+            {
+                spriteGroup.Load();
+            }
             this.brushPalette.Load();
         }
 
         /// <see cref="RCMapDisplayExtension.StopExtensionProc_i"/>
         protected override void StopExtensionProc_i()
         {
-            this.mapObjectSprites.Unload();
+            foreach (SpriteGroup spriteGroup in this.mapObjectSprites)
+            {
+                spriteGroup.Unload();
+            }
             this.brushPalette.Unload();
         }
 
@@ -139,7 +164,8 @@ namespace RC.App.PresLogic.Controls
             {
                 if (obj.Sprite.Index != -1)
                 {
-                    renderContext.RenderSprite(this.mapObjectSprites[obj.Sprite.Index],
+                    SpriteGroup spriteGroup = this.mapObjectSprites[(int)obj.Owner];
+                    renderContext.RenderSprite(spriteGroup[obj.Sprite.Index],
                                                obj.Sprite.DisplayCoords,
                                                obj.Sprite.Section);
                 }
@@ -326,9 +352,11 @@ namespace RC.App.PresLogic.Controls
         private SpriteGroup brushPalette;
 
         /// <summary>
-        /// This sprite-group contains the sprites of the map object.
+        /// This sprite-group contains the sprites of the map object types.
+        /// The 0th sprite group in this list contains the neutral variants of the sprites,
+        /// the Nth sprite group in this list contains the variant of the sprites for player N.
         /// </summary>
-        private SpriteGroup mapObjectSprites;
+        private List<SpriteGroup> mapObjectSprites;
 
         /// <summary>
         /// The current mouse status of this display.
@@ -356,5 +384,15 @@ namespace RC.App.PresLogic.Controls
         /// Reference to the map object view.
         /// </summary>
         private IMapObjectView mapObjectView;
+
+        /// <summary>
+        /// The default color of the transparent parts of the map object sprites.
+        /// </summary>
+        public static readonly UIColor DEFAULT_MAPOBJECT_TRANSPARENT_COLOR = new UIColor(255, 0, 255);
+
+        /// <summary>
+        /// The default owner mask color of the map object sprites.
+        /// </summary>
+        public static readonly UIColor DEFAULT_MAPOBJECT_OWNERMASK_COLOR = new UIColor(0, 255, 255);
     }
 }

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<simulationMetadata>
+<metadata>
   <unitType name="SCV">
     <costs>
       <food>1</food>
@@ -243,7 +243,7 @@
     </groundWeapon>
     <createdIn>Barracks</createdIn>
     <requires>Academy</requires>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </unitType>
   
   <unitType name="Ghost">
@@ -277,7 +277,7 @@
     </airWeapon>
     <createdIn>Barracks</createdIn>
     <requires>Academy,ScienceFacility-CovertOps</requires>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </unitType>
   
   <unitType name="Vulture">
@@ -301,7 +301,7 @@
       <cooldown>30</cooldown>
     </groundWeapon>
     <createdIn>Factory</createdIn>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </unitType>
   
   <unitType name="SiegeTank">
@@ -327,7 +327,7 @@
       <cooldown>37</cooldown>
     </groundWeapon>
     <createdIn>Factory-MachineShop</createdIn>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </unitType>
   
   <unitType name="Goliath">
@@ -361,7 +361,7 @@
     </airWeapon>
     <createdIn>Factory</createdIn>
     <requires>Armory</requires>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </unitType>
   
   <unitType name="Wraith">
@@ -394,7 +394,7 @@
       <cooldown>22</cooldown>
     </airWeapon>
     <createdIn>Starport</createdIn>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </unitType>
   
   <unitType name="Dropship">
@@ -413,7 +413,7 @@
       <speed>0.684</speed>
     </generalData>
     <createdIn>Starport-ControlTower</createdIn>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </unitType>
   
   <unitType name="ScienceVessel">
@@ -434,7 +434,7 @@
     </generalData>
     <createdIn>Starport-ControlTower</createdIn>
     <requires>ScienceFacility</requires>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </unitType>
   
   <unitType name="Battlecruiser">
@@ -469,6 +469,6 @@
     </airWeapon>
     <createdIn>Starport-ControlTower</createdIn>
     <requires>ScienceFacility-PhysicsLab</requires>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </unitType>
-</simulationMetadata>
+</metadata>

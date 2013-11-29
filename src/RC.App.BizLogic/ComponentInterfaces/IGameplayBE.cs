@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common.ComponentModel;
+using RC.App.BizLogic.PublicInterfaces;
 
-namespace RC.App.BizLogic.PublicInterfaces
+namespace RC.App.BizLogic.ComponentInterfaces
 {
     /// <summary>
     /// Interface to the gameplay backend component. The Gameplay page of the UI communicates directly with this interface.
@@ -27,10 +28,16 @@ namespace RC.App.BizLogic.PublicInterfaces
         ITileSetView CreateTileSetView();
 
         /// <summary>
-        /// Creates a view on the objects of the map of the currently running game.
+        /// Creates a view on the game engine metadata.
         /// </summary>
-        /// <returns>The view on the objects of the map of the currently running game.</returns>
-        /// <exception cref="InvalidOperationException">If there is no running game.</exception>
+        /// <returns>The view on the game engine metadata.</returns>
+        IMetadataView CreateMetadataView();
+
+        /// <summary>
+        /// Creates a view on the currently opened scenario.
+        /// </summary>
+        /// <returns>The view on the currently opened scenario.</returns>
+        /// <exception cref="InvalidOperationException">If there is no opened scenario.</exception>
         IMapObjectView CreateMapObjectView();
 
         /// <summary>

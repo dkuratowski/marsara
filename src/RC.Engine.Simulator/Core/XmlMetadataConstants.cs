@@ -10,11 +10,12 @@ namespace RC.Engine.Simulator.Core
     /// </summary>
     static class XmlMetadataConstants
     {
-        public const string SIMMETADATA_ELEM = "simulationMetadata";
+        public const string METADATA_ELEM = "metadata";
         public const string BUILDINGTYPE_ELEM = "buildingType";
         public const string ADDONTYPE_ELEM = "addonType";
         public const string UNITTYPE_ELEM = "unitType";
         public const string UPGRADETYPE_ELEM = "upgradeType";
+        public const string CUSTOMTYPE_ELEM = "customType";
         public const string TYPE_NAME_ATTR = "name";
         public const string GENERALDATA_ELEM = "generalData";
         public const string COSTS_ELEM = "costs";

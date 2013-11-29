@@ -4,19 +4,19 @@ using System.Linq;
 using System.Text;
 using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.Scenarios
 {
     /// <summary>
     /// Contains the definition of an upgrade type.
     /// </summary>
-    class UpgradeType : SimObjectType
+    class UpgradeType : ScenarioElementType, IUpgradeType
     {
         /// <summary>
         /// Constructs a new upgrade type.
         /// </summary>
         /// <param name="name">The name of this upgrade type.</param>
         /// <param name="metadata">The metadata object that this upgrade type belongs to.</param>
-        public UpgradeType(string name, SimMetadata metadata)
+        public UpgradeType(string name, ScenarioMetadata metadata)
             : base(name, metadata)
         {
             this.previousLevel = null;
@@ -25,15 +25,15 @@ namespace RC.Engine.Simulator.Core
             this.previousLevelName = null;
         }
 
-        /// <summary>
-        /// Gets the previous level of this upgrade type.
-        /// </summary>
-        public UpgradeType PreviousLevel { get { return this.previousLevel; } }
+        #region IUpgradeType members
 
-        /// <summary>
-        /// Gets the next level of this upgrade type.
-        /// </summary>
-        public UpgradeType NextLevel { get { return this.previousLevel; } }
+        /// <see cref="IUpgradeType.PreviousLevel"/>
+        public IUpgradeType PreviousLevel { get { return this.previousLevel; } }
+
+        /// <see cref="IUpgradeType.NextLevel"/>
+        public IUpgradeType NextLevel { get { return this.nextLevel; } }
+
+        #endregion IUpgradeType members
 
         #region UpgradeType buildup methods
 
@@ -58,7 +58,7 @@ namespace RC.Engine.Simulator.Core
             this.previousLevelName = previousLevelName;
         }
 
-        /// <see cref="SimObjectType.BuildupReferencesImpl"/>
+        /// <see cref="ScenarioElementType.BuildupReferencesImpl"/>
         protected override void BuildupReferencesImpl()
         {
             if (this.Metadata.IsFinalized) { return; }
@@ -67,11 +67,11 @@ namespace RC.Engine.Simulator.Core
             {
                 if (this.Metadata.HasBuildingType(this.researchedIn))
                 {
-                    this.Metadata.GetBuildingType(this.researchedIn).AddUpgradeType(this);
+                    this.Metadata.GetBuildingTypeImpl(this.researchedIn).AddUpgradeType(this);
                 }
                 else if (this.Metadata.HasAddonType(this.researchedIn))
                 {
-                    this.Metadata.GetAddonType(this.researchedIn).AddUpgradeType(this);
+                    this.Metadata.GetAddonTypeImpl(this.researchedIn).AddUpgradeType(this);
                 }
                 else
                 {
@@ -83,7 +83,7 @@ namespace RC.Engine.Simulator.Core
             {
                 if (!this.Metadata.HasUpgradeType(this.previousLevelName)) { throw new SimulatorException(string.Format("UpgradeType with name '{0}' doesn't exist!", this.previousLevelName)); }
 
-                UpgradeType previousLevelUpg = this.Metadata.GetUpgradeType(this.previousLevelName);
+                UpgradeType previousLevelUpg = this.Metadata.GetUpgradeTypeImpl(this.previousLevelName);
                 this.CheckPotentialPreviousLevel(previousLevelUpg);
                 this.previousLevel = previousLevelUpg;
                 this.previousLevel.nextLevel = this;

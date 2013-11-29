@@ -4,30 +4,31 @@ using System.Linq;
 using System.Text;
 using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.Scenarios
 {
     /// <summary>
     /// Contains the definition of a unit type.
     /// </summary>
-    class UnitType : EntityType
+    class UnitType : ScenarioElementType, IUnitType
     {
         /// <summary>
         /// Constructs a new unit type.
         /// </summary>
         /// <param name="name">The name of this unit type.</param>
         /// <param name="metadata">The metadata object that this unit type belongs to.</param>
-        public UnitType(string name, SimMetadata metadata)
+        public UnitType(string name, ScenarioMetadata metadata)
             : base(name, metadata)
         {
             this.necessaryAddon = null;
             this.createdIn = null;
         }
 
-        /// <summary>
-        /// Gets the addon type that is necessary to be attached to the building that creates
-        /// this type of units.
-        /// </summary>
-        public AddonType NecessaryAddon { get { return this.necessaryAddon; } }
+        #region IUnitType members
+
+        /// <see cref="IUnitType.NecessaryAddon"/>
+        public IAddonType NecessaryAddon { get { return this.necessaryAddon; } }
+
+        #endregion IUnitType members
 
         #region UnitType buildup methods
 
@@ -54,7 +55,7 @@ namespace RC.Engine.Simulator.Core
             this.necessaryAddonName = addonName;
         }
 
-        /// <see cref="SimObjectType.BuildupReferencesImpl"/>
+        /// <see cref="ScenarioElementType.BuildupReferencesImpl"/>
         protected override void BuildupReferencesImpl()
         {
             if (this.Metadata.IsFinalized) { return; }
@@ -65,10 +66,10 @@ namespace RC.Engine.Simulator.Core
                 if (this.necessaryAddonName != null)
                 {
                     if (!this.Metadata.HasAddonType(this.necessaryAddonName)) { throw new SimulatorException(string.Format("AddonType with name '{0}' doesn't exist!", this.necessaryAddonName)); }
-                    if (!this.Metadata.GetBuildingType(this.createdIn).HasAddonType(this.necessaryAddonName)) { throw new SimulatorException(string.Format("BuildingType '{0}' doesn't have AddonType '{1}'!", this.createdIn, this.necessaryAddonName)); }
-                    this.necessaryAddon = this.Metadata.GetAddonType(this.necessaryAddonName);
+                    if (!this.Metadata.GetBuildingTypeImpl(this.createdIn).HasAddonType(this.necessaryAddonName)) { throw new SimulatorException(string.Format("BuildingType '{0}' doesn't have AddonType '{1}'!", this.createdIn, this.necessaryAddonName)); }
+                    this.necessaryAddon = this.Metadata.GetAddonTypeImpl(this.necessaryAddonName);
                 }
-                this.Metadata.GetBuildingType(this.createdIn).AddUnitType(this);
+                this.Metadata.GetBuildingTypeImpl(this.createdIn).AddUnitType(this);
             }
             else if (this.necessaryAddonName != null)
             {

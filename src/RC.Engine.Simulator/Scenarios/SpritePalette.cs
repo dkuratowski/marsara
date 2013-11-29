@@ -5,17 +5,17 @@ using System.Text;
 using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.Scenarios
 {
     /// <summary>
     /// Represents the sprite palettes of the elements of the metadata.
     /// </summary>
-    class SpritePalette
+    class SpritePalette : ISpritePalette
     {
         /// <summary>
         /// Constructs a sprite palette.
         /// </summary>
-        /// <param name="imageData">The byte sequence that contains the image data of this indicator definition.</param>
+        /// <param name="imageData">The byte sequence that contains the image data of this sprite palette.</param>
         /// <param name="transpColorStr">
         /// The string that contains the transparent color of the image data or null if no transparent color is defined.
         /// </param>
@@ -23,7 +23,7 @@ namespace RC.Engine.Simulator.Core
         /// The string that contains the owner mask color of the image data or null if no owner mask color is defined.
         /// </param>
         /// <param name="metadata">The metadata object that this sprite palette belongs to.</param>
-        public SpritePalette(byte[] imageData, string transpColorStr, string ownerMaskColorStr, SimMetadata metadata)
+        public SpritePalette(byte[] imageData, string transpColorStr, string ownerMaskColorStr, ScenarioMetadata metadata)
         {
             if (metadata == null) { throw new ArgumentNullException("metadata"); }
             if (imageData == null || imageData.Length == 0) { throw new ArgumentNullException("imageData"); }
@@ -37,8 +37,24 @@ namespace RC.Engine.Simulator.Core
             this.metadata = metadata;
         }
 
+        #region ISpritePalette members
+
+        /// <see cref="ISpritePalette.ImageData"/>
+        public byte[] ImageData { get { return this.imageData; } }
+
+        /// <see cref="ISpritePalette.TransparentColorStr"/>
+        public string TransparentColorStr { get { return this.transparentColorStr; } }
+
+        /// <see cref="ISpritePalette.OwnerMaskColorStr"/>
+        public string OwnerMaskColorStr { get { return this.ownerMaskColorStr; } }
+
+        /// <see cref="ISpritePalette.Index"/>
+        public int Index { get { return this.index; } }
+
+        #endregion ISpritePalette members
+
         /// <summary>
-        /// Checks and finalizes the indicator definition object. Buildup methods will be unavailable after
+        /// Checks and finalizes the sprite palette object. Buildup methods will be unavailable after
         /// calling this method.
         /// </summary>
         public void CheckAndFinalize()
@@ -50,7 +66,7 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Sets the index of this indicator definition inside the metadata.
+        /// Sets the index of this sprite palette inside the metadata.
         /// </summary>
         /// <param name="newIndex">The new index.</param>
         public void SetIndex(int newIndex)
@@ -77,26 +93,6 @@ namespace RC.Engine.Simulator.Core
             this.sourceRegions.Add(name, sourceRegion);
             this.offsets.Add(name, offset);
         }
-
-        /// <summary>
-        /// Gets the byte sequence that contains the image data of this sprite palette.
-        /// </summary>
-        public byte[] ImageData { get { return this.imageData; } }
-
-        /// <summary>
-        /// Gets the string that contains the transparent color of the image data or null if no transparent color is defined.
-        /// </summary>
-        public string TransparentColorStr { get { return this.transparentColorStr; } }
-
-        /// <summary>
-        /// Gets the string that contains the owner mask color of the image data or null if no owner mask color is defined.
-        /// </summary>
-        public string OwnerMaskColorStr { get { return this.ownerMaskColorStr; } }
-
-        /// <summary>
-        /// Gets the index of this sprite palette inside the metadata.
-        /// </summary>
-        public int Index { get { return this.index; } }
 
         /// <summary>
         /// The byte sequence that contains the image data of this sprite palette.
@@ -131,6 +127,6 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Reference to the metadata object that this sprite palette belongs to.
         /// </summary>
-        private SimMetadata metadata;
+        private ScenarioMetadata metadata;
     }
 }

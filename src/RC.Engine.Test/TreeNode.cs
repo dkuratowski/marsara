@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RC.Engine.Simulator.Terran.TestHeapedObjects
+namespace RC.Engine.Test
 {
     class TreeNode : HeapedObject
     {

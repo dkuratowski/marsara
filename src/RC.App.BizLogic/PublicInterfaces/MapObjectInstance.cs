@@ -17,6 +17,11 @@ namespace RC.App.BizLogic.PublicInterfaces
         public MapSpriteInstance Sprite { get; set; }
 
         /// <summary>
+        /// The player that owns the object to be displayed or Player.Neutral if this is a neutral object.
+        /// </summary>
+        public Player Owner { get; set; }
+
+        /// <summary>
         /// The selection indicator of the object in the coordinate system of the display area or
         /// RCIntRectangle.Undefined if no selection indicator has to be displayed.
         /// </summary>

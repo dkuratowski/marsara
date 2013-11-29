@@ -9,6 +9,10 @@ using System.IO;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Maps.ComponentInterfaces;
 using RC.App.BizLogic.ComponentInterfaces;
+using RC.Engine.Simulator.PublicInterfaces;
+using RC.Engine.Maps.Core;
+using RC.Common;
+using RC.Engine.Simulator.Scenarios;
 
 namespace RC.App.BizLogic.Core
 {
@@ -32,7 +36,7 @@ namespace RC.App.BizLogic.Core
         {
             this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
             this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
-            this.scenarioSimulator = ComponentManager.GetInterface<ISimulator>();
+            this.scenarioLoader = ComponentManager.GetInterface<IScenarioLoader>();
             this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
         }
 
@@ -49,32 +53,46 @@ namespace RC.App.BizLogic.Core
         /// <see cref="IGameplayBE.CreateMapTerrainView"/>
         public IMapTerrainView CreateMapTerrainView()
         {
-            return new MapTerrainView(this.scenarioSimulator.Map);
+            return new MapTerrainView(this.testMap);
         }
 
         /// <see cref="IGameplayBE.CreateMapObjectView"/>
         public IMapObjectView CreateMapObjectView()
         {
-            return new MapObjectView(this.scenarioSimulator.Map, this.scenarioSimulator.GameObjects);
+            return new MapObjectView(this.testScenario);
+            /// TODO: get the map content manager from the loaded scenario !!!
+            //return new MapObjectView(this.testMap, new BspMapContentManager<IGameObject>(
+            //            new RCNumRectangle(-(RCNumber)1 / (RCNumber)2,
+            //                               -(RCNumber)1 / (RCNumber)2,
+            //                               this.testMap.CellSize.X,
+            //                               this.testMap.CellSize.Y),
+            //                               16,
+            //                               10));
         }
 
         /// <see cref="IGameplayBE.CreateMapDebugView"/>
         public IMapDebugView CreateMapDebugView()
         {
-            return new MapDebugView(this.scenarioSimulator.Map, this.pathFinder);
+            return new MapDebugView(this.testMap, this.pathFinder);
         }
 
         /// <see cref="IGameplayBE.CreateTileSetView"/>
         public ITileSetView CreateTileSetView()
         {
-            return new TileSetView(this.scenarioSimulator.Map.Tileset);
+            return new TileSetView(this.testMap.Tileset);
+        }
+
+        /// <see cref="IGameplayBE.CreateMetadataView"/>
+        public IMetadataView CreateMetadataView()
+        {
+            return new MetadataView(this.scenarioLoader.Metadata);
         }
 
         /// <see cref="IGameplayBE.CreateTileSetView"/>
         /// PROTOTYPE CODE
         public void UpdateSimulation()
         {
-            this.scenarioSimulator.SimulateNextFrame();
+            //this.scenarioLoader.SimulateNextFrame();
         }
 
         /// TODO: Remove this section when no longer necessary *********************************************************
@@ -82,10 +100,12 @@ namespace RC.App.BizLogic.Core
         {
             byte[] mapBytes = File.ReadAllBytes(".\\maps\\testmap.rcm");
             MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
-            IMapAccess testMap = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
-            this.scenarioSimulator.BeginScenario(testMap);
+            this.testMap = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
+            this.testScenario = this.scenarioLoader.LoadScenario(this.testMap, mapBytes);
         }
 
+        private IScenario testScenario;
+        private IMapAccess testMap;
         private IMapLoader mapLoader;
         private ITileSetStore tilesetStore;
         /// TODO_END ***************************************************************************************************
@@ -93,9 +113,9 @@ namespace RC.App.BizLogic.Core
         #endregion IGameplayBE methods
 
         /// <summary>
-        /// Reference to the RC.Engine.Simulator.Simulator component.
+        /// Reference to the RC.Engine.Simulator.ScenarioLoader component.
         /// </summary>
-        private ISimulator scenarioSimulator;
+        private IScenarioLoader scenarioLoader;
 
         /// <summary>
         /// Reference to the RC.Engine.Simulator.PathFinder component.

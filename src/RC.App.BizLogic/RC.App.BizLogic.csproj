@@ -73,26 +73,30 @@
     <Compile Include="Core\GameplayBE.cs" />
     <Compile Include="Core\MapDebugView.cs" />
     <Compile Include="Core\MapEditorBE.cs" />
+    <Compile Include="Core\MapObjectPlacementView.cs" />
     <Compile Include="Core\MapObjectView.cs" />
     <Compile Include="Core\MapTerrainView.cs" />
     <Compile Include="Core\MapViewBase.cs" />
+    <Compile Include="Core\MetadataView.cs" />
     <Compile Include="Core\TerrainObjectPlacementView.cs" />
     <Compile Include="Core\TileSetStore.cs" />
     <Compile Include="Core\TileSetView.cs" />
     <Compile Include="ComponentInterfaces\ITileSetStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PublicInterfaces\IGameplayBE.cs" />
+    <Compile Include="ComponentInterfaces\IGameplayBE.cs" />
     <Compile Include="PublicInterfaces\IMapDebugView.cs" />
-    <Compile Include="PublicInterfaces\IMapEditorBE.cs" />
+    <Compile Include="ComponentInterfaces\IMapEditorBE.cs" />
     <Compile Include="PublicInterfaces\IMapObjectView.cs" />
     <Compile Include="PublicInterfaces\IMapTerrainView.cs" />
     <Compile Include="PublicInterfaces\IMapView.cs" />
+    <Compile Include="PublicInterfaces\IMetadataView.cs" />
     <Compile Include="PublicInterfaces\IObjectPlacementView.cs" />
     <Compile Include="PublicInterfaces\MapObjectInstance.cs" />
     <Compile Include="PublicInterfaces\MapSpriteInstance.cs" />
     <Compile Include="PublicInterfaces\MapSpriteType.cs" />
     <Compile Include="PublicInterfaces\ITileSetView.cs" />
     <Compile Include="PublicInterfaces\ObjectPlacementBox.cs" />
+    <Compile Include="PublicInterfaces\Player.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj">

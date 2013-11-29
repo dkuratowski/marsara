@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<simulationMetadata>
+<metadata>
   <addonType name="ComsatStation">
     <costs>
       <mineral>50</mineral>
@@ -16,7 +16,7 @@
     </generalData>
     <mainBuilding>CommandCenter</mainBuilding>
     <requires>Academy</requires>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </addonType>
   <addonType name="NuclearSilo">
     <costs>
@@ -33,7 +33,7 @@
     </generalData>
     <mainBuilding>CommandCenter</mainBuilding>
     <requires>ScienceFacility-CovertOps</requires>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </addonType>
   <addonType name="MachineShop">
     <costs>
@@ -49,7 +49,7 @@
       <sightRange>11</sightRange>
     </generalData>
     <mainBuilding>Factory</mainBuilding>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </addonType>
   <addonType name="ControlTower">
     <costs>
@@ -65,7 +65,7 @@
       <sightRange>11</sightRange>
     </generalData>
     <mainBuilding>Starport</mainBuilding>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </addonType>
   <addonType name="CovertOps">
     <costs>
@@ -81,7 +81,7 @@
       <sightRange>11</sightRange>
     </generalData>
     <mainBuilding>ScienceFacility</mainBuilding>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </addonType>
   <addonType name="PhysicsLab">
     <costs>
@@ -97,6 +97,6 @@
       <sightRange>11</sightRange>
     </generalData>
     <mainBuilding>ScienceFacility</mainBuilding>
-    <sprite image="terran_scv.png" />
+    <!--sprite image="terran_scv.png" /-->
   </addonType>
-</simulationMetadata>
+</metadata>

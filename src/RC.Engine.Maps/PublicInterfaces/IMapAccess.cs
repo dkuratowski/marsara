@@ -58,6 +58,13 @@ namespace RC.Engine.Maps.PublicInterfaces
         RCIntRectangle QuadToCellRect(RCIntRectangle quadRect);
 
         /// <summary>
+        /// Computes the minimum size of a quadratic rectangle that can cover an area on the map with the given size.
+        /// </summary>
+        /// <param name="cellSize">The size of the area in cells.</param>
+        /// <returns>The minimum size of a covering quadratic rectangle.</returns>
+        RCIntVector CellToQuadSize(RCNumVector cellSize);
+
+        /// <summary>
         /// Begines a tile exchanging operation.
         /// </summary>
         void BeginExchangingTiles();
