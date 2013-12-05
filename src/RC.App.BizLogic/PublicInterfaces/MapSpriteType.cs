@@ -13,7 +13,7 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// <summary>
         /// This flag indicates whether the image data might belong to a player (true) or is always neutral.
         /// </summary>
-        public bool HasPlayer { get; set; }
+        public bool HasOwner { get; set; }
 
         /// <summary>
         /// The byte-stream that contains the image data of this map sprite type.

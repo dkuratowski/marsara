@@ -162,12 +162,15 @@ namespace RC.App.PresLogic.Controls
             /// Render the object sprites.
             foreach (MapObjectInstance obj in mapObjects)
             {
-                if (obj.Sprite.Index != -1)
+                foreach (MapSpriteInstance spriteToDisplay in obj.Sprites)
                 {
-                    SpriteGroup spriteGroup = this.mapObjectSprites[(int)obj.Owner];
-                    renderContext.RenderSprite(spriteGroup[obj.Sprite.Index],
-                                               obj.Sprite.DisplayCoords,
-                                               obj.Sprite.Section);
+                    if (spriteToDisplay.Index != -1)
+                    {
+                        SpriteGroup spriteGroup = this.mapObjectSprites[(int)obj.Owner];
+                        renderContext.RenderSprite(spriteGroup[spriteToDisplay.Index],
+                                                   spriteToDisplay.DisplayCoords,
+                                                   spriteToDisplay.Section);
+                    }
                 }
             }
 

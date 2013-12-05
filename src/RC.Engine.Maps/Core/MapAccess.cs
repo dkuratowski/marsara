@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Common;
+using RC.Common.Configuration;
 
 namespace RC.Engine.Maps.Core
 {
@@ -116,8 +117,8 @@ namespace RC.Engine.Maps.Core
                                            -(RCNumber)1 / (RCNumber)2,
                                            this.CellSize.X,
                                            this.CellSize.Y),
-                                           Constants.BSP_NODE_CAPACITY,
-                                           Constants.BSP_MIN_NODE_SIZE);
+                                           ConstantsTable.Get<int>("RC.Engine.Maps.BspNodeCapacity"),
+                                           ConstantsTable.Get<int>("RC.Engine.Maps.BspMinNodeSize"));
                 }
                 return this.terrainObjects;
             }

@@ -42,6 +42,9 @@ namespace RC.App.PresLogic.Controls
 
             this.objectPlacementView = objPlacementView;
             this.objects = objectGroup;
+
+            // TODO: remove
+            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnUpdate);
         }
 
         /// <summary>
@@ -51,6 +54,9 @@ namespace RC.App.PresLogic.Controls
         {
             this.objectPlacementView = null;
             this.objects = null;
+
+            // TODO: remove
+            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnUpdate);
         }
 
         /// <summary>
@@ -76,9 +82,12 @@ namespace RC.App.PresLogic.Controls
             if (this.DisplayedArea != RCIntRectangle.Undefined && this.objectPlacementView != null && this.lastKnownMousePosition != RCIntVector.Undefined)
             {
                 ObjectPlacementBox placementBox = this.objectPlacementView.GetObjectPlacementBox(this.DisplayedArea, this.lastKnownMousePosition);
-                
-                UISprite spriteToDisplay = this.objects[placementBox.Sprite.Index];
-                renderContext.RenderSprite(spriteToDisplay, placementBox.Sprite.DisplayCoords, placementBox.Sprite.Section);
+
+                foreach (MapSpriteInstance spriteToDisplay in placementBox.Sprites)
+                {
+                    UISprite uiSpriteToDisplay = this.objects[spriteToDisplay.Index];
+                    renderContext.RenderSprite(uiSpriteToDisplay, spriteToDisplay.DisplayCoords, spriteToDisplay.Section);
+                }
 
                 foreach (RCIntRectangle part in placementBox.IllegalParts)
                 {
@@ -101,6 +110,12 @@ namespace RC.App.PresLogic.Controls
             {
                 this.lastKnownMousePosition = evtArgs.Position;
             }
+        }
+
+        /// TODO: remove
+        private void OnUpdate(UIUpdateSystemEventArgs args)
+        {
+            this.objectPlacementView.StepAnimation();
         }
 
         /// <summary>

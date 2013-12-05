@@ -25,6 +25,7 @@ namespace RC.Engine.Simulator.Core
             this.typeIDs = new Dictionary<string, short>();
             this.types = new List<HeapType>();
             this.heapTypeContainers = new HashSet<Assembly>();
+            this.heapTypeContainers.Add(this.GetType().Assembly);
             this.inheritenceTree = new Dictionary<string, IHeapType[]>();
 
             this.sectionObjectPool = new Queue<HeapSection>();

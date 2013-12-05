@@ -28,52 +28,17 @@ namespace RC.App.BizLogic.Core
         public List<MapSpriteType> GetMapObjectTypes()
         {
             List<MapSpriteType> retList = new List<MapSpriteType>();
-            foreach (IUnitType unitType in this.metadata.UnitTypes)
+            foreach (IScenarioElementType objType in this.metadata.AllTypes)
             {
-                if (unitType.SpritePalette != null)
+                if (objType.SpritePalette != null)
                 {
-                    MapSpriteType info = this.CreateMapSpriteType(unitType);
-                    info.HasPlayer = true;
-                    retList.Add(info);
-                }
-            }
-
-            foreach (IBuildingType buildingType in this.metadata.BuildingTypes)
-            {
-                if (buildingType.SpritePalette != null)
-                {
-                    MapSpriteType info = this.CreateMapSpriteType(buildingType);
-                    info.HasPlayer = true;
-                    retList.Add(info);
-                }
-            }
-
-            foreach (IAddonType addonType in this.metadata.AddonTypes)
-            {
-                if (addonType.SpritePalette != null)
-                {
-                    MapSpriteType info = this.CreateMapSpriteType(addonType);
-                    info.HasPlayer = true;
-                    retList.Add(info);
-                }
-            }
-
-            foreach (IScenarioElementType customType in this.metadata.CustomTypes)
-            {
-                if (customType.SpritePalette != null)
-                {
-                    MapSpriteType info = this.CreateMapSpriteType(customType);
-                    info.HasPlayer = true;
-                    retList.Add(info);
-                }
-            }
-
-            foreach (IUpgradeType upgradeType in this.metadata.UpgradeTypes)
-            {
-                if (upgradeType.SpritePalette != null)
-                {
-                    MapSpriteType info = this.CreateMapSpriteType(upgradeType);
-                    info.HasPlayer = false;
+                    byte[] imageData = new byte[objType.SpritePalette.ImageData.Length];
+                    Array.Copy(objType.SpritePalette.ImageData, imageData, objType.SpritePalette.ImageData.Length);
+                    MapSpriteType info = new MapSpriteType();
+                    info.ImageData = imageData;
+                    info.TransparentColorStr = objType.SpritePalette.TransparentColorStr;
+                    info.OwnerMaskColorStr = objType.SpritePalette.OwnerMaskColorStr;
+                    info.HasOwner = objType.HasOwner;
                     retList.Add(info);
                 }
             }

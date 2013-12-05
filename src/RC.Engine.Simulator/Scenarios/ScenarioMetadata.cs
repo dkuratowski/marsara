@@ -23,6 +23,7 @@ namespace RC.Engine.Simulator.Scenarios
             this.unitTypes = new Dictionary<string, UnitType>();
             this.upgradeTypes = new Dictionary<string, UpgradeType>();
             this.customTypes = new Dictionary<string, ScenarioElementType>();
+            this.allTypes = new List<ScenarioElementType>();
         }
 
         #region IScenarioMetadata members
@@ -113,6 +114,12 @@ namespace RC.Engine.Simulator.Scenarios
         /// <see cref="IScenarioMetadata.CustomTypes"/>
         public IEnumerable<IScenarioElementType> CustomTypes { get { return this.customTypes.Values; } }
 
+        /// <see cref="IScenarioMetadata.AllTypes"/>
+        public IEnumerable<IScenarioElementType> AllTypes { get { return this.allTypes; } }
+
+        /// <see cref="IScenarioMetadata.this[]"/>
+        public IScenarioElementType this[int typeID] { get { return this.allTypes[typeID]; } }
+
         #endregion IScenarioMetadata members
 
         #region Internal public methods
@@ -189,6 +196,8 @@ namespace RC.Engine.Simulator.Scenarios
                 this.customTypes.ContainsKey(buildingType.Name)) { throw new InvalidOperationException(string.Format("ScenarioMetadata element with name '{0}' already defined!", buildingType.Name)); }
 
             this.buildingTypes.Add(buildingType.Name, buildingType);
+            buildingType.SetID(this.allTypes.Count);
+            this.allTypes.Add(buildingType);
         }
 
         /// <summary>
@@ -206,6 +215,8 @@ namespace RC.Engine.Simulator.Scenarios
                 this.customTypes.ContainsKey(unitType.Name)) { throw new InvalidOperationException(string.Format("ScenarioMetadata element with name '{0}' already defined!", unitType.Name)); }
 
             this.unitTypes.Add(unitType.Name, unitType);
+            unitType.SetID(this.allTypes.Count);
+            this.allTypes.Add(unitType);
         }
 
         /// <summary>
@@ -223,6 +234,8 @@ namespace RC.Engine.Simulator.Scenarios
                 this.customTypes.ContainsKey(addonType.Name)) { throw new InvalidOperationException(string.Format("ScenarioMetadata element with name '{0}' already defined!", addonType.Name)); }
 
             this.addonTypes.Add(addonType.Name, addonType);
+            addonType.SetID(this.allTypes.Count);
+            this.allTypes.Add(addonType);
         }
 
         /// <summary>
@@ -240,6 +253,8 @@ namespace RC.Engine.Simulator.Scenarios
                 this.customTypes.ContainsKey(upgradeType.Name)) { throw new InvalidOperationException(string.Format("ScenarioMetadata element with name '{0}' already defined!", upgradeType.Name)); }
 
             this.upgradeTypes.Add(upgradeType.Name, upgradeType);
+            upgradeType.SetID(this.allTypes.Count);
+            this.allTypes.Add(upgradeType);
         }
 
         /// <summary>
@@ -257,6 +272,8 @@ namespace RC.Engine.Simulator.Scenarios
                 this.customTypes.ContainsKey(customType.Name)) { throw new InvalidOperationException(string.Format("ScenarioMetadata element with name '{0}' already defined!", customType.Name)); }
 
             this.customTypes.Add(customType.Name, customType);
+            customType.SetID(this.allTypes.Count);
+            this.allTypes.Add(customType);
         }
 
         /// <summary>
@@ -264,46 +281,24 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         public void CheckAndFinalize()
         {
-            List<ScenarioElementType> objList = new List<ScenarioElementType>();
-
             /// Buildup the references of the upgrade types.
-            foreach (UpgradeType upgradeType in this.upgradeTypes.Values)
-            {
-                upgradeType.BuildupReferences();
-                objList.Add(upgradeType);
-            }
+            foreach (UpgradeType upgradeType in this.upgradeTypes.Values) { upgradeType.BuildupReferences(); }
 
             /// Buildup the references of the addon types.
-            foreach (AddonType addonType in this.addonTypes.Values)
-            {
-                addonType.BuildupReferences();
-                objList.Add(addonType);
-            }
+            foreach (AddonType addonType in this.addonTypes.Values) { addonType.BuildupReferences(); }
 
             /// Buildup the references of the unit types.
-            foreach (UnitType unitType in this.unitTypes.Values)
-            {
-                unitType.BuildupReferences();
-                objList.Add(unitType);
-            }
+            foreach (UnitType unitType in this.unitTypes.Values) { unitType.BuildupReferences(); }
 
             /// Buildup the references of the building types.
-            foreach (BuildingType buildingType in this.buildingTypes.Values)
-            {
-                buildingType.BuildupReferences();
-                objList.Add(buildingType);
-            }
+            foreach (BuildingType buildingType in this.buildingTypes.Values) { buildingType.BuildupReferences(); }
 
             /// Buildup the references of the custom types.
-            foreach (ScenarioElementType customType in this.customTypes.Values)
-            {
-                customType.BuildupReferences();
-                objList.Add(customType);
-            }
+            foreach (ScenarioElementType customType in this.customTypes.Values) { customType.BuildupReferences(); }
 
             /// Finalize all object types and set the sprite palette indices.
             int currIdx = 0;
-            foreach (ScenarioElementType objType in objList)
+            foreach (ScenarioElementType objType in this.allTypes)
             {
                 SpritePalette spritePalette = objType.GetSpritePaletteImpl();
                 if (spritePalette != null)
@@ -311,6 +306,7 @@ namespace RC.Engine.Simulator.Scenarios
                     spritePalette.SetIndex(currIdx);
                     currIdx++;
                 }
+
                 objType.CheckAndFinalize();
             }
 
@@ -343,6 +339,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// List of the defined custom types mapped by their names.
         /// </summary>
         private Dictionary<string, ScenarioElementType> customTypes;
+
+        /// <summary>
+        /// List of all defined types mapped by their IDs.
+        /// </summary>
+        private List<ScenarioElementType> allTypes;
 
         /// <summary>
         /// Indicates whether this metadata object has been finalized or not.

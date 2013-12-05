@@ -31,8 +31,9 @@ namespace RC.Engine.Simulator.Scenarios
             this.imageData = imageData;
             this.transparentColorStr = transpColorStr;
             this.ownerMaskColorStr = ownerMaskColorStr;
-            this.sourceRegions = new Dictionary<string, RCIntRectangle>();
-            this.offsets = new Dictionary<string, RCIntVector>();
+            this.sourceRegions = new List<RCIntRectangle>();
+            this.offsets = new List<RCIntVector>();
+            this.indexTable = new Dictionary<string, int>();
 
             this.metadata = metadata;
         }
@@ -50,6 +51,20 @@ namespace RC.Engine.Simulator.Scenarios
 
         /// <see cref="ISpritePalette.Index"/>
         public int Index { get { return this.index; } }
+
+        /// <see cref="ISpritePalette.GetSpriteIndex"/>
+        public int GetSpriteIndex(string spriteName)
+        {
+            if (spriteName == null) { throw new ArgumentNullException("spriteName"); }
+            if (!this.indexTable.ContainsKey(spriteName)) { throw new SimulatorException(string.Format("Sprite with name '{0}' doesn't exist!", spriteName)); }
+            return this.indexTable[spriteName];
+        }
+
+        /// <see cref="ISpritePalette.GetSection"/>
+        public RCIntRectangle GetSection(int spriteIdx) { return this.sourceRegions[spriteIdx]; }
+
+        /// <see cref="ISpritePalette.GetOffset"/>
+        public RCIntVector GetOffset(int spriteIdx) { return this.offsets[spriteIdx]; }
 
         #endregion ISpritePalette members
 
@@ -77,21 +92,22 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <summary>
-        /// Adds a frame to this sprite palette.
+        /// Adds a sprite to this sprite palette.
         /// </summary>
-        /// <param name="name">The name of the frame to add.</param>
-        /// <param name="sourceRegion">The source region of the frame to add.</param>
-        /// <param name="offset">The offset of the frame to add.</param>
-        public void AddFrame(string name, RCIntRectangle sourceRegion, RCIntVector offset)
+        /// <param name="name">The name of the sprite to add.</param>
+        /// <param name="sourceRegion">The source region of the sprite to add.</param>
+        /// <param name="offset">The offset of the sprite to add.</param>
+        public void AddSprite(string name, RCIntRectangle sourceRegion, RCIntVector offset)
         {
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (name == null) { throw new ArgumentNullException("name"); }
             if (sourceRegion == RCIntRectangle.Undefined) { throw new ArgumentNullException("sourceRegion"); }
             if (offset == RCIntVector.Undefined) { throw new ArgumentNullException("offset"); }
-            if (this.sourceRegions.ContainsKey(name)) { throw new SimulatorException(string.Format("Frame with name '{0}' already exists!", name)); }
+            if (this.indexTable.ContainsKey(name)) { throw new SimulatorException(string.Format("Sprite with name '{0}' already exists!", name)); }
 
-            this.sourceRegions.Add(name, sourceRegion);
-            this.offsets.Add(name, offset);
+            this.indexTable.Add(name, this.sourceRegions.Count);
+            this.sourceRegions.Add(sourceRegion);
+            this.offsets.Add(offset);
         }
 
         /// <summary>
@@ -115,14 +131,19 @@ namespace RC.Engine.Simulator.Scenarios
         private int index;
 
         /// <summary>
-        /// List of the source regions of the frames mapped by their names.
+        /// List of the source regions of the sprites.
         /// </summary>
-        private Dictionary<string, RCIntRectangle> sourceRegions;
+        private List<RCIntRectangle> sourceRegions;
 
         /// <summary>
-        /// List of the offsets of the frames mapped by their names.
+        /// List of the offsets of the sprites.
         /// </summary>
-        private Dictionary<string, RCIntVector> offsets;
+        private List<RCIntVector> offsets;
+
+        /// <summary>
+        /// The indices of the sprites mapped by their names.
+        /// </summary>
+        private Dictionary<string, int> indexTable;
 
         /// <summary>
         /// Reference to the metadata object that this sprite palette belongs to.

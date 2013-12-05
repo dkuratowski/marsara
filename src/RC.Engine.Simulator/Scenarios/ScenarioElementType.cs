@@ -23,9 +23,12 @@ namespace RC.Engine.Simulator.Scenarios
             if (metadata == null) { throw new ArgumentNullException("metadata"); }
             if (metadata.IsFinalized) { throw new InvalidOperationException("ScenarioMetadata already finalized!"); }
 
+            this.id = -1;
             this.name = name;
+            this.hasOwner = false;
             this.metadata = metadata;
             this.spritePalette = null;
+            this.animationPalette = null;
             this.requirements = new List<Requirement>();
         }
 
@@ -34,8 +37,17 @@ namespace RC.Engine.Simulator.Scenarios
         /// <see cref="IScenarioElementType.Name"/>
         public string Name { get { return this.name; } }
 
+        /// <see cref="IScenarioElementType.ID"/>
+        public int ID { get { return this.id; } }
+
+        /// <see cref="IScenarioElementType.HasOwner"/>
+        public bool HasOwner { get { return this.hasOwner; } }
+
         /// <see cref="IScenarioElementType.SpritePalette"/>
         public ISpritePalette SpritePalette { get { return this.GetSpritePaletteImpl(); } }
+
+        /// <see cref="IScenarioElementType.AnimationPalette"/>
+        public IAnimationPalette AnimationPalette { get { return this.GetAnimationPaletteImpl(); } }
 
         #region Costs data properties
 
@@ -95,19 +107,54 @@ namespace RC.Engine.Simulator.Scenarios
         /// <see cref="IScenarioElementType.SpritePalette"/>
         public SpritePalette GetSpritePaletteImpl() { return this.spritePalette; }
 
+        /// <see cref="IScenarioElementType.AnimationPalette"/>
+        public AnimationPalette GetAnimationPaletteImpl() { return this.animationPalette; }
+
         #endregion Internal public methods
 
         #region ScenarioElementType buildup methods
 
         /// <summary>
-        /// Sets the sprite palette of this object type.
+        /// Sets the ID of this element type.
         /// </summary>
-        /// <param name="spritePalette">The sprite palette of this object type.</param>
+        /// <param name="id">The ID of this element type.</param>
+        public void SetID(int id)
+        {
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (id < 0) { throw new ArgumentOutOfRangeException("id"); }
+            this.id = id;
+        }
+
+        /// <summary>
+        /// Sets the hasOwner flag of this element type.
+        /// </summary>
+        /// <param name="hasOwner">The new value of the hasOwner flag.</param>
+        public void SetHasOwner(bool hasOwner)
+        {
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.hasOwner = hasOwner;
+        }
+
+        /// <summary>
+        /// Sets the sprite palette of this element type.
+        /// </summary>
+        /// <param name="spritePalette">The sprite palette of this element type.</param>
         public void SetSpritePalette(SpritePalette spritePalette)
         {
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (spritePalette == null) { throw new ArgumentNullException("spritePalette"); }
             this.spritePalette = spritePalette;
+        }
+
+        /// <summary>
+        /// Sets the animation palette of this element type.
+        /// </summary>
+        /// <param name="animationPalette">The animation palette of this element type.</param>
+        public void SetAnimationPalette(AnimationPalette animationPalette)
+        {
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (animationPalette == null) { throw new ArgumentNullException("animationPalette"); }
+            this.animationPalette = animationPalette;
         }
 
         /// <summary>
@@ -271,6 +318,7 @@ namespace RC.Engine.Simulator.Scenarios
             if (!this.metadata.IsFinalized)
             {
                 if (this.spritePalette != null) { this.spritePalette.CheckAndFinalize(); }
+                if (this.animationPalette != null) { this.animationPalette.CheckAndFinalize(); }
                 if (this.groundWeapon != null) { this.groundWeapon.CheckAndFinalize(); }
                 if (this.airWeapon != null) { this.airWeapon.CheckAndFinalize(); }
 
@@ -317,9 +365,25 @@ namespace RC.Engine.Simulator.Scenarios
         private string name;
 
         /// <summary>
+        /// The ID of this element type. Must be unique in the metadata.
+        /// </summary>
+        private int id;
+
+        /// <summary>
+        /// This flag indicates whether the instances of this type might belong to a player (true) or are
+        /// always neutral.
+        /// </summary>
+        private bool hasOwner;
+
+        /// <summary>
         /// The sprite palette of this element type.
         /// </summary>
         private SpritePalette spritePalette;
+
+        /// <summary>
+        /// The animation palette of this element type.
+        /// </summary>
+        private AnimationPalette animationPalette;
 
         /// <summary>
         /// The costs data of this element type.

@@ -104,7 +104,7 @@ namespace RC.App.BizLogic.Core
             this.testScenario = this.scenarioLoader.LoadScenario(this.testMap, mapBytes);
         }
 
-        private IScenario testScenario;
+        private Scenario testScenario;
         private IMapAccess testMap;
         private IMapLoader mapLoader;
         private ITileSetStore tilesetStore;

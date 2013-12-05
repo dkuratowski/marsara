@@ -153,9 +153,26 @@ namespace RC.Engine.Simulator.Core
         /// <param name="metadata">The metadata object.</param>
         private static void LoadScenarioElementType(XElement elementTypeElem, ScenarioElementType elementType, ScenarioMetadata metadata)
         {
+            /// Load the has owner flag of the element type.
+            XAttribute hasOwnerAttr = elementTypeElem.Attribute(XmlMetadataConstants.TYPE_HASOWNER_ATTR);
+            elementType.SetHasOwner(hasOwnerAttr != null && XmlHelper.LoadBool(hasOwnerAttr.Value));
+
             /// Load the sprite palette of the element type.
-            XElement spritePaletteElem = elementTypeElem.Element(XmlMetadataConstants.SPRITE_ELEM);
-            if (spritePaletteElem != null) { elementType.SetSpritePalette(LoadSpritePalette(spritePaletteElem, metadata)); }
+            XElement spritePaletteElem = elementTypeElem.Element(XmlMetadataConstants.SPRITEPALETTE_ELEM);
+            SpritePalette spritePalette = null;
+            if (spritePaletteElem != null)
+            {
+                spritePalette = LoadSpritePalette(spritePaletteElem, metadata);
+                elementType.SetSpritePalette(spritePalette);
+            }
+
+            /// Load the animation palette of the element type.
+            XElement animPaletteElem = elementTypeElem.Element(XmlMetadataConstants.ANIMPALETTE_ELEM);
+            if (animPaletteElem != null)
+            {
+                if (spritePalette == null) { throw new SimulatorException("Animation palette definition requires a sprite palette definition!"); }
+                elementType.SetAnimationPalette(LoadAnimationPalette(animPaletteElem, spritePalette, metadata));
+            }
 
             /// Load the cost data of the element type.
             XElement costsDataElem = elementTypeElem.Element(XmlMetadataConstants.COSTS_ELEM);
@@ -195,9 +212,9 @@ namespace RC.Engine.Simulator.Core
         /// <returns>The constructed sprite palette definition.</returns>
         private static SpritePalette LoadSpritePalette(XElement spritePaletteElem, ScenarioMetadata metadata)
         {
-            XAttribute imageAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITE_IMAGE_ATTR);
-            XAttribute transpColorAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITE_TRANSPCOLOR_ATTR);
-            XAttribute ownerMaskColorAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITE_OWNERMASKCOLOR_ATTR);
+            XAttribute imageAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITEPALETTE_IMAGE_ATTR);
+            XAttribute transpColorAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITEPALETTE_TRANSPCOLOR_ATTR);
+            XAttribute ownerMaskColorAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITEPALETTE_OWNERMASKCOLOR_ATTR);
             if (imageAttr == null) { throw new SimulatorException("Image not defined for sprite palette!"); }
 
             /// Read the image data.
@@ -211,17 +228,124 @@ namespace RC.Engine.Simulator.Core
                                                             metadata);
 
             /// Load the frames.
-            foreach (XElement frameElem in spritePaletteElem.Elements(XmlMetadataConstants.FRAME_ELEM))
+            foreach (XElement frameElem in spritePaletteElem.Elements(XmlMetadataConstants.SPRITE_ELEM))
             {
-                XAttribute frameNameAttr = frameElem.Attribute(XmlMetadataConstants.FRAME_NAME_ATTR);
-                XAttribute sourceRegionAttr = frameElem.Attribute(XmlMetadataConstants.FRAME_SOURCEREGION_ATTR);
-                XAttribute offsetAttr = frameElem.Attribute(XmlMetadataConstants.FRAME_OFFSET_ATTR);
+                XAttribute frameNameAttr = frameElem.Attribute(XmlMetadataConstants.SPRITE_NAME_ATTR);
+                XAttribute sourceRegionAttr = frameElem.Attribute(XmlMetadataConstants.SPRITE_SOURCEREGION_ATTR);
+                XAttribute offsetAttr = frameElem.Attribute(XmlMetadataConstants.SPRITE_OFFSET_ATTR);
                 if (frameNameAttr == null) { throw new SimulatorException("Frame name not defined in sprite palette!"); }
                 if (sourceRegionAttr == null) { throw new SimulatorException("Source region not defined in sprite palette!"); }
                 if (offsetAttr == null) { throw new SimulatorException("Offset not defined in sprite palette!"); }
-                spritePalette.AddFrame(frameNameAttr.Value, XmlHelper.LoadIntRectangle(sourceRegionAttr.Value), XmlHelper.LoadIntVector(offsetAttr.Value));
+                spritePalette.AddSprite(frameNameAttr.Value, XmlHelper.LoadIntRectangle(sourceRegionAttr.Value), XmlHelper.LoadIntVector(offsetAttr.Value));
             }
             return spritePalette;
+        }
+
+        /// <summary>
+        /// Loads an animation palette definition from the given XML node.
+        /// </summary>
+        /// <param name="animPaletteElem">The XML node to load from.</param>
+        /// <param name="metadata">The metadata object.</param>
+        /// <param name="spritePalette">The sprite palette that the animation palette is based on.</param>
+        /// <returns>The constructed animation palette definition.</returns>
+        private static AnimationPalette LoadAnimationPalette(XElement animPaletteElem, ISpritePalette spritePalette, ScenarioMetadata metadata)
+        {
+            /// Create the animation palette object.
+            AnimationPalette animPalette = new AnimationPalette(metadata);
+
+            /// Load the animations.
+            foreach (XElement animElem in animPaletteElem.Elements(XmlMetadataConstants.ANIMATION_ELEM))
+            {
+                XAttribute animNameAttr = animElem.Attribute(XmlMetadataConstants.ANIMATION_NAME_ATTR);
+                if (animNameAttr == null) { throw new SimulatorException("Animation name not defined in animation palette!"); }
+
+                XAttribute isPreviewAttr = animElem.Attribute(XmlMetadataConstants.ANIMATION_ISPREVIEW_ATTR);
+                animPalette.AddAnimation(animNameAttr.Value, LoadAnimation(animElem, spritePalette), isPreviewAttr != null ? XmlHelper.LoadBool(isPreviewAttr.Value) : false);
+            }
+            return animPalette;
+        }
+
+        /// <summary>
+        /// Loads an animation definition from the given XML node.
+        /// </summary>
+        /// <param name="animElem">The XML node to load from.</param>
+        /// <param name="spritePalette">The sprite palette that the animation is based on.</param>
+        /// <returns>The constructed animation definition.</returns>
+        private static Animation LoadAnimation(XElement animElem, ISpritePalette spritePalette)
+        {
+            /// Collect the labels.
+            Dictionary<string, int> labels = new Dictionary<string, int>();
+            int i = 0;
+            foreach (XElement instructionElem in animElem.Elements())
+            {
+                if (instructionElem.Name == XmlMetadataConstants.LABEL_ELEM)
+                {
+                    XAttribute labelNameAttr = instructionElem.Attribute(XmlMetadataConstants.LABEL_NAME_ATTR);
+                    if (labelNameAttr == null) { throw new SimulatorException("Label name not defined in animation!"); }
+                    labels.Add(labelNameAttr.Value, i);
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
+            /// Collect the instructions
+            i = 0;
+            List<Animation.IInstruction> instructions = new List<Animation.IInstruction>();
+            foreach (XElement instructionElem in animElem.Elements())
+            {
+                if (instructionElem.Name == XmlMetadataConstants.FRAME_ELEM)
+                {
+                    instructions.Add(LoadNewFrameInstruction(instructionElem, spritePalette));
+                }
+                else if (instructionElem.Name == XmlMetadataConstants.GOTO_ELEM)
+                {
+                    instructions.Add(LoadGotoInstruction(instructionElem, labels));
+                }
+            }
+
+            /// Create the animation object.
+            return new Animation(instructions);
+        }
+
+        /// <summary>
+        /// Loads a new frame instruction from the given XML node.
+        /// </summary>
+        /// <param name="instructionElem">The XML node to load from.</param>
+        /// <param name="spritePalette">The sprite palette that the animation instruction is based on.</param>
+        /// <returns>The constructed instruction.</returns>
+        private static Animation.IInstruction LoadNewFrameInstruction(XElement instructionElem, ISpritePalette spritePalette)
+        {
+            XAttribute spritesAttr = instructionElem.Attribute(XmlMetadataConstants.FRAME_SPRITES_ATTR);
+            XAttribute durationAttr = instructionElem.Attribute(XmlMetadataConstants.FRAME_DURATION_ATTR);
+            if (spritesAttr == null) { throw new SimulatorException("Sprites not defined for new frame instruction!"); }
+
+            string[] spriteNames = spritesAttr.Value.Split(',');
+            if (spriteNames.Length == 0) { throw new SimulatorException("Syntax error!"); }
+
+            int[] spriteIndices = new int[spriteNames.Length];
+            for (int i = 0; i < spriteNames.Length; i++)
+            {
+                spriteIndices[i] = spritePalette.GetSpriteIndex(spriteNames[i]);
+            }
+
+            return new NewFrameInstruction(spriteIndices, durationAttr != null ? XmlHelper.LoadInt(durationAttr.Value) : 1);
+        }
+
+        /// <summary>
+        /// Loads a goto instruction from the given XML node.
+        /// </summary>
+        /// <param name="instructionElem">The XML node to load from.</param>
+        /// <param name="labels">List of the labels mapped by their names.</param>
+        /// <returns>The constructed instruction.</returns>
+        private static Animation.IInstruction LoadGotoInstruction(XElement instructionElem, Dictionary<string, int> labels)
+        {
+            XAttribute labelAttr = instructionElem.Attribute(XmlMetadataConstants.GOTO_LABEL_ATTR);
+            if (labelAttr == null) { throw new SimulatorException("Target label not defined for goto instruction!"); }
+            if (!labels.ContainsKey(labelAttr.Value)) { throw new SimulatorException(string.Format("Label '{0}' doesn't exist!", labelAttr.Value)); }
+
+            return new GotoInstruction(labels[labelAttr.Value]);
         }
 
         /// <summary>

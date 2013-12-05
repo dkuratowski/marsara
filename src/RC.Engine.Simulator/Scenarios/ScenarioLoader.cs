@@ -31,14 +31,14 @@ namespace RC.Engine.Simulator.Scenarios
         #region IScenarioLoader methods
 
         /// <see cref="IScenarioLoader.NewScenario"/>
-        public IScenario NewScenario(IMapAccess map)
+        public Scenario NewScenario(IMapAccess map)
         {
             if (map == null) { throw new ArgumentNullException("map"); }
             return new Scenario(map);
         }
 
         /// <see cref="IScenarioLoader.LoadScenario"/>
-        public IScenario LoadScenario(IMapAccess map, byte[] data)
+        public Scenario LoadScenario(IMapAccess map, byte[] data)
         {
             if (map == null) { throw new ArgumentNullException("map"); }
             if (data == null) { throw new ArgumentNullException("data"); }
@@ -63,6 +63,12 @@ namespace RC.Engine.Simulator.Scenarios
                 else if (package.PackageFormat.ID == ScenarioFileFormat.START_LOCATION)
                 {
                     /// TODO: Load the start location!
+                    RCIntVector quadCoords = new RCIntVector(package.ReadShort(0), package.ReadShort(1));
+                    int playerIndex = package.ReadByte(2);
+                    IScenarioElementType startLocationType = this.metadata.GetElementType(StartLocation.ELEMENT_TYPE_NAME);
+                    RCIntVector quadSize = map.CellToQuadSize(startLocationType.Area.Read());
+                    RCNumRectangle mapCoords = map.QuadToCellRect(new RCIntRectangle(quadCoords, quadSize));
+                    //StartLocation startLocation = new StartLocation(mapCoords, playerIndex);
                 }
             }
 
@@ -70,7 +76,7 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <see cref="IScenarioLoader.SaveScenario"/>
-        public byte[] SaveScenario(IScenario scenario)
+        public byte[] SaveScenario(Scenario scenario)
         {
             throw new NotImplementedException();
         }

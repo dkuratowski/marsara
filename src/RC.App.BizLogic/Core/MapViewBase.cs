@@ -11,7 +11,7 @@ namespace RC.App.BizLogic.Core
     /// <summary>
     /// Base class of views on game maps.
     /// </summary>
-    class MapViewBase : IMapView
+    abstract class MapViewBase : IMapView
     {
         /// <summary>
         /// Constructs a MapViewBase instance.

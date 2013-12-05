@@ -12,9 +12,9 @@ namespace RC.App.BizLogic.PublicInterfaces
     public struct MapObjectInstance
     {
         /// <summary>
-        /// The sprite of the object to be displayed.
+        /// The sprites of the object to be displayed.
         /// </summary>
-        public MapSpriteInstance Sprite { get; set; }
+        public List<MapSpriteInstance> Sprites { get; set; }
 
         /// <summary>
         /// The player that owns the object to be displayed or Player.Neutral if this is a neutral object.

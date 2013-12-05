@@ -46,6 +46,9 @@
     <Compile Include="ComponentInterfaces\IHeapManagerPluginInstall.cs" />
     <Compile Include="Scenarios\AddonType.cs" />
     <Compile Include="Core\BinaryHeap.cs" />
+    <Compile Include="PublicInterfaces\Animation.cs" />
+    <Compile Include="PublicInterfaces\AnimationPlayer.cs" />
+    <Compile Include="Scenarios\AnimationPalette.cs" />
     <Compile Include="Scenarios\BuildingType.cs" />
     <Compile Include="Core\Constants.cs" />
     <Compile Include="PublicInterfaces\ConstValue.cs" />
@@ -56,6 +59,8 @@
     <Compile Include="Core\PathFinder.cs" />
     <Compile Include="Core\PFTreeNode.cs" />
     <Compile Include="Core\HeapConnector.cs" />
+    <Compile Include="Scenarios\Entity.cs" />
+    <Compile Include="Scenarios\IAnimationPalette.cs" />
     <Compile Include="Scenarios\IScenarioElementType.cs" />
     <Compile Include="Scenarios\ISpritePalette.cs" />
     <Compile Include="Scenarios\IWeaponData.cs" />
@@ -69,6 +74,7 @@
     <Compile Include="Core\Heap.cs" />
     <Compile Include="Core\HeapManager.cs" />
     <Compile Include="Scenarios\ScenarioMetadata.cs" />
+    <Compile Include="Scenarios\StartLocation.cs" />
     <Compile Include="Scenarios\UnitType.cs" />
     <Compile Include="Scenarios\UpgradeType.cs" />
     <Compile Include="Scenarios\WeaponData.cs" />
@@ -83,11 +89,9 @@
     <Compile Include="Scenarios\IAddonType.cs" />
     <Compile Include="Scenarios\IBuildingType.cs" />
     <Compile Include="Scenarios\IScenarioMetadata.cs" />
-    <Compile Include="Scenarios\IScenario.cs" />
     <Compile Include="Scenarios\IUnitType.cs" />
     <Compile Include="Scenarios\IUpgradeType.cs" />
     <Compile Include="PublicInterfaces\ValueInterfaces.cs" />
-    <Compile Include="PublicInterfaces\IGameObject.cs" />
     <Compile Include="InternalInterfaces\IHeap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicInterfaces\IPath.cs" />

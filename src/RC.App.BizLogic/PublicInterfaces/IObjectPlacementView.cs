@@ -18,5 +18,8 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// <param name="position">The position of the mouse pointer in pixels.</param>
         /// <returns>The object placement box to be displayed.</returns>
         ObjectPlacementBox GetObjectPlacementBox(RCIntRectangle displayedArea, RCIntVector position);
+
+        /// TODO: remove
+        void StepAnimation();
     }
 }

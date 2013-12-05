@@ -46,6 +46,9 @@ namespace RC.Engine.Maps.Core
         /// <see cref="ICell.ParentIsoTile"/>
         public IIsoTile ParentIsoTile { get { return this.parentIsoTile; } }
 
+        /// <see cref="ICell.MapCoords"/>
+        public RCIntVector MapCoords { get { return this.mapCoords; } }
+
         #endregion ICell methods
 
         #region Internal map structure buildup methods
@@ -138,11 +141,6 @@ namespace RC.Engine.Maps.Core
         }
 
         #endregion Internal attach and detach methods
-
-        /// <summary>
-        /// Gets the map coordinates of this cell.
-        /// </summary>
-        public RCIntVector MapCoords { get { return this.mapCoords; } }
 
         /// <summary>
         /// Gets the coordinates of this cell inside its parent quadratic tile.

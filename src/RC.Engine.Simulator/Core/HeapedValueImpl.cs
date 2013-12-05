@@ -33,14 +33,14 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IValue<T>.Read"/>
         public override T Read()
         {
-            if (!this.isReadyToUse) { throw new InvalidOperationException("Heap accessor is not ready to use!"); }
+            //if (!this.isReadyToUse) { throw new InvalidOperationException("Heap accessor is not ready to use!"); }
             return this.cachedValue;
         }
 
         /// <see cref="IValue<T>.Write"/>
         public override void Write(T newVal)
         {
-            if (!this.isReadyToUse) { throw new InvalidOperationException("Heap accessor is not ready to use!"); }
+            //if (!this.isReadyToUse) { throw new InvalidOperationException("Heap accessor is not ready to use!"); }
             this.cachedValue = newVal;
             this.SynchToHeap();
             this.RaiseValueChangedEvt();

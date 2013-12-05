@@ -20,7 +20,7 @@ namespace RC.App.BizLogic.Core
         /// Constructs a MapObjectView instance.
         /// </summary>
         /// <param name="scenario">The subject of this view.</param>
-        public MapObjectView(IScenario scenario)
+        public MapObjectView(Scenario scenario)
             : base(scenario.Map)
         {
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
@@ -65,6 +65,6 @@ namespace RC.App.BizLogic.Core
         /// <summary>
         /// Reference to the scenario.
         /// </summary>
-        private IScenario scenario;
+        private Scenario scenario;
     }
 }

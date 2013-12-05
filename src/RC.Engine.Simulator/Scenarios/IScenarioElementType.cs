@@ -31,9 +31,25 @@ namespace RC.Engine.Simulator.Scenarios
         string Name { get; }
 
         /// <summary>
+        /// Get the ID of this element type.
+        /// </summary>
+        int ID { get; }
+
+        /// <summary>
+        /// This flag indicates whether the instances of this type might belong to a player (true) or are
+        /// always neutral.
+        /// </summary>
+        bool HasOwner { get; }
+
+        /// <summary>
         /// Gets the sprite palette of this element type or null if this element type has no sprite palette.
         /// </summary>
         ISpritePalette SpritePalette { get; }
+
+        /// <summary>
+        /// Gets the animation palette of this element type or null if this element type has no animation palette.
+        /// </summary>
+        IAnimationPalette AnimationPalette { get; }
 
         /// <summary>
         /// Gets the build time of this element type or null if this element type has no build time defined.

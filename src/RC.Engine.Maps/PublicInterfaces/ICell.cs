@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RC.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,5 +25,10 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// Gets the isometric tile that this cell belongs to.
         /// </summary>
         IIsoTile ParentIsoTile { get; }
+
+        /// <summary>
+        /// Gets the map coordinates of this cell.
+        /// </summary>
+        RCIntVector MapCoords { get; }
     }
 }

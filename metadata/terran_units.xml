@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <metadata>
-  <unitType name="SCV">
+  <unitType name="SCV" hasOwner="true">
     <costs>
       <food>1</food>
       <mineral>50</mineral>
@@ -20,113 +20,113 @@
       <cooldown>15</cooldown>
     </groundWeapon>
     <createdIn>CommandCenter</createdIn>
-    <sprite image="terran_scv.png" transparentColor="255;0;255" ownerMaskColor="0;255;255">
-      <frame name="StandingN" sourceRegion="1;1;13;11" offset="-3;-4" />
-      <frame name="StandingNE" sourceRegion="15;1;12;12" offset="-1;-4" />
-      <frame name="StandingE" sourceRegion="28;1;11;13" offset="0;-3" />
-      <frame name="StandingSE" sourceRegion="40;1;12;12" offset="0;0" />
-      <frame name="StandingS" sourceRegion="53;1;13;11" offset="-3;0" />
-      <frame name="StandingSW" sourceRegion="67;1;12;12" offset="-5;0" />
-      <frame name="StandingW" sourceRegion="80;1;11;13" offset="-4;-3" />
-      <frame name="StandingNW" sourceRegion="92;1;12;12" offset="-5;-5" />
-      <frame name="WorkingN_0" sourceRegion="1;17;13;15" offset="-3;-8" />
-      <frame name="WorkingN_1" sourceRegion="15;17;14;13" offset="-3;-9" />
-      <frame name="WorkingNE_0" sourceRegion="30;17;15;13" offset="0;-6" />
-      <frame name="WorkingNE_1" sourceRegion="46;17;14;13" offset="0;-7" />
-      <frame name="WorkingE_0" sourceRegion="61;17;13;15" offset="0;-3" />
-      <frame name="WorkingE_1" sourceRegion="75;17;14;13" offset="0;-3" />
-      <frame name="WorkingSE_0" sourceRegion="90;17;15;13" offset="0;0" />
-      <frame name="WorkingSE_1" sourceRegion="106;17;14;13" offset="0;0" />
-      <frame name="WorkingS_0" sourceRegion="1;33;13;16" offset="-3;0" />
-      <frame name="WorkingS_1" sourceRegion="15;33;13;14" offset="-3;0" />
-      <frame name="WorkingSW_0" sourceRegion="29;33;16;13" offset="-7;0" />
-      <frame name="WorkingSW_1" sourceRegion="46;33;13;14" offset="-6;0" />
-      <frame name="WorkingW_0" sourceRegion="60;33;13;16" offset="-8;-3" />
-      <frame name="WorkingW_1" sourceRegion="74;33;13;14" offset="-9;-3" />
-      <frame name="WorkingNW_0" sourceRegion="88;33;16;13" offset="-7;-6" />
-      <frame name="WorkingNW_1" sourceRegion="105;33;13;14" offset="-6;-7" />
-      <frame name="MovingN" sourceRegion="1;50;13;13" offset="-3;-4" />
-      <frame name="MovingNE" sourceRegion="15;50;13;13" offset="-1;-5" />
-      <frame name="MovingE" sourceRegion="29;50;13;13" offset="-2;-3" />
-      <frame name="MovingSE" sourceRegion="43;50;13;13" offset="-1;-1" />
-      <frame name="MovingS" sourceRegion="57;50;13;13" offset="-3;-2" />
-      <frame name="MovingSW" sourceRegion="71;50;13;13" offset="-5;-1" />
-      <frame name="MovingW" sourceRegion="85;50;13;13" offset="-4;-3" />
-      <frame name="MovingNW" sourceRegion="99;50;13;13" offset="-5;-5" />
-      <frame name="StandingWithGasN" sourceRegion="1;64;13;11" offset="-3;-4" />
-      <frame name="StandingWithGasNE" sourceRegion="15;64;12;12" offset="-1;-4" />
-      <frame name="StandingWithGasE" sourceRegion="28;64;11;13" offset="0;-3" />
-      <frame name="StandingWithGasSE" sourceRegion="40;64;12;12" offset="0;0" />
-      <frame name="StandingWithGasS" sourceRegion="53;64;13;11" offset="-3;0" />
-      <frame name="StandingWithGasSW" sourceRegion="67;64;12;12" offset="-5;0" />
-      <frame name="StandingWithGasW" sourceRegion="80;64;11;13" offset="-4;-3" />
-      <frame name="StandingWithGasNW" sourceRegion="92;64;12;12" offset="-5;-5" />
-      <frame name="WorkingWithGasN_0" sourceRegion="1;80;13;15" offset="-3;-8" />
-      <frame name="WorkingWithGasN_1" sourceRegion="15;80;14;13" offset="-3;-9" />
-      <frame name="WorkingWithGasNE_0" sourceRegion="30;80;15;13" offset="0;-6" />
-      <frame name="WorkingWithGasNE_1" sourceRegion="46;80;14;13" offset="0;-7" />
-      <frame name="WorkingWithGasE_0" sourceRegion="61;80;13;15" offset="0;-3" />
-      <frame name="WorkingWithGasE_1" sourceRegion="75;80;14;13" offset="0;-3" />
-      <frame name="WorkingWithGasSE_0" sourceRegion="90;80;15;13" offset="0;0" />
-      <frame name="WorkingWithGasSE_1" sourceRegion="106;80;14;13" offset="0;0" />
-      <frame name="WorkingWithGasS_0" sourceRegion="1;96;13;16" offset="-3;0" />
-      <frame name="WorkingWithGasS_1" sourceRegion="15;96;13;14" offset="-3;0" />
-      <frame name="WorkingWithGasSW_0" sourceRegion="29;96;16;13" offset="-7;0" />
-      <frame name="WorkingWithGasSW_1" sourceRegion="46;96;13;14" offset="-6;0" />
-      <frame name="WorkingWithGasW_0" sourceRegion="60;96;13;16" offset="-8;-3" />
-      <frame name="WorkingWithGasW_1" sourceRegion="74;96;13;14" offset="-9;-3" />
-      <frame name="WorkingWithGasNW_0" sourceRegion="88;96;16;13" offset="-7;-6" />
-      <frame name="WorkingWithGasNW_1" sourceRegion="105;96;13;14" offset="-6;-7" />
-      <frame name="MovingWithGasN" sourceRegion="1;113;13;13" offset="-3;-4" />
-      <frame name="MovingWithGasNE" sourceRegion="15;113;13;13" offset="-1;-5" />
-      <frame name="MovingWithGasE" sourceRegion="29;113;13;13" offset="-2;-3" />
-      <frame name="MovingWithGasSE" sourceRegion="43;113;13;13" offset="-1;-1" />
-      <frame name="MovingWithGasS" sourceRegion="57;113;13;13" offset="-3;-2" />
-      <frame name="MovingWithGasSW" sourceRegion="71;113;13;13" offset="-5;-1" />
-      <frame name="MovingWithGasW" sourceRegion="85;113;13;13" offset="-4;-3" />
-      <frame name="MovingWithGasNW" sourceRegion="99;113;13;13" offset="-5;-5" />
-      <frame name="StandingWithMineralsN" sourceRegion="1;127;13;11" offset="-3;-4" />
-      <frame name="StandingWithMineralsNE" sourceRegion="15;127;12;12" offset="-1;-4" />
-      <frame name="StandingWithMineralsE" sourceRegion="28;127;11;13" offset="0;-3" />
-      <frame name="StandingWithMineralsSE" sourceRegion="40;127;12;12" offset="0;0" />
-      <frame name="StandingWithMineralsS" sourceRegion="53;127;13;11" offset="-3;0" />
-      <frame name="StandingWithMineralsSW" sourceRegion="67;127;12;12" offset="-5;0" />
-      <frame name="StandingWithMineralsW" sourceRegion="80;127;11;13" offset="-4;-3" />
-      <frame name="StandingWithMineralsNW" sourceRegion="92;127;12;12" offset="-5;-5" />
-      <frame name="WorkingWithMineralsN_0" sourceRegion="1;143;13;15" offset="-3;-8" />
-      <frame name="WorkingWithMineralsN_1" sourceRegion="15;143;14;13" offset="-3;-9" />
-      <frame name="WorkingWithMineralsNE_0" sourceRegion="30;143;15;13" offset="0;-6" />
-      <frame name="WorkingWithMineralsNE_1" sourceRegion="46;143;14;13" offset="0;-7" />
-      <frame name="WorkingWithMineralsE_0" sourceRegion="61;143;13;15" offset="0;-3" />
-      <frame name="WorkingWithMineralsE_1" sourceRegion="75;143;14;13" offset="0;-3" />
-      <frame name="WorkingWithMineralsSE_0" sourceRegion="90;143;15;13" offset="0;0" />
-      <frame name="WorkingWithMineralsSE_1" sourceRegion="106;143;14;13" offset="0;0" />
-      <frame name="WorkingWithMineralsS_0" sourceRegion="1;159;13;16" offset="-3;0" />
-      <frame name="WorkingWithMineralsS_1" sourceRegion="15;159;13;14" offset="-3;0" />
-      <frame name="WorkingWithMineralsSW_0" sourceRegion="29;159;16;13" offset="-7;0" />
-      <frame name="WorkingWithMineralsSW_1" sourceRegion="46;159;13;14" offset="-6;0" />
-      <frame name="WorkingWithMineralsW_0" sourceRegion="60;159;13;16" offset="-8;-3" />
-      <frame name="WorkingWithMineralsW_1" sourceRegion="74;159;13;14" offset="-9;-3" />
-      <frame name="WorkingWithMineralsNW_0" sourceRegion="88;159;16;13" offset="-7;-6" />
-      <frame name="WorkingWithMineralsNW_1" sourceRegion="105;159;13;14" offset="-6;-7" />
-      <frame name="MovingWithMineralsN" sourceRegion="1;176;13;13" offset="-3;-4" />
-      <frame name="MovingWithMineralsNE" sourceRegion="15;176;13;13" offset="-1;-5" />
-      <frame name="MovingWithMineralsE" sourceRegion="29;176;13;13" offset="-2;-3" />
-      <frame name="MovingWithMineralsSE" sourceRegion="43;176;13;13" offset="-1;-1" />
-      <frame name="MovingWithMineralsS" sourceRegion="57;176;13;13" offset="-3;-2" />
-      <frame name="MovingWithMineralsSW" sourceRegion="71;176;13;13" offset="-5;-1" />
-      <frame name="MovingWithMineralsW" sourceRegion="85;176;13;13" offset="-4;-3" />
-      <frame name="MovingWithMineralsNW" sourceRegion="99;176;13;13" offset="-5;-5" />
-      <frame name="Die_0" sourceRegion="1;190;13;11" offset="-3;0" />
-      <frame name="Die_1" sourceRegion="15;190;14;12" offset="-3;-1" />
-      <frame name="Die_2" sourceRegion="30;190;16;12" offset="-4;-1" />
-      <frame name="Die_3" sourceRegion="47;190;17;13" offset="-5;-2" />
-      <frame name="Die_4" sourceRegion="65;190;18;14" offset="-5;-2" />
-      <frame name="Die_5" sourceRegion="84;190;18;14" offset="-5;-2" />
-    </sprite>
+    <spritePalette image="terran_scv.png" transparentColor="255;0;255" ownerMaskColor="0;255;255">
+      <sprite name="StandingN" sourceRegion="1;1;13;11" offset="-3;-4" />
+      <sprite name="StandingNE" sourceRegion="15;1;12;12" offset="-1;-4" />
+      <sprite name="StandingE" sourceRegion="28;1;11;13" offset="0;-3" />
+      <sprite name="StandingSE" sourceRegion="40;1;12;12" offset="0;0" />
+      <sprite name="StandingS" sourceRegion="53;1;13;11" offset="-3;0" />
+      <sprite name="StandingSW" sourceRegion="67;1;12;12" offset="-5;0" />
+      <sprite name="StandingW" sourceRegion="80;1;11;13" offset="-4;-3" />
+      <sprite name="StandingNW" sourceRegion="92;1;12;12" offset="-5;-5" />
+      <sprite name="WorkingN_0" sourceRegion="1;17;13;15" offset="-3;-8" />
+      <sprite name="WorkingN_1" sourceRegion="15;17;14;13" offset="-3;-9" />
+      <sprite name="WorkingNE_0" sourceRegion="30;17;15;13" offset="0;-6" />
+      <sprite name="WorkingNE_1" sourceRegion="46;17;14;13" offset="0;-7" />
+      <sprite name="WorkingE_0" sourceRegion="61;17;13;15" offset="0;-3" />
+      <sprite name="WorkingE_1" sourceRegion="75;17;14;13" offset="0;-3" />
+      <sprite name="WorkingSE_0" sourceRegion="90;17;15;13" offset="0;0" />
+      <sprite name="WorkingSE_1" sourceRegion="106;17;14;13" offset="0;0" />
+      <sprite name="WorkingS_0" sourceRegion="1;33;13;16" offset="-3;0" />
+      <sprite name="WorkingS_1" sourceRegion="15;33;13;14" offset="-3;0" />
+      <sprite name="WorkingSW_0" sourceRegion="29;33;16;13" offset="-7;0" />
+      <sprite name="WorkingSW_1" sourceRegion="46;33;13;14" offset="-6;0" />
+      <sprite name="WorkingW_0" sourceRegion="60;33;13;16" offset="-8;-3" />
+      <sprite name="WorkingW_1" sourceRegion="74;33;13;14" offset="-9;-3" />
+      <sprite name="WorkingNW_0" sourceRegion="88;33;16;13" offset="-7;-6" />
+      <sprite name="WorkingNW_1" sourceRegion="105;33;13;14" offset="-6;-7" />
+      <sprite name="MovingN" sourceRegion="1;50;13;13" offset="-3;-4" />
+      <sprite name="MovingNE" sourceRegion="15;50;13;13" offset="-1;-5" />
+      <sprite name="MovingE" sourceRegion="29;50;13;13" offset="-2;-3" />
+      <sprite name="MovingSE" sourceRegion="43;50;13;13" offset="-1;-1" />
+      <sprite name="MovingS" sourceRegion="57;50;13;13" offset="-3;-2" />
+      <sprite name="MovingSW" sourceRegion="71;50;13;13" offset="-5;-1" />
+      <sprite name="MovingW" sourceRegion="85;50;13;13" offset="-4;-3" />
+      <sprite name="MovingNW" sourceRegion="99;50;13;13" offset="-5;-5" />
+      <sprite name="StandingWithGasN" sourceRegion="1;64;13;11" offset="-3;-4" />
+      <sprite name="StandingWithGasNE" sourceRegion="15;64;12;12" offset="-1;-4" />
+      <sprite name="StandingWithGasE" sourceRegion="28;64;11;13" offset="0;-3" />
+      <sprite name="StandingWithGasSE" sourceRegion="40;64;12;12" offset="0;0" />
+      <sprite name="StandingWithGasS" sourceRegion="53;64;13;11" offset="-3;0" />
+      <sprite name="StandingWithGasSW" sourceRegion="67;64;12;12" offset="-5;0" />
+      <sprite name="StandingWithGasW" sourceRegion="80;64;11;13" offset="-4;-3" />
+      <sprite name="StandingWithGasNW" sourceRegion="92;64;12;12" offset="-5;-5" />
+      <sprite name="WorkingWithGasN_0" sourceRegion="1;80;13;15" offset="-3;-8" />
+      <sprite name="WorkingWithGasN_1" sourceRegion="15;80;14;13" offset="-3;-9" />
+      <sprite name="WorkingWithGasNE_0" sourceRegion="30;80;15;13" offset="0;-6" />
+      <sprite name="WorkingWithGasNE_1" sourceRegion="46;80;14;13" offset="0;-7" />
+      <sprite name="WorkingWithGasE_0" sourceRegion="61;80;13;15" offset="0;-3" />
+      <sprite name="WorkingWithGasE_1" sourceRegion="75;80;14;13" offset="0;-3" />
+      <sprite name="WorkingWithGasSE_0" sourceRegion="90;80;15;13" offset="0;0" />
+      <sprite name="WorkingWithGasSE_1" sourceRegion="106;80;14;13" offset="0;0" />
+      <sprite name="WorkingWithGasS_0" sourceRegion="1;96;13;16" offset="-3;0" />
+      <sprite name="WorkingWithGasS_1" sourceRegion="15;96;13;14" offset="-3;0" />
+      <sprite name="WorkingWithGasSW_0" sourceRegion="29;96;16;13" offset="-7;0" />
+      <sprite name="WorkingWithGasSW_1" sourceRegion="46;96;13;14" offset="-6;0" />
+      <sprite name="WorkingWithGasW_0" sourceRegion="60;96;13;16" offset="-8;-3" />
+      <sprite name="WorkingWithGasW_1" sourceRegion="74;96;13;14" offset="-9;-3" />
+      <sprite name="WorkingWithGasNW_0" sourceRegion="88;96;16;13" offset="-7;-6" />
+      <sprite name="WorkingWithGasNW_1" sourceRegion="105;96;13;14" offset="-6;-7" />
+      <sprite name="MovingWithGasN" sourceRegion="1;113;13;13" offset="-3;-4" />
+      <sprite name="MovingWithGasNE" sourceRegion="15;113;13;13" offset="-1;-5" />
+      <sprite name="MovingWithGasE" sourceRegion="29;113;13;13" offset="-2;-3" />
+      <sprite name="MovingWithGasSE" sourceRegion="43;113;13;13" offset="-1;-1" />
+      <sprite name="MovingWithGasS" sourceRegion="57;113;13;13" offset="-3;-2" />
+      <sprite name="MovingWithGasSW" sourceRegion="71;113;13;13" offset="-5;-1" />
+      <sprite name="MovingWithGasW" sourceRegion="85;113;13;13" offset="-4;-3" />
+      <sprite name="MovingWithGasNW" sourceRegion="99;113;13;13" offset="-5;-5" />
+      <sprite name="StandingWithMineralsN" sourceRegion="1;127;13;11" offset="-3;-4" />
+      <sprite name="StandingWithMineralsNE" sourceRegion="15;127;12;12" offset="-1;-4" />
+      <sprite name="StandingWithMineralsE" sourceRegion="28;127;11;13" offset="0;-3" />
+      <sprite name="StandingWithMineralsSE" sourceRegion="40;127;12;12" offset="0;0" />
+      <sprite name="StandingWithMineralsS" sourceRegion="53;127;13;11" offset="-3;0" />
+      <sprite name="StandingWithMineralsSW" sourceRegion="67;127;12;12" offset="-5;0" />
+      <sprite name="StandingWithMineralsW" sourceRegion="80;127;11;13" offset="-4;-3" />
+      <sprite name="StandingWithMineralsNW" sourceRegion="92;127;12;12" offset="-5;-5" />
+      <sprite name="WorkingWithMineralsN_0" sourceRegion="1;143;13;15" offset="-3;-8" />
+      <sprite name="WorkingWithMineralsN_1" sourceRegion="15;143;14;13" offset="-3;-9" />
+      <sprite name="WorkingWithMineralsNE_0" sourceRegion="30;143;15;13" offset="0;-6" />
+      <sprite name="WorkingWithMineralsNE_1" sourceRegion="46;143;14;13" offset="0;-7" />
+      <sprite name="WorkingWithMineralsE_0" sourceRegion="61;143;13;15" offset="0;-3" />
+      <sprite name="WorkingWithMineralsE_1" sourceRegion="75;143;14;13" offset="0;-3" />
+      <sprite name="WorkingWithMineralsSE_0" sourceRegion="90;143;15;13" offset="0;0" />
+      <sprite name="WorkingWithMineralsSE_1" sourceRegion="106;143;14;13" offset="0;0" />
+      <sprite name="WorkingWithMineralsS_0" sourceRegion="1;159;13;16" offset="-3;0" />
+      <sprite name="WorkingWithMineralsS_1" sourceRegion="15;159;13;14" offset="-3;0" />
+      <sprite name="WorkingWithMineralsSW_0" sourceRegion="29;159;16;13" offset="-7;0" />
+      <sprite name="WorkingWithMineralsSW_1" sourceRegion="46;159;13;14" offset="-6;0" />
+      <sprite name="WorkingWithMineralsW_0" sourceRegion="60;159;13;16" offset="-8;-3" />
+      <sprite name="WorkingWithMineralsW_1" sourceRegion="74;159;13;14" offset="-9;-3" />
+      <sprite name="WorkingWithMineralsNW_0" sourceRegion="88;159;16;13" offset="-7;-6" />
+      <sprite name="WorkingWithMineralsNW_1" sourceRegion="105;159;13;14" offset="-6;-7" />
+      <sprite name="MovingWithMineralsN" sourceRegion="1;176;13;13" offset="-3;-4" />
+      <sprite name="MovingWithMineralsNE" sourceRegion="15;176;13;13" offset="-1;-5" />
+      <sprite name="MovingWithMineralsE" sourceRegion="29;176;13;13" offset="-2;-3" />
+      <sprite name="MovingWithMineralsSE" sourceRegion="43;176;13;13" offset="-1;-1" />
+      <sprite name="MovingWithMineralsS" sourceRegion="57;176;13;13" offset="-3;-2" />
+      <sprite name="MovingWithMineralsSW" sourceRegion="71;176;13;13" offset="-5;-1" />
+      <sprite name="MovingWithMineralsW" sourceRegion="85;176;13;13" offset="-4;-3" />
+      <sprite name="MovingWithMineralsNW" sourceRegion="99;176;13;13" offset="-5;-5" />
+      <sprite name="Die_0" sourceRegion="1;190;13;11" offset="-3;0" />
+      <sprite name="Die_1" sourceRegion="15;190;14;12" offset="-3;-1" />
+      <sprite name="Die_2" sourceRegion="30;190;16;12" offset="-4;-1" />
+      <sprite name="Die_3" sourceRegion="47;190;17;13" offset="-5;-2" />
+      <sprite name="Die_4" sourceRegion="65;190;18;14" offset="-5;-2" />
+      <sprite name="Die_5" sourceRegion="84;190;18;14" offset="-5;-2" />
+    </spritePalette>
   </unitType>
   
-  <unitType name="Marine">
+  <unitType name="Marine" hasOwner="true">
     <costs>
       <food>1</food>
       <mineral>50</mineral>
@@ -154,71 +154,71 @@
       <cooldown>15</cooldown>
     </airWeapon>
     <createdIn>Barracks</createdIn>
-    <sprite image="terran_marine.png" transparentColor="255;0;255" ownerMaskColor="0;255;255">
-      <frame name="StandingN" sourceRegion="1;1;9;12" offset="0;-7" />
-      <frame name="StandingNE" sourceRegion="11;1;6;12" offset="0;-7" />
-      <frame name="StandingE" sourceRegion="18;1;7;12" offset="0;-7" />
-      <frame name="StandingSE" sourceRegion="26;1;7;12" offset="0;-7" />
-      <frame name="StandingS" sourceRegion="34;1;9;12" offset="-2;-7" />
-      <frame name="StandingSW" sourceRegion="44;1;7;12" offset="0;-7" />
-      <frame name="StandingW" sourceRegion="52;1;7;12" offset="0;-7" />
-      <frame name="StandingNW" sourceRegion="60;1;6;12" offset="1;-7" />
-      <frame name="ShootingN_0" sourceRegion="1;14;7;12" offset="1;-7" />
-      <frame name="ShootingN_1" sourceRegion="1;27;8;15" offset="1;-10" />
-      <frame name="ShootingNE_0" sourceRegion="9;14;8;12" offset="1;-7" />
-      <frame name="ShootingNE_1" sourceRegion="10;27;12;15" offset="1;-10" />
-      <frame name="ShootingE_0" sourceRegion="18;14;9;12" offset="0;-7" />
-      <frame name="ShootingE_1" sourceRegion="23;27;14;15" offset="0;-10" />
-      <frame name="ShootingSE_0" sourceRegion="28;14;9;12" offset="1;-7" />
-      <frame name="ShootingSE_1" sourceRegion="38;27;13;15" offset="1;-10" />
-      <frame name="ShootingS_0" sourceRegion="38;14;6;12" offset="0;-7" />
-      <frame name="ShootingS_1" sourceRegion="52;27;8;15" offset="-2;-10" />
-      <frame name="ShootingSW_0" sourceRegion="45;14;9;12" offset="-3;-7" />
-      <frame name="ShootingSW_1" sourceRegion="61;27;12;15" offset="-6;-10" />
-      <frame name="ShootingW_0" sourceRegion="55;14;9;12" offset="-3;-7" />
-      <frame name="ShootingW_1" sourceRegion="74;27;14;15" offset="-8;-10" />
-      <frame name="ShootingNW_0" sourceRegion="65;14;8;12" offset="-2;-7" />
-      <frame name="ShootingNW_1" sourceRegion="89;27;12;15" offset="-6;-10" />
-      <frame name="WalkingN_0" sourceRegion="1;43;8;12" offset="0;-7" />
-      <frame name="WalkingN_1" sourceRegion="1;56;9;12" offset="0;-7" />
-      <frame name="WalkingN_2" sourceRegion="1;69;9;12" offset="0;-7" />
-      <frame name="WalkingN_3" sourceRegion="1;82;9;12" offset="0;-7" />
-      <frame name="WalkingNE_0" sourceRegion="10;43;6;12" offset="0;-7" />
-      <frame name="WalkingNE_1" sourceRegion="11;56;6;12" offset="0;-7" />
-      <frame name="WalkingNE_2" sourceRegion="11;69;7;12" offset="0;-7" />
-      <frame name="WalkingNE_3" sourceRegion="11;82;7;12" offset="0;-7" />
-      <frame name="WalkingE_0" sourceRegion="17;43;7;12" offset="0;-7" />
-      <frame name="WalkingE_1" sourceRegion="18;56;7;12" offset="0;-7" />
-      <frame name="WalkingE_2" sourceRegion="19;69;7;12" offset="0;-7" />
-      <frame name="WalkingE_3" sourceRegion="19;82;6;12" offset="0;-7" />
-      <frame name="WalkingSE_0" sourceRegion="25;43;6;12" offset="1;-7" />
-      <frame name="WalkingSE_1" sourceRegion="26;56;7;12" offset="1;-7" />
-      <frame name="WalkingSE_2" sourceRegion="27;69;8;12" offset="0;-7" />
-      <frame name="WalkingSE_3" sourceRegion="26;82;7;12" offset="0;-7" />
-      <frame name="WalkingS_0" sourceRegion="32;43;8;12" offset="-1;-7" />
-      <frame name="WalkingS_1" sourceRegion="34;56;9;12" offset="-2;-7" />
-      <frame name="WalkingS_2" sourceRegion="36;69;9;12" offset="-2;-7" />
-      <frame name="WalkingS_3" sourceRegion="34;82;9;12" offset="-2;-7" />
-      <frame name="WalkingSW_0" sourceRegion="41;43;6;12" offset="0;-7" />
-      <frame name="WalkingSW_1" sourceRegion="44;56;7;12" offset="-1;-7" />
-      <frame name="WalkingSW_2" sourceRegion="46;69;8;12" offset="-2;-7" />
-      <frame name="WalkingSW_3" sourceRegion="44;82;7;12" offset="-1;-7" />
-      <frame name="WalkingW_0" sourceRegion="48;43;7;12" offset="0;-7" />
-      <frame name="WalkingW_1" sourceRegion="52;56;7;12" offset="0;-7" />
-      <frame name="WalkingW_2" sourceRegion="55;69;7;12" offset="-1;-7" />
-      <frame name="WalkingW_3" sourceRegion="52;82;6;12" offset="0;-7" />
-      <frame name="WalkingNW_0" sourceRegion="56;43;6;12" offset="0;-7" />
-      <frame name="WalkingNW_1" sourceRegion="60;56;6;12" offset="0;-7" />
-      <frame name="WalkingNW_2" sourceRegion="63;69;7;12" offset="-1;-7" />
-      <frame name="WalkingNW_3" sourceRegion="59;82;7;12" offset="-1;-7" />
-      <frame name="Die_0" sourceRegion="1;95;9;12" offset="-2;-7" />
-      <frame name="Die_1" sourceRegion="11;95;10;12" offset="-2;-7" />
-      <frame name="Die_2" sourceRegion="22;95;11;12" offset="-3;-7" />
-      <frame name="Die_3" sourceRegion="34;95;11;12" offset="-3;-7" />
-    </sprite>
+    <spritePalette image="terran_marine.png" transparentColor="255;0;255" ownerMaskColor="0;255;255">
+      <sprite name="StandingN" sourceRegion="1;1;9;12" offset="0;-7" />
+      <sprite name="StandingNE" sourceRegion="11;1;6;12" offset="0;-7" />
+      <sprite name="StandingE" sourceRegion="18;1;7;12" offset="0;-7" />
+      <sprite name="StandingSE" sourceRegion="26;1;7;12" offset="0;-7" />
+      <sprite name="StandingS" sourceRegion="34;1;9;12" offset="-2;-7" />
+      <sprite name="StandingSW" sourceRegion="44;1;7;12" offset="0;-7" />
+      <sprite name="StandingW" sourceRegion="52;1;7;12" offset="0;-7" />
+      <sprite name="StandingNW" sourceRegion="60;1;6;12" offset="1;-7" />
+      <sprite name="ShootingN_0" sourceRegion="1;14;7;12" offset="1;-7" />
+      <sprite name="ShootingN_1" sourceRegion="1;27;8;15" offset="1;-10" />
+      <sprite name="ShootingNE_0" sourceRegion="9;14;8;12" offset="1;-7" />
+      <sprite name="ShootingNE_1" sourceRegion="10;27;12;15" offset="1;-10" />
+      <sprite name="ShootingE_0" sourceRegion="18;14;9;12" offset="0;-7" />
+      <sprite name="ShootingE_1" sourceRegion="23;27;14;15" offset="0;-10" />
+      <sprite name="ShootingSE_0" sourceRegion="28;14;9;12" offset="1;-7" />
+      <sprite name="ShootingSE_1" sourceRegion="38;27;13;15" offset="1;-10" />
+      <sprite name="ShootingS_0" sourceRegion="38;14;6;12" offset="0;-7" />
+      <sprite name="ShootingS_1" sourceRegion="52;27;8;15" offset="-2;-10" />
+      <sprite name="ShootingSW_0" sourceRegion="45;14;9;12" offset="-3;-7" />
+      <sprite name="ShootingSW_1" sourceRegion="61;27;12;15" offset="-6;-10" />
+      <sprite name="ShootingW_0" sourceRegion="55;14;9;12" offset="-3;-7" />
+      <sprite name="ShootingW_1" sourceRegion="74;27;14;15" offset="-8;-10" />
+      <sprite name="ShootingNW_0" sourceRegion="65;14;8;12" offset="-2;-7" />
+      <sprite name="ShootingNW_1" sourceRegion="89;27;12;15" offset="-6;-10" />
+      <sprite name="WalkingN_0" sourceRegion="1;43;8;12" offset="0;-7" />
+      <sprite name="WalkingN_1" sourceRegion="1;56;9;12" offset="0;-7" />
+      <sprite name="WalkingN_2" sourceRegion="1;69;9;12" offset="0;-7" />
+      <sprite name="WalkingN_3" sourceRegion="1;82;9;12" offset="0;-7" />
+      <sprite name="WalkingNE_0" sourceRegion="10;43;6;12" offset="0;-7" />
+      <sprite name="WalkingNE_1" sourceRegion="11;56;6;12" offset="0;-7" />
+      <sprite name="WalkingNE_2" sourceRegion="11;69;7;12" offset="0;-7" />
+      <sprite name="WalkingNE_3" sourceRegion="11;82;7;12" offset="0;-7" />
+      <sprite name="WalkingE_0" sourceRegion="17;43;7;12" offset="0;-7" />
+      <sprite name="WalkingE_1" sourceRegion="18;56;7;12" offset="0;-7" />
+      <sprite name="WalkingE_2" sourceRegion="19;69;7;12" offset="0;-7" />
+      <sprite name="WalkingE_3" sourceRegion="19;82;6;12" offset="0;-7" />
+      <sprite name="WalkingSE_0" sourceRegion="25;43;6;12" offset="1;-7" />
+      <sprite name="WalkingSE_1" sourceRegion="26;56;7;12" offset="1;-7" />
+      <sprite name="WalkingSE_2" sourceRegion="27;69;8;12" offset="0;-7" />
+      <sprite name="WalkingSE_3" sourceRegion="26;82;7;12" offset="0;-7" />
+      <sprite name="WalkingS_0" sourceRegion="32;43;8;12" offset="-1;-7" />
+      <sprite name="WalkingS_1" sourceRegion="34;56;9;12" offset="-2;-7" />
+      <sprite name="WalkingS_2" sourceRegion="36;69;9;12" offset="-2;-7" />
+      <sprite name="WalkingS_3" sourceRegion="34;82;9;12" offset="-2;-7" />
+      <sprite name="WalkingSW_0" sourceRegion="41;43;6;12" offset="0;-7" />
+      <sprite name="WalkingSW_1" sourceRegion="44;56;7;12" offset="-1;-7" />
+      <sprite name="WalkingSW_2" sourceRegion="46;69;8;12" offset="-2;-7" />
+      <sprite name="WalkingSW_3" sourceRegion="44;82;7;12" offset="-1;-7" />
+      <sprite name="WalkingW_0" sourceRegion="48;43;7;12" offset="0;-7" />
+      <sprite name="WalkingW_1" sourceRegion="52;56;7;12" offset="0;-7" />
+      <sprite name="WalkingW_2" sourceRegion="55;69;7;12" offset="-1;-7" />
+      <sprite name="WalkingW_3" sourceRegion="52;82;6;12" offset="0;-7" />
+      <sprite name="WalkingNW_0" sourceRegion="56;43;6;12" offset="0;-7" />
+      <sprite name="WalkingNW_1" sourceRegion="60;56;6;12" offset="0;-7" />
+      <sprite name="WalkingNW_2" sourceRegion="63;69;7;12" offset="-1;-7" />
+      <sprite name="WalkingNW_3" sourceRegion="59;82;7;12" offset="-1;-7" />
+      <sprite name="Die_0" sourceRegion="1;95;9;12" offset="-2;-7" />
+      <sprite name="Die_1" sourceRegion="11;95;10;12" offset="-2;-7" />
+      <sprite name="Die_2" sourceRegion="22;95;11;12" offset="-3;-7" />
+      <sprite name="Die_3" sourceRegion="34;95;11;12" offset="-3;-7" />
+    </spritePalette>
   </unitType>
   
-  <unitType name="Firebat">
+  <unitType name="Firebat" hasOwner="true">
     <costs>
       <food>1</food>
       <mineral>50</mineral>
@@ -243,10 +243,10 @@
     </groundWeapon>
     <createdIn>Barracks</createdIn>
     <requires>Academy</requires>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Ghost">
+  <unitType name="Ghost" hasOwner="true">
     <costs>
       <food>1</food>
       <mineral>25</mineral>
@@ -277,10 +277,10 @@
     </airWeapon>
     <createdIn>Barracks</createdIn>
     <requires>Academy,ScienceFacility-CovertOps</requires>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Vulture">
+  <unitType name="Vulture" hasOwner="true">
     <costs>
       <food>2</food>
       <mineral>75</mineral>
@@ -301,10 +301,10 @@
       <cooldown>30</cooldown>
     </groundWeapon>
     <createdIn>Factory</createdIn>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="SiegeTank">
+  <unitType name="SiegeTank" hasOwner="true">
     <costs>
       <food>2</food>
       <mineral>150</mineral>
@@ -327,10 +327,10 @@
       <cooldown>37</cooldown>
     </groundWeapon>
     <createdIn>Factory-MachineShop</createdIn>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Goliath">
+  <unitType name="Goliath" hasOwner="true">
     <costs>
       <food>2</food>
       <mineral>100</mineral>
@@ -361,10 +361,10 @@
     </airWeapon>
     <createdIn>Factory</createdIn>
     <requires>Armory</requires>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Wraith">
+  <unitType name="Wraith" hasOwner="true">
     <costs>
       <food>2</food>
       <mineral>150</mineral>
@@ -394,10 +394,10 @@
       <cooldown>22</cooldown>
     </airWeapon>
     <createdIn>Starport</createdIn>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Dropship">
+  <unitType name="Dropship" hasOwner="true">
     <costs>
       <food>2</food>
       <mineral>100</mineral>
@@ -413,10 +413,10 @@
       <speed>0.684</speed>
     </generalData>
     <createdIn>Starport-ControlTower</createdIn>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="ScienceVessel">
+  <unitType name="ScienceVessel" hasOwner="true">
     <costs>
       <food>2</food>
       <mineral>100</mineral>
@@ -434,10 +434,10 @@
     </generalData>
     <createdIn>Starport-ControlTower</createdIn>
     <requires>ScienceFacility</requires>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Battlecruiser">
+  <unitType name="Battlecruiser" hasOwner="true">
     <costs>
       <food>6</food>
       <mineral>400</mineral>
@@ -469,6 +469,6 @@
     </airWeapon>
     <createdIn>Starport-ControlTower</createdIn>
     <requires>ScienceFacility-PhysicsLab</requires>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </unitType>
 </metadata>

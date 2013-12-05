@@ -111,5 +111,17 @@ namespace RC.Engine.Simulator.Scenarios
         /// Gets the list of all custom types defined in the metadata.
         /// </summary>
         IEnumerable<IScenarioElementType> CustomTypes { get; }
+
+        /// <summary>
+        /// Gets the list of all element types defined in the metadata.
+        /// </summary>
+        IEnumerable<IScenarioElementType> AllTypes { get; }
+
+        /// <summary>
+        /// Gets the element type with the given ID.
+        /// </summary>
+        /// <param name="typeID">The ID of the element type.</param>
+        /// <returns>The element type with the given ID.</returns>
+        IScenarioElementType this[int typeID] { get; }
     }
 }

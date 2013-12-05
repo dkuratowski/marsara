@@ -31,7 +31,7 @@ namespace RC.App.PresLogic
             List<UISprite> retList = new List<UISprite>();
             foreach (MapSpriteType objType in this.metadataView.GetMapObjectTypes())
             {
-                if (owner == Player.Neutral || objType.HasPlayer)
+                if (this.owner == Player.Neutral || objType.HasOwner)
                 {
                     UISprite origSprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(
                         objType.ImageData,

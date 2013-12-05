@@ -232,6 +232,6 @@ namespace RC.App.BizLogic.Core
         /// <summary>
         /// Reference to the currently active scenario.
         /// </summary>
-        private IScenario activeScenario;
+        private Scenario activeScenario;
     }
 }

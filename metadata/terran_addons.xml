@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <metadata>
-  <addonType name="ComsatStation">
+  <addonType name="ComsatStation" hasOwner="true">
     <costs>
       <mineral>50</mineral>
       <gas>50</gas>
@@ -16,9 +16,9 @@
     </generalData>
     <mainBuilding>CommandCenter</mainBuilding>
     <requires>Academy</requires>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </addonType>
-  <addonType name="NuclearSilo">
+  <addonType name="NuclearSilo" hasOwner="true">
     <costs>
       <mineral>100</mineral>
       <gas>100</gas>
@@ -33,9 +33,9 @@
     </generalData>
     <mainBuilding>CommandCenter</mainBuilding>
     <requires>ScienceFacility-CovertOps</requires>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </addonType>
-  <addonType name="MachineShop">
+  <addonType name="MachineShop" hasOwner="true">
     <costs>
       <mineral>50</mineral>
       <gas>50</gas>
@@ -49,9 +49,9 @@
       <sightRange>11</sightRange>
     </generalData>
     <mainBuilding>Factory</mainBuilding>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </addonType>
-  <addonType name="ControlTower">
+  <addonType name="ControlTower" hasOwner="true">
     <costs>
       <mineral>50</mineral>
       <gas>50</gas>
@@ -65,9 +65,9 @@
       <sightRange>11</sightRange>
     </generalData>
     <mainBuilding>Starport</mainBuilding>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </addonType>
-  <addonType name="CovertOps">
+  <addonType name="CovertOps" hasOwner="true">
     <costs>
       <mineral>50</mineral>
       <gas>50</gas>
@@ -81,9 +81,9 @@
       <sightRange>11</sightRange>
     </generalData>
     <mainBuilding>ScienceFacility</mainBuilding>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </addonType>
-  <addonType name="PhysicsLab">
+  <addonType name="PhysicsLab" hasOwner="true">
     <costs>
       <mineral>50</mineral>
       <gas>50</gas>
@@ -97,6 +97,6 @@
       <sightRange>11</sightRange>
     </generalData>
     <mainBuilding>ScienceFacility</mainBuilding>
-    <!--sprite image="terran_scv.png" /-->
+    <!--spritePalette image="terran_scv.png" /-->
   </addonType>
 </metadata>

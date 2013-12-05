@@ -4,32 +4,80 @@
     <generalData>
       <area>8.0;4.0</area>
     </generalData>
-    <sprite image="mineral_field.png" transparentColor="255;0;255">
-      <frame name="Amount_100_200" sourceRegion="1;52;32;16" offset="0;0" />
-      <frame name="Amount_300_400" sourceRegion="1;35;32;16" offset="0;0" />
-      <frame name="Amount_500_700" sourceRegion="1;18;32;16" offset="0;0" />
-      <frame name="Amount_Full" sourceRegion="1;1;32;16" offset="0;0" />
-    </sprite>
+    <spritePalette image="mineral_field.png" transparentColor="255;0;255">
+      <sprite name="Amount_100_200" sourceRegion="1;52;32;16" offset="0;0" />
+      <sprite name="Amount_300_400" sourceRegion="1;35;32;16" offset="0;0" />
+      <sprite name="Amount_500_700" sourceRegion="1;18;32;16" offset="0;0" />
+      <sprite name="Amount_Full" sourceRegion="1;1;32;16" offset="0;0" />
+    </spritePalette>
+    <animationPalette>
+      <animation name="Amount_Full" isPreview="true">
+        <frame sprites="Amount_Full" />
+      </animation>
+      <animation name="Amount_100_200">
+        <frame sprites="Amount_100_200" />
+      </animation>
+      <animation name="Amount_300_400">
+        <frame sprites="Amount_300_400" />
+      </animation>
+      <animation name="Amount_500_700">
+        <frame sprites="Amount_500_700" />
+      </animation>
+    </animationPalette>
   </customType>
   <customType name="VespeneGeyser">
     <generalData>
       <area>16.0;8.0</area>
     </generalData>
-    <sprite image="vespene_geyser.png" transparentColor="255;0;255">
-      <frame name="Normal0" sourceRegion="1;34;64;32" offset="0;0" />
-      <frame name="Normal1" sourceRegion="1;67;64;32" offset="0;0" />
-      <frame name="Normal2" sourceRegion="1;100;64;32" offset="0;0" />
-      <frame name="Depleted0" sourceRegion="66;34;64;32" offset="0;0" />
-      <frame name="Depleted1" sourceRegion="66;67;64;32" offset="0;0" />
-      <frame name="Depleted2" sourceRegion="66;100;64;32" offset="0;0" />
-    </sprite>
+    <spritePalette image="vespene_geyser.png" transparentColor="255;0;255">
+      <sprite name="Crater" sourceRegion="1;1;64;32" offset="0;0" />
+      <sprite name="NormalSmokeL0" sourceRegion="1;34;6;10" offset="14;2" />
+      <sprite name="NormalSmokeL1" sourceRegion="8;34;5;10" offset="15;2" />
+      <sprite name="NormalSmokeL2" sourceRegion="14;34;5;10" offset="15;2" />
+      <sprite name="NormalSmokeM0" sourceRegion="20;34;7;10" offset="34;2" />
+      <sprite name="NormalSmokeM1" sourceRegion="28;34;5;10" offset="35;2" />
+      <sprite name="NormalSmokeM2" sourceRegion="34;34;5;10" offset="36;2" />
+      <sprite name="NormalSmokeR0" sourceRegion="40;34;3;10" offset="51;9" />
+      <sprite name="NormalSmokeR1" sourceRegion="44;34;3;10" offset="52;9" />
+      <sprite name="NormalSmokeR2" sourceRegion="48;34;4;10" offset="52;9" />
+      <sprite name="DepletedSmokeL0" sourceRegion="1;45;5;9" offset="16;3" />
+      <sprite name="DepletedSmokeL1" sourceRegion="7;45;4;9" offset="15;3" />
+      <sprite name="DepletedSmokeL2" sourceRegion="12;45;4;9" offset="15;3" />
+      <sprite name="DepletedSmokeM0" sourceRegion="17;45;5;9" offset="37;3" />
+      <sprite name="DepletedSmokeM1" sourceRegion="23;45;4;9" offset="37;3" />
+      <sprite name="DepletedSmokeM2" sourceRegion="28;45;4;9" offset="36;3" />
+      <sprite name="DepletedSmokeR0" sourceRegion="33;45;5;9" offset="52;10" />
+      <sprite name="DepletedSmokeR1" sourceRegion="39;45;3;9" offset="51;10" />
+      <sprite name="DepletedSmokeR2" sourceRegion="43;45;2;9" offset="52;10" />
+    </spritePalette>
+    <animationPalette>
+      <animation name="Normal" isPreview="true">
+        <label name="Begin" />
+        <frame sprites="Crater,NormalSmokeL0,NormalSmokeM0,NormalSmokeR0" duration="10" />
+        <frame sprites="Crater,NormalSmokeL1,NormalSmokeM1,NormalSmokeR1" duration="10" />
+        <frame sprites="Crater,NormalSmokeL2,NormalSmokeM2,NormalSmokeR2" duration="10" />
+        <goto label="Begin" />
+      </animation>
+      <animation name="Depleted">
+        <label name="Begin" />
+        <frame sprites="Crater,DepletedSmokeL0,DepletedSmokeM0,DepletedSmokeR0" duration="10" />
+        <frame sprites="Crater,DepletedSmokeL1,DepletedSmokeM1,DepletedSmokeR1" duration="10" />
+        <frame sprites="Crater,DepletedSmokeL2,DepletedSmokeM2,DepletedSmokeR2" duration="10" />
+        <goto label="Begin" />
+      </animation>
+    </animationPalette>
   </customType>
-  <customType name="StartLocation">
+  <customType name="StartLocation" hasOwner="true">
     <generalData>
       <area>16.0;12.0</area>
     </generalData>
-    <sprite image="start_location.png" transparentColor="255;0;255">
-      <frame name="Normal" sourceRegion="0;0;64;48" offset="0;0" />
-    </sprite>
+    <spritePalette image="start_location.png" transparentColor="255;0;255">
+      <sprite name="StartLocation" sourceRegion="0;0;64;48" offset="0;0" />
+    </spritePalette>
+    <animationPalette>
+      <animation name="Normal" isPreview="true">
+        <frame sprites="StartLocation" />
+      </animation>
+    </animationPalette>
   </customType>
 </metadata>

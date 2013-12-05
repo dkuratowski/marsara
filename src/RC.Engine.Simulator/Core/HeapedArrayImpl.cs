@@ -30,7 +30,7 @@ namespace RC.Engine.Simulator.Core
         {
             get
             {
-                if (!this.isReadyToUse) { throw new InvalidOperationException("Heap accessor is not ready to use!"); }
+                //if (!this.isReadyToUse) { throw new InvalidOperationException("Heap accessor is not ready to use!"); }
                 if (index < 0 || index >= this.items.Length) { throw new IndexOutOfRangeException(); }
                 return this.items[index];
             }
@@ -39,7 +39,7 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="HeapedArray<T>.New"/>
         public override void New(int length)
         {
-            if (!this.isReadyToUse) { throw new InvalidOperationException("Heap accessor is not ready to use!"); }
+            //if (!this.isReadyToUse) { throw new InvalidOperationException("Heap accessor is not ready to use!"); }
             if (length < 0) { throw new ArgumentOutOfRangeException("length"); }
 
             /// Delete the old array if exists.
@@ -60,7 +60,7 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IEnumerable<IValue<T>>.GetEnumeratorImpl"/>
         protected override IEnumerator<IValue<T>> GetEnumeratorImpl()
         {
-            if (!this.isReadyToUse) { throw new InvalidOperationException("Heap accessor is not ready to use!"); }
+            //if (!this.isReadyToUse) { throw new InvalidOperationException("Heap accessor is not ready to use!"); }
             return ((IEnumerable<IValue<T>>)this.items).GetEnumerator();
         }
 
