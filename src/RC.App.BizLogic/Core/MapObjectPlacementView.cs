@@ -43,8 +43,7 @@ namespace RC.App.BizLogic.Core
         /// <see cref="ObjectPlacementView.CheckObjectConstraints"/>
         protected override HashSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords)
         {
-            HashSet<RCIntVector> violatingQuadCoords = this.objectType.CheckConstraints(this.scenario, topLeftCoords);
-            return violatingQuadCoords;
+            return this.objectType.CheckConstraints(this.scenario, topLeftCoords);
         }
 
         /// <see cref="ObjectPlacementView.GetObjectQuadraticSize"/>
@@ -71,7 +70,7 @@ namespace RC.App.BizLogic.Core
             return retList;
         }
 
-        /// TODO: remove
+        /// <see cref="ObjectPlacementView.StepAnimation"/>
         public override void StepAnimation()
         {
             this.previewAnimation.Step();

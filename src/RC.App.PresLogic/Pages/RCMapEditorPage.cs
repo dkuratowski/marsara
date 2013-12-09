@@ -102,6 +102,7 @@ namespace RC.App.PresLogic.Pages
             /// Create the necessary views.
             this.mapTerrainView = this.mapEditorBE.CreateMapTerrainView();
             this.mapObjectView = this.mapEditorBE.CreateMapObjectView();
+            this.mapObjectDataView = this.mapEditorBE.CreateMapObjectDataView();
             this.tilesetView = this.mapEditorBE.CreateTileSetView();
             this.metadataView = this.mapEditorBE.CreateMetadataView();
 
@@ -110,7 +111,8 @@ namespace RC.App.PresLogic.Pages
             this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView, this.metadataView);
             this.isotileDisplayEx = new RCIsoTileDisplay(this.mapObjectDisplayEx, this.mapTerrainView);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.isotileDisplayEx, this.mapTerrainView);
-            this.mapDisplay = this.objectPlacementDisplayEx;
+            this.resourceAmountDisplayEx = new RCResourceAmountDisplay(this.objectPlacementDisplayEx, this.mapObjectDataView, this.mapTerrainView);
+            this.mapDisplay = this.resourceAmountDisplayEx;
             this.mapDisplay.Started += this.OnMapDisplayStarted;
             this.mapDisplay.Start();
 
@@ -154,6 +156,10 @@ namespace RC.App.PresLogic.Pages
             /// Show the map editor panel.
             this.mapEditorPanel.Show();
             this.mapEditorPanel.ResetControls();
+
+            /// Start the clock signal of the map editor.
+            this.clockSignal = new ClockSignal(MAPEDITOR_MS_PER_FRAME);
+            this.clockSignal.AddTarget(this.mapEditorBE.StepAnimations);
         }
 
         /// <summary>
@@ -167,6 +173,9 @@ namespace RC.App.PresLogic.Pages
 
             if (newState == Status.Inactive)
             {
+                /// Stop the clock signal of the map editor.
+                this.clockSignal.Dispose();
+
                 this.StatusChanged -= this.OnPageStatusChanged;
 
                 this.mapDisplay.Stopped += this.OnMapDisplayStopped;
@@ -201,21 +210,24 @@ namespace RC.App.PresLogic.Pages
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateTerrainObjectPlacementView(this.mapEditorPanel.SelectedItem),
-                    this.mapDisplayBasic.TerrainObjectSprites);
+                    this.mapDisplayBasic.TerrainObjectSprites,
+                    this.clockSignal);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
-                    this.mapEditorBE.CreateMapObjectPlacementView("StartLocation"),
-                    this.mapObjectDisplayEx.GetMapObjectSprites((Player)(this.mapEditorPanel.SelectedIndex + 1)));
+                    this.mapEditorBE.CreateMapObjectPlacementView(STARTLOCATION_NAME),
+                    this.mapObjectDisplayEx.GetMapObjectSprites((PlayerEnum)(this.mapEditorPanel.SelectedIndex)),
+                    this.clockSignal);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateMapObjectPlacementView(this.mapEditorPanel.SelectedItem),
-                    this.mapObjectDisplayEx.GetMapObjectSprites(Player.Neutral));
+                    this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral),
+                    this.clockSignal);
             }
             else
             {
@@ -233,21 +245,24 @@ namespace RC.App.PresLogic.Pages
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateTerrainObjectPlacementView(this.mapEditorPanel.SelectedItem),
-                    this.mapDisplayBasic.TerrainObjectSprites);
+                    this.mapDisplayBasic.TerrainObjectSprites,
+                    this.clockSignal);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
-                    this.mapEditorBE.CreateMapObjectPlacementView("StartLocation"),
-                    this.mapObjectDisplayEx.GetMapObjectSprites((Player)(this.mapEditorPanel.SelectedIndex + 1)));
+                    this.mapEditorBE.CreateMapObjectPlacementView(STARTLOCATION_NAME),
+                    this.mapObjectDisplayEx.GetMapObjectSprites((PlayerEnum)(this.mapEditorPanel.SelectedIndex)),
+                    this.clockSignal);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateMapObjectPlacementView(this.mapEditorPanel.SelectedItem),
-                    this.mapObjectDisplayEx.GetMapObjectSprites(Player.Neutral));
+                    this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral),
+                    this.clockSignal);
             }
         }
 
@@ -300,7 +315,28 @@ namespace RC.App.PresLogic.Pages
                     {
                         this.objectPlacementDisplayEx.StartPlacingObject(
                             this.mapEditorBE.CreateTerrainObjectPlacementView(this.mapEditorPanel.SelectedItem),
-                            this.mapDisplayBasic.TerrainObjectSprites);
+                            this.mapDisplayBasic.TerrainObjectSprites,
+                            this.clockSignal);
+                    }
+                }
+            }
+            else if (this.activatorBtn == UIMouseButton.Undefined && this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
+            {
+                int objectID = this.mapObjectView.GetMapObjectID(this.mapDisplay.DisplayedArea, evtArgs.Position);
+                if (objectID != -1)
+                {
+                    this.objectPlacementDisplayEx.StopPlacingObject();
+                    this.mapObjectDataView.StartReadingMapObject(objectID);
+                }
+                else
+                {
+                    this.mapObjectDataView.StopReadingMapObject();
+                    if (!this.objectPlacementDisplayEx.PlacingObject)
+                    {
+                        this.objectPlacementDisplayEx.StartPlacingObject(
+                            this.mapEditorBE.CreateMapObjectPlacementView(this.mapEditorPanel.SelectedItem),
+                            this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral),
+                            this.clockSignal);
                     }
                 }
             }
@@ -322,6 +358,21 @@ namespace RC.App.PresLogic.Pages
                 {
                     this.mapEditorBE.PlaceTerrainObject(this.mapDisplay.DisplayedArea, evtArgs.Position, this.mapEditorPanel.SelectedItem);
                 }
+                else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
+                {
+                    this.mapEditorBE.PlaceStartLocation(this.mapDisplay.DisplayedArea, evtArgs.Position, this.mapEditorPanel.SelectedIndex);
+                }
+                else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
+                {
+                    if (this.mapEditorPanel.SelectedItem == RCMapEditorPage.MINERALFIELD_NAME)
+                    {
+                        this.mapEditorBE.PlaceMineralField(this.mapDisplay.DisplayedArea, evtArgs.Position);
+                    }
+                    else if (this.mapEditorPanel.SelectedItem == RCMapEditorPage.VESPENEGEYSER_NAME)
+                    {
+                        this.mapEditorBE.PlaceVespeneGeyser(this.mapDisplay.DisplayedArea, evtArgs.Position);
+                    }
+                }
             }
             else if (this.activatorBtn == UIMouseButton.Undefined && evtArgs.Button == UIMouseButton.Right)
             {
@@ -329,6 +380,11 @@ namespace RC.App.PresLogic.Pages
                 if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
                 {
                     this.mapEditorBE.RemoveTerrainObject(this.mapDisplay.DisplayedArea, evtArgs.Position);
+                }
+                else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation ||
+                         this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
+                {
+                    this.mapEditorBE.RemoveEntity(this.mapDisplay.DisplayedArea, evtArgs.Position);
                 }
             }
         }
@@ -379,6 +435,11 @@ namespace RC.App.PresLogic.Pages
         private IMapObjectView mapObjectView;
 
         /// <summary>
+        /// Reference to the map object data view.
+        /// </summary>
+        private IMapObjectDataView mapObjectDataView;
+
+        /// <summary>
         /// Reference to the tileset view.
         /// </summary>
         private ITileSetView tilesetView;
@@ -414,6 +475,11 @@ namespace RC.App.PresLogic.Pages
         private RCObjectPlacementDisplay objectPlacementDisplayEx;
 
         /// <summary>
+        /// Extension of the map display that displays the amount of resource in a mineral field or vespene geyser.
+        /// </summary>
+        private RCResourceAmountDisplay resourceAmountDisplayEx;
+
+        /// <summary>
         /// Reference to the panel with the controls.
         /// </summary>
         private RCMapEditorPanel mapEditorPanel;
@@ -432,6 +498,19 @@ namespace RC.App.PresLogic.Pages
         /// Reference to the object that controls the scrolling of the map display.
         /// </summary>
         private ScrollHandler scrollHandler;
+
+        /// <summary>
+        /// The clock signal of the map editor.
+        /// </summary>
+        private ClockSignal clockSignal;
+
+        /// <summary>
+        /// Name of the scenario element types that can be placed on the scenario.
+        /// </summary>
+        public const string STARTLOCATION_NAME = "StartLocation";
+        public const string MINERALFIELD_NAME = "MineralField";
+        public const string VESPENEGEYSER_NAME = "VespeneGeyser";
+        public const int MAPEDITOR_MS_PER_FRAME = 60;
 
         #region Map editor settings
 

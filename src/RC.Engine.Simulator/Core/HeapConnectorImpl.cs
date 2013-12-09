@@ -204,8 +204,10 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IValueRead<T>.Read"/>
         public RCIntVector Read()
         {
-            return new RCIntVector(this.Heap.ReadInt(this.DataAddress),
-                                   this.Heap.ReadInt(this.DataAddress + 4));
+            bool isDefined = this.Heap.ReadByte(this.DataAddress) == (byte)0x01;
+            return isDefined ? new RCIntVector(this.Heap.ReadInt(this.DataAddress + 1),
+                                               this.Heap.ReadInt(this.DataAddress + 5))
+                : RCIntVector.Undefined;
         }
 
         /// <see cref="IValueRead<T>.ValueChanged"/>
@@ -219,8 +221,10 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IValueWrite<T>.Write"/>
         public void Write(RCIntVector newVal)
         {
-            this.Heap.WriteInt(this.DataAddress, newVal.X);
-            this.Heap.WriteInt(this.DataAddress + 4, newVal.Y);
+            bool isDefined = (newVal != RCIntVector.Undefined);
+            this.Heap.WriteByte(this.DataAddress, isDefined ? (byte)0x01 : (byte)0x00);
+            this.Heap.WriteInt(this.DataAddress + 1, newVal.X);
+            this.Heap.WriteInt(this.DataAddress + 5, newVal.Y);
         }
 
         #endregion IValueWrite<T> methods
@@ -242,8 +246,10 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IValueRead<T>.Read"/>
         public RCNumVector Read()
         {
-            return new RCNumVector(new RCNumber(this.Heap.ReadInt(this.DataAddress)),
-                                   new RCNumber(this.Heap.ReadInt(this.DataAddress + 4)));
+            bool isDefined = this.Heap.ReadByte(this.DataAddress) == (byte)0x01;
+            return isDefined ? new RCNumVector(new RCNumber(this.Heap.ReadInt(this.DataAddress + 1)),
+                                               new RCNumber(this.Heap.ReadInt(this.DataAddress + 5)))
+                : RCNumVector.Undefined;
         }
 
         /// <see cref="IValueRead<T>.ValueChanged"/>
@@ -257,8 +263,10 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IValueWrite<T>.Write"/>
         public void Write(RCNumVector newVal)
         {
-            this.Heap.WriteInt(this.DataAddress, newVal.X.Bits);
-            this.Heap.WriteInt(this.DataAddress + 4, newVal.Y.Bits);
+            bool isDefined = (newVal != RCNumVector.Undefined);
+            this.Heap.WriteByte(this.DataAddress, isDefined ? (byte)0x01 : (byte)0x00);
+            this.Heap.WriteInt(this.DataAddress + 1, newVal.X.Bits);
+            this.Heap.WriteInt(this.DataAddress + 5, newVal.Y.Bits);
         }
 
         #endregion IValueWrite<T> methods
@@ -280,10 +288,12 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IValueRead<T>.Read"/>
         public RCIntRectangle Read()
         {
-            return new RCIntRectangle(this.Heap.ReadInt(this.DataAddress),
-                                      this.Heap.ReadInt(this.DataAddress + 4),
-                                      this.Heap.ReadInt(this.DataAddress + 8),
-                                      this.Heap.ReadInt(this.DataAddress + 12));
+            bool isDefined = this.Heap.ReadByte(this.DataAddress) == (byte)0x01;
+            return isDefined ? new RCIntRectangle(this.Heap.ReadInt(this.DataAddress + 1),
+                                                  this.Heap.ReadInt(this.DataAddress + 5),
+                                                  this.Heap.ReadInt(this.DataAddress + 9),
+                                                  this.Heap.ReadInt(this.DataAddress + 13))
+                : RCIntRectangle.Undefined;
         }
 
         /// <see cref="IValueRead<T>.ValueChanged"/>
@@ -297,10 +307,12 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IValueWrite<T>.Write"/>
         public void Write(RCIntRectangle newVal)
         {
-            this.Heap.WriteInt(this.DataAddress, newVal.X);
-            this.Heap.WriteInt(this.DataAddress + 4, newVal.Y);
-            this.Heap.WriteInt(this.DataAddress + 8, newVal.Width);
-            this.Heap.WriteInt(this.DataAddress + 12, newVal.Height);
+            bool isDefined = (newVal != RCIntRectangle.Undefined);
+            this.Heap.WriteByte(this.DataAddress, isDefined ? (byte)0x01 : (byte)0x00);
+            this.Heap.WriteInt(this.DataAddress + 1, newVal.X);
+            this.Heap.WriteInt(this.DataAddress + 5, newVal.Y);
+            this.Heap.WriteInt(this.DataAddress + 9, newVal.Width);
+            this.Heap.WriteInt(this.DataAddress + 13, newVal.Height);
         }
 
         #endregion IValueWrite<T> methods
@@ -322,10 +334,12 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IValueRead<T>.Read"/>
         public RCNumRectangle Read()
         {
-            return new RCNumRectangle(new RCNumber(this.Heap.ReadInt(this.DataAddress)),
-                                      new RCNumber(this.Heap.ReadInt(this.DataAddress + 4)),
-                                      new RCNumber(this.Heap.ReadInt(this.DataAddress + 8)),
-                                      new RCNumber(this.Heap.ReadInt(this.DataAddress + 12)));
+            bool isDefined = this.Heap.ReadByte(this.DataAddress) == (byte)0x01;
+            return isDefined ? new RCNumRectangle(new RCNumber(this.Heap.ReadInt(this.DataAddress + 1)),
+                                                  new RCNumber(this.Heap.ReadInt(this.DataAddress + 5)),
+                                                  new RCNumber(this.Heap.ReadInt(this.DataAddress + 9)),
+                                                  new RCNumber(this.Heap.ReadInt(this.DataAddress + 13)))
+                : RCNumRectangle.Undefined;
         }
 
         /// <see cref="IValueRead<T>.ValueChanged"/>
@@ -339,10 +353,12 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IValueWrite<T>.Write"/>
         public void Write(RCNumRectangle newVal)
         {
-            this.Heap.WriteInt(this.DataAddress, newVal.X.Bits);
-            this.Heap.WriteInt(this.DataAddress + 4, newVal.Y.Bits);
-            this.Heap.WriteInt(this.DataAddress + 8, newVal.Width.Bits);
-            this.Heap.WriteInt(this.DataAddress + 12, newVal.Height.Bits);
+            bool isDefined = (newVal != RCNumRectangle.Undefined);
+            this.Heap.WriteByte(this.DataAddress, isDefined ? (byte)0x01 : (byte)0x00);
+            this.Heap.WriteInt(this.DataAddress + 1, newVal.X.Bits);
+            this.Heap.WriteInt(this.DataAddress + 5, newVal.Y.Bits);
+            this.Heap.WriteInt(this.DataAddress + 9, newVal.Width.Bits);
+            this.Heap.WriteInt(this.DataAddress + 13, newVal.Height.Bits);
         }
 
         #endregion IValueWrite<T> methods

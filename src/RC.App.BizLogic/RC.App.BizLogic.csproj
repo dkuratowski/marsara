@@ -73,6 +73,7 @@
     <Compile Include="Core\GameplayBE.cs" />
     <Compile Include="Core\MapDebugView.cs" />
     <Compile Include="Core\MapEditorBE.cs" />
+    <Compile Include="Core\MapObjectDataView.cs" />
     <Compile Include="Core\MapObjectPlacementView.cs" />
     <Compile Include="Core\MapObjectView.cs" />
     <Compile Include="Core\MapTerrainView.cs" />
@@ -87,6 +88,7 @@
     <Compile Include="ComponentInterfaces\IGameplayBE.cs" />
     <Compile Include="PublicInterfaces\IMapDebugView.cs" />
     <Compile Include="ComponentInterfaces\IMapEditorBE.cs" />
+    <Compile Include="PublicInterfaces\IMapObjectDataView.cs" />
     <Compile Include="PublicInterfaces\IMapObjectView.cs" />
     <Compile Include="PublicInterfaces\IMapTerrainView.cs" />
     <Compile Include="PublicInterfaces\IMapView.cs" />
@@ -97,7 +99,7 @@
     <Compile Include="PublicInterfaces\MapSpriteType.cs" />
     <Compile Include="PublicInterfaces\ITileSetView.cs" />
     <Compile Include="PublicInterfaces\ObjectPlacementBox.cs" />
-    <Compile Include="PublicInterfaces\Player.cs" />
+    <Compile Include="PublicInterfaces\PlayerEnum.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj">

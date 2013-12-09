@@ -16,7 +16,8 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// quadratic position and collects all the violating quadratic coordinates relative to the top-left corner of the
 		/// terrain object.
         /// </summary>
-        /// <param name="terrainObj">The terrain object to be checked.</param>
+        /// <param name="map">Reference to the map.</param>
+        /// <param name="position">The position to check.</param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the top-left corner) violating the constraint.
         /// </returns>

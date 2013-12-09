@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Common", "RC.Common\RC.Common.csproj", "{96EF40A8-8614-468B-ABC3-7315A1B5B7CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.DssServices", "RC.DssServices\RC.DssServices.csproj", "{5F4F0C4B-F5E3-49CF-98F1-83EB6F44BECE}"
@@ -159,6 +159,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.Engine.Simulator", "RC.E
 	ProjectSection(SolutionItems) = preProject
 		..\config\RC.Engine.Simulator\RC.Engine.Simulator.ConstantsConfig.xml = ..\config\RC.Engine.Simulator\RC.Engine.Simulator.ConstantsConfig.xml
 		..\config\RC.Engine.Simulator\RC.Engine.Simulator.node = ..\config\RC.Engine.Simulator\RC.Engine.Simulator.node
+		..\config\RC.Engine.Simulator\RC.Engine.Simulator.PackageFormatConfig.xml = ..\config\RC.Engine.Simulator\RC.Engine.Simulator.PackageFormatConfig.xml
 		..\config\RC.Engine.Simulator\RC.Engine.Simulator.TraceConfig.xml = ..\config\RC.Engine.Simulator\RC.Engine.Simulator.TraceConfig.xml
 	EndProjectSection
 EndProject

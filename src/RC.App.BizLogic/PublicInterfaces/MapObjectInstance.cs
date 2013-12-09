@@ -19,7 +19,7 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// <summary>
         /// The player that owns the object to be displayed or Player.Neutral if this is a neutral object.
         /// </summary>
-        public Player Owner { get; set; }
+        public PlayerEnum Owner { get; set; }
 
         /// <summary>
         /// The selection indicator of the object in the coordinate system of the display area or

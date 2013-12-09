@@ -13,12 +13,12 @@ namespace RC.Engine.Simulator.Terran
     /// This class represents the heap manager plugin for the Terran race.
     /// </summary>
     [Plugin(typeof(IHeapManager))]
-    class TerranPlugin : IPlugin<IHeapManagerPluginInstall>
+    class TerranHeapManagerPlugin : IPlugin<IHeapManagerPluginInstall>
     {
         /// <summary>
-        /// Constructs a TerranPlugin instance.
+        /// Constructs a TerranHeapManagerPlugin instance.
         /// </summary>
-        public TerranPlugin()
+        public TerranHeapManagerPlugin()
         {
         }
 

@@ -19,11 +19,9 @@ namespace RC.Engine.Simulator.Scenarios
         /// Constructs an entity instance.
         /// </summary>
         /// <param name="elementTypeName">The name of the element type of this entity.</param>
-        /// <param name="initialPosition">The initial position of the entity instance on the map.</param>
-        public Entity(string elementTypeName, RCNumVector initialPosition)
+        public Entity(string elementTypeName)
         {
             if (elementTypeName == null) { throw new ArgumentNullException("elementTypeName"); }
-            if (initialPosition == RCNumVector.Undefined) { throw new ArgumentNullException("initialPosition"); }
 
             this.position = this.ConstructField<RCNumVector>("position");
             this.id = this.ConstructField<int>("id");
@@ -31,8 +29,9 @@ namespace RC.Engine.Simulator.Scenarios
 
             this.elementType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetElementType(elementTypeName);
             this.scenario = null;
+            this.currentAnimation = null;
 
-            this.position.Write(initialPosition);
+            this.position.Write(RCNumVector.Undefined);
             this.id.Write(-1);
             this.typeID.Write(this.elementType.ID);
         }
@@ -46,6 +45,44 @@ namespace RC.Engine.Simulator.Scenarios
         /// Gets the metadata type definition of the entity.
         /// </summary>
         public IScenarioElementType ElementType { get { return this.elementType; } }
+
+        /// <summary>
+        /// Gets the player of the currently active animation of this entity.
+        /// </summary>
+        public AnimationPlayer CurrentAnimation { get { return this.currentAnimation; } }
+
+        /// <summary>
+        /// Gets the owner of this entity or null if this entity is neutral or is a start location.
+        /// </summary>
+        public Player Owner { get { return this.owner; } }
+
+        /// <summary>
+        /// Gets the scenario that this entity belongs to.
+        /// </summary>
+        protected Scenario Scenario { get { return this.scenario; } }
+
+        /// <summary>
+        /// Sets the position of this entity.
+        /// </summary>
+        /// <param name="newPos">The new position of this entity.</param>
+        protected void SetPosition(RCNumVector newPos)
+        {
+            if (newPos == RCNumVector.Undefined) { throw new ArgumentNullException("newPos"); }
+
+            if (this.PositionChanging != null) { this.PositionChanging(this); }
+            this.position.Write(newPos);
+            if (this.PositionChanged != null) { this.PositionChanged(this); }
+        }
+
+        /// <summary>
+        /// Sets the current animation of this entity.
+        /// </summary>
+        /// <param name="animationName">The name of the animation.</param>
+        protected void SetCurrentAnimation(string animationName)
+        {
+            if (animationName == null) { throw new ArgumentNullException("animationName"); }
+            this.currentAnimation = new AnimationPlayer(this.elementType.AnimationPalette.GetAnimation(animationName));
+        }
 
         #region IMapContent members
 
@@ -66,26 +103,39 @@ namespace RC.Engine.Simulator.Scenarios
         #region Internal members
 
         /// <summary>
-        /// This method is called when this entity has been attached to a scenario.
+        /// This method is called when this entity has been added to a scenario.
         /// </summary>
-        /// <param name="scenario">The scenario where this entity is attached to.</param>
+        /// <param name="scenario">The scenario where this entity is added to.</param>
         /// <param name="id">The ID of this entity.</param>
-        internal void OnAttached(Scenario scenario, int id)
+        internal void OnAddedToScenario(Scenario scenario, int id)
         {
-            if (this.scenario != null) { throw new InvalidOperationException("The entity is already attached to a scenario!"); }
+            if (this.scenario != null) { throw new InvalidOperationException("The entity is already added to a scenario!"); }
             this.scenario = scenario;
             this.id.Write(id);
+            this.OnAddedToScenarioImpl();
         }
 
         /// <summary>
-        /// This method is called when this entity has been detached from the scenario it is currently attached to.
+        /// This method is called when this entity has been removed from the scenario it is currently belongs to.
         /// </summary>
-        internal void OnDetached()
+        internal void OnRemovedFromScenario()
         {
-            if (this.scenario == null) { throw new InvalidOperationException("The entity is not attached to a scenario!"); }
+            if (this.scenario == null) { throw new InvalidOperationException("The entity doesn't not belong to a scenario!"); }
+            if (this.scenario.VisibleEntities.HasContent(this)) { this.scenario.VisibleEntities.DetachContent(this); }
             this.scenario = null;
             this.id.Write(-1);
+            this.OnRemovedFromScenarioImpl();
         }
+
+        /// <summary>
+        /// This method is called when this entity has been added to a scenario. Can be overriden in the derived classes.
+        /// </summary>
+        protected virtual void OnAddedToScenarioImpl() { }
+
+        /// <summary>
+        /// This method is called when this entity has been removed from it's scenario. Can be overriden in the derived classes.
+        /// </summary>
+        protected virtual void OnRemovedFromScenarioImpl() { }
 
         #endregion Internal members
 
@@ -109,12 +159,22 @@ namespace RC.Engine.Simulator.Scenarios
         #endregion Heaped members
 
         /// <summary>
+        /// The player of the currently active animation of this entity.
+        /// </summary>
+        private AnimationPlayer currentAnimation;
+
+        /// <summary>
+        /// Reference to the player who owns this entity or null if this entity is neutral or is a start location.
+        /// </summary>
+        private Player owner;
+
+        /// <summary>
         /// Reference to the element type of this entity.
         /// </summary>
         private IScenarioElementType elementType;
 
         /// <summary>
-        /// Reference to the scenario where this entity is attached to or null if this entity is not attached
+        /// Reference to the scenario that this entity belongs to or null if this entity doesn't belong to any scenario.
         /// to a scenario.
         /// </summary>
         private Scenario scenario;

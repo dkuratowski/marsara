@@ -35,6 +35,14 @@ namespace RC.Engine.Simulator.Scenarios
             }
         }
 
+        /// <see cref="IAnimationPalette.GetAnimation"/>
+        public Animation GetAnimation(string animationName)
+        {
+            if (animationName == null) { throw new ArgumentNullException("animationName"); }
+            if (!this.animations.ContainsKey(animationName)) { throw new SimulatorException(string.Format("Animation with name '{0}' doesn't exist!", animationName)); }
+            return this.animations[animationName];
+        }
+
         #endregion IAnimationPalette members
 
         /// <summary>

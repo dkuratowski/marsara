@@ -24,6 +24,7 @@ namespace RC.App.PresLogic.Controls
         {
             this.objects = null;
             this.objectPlacementView = null;
+            this.clockSignal = null;
             this.objectPlacementMaskGreen = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ObjectPlacementMaskGreen");
             this.objectPlacementMaskRed = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ObjectPlacementMaskRed");
             this.lastKnownMousePosition = RCIntVector.Undefined;
@@ -34,17 +35,18 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         /// <param name="objPlacementView">The object placement view that will provide the object placement box to be displayed.</param>
         /// <param name="objectGroup">The sprite-group indexed by the object placement view.</param>
-        public void StartPlacingObject(IObjectPlacementView objPlacementView, SpriteGroup objectGroup)
+        /// <param name="clockSignal">The clock signal that is used to animate the object placement box.</param>
+        public void StartPlacingObject(IObjectPlacementView objPlacementView, SpriteGroup objectGroup, ClockSignal clockSignal)
         {
             if (objPlacementView == null) { throw new ArgumentNullException("objPlacementView"); }
             if (objectGroup == null) { throw new ArgumentNullException("objectGroup"); }
+            if (clockSignal == null) { throw new ArgumentNullException("clockSignal"); }
             if (this.objectPlacementView != null) { throw new InvalidOperationException("Object placement has already been started!"); }
 
             this.objectPlacementView = objPlacementView;
+            this.clockSignal = clockSignal;
+            this.clockSignal.AddTarget(this.objectPlacementView.StepAnimation);
             this.objects = objectGroup;
-
-            // TODO: remove
-            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnUpdate);
         }
 
         /// <summary>
@@ -52,11 +54,10 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         public void StopPlacingObject()
         {
+            if (this.PlacingObject) { this.clockSignal.RemoveTarget(this.objectPlacementView.StepAnimation); }            
+            this.clockSignal = null;
             this.objectPlacementView = null;
             this.objects = null;
-
-            // TODO: remove
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnUpdate);
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace RC.App.PresLogic.Controls
             this.MouseSensor.Move -= this.OnMouseMove;
         }
 
-        /// <see cref="RCMapDisplayExtension"/>
+        /// <see cref="RCMapDisplayExtension.RenderExtension_i"/>
         protected override void RenderExtension_i(IUIRenderContext renderContext)
         {
             if (this.DisplayedArea != RCIntRectangle.Undefined && this.objectPlacementView != null && this.lastKnownMousePosition != RCIntVector.Undefined)
@@ -112,12 +113,6 @@ namespace RC.App.PresLogic.Controls
             }
         }
 
-        /// TODO: remove
-        private void OnUpdate(UIUpdateSystemEventArgs args)
-        {
-            this.objectPlacementView.StepAnimation();
-        }
-
         /// <summary>
         /// The sprite for displaying the green parts of the object placement mask.
         /// </summary>
@@ -132,6 +127,11 @@ namespace RC.App.PresLogic.Controls
         /// Reference to the object placement view or null if there is no object being placed.
         /// </summary>
         private IObjectPlacementView objectPlacementView;
+
+        /// <summary>
+        /// The clock signal that is used to animate the object placement box.
+        /// </summary>
+        private ClockSignal clockSignal;
 
         /// <summary>
         /// List of the objects.

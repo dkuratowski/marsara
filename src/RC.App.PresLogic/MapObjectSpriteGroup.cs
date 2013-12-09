@@ -16,7 +16,7 @@ namespace RC.App.PresLogic
         /// </summary>
         /// <param name="metadataView">Reference to the metadata view.</param>
         /// <param name="owner">The owner of the map objects in this group.</param>
-        public MapObjectSpriteGroup(IMetadataView metadataView, Player owner)
+        public MapObjectSpriteGroup(IMetadataView metadataView, PlayerEnum owner)
             : base()
         {
             if (metadataView == null) { throw new ArgumentNullException("metadataView"); }
@@ -31,7 +31,7 @@ namespace RC.App.PresLogic
             List<UISprite> retList = new List<UISprite>();
             foreach (MapSpriteType objType in this.metadataView.GetMapObjectTypes())
             {
-                if (this.owner == Player.Neutral || objType.HasOwner)
+                if (this.owner == PlayerEnum.Neutral || objType.HasOwner)
                 {
                     UISprite origSprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(
                         objType.ImageData,
@@ -71,22 +71,22 @@ namespace RC.App.PresLogic
         /// <summary>
         /// The owner of the map objects in this group.
         /// </summary>
-        private Player owner;
+        private PlayerEnum owner;
 
         /// <summary>
         /// Defines the colors of the players.
         /// </summary>
-        private static readonly Dictionary<Player, UIColor> PLAYER_COLOR_MAPPINGS = new Dictionary<Player, UIColor>()
+        private static readonly Dictionary<PlayerEnum, UIColor> PLAYER_COLOR_MAPPINGS = new Dictionary<PlayerEnum, UIColor>()
         {
-            { Player.Neutral, UIColor.Black },
-            { Player.Player1, UIColor.Red },
-            { Player.Player2, UIColor.Blue },
-            { Player.Player3, UIColor.Cyan },
-            { Player.Player4, UIColor.Magenta },
-            { Player.Player5, UIColor.LightMagenta },
-            { Player.Player6, UIColor.Green },
-            { Player.Player7, UIColor.WhiteHigh },
-            { Player.Player8, UIColor.Yellow }
+            { PlayerEnum.Neutral, UIColor.Black },
+            { PlayerEnum.Player0, UIColor.Red },
+            { PlayerEnum.Player1, UIColor.Blue },
+            { PlayerEnum.Player2, UIColor.Cyan },
+            { PlayerEnum.Player3, UIColor.Magenta },
+            { PlayerEnum.Player4, UIColor.LightMagenta },
+            { PlayerEnum.Player5, UIColor.Green },
+            { PlayerEnum.Player6, UIColor.WhiteHigh },
+            { PlayerEnum.Player7, UIColor.Yellow }
         };
     }
 }

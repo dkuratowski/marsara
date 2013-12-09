@@ -18,7 +18,7 @@
     <description>Contains informations about a start location.</description>
     <field type="SHORT">Quadratic coordinate of the start location (X component).</field>
     <field type="SHORT">Quadratic coordinate of the start location (Y component).</field>
-	<field type="BYTE">The index of the player that the start location belongs to.</field>
+	  <field type="BYTE">The index of the player that the start location belongs to.</field>
   </packageFormat>
 
 </packageFormatConfig>

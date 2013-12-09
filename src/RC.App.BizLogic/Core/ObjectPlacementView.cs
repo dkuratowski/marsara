@@ -88,7 +88,7 @@ namespace RC.App.BizLogic.Core
             return placementBox;
         }
 
-        /// TODO: remove
+        /// <see cref="IObjectPlacementView.StepAnimation"/>
         public virtual void StepAnimation() { }
 
         #endregion IObjectPlacementView members

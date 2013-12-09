@@ -21,20 +21,16 @@ namespace RC.Engine.Maps.Core
         /// has to be checked.
         /// </param>
         /// <param name="terrain">The terrain type that the checked isometric tile has to be.</param>
-        /// <param name="terrainObjType">The terrain object type that this constraint belongs to.</param>
         /// <param name="tileset">The tileset that this constraint belongs to.</param>
-        public IsoTileConstraint(RCIntVector quadCoords, TerrainType terrain, TerrainObjectType terrainObjType, TileSet tileset)
+        public IsoTileConstraint(RCIntVector quadCoords, TerrainType terrain, TileSet tileset)
         {
             if (quadCoords == RCIntVector.Undefined) { throw new ArgumentNullException("quadCoords"); }
             if (terrain == null) { throw new ArgumentNullException("terrain"); }
-            if (terrainObjType == null) { throw new ArgumentNullException("terrainObjType"); }
             if (tileset == null) { throw new ArgumentNullException("tileset"); }
             if (terrain.Tileset != tileset) { throw new InvalidOperationException("The given terrain type is in another tileset!"); }
-            if (terrainObjType.Tileset != tileset) { throw new InvalidOperationException("The given terrain object type is in another tileset!"); }
 
             this.quadCoords = quadCoords;
             this.allowedCombinations = new List<TerrainCombination>() { TerrainCombination.Simple };
-            this.terrainObjectType = terrainObjType;
             this.tileset = tileset;
             this.terrainA = terrain;
             this.terrainB = null;
@@ -56,18 +52,15 @@ namespace RC.Engine.Maps.Core
                                  TerrainType terrainA,
                                  TerrainType terrainB,
                                  List<TerrainCombination> combinations,
-                                 TerrainObjectType terrainObjType,
                                  TileSet tileset)
         {
             if (quadCoords == RCIntVector.Undefined) { throw new ArgumentNullException("quadCoords"); }
             if (terrainA == null) { throw new ArgumentNullException("terrainA"); }
             if (terrainB == null) { throw new ArgumentNullException("terrainB"); }
             if (combinations == null || combinations.Count == 0) { throw new ArgumentNullException("combinations"); }
-            if (terrainObjType == null) { throw new ArgumentNullException("terrainObjType"); }
             if (tileset == null) { throw new ArgumentNullException("tileset"); }
             if (terrainA.Tileset != tileset) { throw new InvalidOperationException("The given terrain type is in another tileset!"); }
             if (terrainB.Tileset != tileset) { throw new InvalidOperationException("The given terrain type is in another tileset!"); }
-            if (terrainObjType.Tileset != tileset) { throw new InvalidOperationException("The given terrain object type is in another tileset!"); }
 
             this.quadCoords = quadCoords;
             this.allowedCombinations = new List<TerrainCombination>();
@@ -77,7 +70,6 @@ namespace RC.Engine.Maps.Core
                 this.allowedCombinations.Add(comb);
             }
 
-            this.terrainObjectType = terrainObjType;
             this.tileset = tileset;
             if (terrainB.Parent != terrainA) { throw new ArgumentException(string.Format("TerrainType '{0}' must be the parent of TerrainType '{1}'!", terrainA, terrainB)); }
 
@@ -96,12 +88,8 @@ namespace RC.Engine.Maps.Core
 
             HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
             RCIntVector absQuadCoords = position + this.quadCoords;
-            if (absQuadCoords.X < 0 || absQuadCoords.X >= map.Size.X ||
-                absQuadCoords.Y < 0 || absQuadCoords.Y >= map.Size.Y)
-            {
-                retList.Add(this.quadCoords);
-            }
-            else
+            if (absQuadCoords.X >= 0 && absQuadCoords.X < map.Size.X &&
+                absQuadCoords.Y >= 0 && absQuadCoords.Y < map.Size.Y)
             {
                 IQuadTile checkedQuadTile = map.GetQuadTile(absQuadCoords);
                 IIsoTile checkedIsoTile = checkedQuadTile.IsoTile;
@@ -142,11 +130,6 @@ namespace RC.Engine.Maps.Core
         /// List of the allowed combinations of the checked isometric tile.
         /// </summary>
         private List<TerrainCombination> allowedCombinations;
-
-        /// <summary>
-        /// Reference to the terrain object type that this constraint belongs to.
-        /// </summary>
-        private TerrainObjectType terrainObjectType;
 
         /// <summary>
         /// Reference to the tileset that this constraint belongs to.

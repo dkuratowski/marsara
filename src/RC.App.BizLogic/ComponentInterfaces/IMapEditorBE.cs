@@ -68,6 +68,12 @@ namespace RC.App.BizLogic.ComponentInterfaces
         IMapObjectView CreateMapObjectView();
 
         /// <summary>
+        /// Creates a map object data view.
+        /// </summary>
+        /// <returns>The created map object data view.</returns>
+        IMapObjectDataView CreateMapObjectDataView();
+
+        /// <summary>
         /// Creates a terrain object placement view on the currently opened map.
         /// </summary>
         /// <param name="terrainObjectName">The name of the terrain object to be placed.</param>
@@ -107,5 +113,43 @@ namespace RC.App.BizLogic.ComponentInterfaces
         /// <param name="position">The position inside the displayed area in pixels.</param>
         /// <returns>True if the terrain object at the given position was removed, false otherwise.</returns>
         bool RemoveTerrainObject(RCIntRectangle displayedArea, RCIntVector position);
+
+        /// <summary>
+        /// Places a start location on the map at the given position.
+        /// </summary>
+        /// <param name="displayedArea">The displayed area in pixels.</param>
+        /// <param name="position">The position inside the displayed area in pixels.</param>
+        /// <param name="playerIndex">The index of the player that the start location belongs to.</param>
+        /// <returns>True if the start location could be placed to the given position, false otherwise.</returns>
+        bool PlaceStartLocation(RCIntRectangle displayedArea, RCIntVector position, int playerIndex);
+
+        /// <summary>
+        /// Places a mineral field on the map at the given position.
+        /// </summary>
+        /// <param name="displayedArea">The displayed area in pixels.</param>
+        /// <param name="position">The position inside the displayed area in pixels.</param>
+        /// <returns>True if the mineral field could be placed to the given position, false otherwise.</returns>
+        bool PlaceMineralField(RCIntRectangle displayedArea, RCIntVector position);
+
+        /// <summary>
+        /// Places a vespene geyser on the map at the given position.
+        /// </summary>
+        /// <param name="displayedArea">The displayed area in pixels.</param>
+        /// <param name="position">The position inside the displayed area in pixels.</param>
+        /// <returns>True if the vespene geyser could be placed to the given position, false otherwise.</returns>
+        bool PlaceVespeneGeyser(RCIntRectangle displayedArea, RCIntVector position);
+
+        /// <summary>
+        /// Removes an entity from the map at the given position.
+        /// </summary>
+        /// <param name="displayedArea">The displayed area in pixels.</param>
+        /// <param name="position">The position inside the displayed area in pixels.</param>
+        /// <returns>True if the entity at the given position was removed, false otherwise.</returns>
+        bool RemoveEntity(RCIntRectangle displayedArea, RCIntVector position);
+
+        /// <summary>
+        /// Steps the animations on the edited map.
+        /// </summary>
+        void StepAnimations();
     }
 }

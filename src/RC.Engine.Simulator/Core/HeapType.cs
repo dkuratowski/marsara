@@ -81,11 +81,11 @@ namespace RC.Engine.Simulator.Core
                     break;
                 case BuiltInTypeEnum.IntVector:
                 case BuiltInTypeEnum.NumVector:
-                    this.allocationSize = 8;
+                    this.allocationSize = 9;
                     break;
                 case BuiltInTypeEnum.IntRectangle:
                 case BuiltInTypeEnum.NumRectangle:
-                    this.allocationSize = 16;
+                    this.allocationSize = 17;
                     break;
                 default:
                     throw new ArgumentException("Unexpected value of 'builtInType'!", "builtInType");

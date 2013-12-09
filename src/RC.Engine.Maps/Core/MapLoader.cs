@@ -231,9 +231,6 @@ namespace RC.Engine.Maps.Core
                     RCIntVector quadCoords = new RCIntVector(package.ReadShort(0), package.ReadShort(1));
                     ITerrainObjectType terrainObjType = this.mapStructure.Tileset.GetTerrainObjectType(terrainObjIndexTable[package.ReadByte(2)]);
 
-                    if (terrainObjType.CheckConstraints(map, quadCoords).Count != 0) { throw new MapException(string.Format("Terrain object at {0} is voilating the tileset constraints!", quadCoords)); }
-                    if (terrainObjType.CheckTerrainObjectIntersections(map, quadCoords).Count != 0) { throw new MapException(string.Format("Terrain object at {0} intersects other terrain objects!", quadCoords)); }
-
                     /// TODO: Might be better to create the TerrainObject with a factory?
                     ITerrainObject newObj = new TerrainObject(map, terrainObjType, quadCoords);
                     foreach (ICellDataChangeSet changeset in newObj.Type.CellDataChangesets)
@@ -242,6 +239,15 @@ namespace RC.Engine.Maps.Core
                     }
                     map.TerrainObjects.AttachContent(newObj);
                 }
+            }
+
+            /// Check the constraints of the terrain objects.
+            foreach (ITerrainObject terrainObj in map.TerrainObjects.GetContents())
+            {
+                map.TerrainObjects.DetachContent(terrainObj);
+                if (terrainObj.Type.CheckConstraints(map, terrainObj.MapCoords).Count != 0) { throw new MapException(string.Format("Terrain object at {0} is voilating the tileset constraints!", terrainObj.MapCoords)); }
+                if (terrainObj.Type.CheckTerrainObjectIntersections(map, terrainObj.MapCoords).Count != 0) { throw new MapException(string.Format("Terrain object at {0} intersects other terrain objects!", terrainObj.MapCoords)); }
+                map.TerrainObjects.AttachContent(terrainObj);
             }
         }
 

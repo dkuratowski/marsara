@@ -9,6 +9,7 @@ using RC.App.BizLogic;
 using RC.Common.ComponentModel;
 using RC.App.PresLogic.Controls;
 using RC.App.BizLogic.PublicInterfaces;
+using RC.App.PresLogic.Pages;
 
 namespace RC.App.PresLogic.Panels
 {
@@ -131,7 +132,7 @@ namespace RC.App.PresLogic.Panels
                     this.paletteListbox.IsEnabled = true;
                     break;
                 case EditMode.PlaceResource:
-                    this.paletteListbox.SetItems(new string[2] { "MineralField", "VespeneGeyser" });
+                    this.paletteListbox.SetItems(new string[2] { RCMapEditorPage.MINERALFIELD_NAME, RCMapEditorPage.VESPENEGEYSER_NAME });
                     this.saveButton.IsEnabled = true;
                     this.editModeSelector.IsEnabled = true;
                     this.paletteListbox.IsEnabled = true;

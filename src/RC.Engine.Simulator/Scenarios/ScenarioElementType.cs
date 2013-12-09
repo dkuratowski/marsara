@@ -29,6 +29,7 @@ namespace RC.Engine.Simulator.Scenarios
             this.metadata = metadata;
             this.spritePalette = null;
             this.animationPalette = null;
+            this.placementConstraints = new List<EntityConstraint>();
             this.requirements = new List<Requirement>();
         }
 
@@ -100,6 +101,37 @@ namespace RC.Engine.Simulator.Scenarios
 
         #endregion Weapons
 
+        /// <see cref="IScenarioElementType.CheckConstraints"/>
+        public HashSet<RCIntVector> CheckConstraints(Scenario scenario, RCIntVector position)
+        {
+            if (scenario == null) { throw new ArgumentNullException("scenario"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            /// Check against the constraints defined by this scenario element type.
+            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
+            foreach (EntityConstraint constraint in this.placementConstraints)
+            {
+                retList.UnionWith(constraint.Check(scenario, position));
+            }
+
+            RCIntVector quadSize = scenario.Map.CellToQuadSize(this.Area.Read());
+            for (int quadX = 0; quadX < quadSize.X; quadX++)
+            {
+                for (int quadY = 0; quadY < quadSize.Y; quadY++)
+                {
+                    RCIntVector relQuadCoords = new RCIntVector(quadX, quadY);
+                    RCIntVector absQuadCoords = position + relQuadCoords;
+                    if (absQuadCoords.X < 0 || absQuadCoords.X >= scenario.Map.Size.X ||
+                        absQuadCoords.Y < 0 || absQuadCoords.Y >= scenario.Map.Size.Y)
+                    {
+                        /// Intersection with the boundaries of the map.
+                        retList.Add(relQuadCoords);
+                    }
+                }
+            }
+            return retList;
+        }
+
         #endregion IScenarioElementType members
 
         #region Internal public methods
@@ -158,7 +190,20 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <summary>
-        /// Adds a requirement to this object type.
+        /// Adds a placement constraint to this element type.
+        /// </summary>
+        /// <param name="constraints">The placement constraint to add.</param>
+        public void AddPlacementConstraint(EntityConstraint constraint)
+        {
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (constraint == null) { throw new ArgumentNullException("constraint"); }
+
+            constraint.SetEntityType(this);
+            this.placementConstraints.Add(constraint);
+        }
+
+        /// <summary>
+        /// Adds a requirement to this element type.
         /// </summary>
         /// <param name="requirement">The requirement to add.</param>
         public void AddRequirement(Requirement requirement)
@@ -384,6 +429,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// The animation palette of this element type.
         /// </summary>
         private AnimationPalette animationPalette;
+
+        /// <summary>
+        /// List of the placement constraints of this element type or null if this element type has no placement constraints.
+        /// </summary>
+        private List<EntityConstraint> placementConstraints;
 
         /// <summary>
         /// The costs data of this element type.

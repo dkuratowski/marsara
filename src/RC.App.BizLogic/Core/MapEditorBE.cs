@@ -8,6 +8,7 @@ using RC.Common;
 using System.IO;
 using RC.Engine.Simulator.Scenarios;
 using RC.Engine.Simulator.ComponentInterfaces;
+using System.Collections.Generic;
 
 namespace RC.App.BizLogic.Core
 {
@@ -109,6 +110,13 @@ namespace RC.App.BizLogic.Core
             return new MapObjectView(this.activeScenario);
         }
 
+        /// <see cref="IMapEditorBE.CreateMapObjectDataView"/>
+        public IMapObjectDataView CreateMapObjectDataView()
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            return new MapObjectDataView(this.activeScenario);
+        }
+
         /// <see cref="IMapEditorBE.CreateTileSetView"/>
         public ITileSetView CreateTileSetView()
         {
@@ -200,6 +208,108 @@ namespace RC.App.BizLogic.Core
                 }
             }
             return false;
+        }
+
+        /// <see cref="IMapEditorBE.PlaceStartLocation"/>
+        public bool PlaceStartLocation(RCIntRectangle displayedArea, RCIntVector position, int playerIndex)
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
+                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            IQuadTile quadTileAtPos = this.activeMap.GetCell(navCellCoords).ParentQuadTile;
+
+            IScenarioElementType objectType = this.scenarioLoader.Metadata.GetElementType(StartLocation.STARTLOCATION_TYPE_NAME);
+            RCIntVector objQuadSize = this.activeMap.CellToQuadSize(objectType.Area.Read());
+            RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
+            if (objectType.CheckConstraints(this.activeScenario, topLeftQuadCoords).Count != 0) { return false; }
+
+            /// Check if a start location with the given player index already exists.
+            List<StartLocation> startLocations = this.activeScenario.GetAllEntities<StartLocation>();
+            StartLocation startLocation = null;
+            foreach (StartLocation sl in startLocations)
+            {
+                if (sl.PlayerIndex.Read() == playerIndex)
+                {
+                    startLocation = sl;
+                    break;
+                }
+            }
+
+            /// If a start location with the given player index already exists, change its quadratic coordinates,
+            /// otherwise create a new start location.
+            if (startLocation != null) { startLocation.SetQuadCoords(topLeftQuadCoords); }
+            else { this.activeScenario.AddEntity(new StartLocation(topLeftQuadCoords, playerIndex)); }
+            return true;
+        }
+
+        /// <see cref="IMapEditorBE.PlaceMineralField"/>
+        public bool PlaceMineralField(RCIntRectangle displayedArea, RCIntVector position)
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
+                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            IQuadTile quadTileAtPos = this.activeMap.GetCell(navCellCoords).ParentQuadTile;
+
+            IScenarioElementType objectType = this.scenarioLoader.Metadata.GetElementType(MineralField.MINERALFIELD_TYPE_NAME);
+            RCIntVector objQuadSize = this.activeMap.CellToQuadSize(objectType.Area.Read());
+            RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
+            if (objectType.CheckConstraints(this.activeScenario, topLeftQuadCoords).Count != 0) { return false; }
+
+            MineralField placedMineralField = new MineralField(topLeftQuadCoords);
+            this.activeScenario.AddEntity(placedMineralField);
+            return true;
+        }
+
+        /// <see cref="IMapEditorBE.PlaceVespeneGeyser"/>
+        public bool PlaceVespeneGeyser(RCIntRectangle displayedArea, RCIntVector position)
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
+                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            IQuadTile quadTileAtPos = this.activeMap.GetCell(navCellCoords).ParentQuadTile;
+
+            IScenarioElementType objectType = this.scenarioLoader.Metadata.GetElementType(VespeneGeyser.VESPENEGEYSER_TYPE_NAME);
+            RCIntVector objQuadSize = this.activeMap.CellToQuadSize(objectType.Area.Read());
+            RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
+            if (objectType.CheckConstraints(this.activeScenario, topLeftQuadCoords).Count != 0) { return false; }
+
+            VespeneGeyser placedVespeneGeyser = new VespeneGeyser(topLeftQuadCoords);
+            this.activeScenario.AddEntity(placedVespeneGeyser);
+            return true;
+        }
+
+        /// <see cref="IMapEditorBE.RemoveEntity"/>
+        public bool RemoveEntity(RCIntRectangle displayedArea, RCIntVector position)
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
+                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            foreach (Entity entity in this.activeScenario.VisibleEntities.GetContents(navCellCoords))
+            {
+                this.activeScenario.RemoveEntity(entity);
+                entity.Dispose();
+                return true;
+            }
+            return false;
+        }
+
+        /// <see cref="IMapEditorBE.StepAnimations"/>
+        public void StepAnimations()
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            this.activeScenario.StepAnimations();
         }
 
         #endregion IMapEditorBE methods

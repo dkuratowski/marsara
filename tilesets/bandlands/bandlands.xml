@@ -1781,6 +1781,7 @@
       <dataChangesetRect field="GroundLevel" rect="7;8;8;1">1</dataChangesetRect>
       <dataChangesetRect field="GroundLevel" rect="9;9;5;1">1</dataChangesetRect>
       <dataChangesetRect field="GroundLevel" rect="11;10;2;1">1</dataChangesetRect>
+      <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
     </terrainObject>
     <terrainObject name="StructureWall1" image="terrainobj_structwall_1.png" quadSize="4;4" offset="0;0">
       <excludeArea rect="0;0;2;1" />
@@ -1817,6 +1818,7 @@
       <dataChangesetRect field="GroundLevel" rect="0;8;9;1">1</dataChangesetRect>
       <dataChangesetRect field="GroundLevel" rect="2;9;5;1">1</dataChangesetRect>
       <dataChangesetRect field="GroundLevel" rect="3;10;2;1">1</dataChangesetRect>
-	  </terrainObject>
+      <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
+    </terrainObject>
   </declareTerrainObjects>
 </tileset>

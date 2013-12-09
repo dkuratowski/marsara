@@ -115,5 +115,17 @@ namespace RC.Engine.Simulator.Scenarios
         /// Gets the air weapon of this element type or null if this element type has no air weapon defined.
         /// </summary>
         IWeaponData AirWeapon { get; }
+
+        /// <summary>
+        /// Checks whether the constraints of this entity type allows placing an entity of this type to the given scenario at the given
+        /// quadratic position and collects all the violating quadratic coordinates relative to the top-left corner of the
+        /// entity.
+        /// </summary>
+        /// <param name="scenario">Reference to the scenario.</param>
+        /// <param name="position">The position to check.</param>
+        /// <returns>
+        /// The list of the quadratic coordinates (relative to the top-left corner) violating the constraints of this entity type.
+        /// </returns>
+        HashSet<RCIntVector> CheckConstraints(Scenario scenario, RCIntVector position);
     }
 }

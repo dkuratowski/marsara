@@ -274,7 +274,7 @@ namespace RC.Engine.Maps.Core
             if (terrainAttr != null)
             {
                 TerrainType terrain = tileset.GetTerrainTypeImpl(terrainAttr.Value);
-                return new IsoTileConstraint(quadCoords, terrain, terrainObj, tileset);
+                return new IsoTileConstraint(quadCoords, terrain, tileset);
             }
             else
             {
@@ -293,7 +293,7 @@ namespace RC.Engine.Maps.Core
                     combinations.Add(combination);
                 }
 
-                return new IsoTileConstraint(quadCoords, terrainA, terrainB, combinations, terrainObj, tileset);
+                return new IsoTileConstraint(quadCoords, terrainA, terrainB, combinations, tileset);
             }
         }
 

@@ -32,15 +32,15 @@ namespace RC.App.PresLogic.Controls
             this.mapObjectView = mapObjectView;
 
             this.mapObjectSprites = new List<SpriteGroup>();
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Neutral));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player1));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player2));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player3));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player4));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player5));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player6));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player7));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, Player.Player8));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player0));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player1));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player2));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player3));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player4));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player5));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player6));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player7));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Neutral));
 
             this.brushPalette = new BrushPaletteSpriteGroup();
             this.CurrentMouseStatus = MouseStatus.None;
@@ -54,7 +54,7 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         /// <param name="player">The player that owns the sprite group..</param>
         /// <returns>The sprite group of the map object types for the given player.</returns>
-        public SpriteGroup GetMapObjectSprites(Player player) { return this.mapObjectSprites[(int)player]; }
+        public SpriteGroup GetMapObjectSprites(PlayerEnum player) { return this.mapObjectSprites[player != PlayerEnum.Neutral ? (int)player : this.mapObjectSprites.Count - 1]; }
 
         /// <summary>
         /// This event is raised when a mouse handling activity has been started on this display.
@@ -166,7 +166,7 @@ namespace RC.App.PresLogic.Controls
                 {
                     if (spriteToDisplay.Index != -1)
                     {
-                        SpriteGroup spriteGroup = this.mapObjectSprites[(int)obj.Owner];
+                        SpriteGroup spriteGroup = this.GetMapObjectSprites(obj.Owner);
                         renderContext.RenderSprite(spriteGroup[spriteToDisplay.Index],
                                                    spriteToDisplay.DisplayCoords,
                                                    spriteToDisplay.Section);
@@ -356,8 +356,8 @@ namespace RC.App.PresLogic.Controls
 
         /// <summary>
         /// This sprite-group contains the sprites of the map object types.
-        /// The 0th sprite group in this list contains the neutral variants of the sprites,
-        /// the Nth sprite group in this list contains the variant of the sprites for player N.
+        /// The Nth sprite group in this list contains the variant of the sprites for PlayerN.
+        /// The last sprite group in this list contains the neutral variants of the sprites.
         /// </summary>
         private List<SpriteGroup> mapObjectSprites;
 

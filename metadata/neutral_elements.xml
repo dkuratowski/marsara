@@ -5,23 +5,23 @@
       <area>8.0;4.0</area>
     </generalData>
     <spritePalette image="mineral_field.png" transparentColor="255;0;255">
-      <sprite name="Amount_100_200" sourceRegion="1;52;32;16" offset="0;0" />
-      <sprite name="Amount_300_400" sourceRegion="1;35;32;16" offset="0;0" />
-      <sprite name="Amount_500_700" sourceRegion="1;18;32;16" offset="0;0" />
+      <sprite name="Amount_0_200" sourceRegion="1;52;32;16" offset="0;0" />
+      <sprite name="Amount_200_400" sourceRegion="1;35;32;16" offset="0;0" />
+      <sprite name="Amount_400_700" sourceRegion="1;18;32;16" offset="0;0" />
       <sprite name="Amount_Full" sourceRegion="1;1;32;16" offset="0;0" />
     </spritePalette>
     <animationPalette>
       <animation name="Amount_Full" isPreview="true">
         <frame sprites="Amount_Full" />
       </animation>
-      <animation name="Amount_100_200">
-        <frame sprites="Amount_100_200" />
+      <animation name="Amount_0_200">
+        <frame sprites="Amount_0_200" />
       </animation>
-      <animation name="Amount_300_400">
-        <frame sprites="Amount_300_400" />
+      <animation name="Amount_200_400">
+        <frame sprites="Amount_200_400" />
       </animation>
-      <animation name="Amount_500_700">
-        <frame sprites="Amount_500_700" />
+      <animation name="Amount_400_700">
+        <frame sprites="Amount_400_700" />
       </animation>
     </animationPalette>
   </customType>
@@ -75,7 +75,7 @@
       <sprite name="StartLocation" sourceRegion="0;0;64;48" offset="0;0" />
     </spritePalette>
     <animationPalette>
-      <animation name="Normal" isPreview="true">
+      <animation name="Show" isPreview="true">
         <frame sprites="StartLocation" />
       </animation>
     </animationPalette>

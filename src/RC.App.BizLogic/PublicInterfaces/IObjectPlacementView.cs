@@ -19,7 +19,9 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// <returns>The object placement box to be displayed.</returns>
         ObjectPlacementBox GetObjectPlacementBox(RCIntRectangle displayedArea, RCIntVector position);
 
-        /// TODO: remove
+        /// <summary>
+        /// Steps the animation of the object placement box.
+        /// </summary>
         void StepAnimation();
     }
 }

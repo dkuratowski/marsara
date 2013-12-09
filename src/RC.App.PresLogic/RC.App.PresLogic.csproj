@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BrushPaletteSpriteGroup.cs" />
+    <Compile Include="ClockSignal.cs" />
     <Compile Include="Controls\RCIsoTileDisplay.cs" />
     <Compile Include="Controls\RCDropdownSelector.cs" />
     <Compile Include="Controls\RCListBox.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Controls\RCMapObjectDisplay.cs" />
     <Compile Include="Controls\RCObjectPlacementDisplay.cs" />
     <Compile Include="Controls\IScrollableControl.cs" />
+    <Compile Include="Controls\RCResourceAmountDisplay.cs" />
     <Compile Include="IsoTileSpriteGroup.cs" />
     <Compile Include="MapObjectSpriteGroup.cs" />
     <Compile Include="PresLogicConstants.cs" />
