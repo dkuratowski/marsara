@@ -15,10 +15,6 @@ namespace RC.Engine.Maps.Core
         public const string TERRAINTYPE_ELEM = "terrainType";
         public const string TERRAINTYPE_NAME_ATTR = "name";
         public const string TERRAINTYPE_TRANSLENGTH_ATTR = "transitionLength";
-        public const string DECLAREFIELDS_ELEM = "declareFields";
-        public const string DECLAREFIELD_ELEM = "declareField";
-        public const string DECLAREFIELD_NAME_ATTR = "name";
-        public const string DECLAREFIELD_TYPE_ATTR = "type";
         public const string DECLARETILES_ELEM = "declareTiles";
         public const string SIMPLETILE_ELEM = "simpleTile";
         public const string SIMPLETILE_TERRAIN_ATTR = "terrain";
@@ -42,6 +38,9 @@ namespace RC.Engine.Maps.Core
         public const string CELLDATACHANGESET_RECT_RECT_ATTR = "rect";
         public const string CELLDATACHANGESET_CELL_ELEM = "dataChangesetCell";
         public const string CELLDATACHANGESET_CELL_CELL_ATTR = "cell";
+        public const string CELLDATA_ISWALKABLE_NAME = "IsWalkable";
+        public const string CELLDATA_ISBUILDABLE_NAME = "IsBuildable";
+        public const string CELLDATA_GROUNDLEVEL_NAME = "GroundLevel";
         public const string IF_ELEM = "if";
         public const string ELSEIF_ELEM = "elseIf";
         public const string ELSE_ELEM = "else";

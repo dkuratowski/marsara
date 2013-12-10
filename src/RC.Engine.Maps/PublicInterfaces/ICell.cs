@@ -12,9 +12,58 @@ namespace RC.Engine.Maps.PublicInterfaces
     public interface ICell
     {
         /// <summary>
-        /// Gets the data attached to this cell.
+        /// Gets the walkability flag of this cell.
         /// </summary>
-        ICellData Data { get; }
+        bool IsWalkable { get; }
+
+        /// <summary>
+        /// Gets the buildability flag of this cell.
+        /// </summary>
+        bool IsBuildable { get; }
+
+        /// <summary>
+        /// Gets the ground level of this cell.
+        /// </summary>
+        int GroundLevel { get; }
+
+        /// <summary>
+        /// Locks the data fields of the cell. Writing data after lock is not possible. If the cell data has already been locked,
+        /// this function has no effect.
+        /// </summary>
+        void Lock();
+
+        /// <summary>
+        /// Changes the walkability flag of this cell.
+        /// </summary>
+        /// <param name="newVal">The new value of the walkability flag.</param>
+        void ChangeWalkability(bool newVal);
+
+        /// <summary>
+        /// Changes the buildability flag of this cell.
+        /// </summary>
+        /// <param name="newVal">The new value of the buildability flag.</param>
+        void ChangeBuildability(bool newVal);
+
+        /// <summary>
+        /// Changes the ground level of this cell.
+        /// </summary>
+        /// <param name="newVal">The new value of the ground level.</param>
+        void ChangeGroundLevel(int newVal);
+
+        /// <summary>
+        /// Undos the last modification of the walkability flag.
+        /// </summary>
+        void UndoWalkabilityChange();
+
+        /// <summary>
+        /// Undos the last modification of the buildability flag.
+        /// </summary>
+        void UndoBuildabilityChange();
+
+        /// <summary>
+        /// Undos the last modification of the ground level.
+        /// </summary>
+        void UndoGroundLevelChange();
 
         /// <summary>
         /// Gets the quadratic tile that this cell belongs to.

@@ -33,12 +33,10 @@ namespace RC.Engine.Maps.Core
             XDocument xmlDoc = XDocument.Parse(xmlStr);
             XAttribute tilesetNameAttr = xmlDoc.Root.Attribute(XmlTileSetConstants.TILESET_NAME_ATTR);
             XElement terrainTreeElem = xmlDoc.Root.Element(XmlTileSetConstants.TERRAINTYPE_ELEM);
-            XElement declareFieldsElem = xmlDoc.Root.Element(XmlTileSetConstants.DECLAREFIELDS_ELEM);
             XElement declareTilesElem = xmlDoc.Root.Element(XmlTileSetConstants.DECLARETILES_ELEM);
             XElement declareTerrainObjectsElem = xmlDoc.Root.Element(XmlTileSetConstants.DECLARETERRAINOBJECTS_ELEM);
             if (tilesetNameAttr == null) { throw new TileSetException("Tileset name not defined!"); }
             if (terrainTreeElem == null) { throw new TileSetException("Terrain-tree not defined!"); }
-            if (declareFieldsElem == null) { throw new TileSetException("Field declarations not found!"); }
             if (declareTilesElem == null) { throw new TileSetException("Tile declarations not found"); }
 
             /// Create the TileSet object.
@@ -46,12 +44,6 @@ namespace RC.Engine.Maps.Core
 
             /// Load the terrain tree.
             LoadTerrainTree(terrainTreeElem, null, tileset);
-
-            /// Load the cell data field declarations.
-            foreach (XElement fieldDeclarationElem in declareFieldsElem.Elements(XmlTileSetConstants.DECLAREFIELD_ELEM))
-            {
-                LoadFieldDeclaration(fieldDeclarationElem, tileset);
-            }
 
             /// Load the simple tiles.
             foreach (XElement simpleTileElem in declareTilesElem.Elements(XmlTileSetConstants.SIMPLETILE_ELEM))
@@ -114,43 +106,6 @@ namespace RC.Engine.Maps.Core
             foreach (XElement childTerrainElem in fromElem.Elements(XmlTileSetConstants.TERRAINTYPE_ELEM))
             {
                 LoadTerrainTree(childTerrainElem, currentTerrain, tileset);
-            }
-        }
-
-        /// <summary>
-        /// Loads the data field declarations from the XML element into the given tileset.
-        /// </summary>
-        /// <param name="fromElem">The XML element to load from.</param>
-        /// <param name="tileset">The TileSet to load to.</param>
-        private static void LoadFieldDeclaration(XElement fromElem, TileSet tileset)
-        {
-            XAttribute nameAttr = fromElem.Attribute(XmlTileSetConstants.DECLAREFIELD_NAME_ATTR);
-            XAttribute typeAttr = fromElem.Attribute(XmlTileSetConstants.DECLAREFIELD_TYPE_ATTR);
-            if (nameAttr == null) { throw new TileSetException("Data field name not defined!"); }
-            if (typeAttr == null) { throw new TileSetException("Data field type not defined!"); }
-
-            /// Try to parse the type string.
-            CellDataType type;
-            if (!EnumMap<CellDataType, string>.Demap(typeAttr.Value, out type))
-            {
-                throw new TileSetException(string.Format("Unexpected data type {0} defined for field {1}.", typeAttr.Value, nameAttr.Value));
-            }
-
-            /// Declare the field...
-            tileset.DeclareField(nameAttr.Value, type);
-
-            /// ... and load it's default value.
-            int fieldIdx = tileset.GetCellDataFieldIndex(nameAttr.Value);
-            switch (type)
-            {
-                case CellDataType.BOOL:
-                    tileset.DefaultCellData.WriteBool(fieldIdx, XmlHelper.LoadBool(fromElem.Value));
-                    break;
-                case CellDataType.INT:
-                    tileset.DefaultCellData.WriteInt(fieldIdx, XmlHelper.LoadInt(fromElem.Value));
-                    break;
-                default:
-                    throw new TileSetException("Unexpected data field type!");
             }
         }
 
@@ -421,60 +376,42 @@ namespace RC.Engine.Maps.Core
         private static ICellDataChangeSet LoadCellDataChangeSet(XElement fromElem, TileSet tileset)
         {
             ICellDataChangeSet retObj = null;
+            ICellDataModifier modifier = null;
 
             /// Load the name of the target field.
             XAttribute fieldAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_FIELD_ATTR);
             if (fieldAttr == null) { throw new TileSetException("Field name not defined for a data changeset element!"); }
-            CellDataType fieldType = tileset.GetCellDataFieldType(tileset.GetCellDataFieldIndex(fieldAttr.Value));
+
+            if (fieldAttr.Value == XmlTileSetConstants.CELLDATA_ISWALKABLE_NAME)
+            {
+                modifier = new WalkabilityFlagModifier(XmlHelper.LoadBool(fromElem.Value));
+            }
+            else if (fieldAttr.Value == XmlTileSetConstants.CELLDATA_ISBUILDABLE_NAME)
+            {
+                modifier = new BuildabilityFlagModifier(XmlHelper.LoadBool(fromElem.Value));
+            }
+            else if (fieldAttr.Value == XmlTileSetConstants.CELLDATA_GROUNDLEVEL_NAME)
+            {
+                modifier = new GroundLevelModifier(XmlHelper.LoadInt(fromElem.Value));
+            }
+            if (modifier == null) { throw new TileSetException("Unexpected field name defined for a data changeset element!"); }
 
             switch (fromElem.Name.LocalName)
             {
                 case XmlTileSetConstants.CELLDATACHANGESET_ALL_ELEM:
-                    /// Create the changeset object.
-                    if (fieldType == CellDataType.BOOL)
-                    {
-                        retObj = new CellDataChangeSetBase(fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
-                    }
-                    else if (fieldType == CellDataType.INT)
-                    {
-                        retObj = new CellDataChangeSetBase(fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
-                    }
+                    retObj = new CellDataChangeSetBase(modifier, tileset);
                     break;
-
                 case XmlTileSetConstants.CELLDATACHANGESET_CELL_ELEM:
-                    /// Load the target cell.
                     XAttribute cellAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_CELL_CELL_ATTR);
                     if (cellAttr == null) { throw new TileSetException("Cell not defined for a cell data changeset element!"); }
-
-                    /// Create the changeset object.
-                    if (fieldType == CellDataType.BOOL)
-                    {
-                        retObj = new CellChangeSet(XmlHelper.LoadIntVector(cellAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
-                    }
-                    else if (fieldType == CellDataType.INT)
-                    {
-                        retObj = new CellChangeSet(XmlHelper.LoadIntVector(cellAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
-                    }
+                    retObj = new CellChangeSet(XmlHelper.LoadIntVector(cellAttr.Value), modifier, tileset);
                     break;
-
                 case XmlTileSetConstants.CELLDATACHANGESET_COL_ELEM:
-                    /// Load the target column.
                     XAttribute colIndexAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_COL_INDEX_ATTR);
                     if (colIndexAttr == null) { throw new TileSetException("Column not defined for a column data changeset element!"); }
-
-                    /// Create the changeset object.
-                    if (fieldType == CellDataType.BOOL)
-                    {
-                        retObj = new ColumnChangeSet(XmlHelper.LoadInt(colIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
-                    }
-                    else if (fieldType == CellDataType.INT)
-                    {
-                        retObj = new ColumnChangeSet(XmlHelper.LoadInt(colIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
-                    }
+                    retObj = new ColumnChangeSet(XmlHelper.LoadInt(colIndexAttr.Value), modifier, tileset);
                     break;
-
                 case XmlTileSetConstants.CELLDATACHANGESET_QUARTER_ELEM:
-                    /// Load the target quarter.
                     XAttribute quarterAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_QUARTER_WHICH_ATTR);
                     if (quarterAttr == null) { throw new TileSetException("Quarter not defined for a quarter data changeset element!"); }
                     MapDirection quarter;
@@ -482,50 +419,18 @@ namespace RC.Engine.Maps.Core
                     {
                         throw new TileSetException(string.Format("Unexpected quarter '{0}' defined for quarter data changeset!", quarterAttr.Value));
                     }
-
-                    /// Create the changeset object.
-                    if (fieldType == CellDataType.BOOL)
-                    {
-                        retObj = new IsoQuarterChangeSet(quarter, fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
-                    }
-                    else if (fieldType == CellDataType.INT)
-                    {
-                        retObj = new IsoQuarterChangeSet(quarter, fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
-                    }
+                    retObj = new IsoQuarterChangeSet(quarter, modifier, tileset);
                     break;
-
                 case XmlTileSetConstants.CELLDATACHANGESET_RECT_ELEM:
-                    /// Load the target rectangle.
                     XAttribute rectAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_RECT_RECT_ATTR);
                     if (rectAttr == null) { throw new TileSetException("Rectangle not defined for a rectangle data changeset element!"); }
-
-                    /// Create the changeset object.
-                    if (fieldType == CellDataType.BOOL)
-                    {
-                        retObj = new RectangleChangeSet(XmlHelper.LoadIntRectangle(rectAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
-                    }
-                    else if (fieldType == CellDataType.INT)
-                    {
-                        retObj = new RectangleChangeSet(XmlHelper.LoadIntRectangle(rectAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
-                    }
+                    retObj = new RectangleChangeSet(XmlHelper.LoadIntRectangle(rectAttr.Value), modifier, tileset);
                     break;
-
                 case XmlTileSetConstants.CELLDATACHANGESET_ROW_ELEM:
-                    /// Load the target row.
                     XAttribute rowIndexAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_ROW_INDEX_ATTR);
                     if (rowIndexAttr == null) { throw new TileSetException("Row not defined for a row data changeset element!"); }
-
-                    /// Create the changeset object.
-                    if (fieldType == CellDataType.BOOL)
-                    {
-                        retObj = new RowChangeSet(XmlHelper.LoadInt(rowIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadBool(fromElem.Value), tileset);
-                    }
-                    else if (fieldType == CellDataType.INT)
-                    {
-                        retObj = new RowChangeSet(XmlHelper.LoadInt(rowIndexAttr.Value), fieldAttr.Value, XmlHelper.LoadInt(fromElem.Value), tileset);
-                    }
+                    retObj = new RowChangeSet(XmlHelper.LoadInt(rowIndexAttr.Value), modifier, tileset);
                     break;
-
                 default:
                     throw new TileSetException(string.Format("Unexpected data changeset element '{0}'!", fromElem.Name));
             }

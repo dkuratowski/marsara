@@ -16,32 +16,13 @@ namespace RC.Engine.Maps.Core
         /// Constructs a changeset for overwriting an integer field.
         /// </summary>
         /// <param name="targetRow">The row of the target to perform the changeset.</param>
-        /// <param name="targetField">The name of the target field.</param>
-        /// <param name="value">The new value of the target field.</param>
+        /// <param name="modifier">Reference to the modifier.</param>
         /// <param name="tileset">The tileset of this changeset.</param>
-        public RowChangeSet(int targetRow, string targetField, int value, TileSet tileset)
-            : base(targetField, value, tileset)
+        public RowChangeSet(int targetRow, ICellDataModifier modifier, TileSet tileset)
+            : base(modifier, tileset)
         {
             this.CheckAndAssignCtorParams(targetRow);
         }
-
-        /// <summary>
-        /// Constructs a changeset for overwriting a bool field.
-        /// </summary>
-        /// <param name="targetRow">The row of the target to perform the changeset.</param>
-        /// <param name="targetField">The name of the target field.</param>
-        /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this changeset.</param>
-        public RowChangeSet(int targetRow, string targetField, bool value, TileSet tileset)
-            : base(targetField, value, tileset)
-        {
-            this.CheckAndAssignCtorParams(targetRow);
-        }
-
-        /// <summary>
-        /// Gets the target row of this changeset.
-        /// </summary>
-        public int TargetRow { get { return this.targetRow; } }
 
         /// <see cref="CellDataChangeSetBase.CollectTargetSet"/>
         protected override HashSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)

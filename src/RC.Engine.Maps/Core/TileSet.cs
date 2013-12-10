@@ -23,10 +23,6 @@ namespace RC.Engine.Maps.Core
 
             this.name = name;
             this.isFinalized = false;
-            this.fieldTypes = new List<CellDataType>();
-            this.fieldNames = new List<string>();
-            this.fieldIndices = new Dictionary<string, int>();
-            this.defaultCellData = new CellData(this);
             this.terrainTypes = new Dictionary<string, TerrainType>();
             this.simpleTileTypes = new Dictionary<string, IsoTileType>();
             this.terrainObjectTypes = new Dictionary<string, TerrainObjectType>();
@@ -37,29 +33,6 @@ namespace RC.Engine.Maps.Core
         }
 
         #region ITileSet methods
-
-        /// <see cref="ITileSet.GetCellDataFieldIndex"/>
-        public int GetCellDataFieldIndex(string nameOfField)
-        {
-            if (nameOfField == null) { throw new ArgumentNullException("nameOfField"); }
-            if (!this.fieldIndices.ContainsKey(nameOfField)) { throw new TileSetException(string.Format("Field '{0}' not declared!", nameOfField)); }
-
-            return this.fieldIndices[nameOfField];
-        }
-
-        /// <see cref="ITileSet.GetCellDataFieldName"/>
-        public string GetCellDataFieldName(int index)
-        {
-            if (index < 0 || index >= this.fieldNames.Count) { throw new TileSetException(string.Format("Field with index {0} not declared!", index)); }
-            return this.fieldNames[index];
-        }
-
-        /// <see cref="ITileSet.GetCellDataFieldType"/>
-        public CellDataType GetCellDataFieldType(int index)
-        {
-            if (index < 0 || index >= this.fieldTypes.Count) { return CellDataType.UNKNOWN; }
-            return this.fieldTypes[index];
-        }
 
         /// <see cref="ITileSet.GetTerrainType"/>
         public ITerrainType GetTerrainType(string name)
@@ -93,9 +66,6 @@ namespace RC.Engine.Maps.Core
 
         /// <see cref="ITileSet.TileVariants"/>
         public IEnumerable<IIsoTileVariant> TileVariants { get { return this.allTileVariantList; } }
-
-        /// <see cref="ITileSet.DefaultCellData"/>
-        public ICellData DefaultCellData { get { return this.defaultCellData; } }
 
         /// <see cref="ITileSet.Name"/>
         public string Name { get { return this.name; } }
@@ -147,27 +117,6 @@ namespace RC.Engine.Maps.Core
         #endregion Internal public methods
 
         #region Internal buildup methods
-
-        /// <summary>
-        /// Declares a new cell data field.
-        /// </summary>
-        /// <param name="nameOfField">The name of the declared field.</param>
-        /// <param name="typeOfField">The type of the declared field.</param>
-        /// <exception cref="TileSetException">
-        /// If you give CellDataType.UNKNOWN in the parameter.
-        /// If this TileSet has been finalized.
-        /// </exception>
-        public void DeclareField(string nameOfField, CellDataType typeOfField)
-        {
-            if (nameOfField == null) { throw new ArgumentNullException("nameOfField"); }
-            if (typeOfField == CellDataType.UNKNOWN) { throw new TileSetException("CellDataType.UNKNOWN cannot be used as a field type!"); }
-            if (this.isFinalized) { throw new InvalidOperationException("It is not possible to declare new fields to a finalized TileSet!"); }
-            if (this.fieldIndices.ContainsKey(nameOfField)) { throw new TileSetException(string.Format("Field '{0}' already declared!", nameOfField)); }
-
-            this.fieldTypes.Add(typeOfField);
-            this.fieldNames.Add(nameOfField);
-            this.fieldIndices.Add(nameOfField, this.fieldTypes.Count - 1);
-        }
 
         /// <summary>
         /// Creates a terrain type with the given name.
@@ -255,15 +204,6 @@ namespace RC.Engine.Maps.Core
         /// </summary>
         public void CheckAndFinalize()
         {
-            /// Check whether every declared cell data field has a default value.
-            for (int i = 0; i < this.fieldNames.Count; i++)
-            {
-                if (!this.defaultCellData.IsFieldInitialized(i)) { throw new TileSetException(string.Format("Field '{0}' has no default value!", this.fieldNames[i])); }
-            }
-
-            /// Lock the default values so that nobody is able to change them from now.
-            this.defaultCellData.Lock();
-
             /// Check whether the terrain tree has only one root.
             TerrainType root = null;
             foreach (TerrainType terrain in this.terrainTypes.Values)
@@ -312,26 +252,6 @@ namespace RC.Engine.Maps.Core
         /// The name of this tileset.
         /// </summary>
         private string name;
-
-        /// <summary>
-        /// List of the types of the fields.
-        /// </summary>
-        private List<CellDataType> fieldTypes;
-
-        /// <summary>
-        /// List of the names of the fields.
-        /// </summary>
-        private List<string> fieldNames;
-
-        /// <summary>
-        /// List of the field indices mapped by their names.
-        /// </summary>
-        private Dictionary<string, int> fieldIndices;
-
-        /// <summary>
-        /// Contains the default values of the declared fields.
-        /// </summary>
-        private CellData defaultCellData;
 
         /// <summary>
         /// List of the terrain types of this tileset mapped by their name.

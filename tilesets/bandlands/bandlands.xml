@@ -13,11 +13,6 @@
       <terrainType name="RockyGround" />
     </terrainType>
   </terrainType>
-  <declareFields>
-    <declareField name="IsWalkable" type="BOOL">true</declareField>
-    <declareField name="IsBuildable" type="BOOL">true</declareField>
-    <declareField name="GroundLevel" type="INT">0</declareField>
-  </declareFields>
   <declareTiles>
     <simpleTile terrain="Water">
       <variant image="water.png">

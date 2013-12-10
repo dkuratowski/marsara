@@ -162,7 +162,25 @@ namespace RC.App.BizLogic.Core
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
             IIsoTile isotile = this.activeMap.GetCell(navCellCoords).ParentIsoTile;
 
-            this.mapEditor.DrawTerrain(this.activeMap, isotile, this.activeMap.Tileset.GetTerrainType(terrainType));
+            IEnumerable<IIsoTile> affectedIsoTiles = this.mapEditor.DrawTerrain(this.activeMap, isotile, this.activeMap.Tileset.GetTerrainType(terrainType));
+
+            foreach (IIsoTile affectedIsoTile in affectedIsoTiles)
+            {
+                RCNumRectangle isoTileRect = new RCNumRectangle(affectedIsoTile.GetCellMapCoords(new RCIntVector(0, 0)), affectedIsoTile.CellSize)
+                                           - new RCNumVector(1, 1) / 2;
+                foreach (QuadEntity affectedEntity in this.activeScenario.GetVisibleEntities<QuadEntity>(isoTileRect))
+                {
+                    this.activeScenario.VisibleEntities.DetachContent(affectedEntity);
+                    bool violatingConstraints = false;
+                    if (affectedEntity.ElementType.CheckConstraints(this.activeScenario, affectedEntity.QuadCoords).Count != 0)
+                    {
+                        this.activeScenario.RemoveEntity(affectedEntity);
+                        affectedEntity.Dispose();
+                        violatingConstraints = true;
+                    }
+                    if (!violatingConstraints) { this.activeScenario.VisibleEntities.AttachContent(affectedEntity); }
+                }
+            }
         }
 
         /// <see cref="IMapEditorBE.PlaceTerrainObject"/>
@@ -185,6 +203,24 @@ namespace RC.App.BizLogic.Core
             {
                 IQuadTile targetQuadTile = this.activeMap.GetQuadTile(topLeftQuadCoords);
                 placedTerrainObject = this.mapEditor.PlaceTerrainObject(this.activeMap, targetQuadTile, terrainObjType);
+            }
+
+            if (placedTerrainObject != null)
+            {
+                RCNumRectangle terrObjRect = new RCNumRectangle(placedTerrainObject.GetCell(new RCIntVector(0, 0)).MapCoords, placedTerrainObject.CellSize)
+                                           - new RCNumVector(1, 1) / 2;
+                foreach (QuadEntity affectedEntity in this.activeScenario.GetVisibleEntities<QuadEntity>(terrObjRect))
+                {
+                    this.activeScenario.VisibleEntities.DetachContent(affectedEntity);
+                    bool violatingConstraints = false;
+                    if (affectedEntity.ElementType.CheckConstraints(this.activeScenario, affectedEntity.QuadCoords).Count != 0)
+                    {
+                        this.activeScenario.RemoveEntity(affectedEntity);
+                        affectedEntity.Dispose();
+                        violatingConstraints = true;
+                    }
+                    if (!violatingConstraints) { this.activeScenario.VisibleEntities.AttachContent(affectedEntity); }
+                }
             }
             return placedTerrainObject != null;
         }
@@ -300,6 +336,28 @@ namespace RC.App.BizLogic.Core
             {
                 this.activeScenario.RemoveEntity(entity);
                 entity.Dispose();
+                return true;
+            }
+            return false;
+        }
+
+        /// <see cref="IMapEditorBE.RemoveEntity"/>
+        public bool ChangeResourceAmount(int objectID, int delta)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            MineralField mineralField = this.activeScenario.GetEntity<MineralField>(objectID);
+            VespeneGeyser vespeneGeyser = this.activeScenario.GetEntity<VespeneGeyser>(objectID);
+            if (mineralField != null)
+            {
+                int currentResourceAmount = mineralField.ResourceAmount.Read();
+                mineralField.ResourceAmount.Write(Math.Max(MineralField.MINIMUM_RESOURCE_AMOUNT, currentResourceAmount + delta));
+                return true;
+            }
+            else if (vespeneGeyser != null)
+            {
+                int currentResourceAmount = vespeneGeyser.ResourceAmount.Read();
+                vespeneGeyser.ResourceAmount.Write(Math.Max(VespeneGeyser.MINIMUM_RESOURCE_AMOUNT, currentResourceAmount + delta));
                 return true;
             }
             return false;

@@ -8,6 +8,114 @@ using RC.Engine.Maps.PublicInterfaces;
 namespace RC.Engine.Maps.Core
 {
     /// <summary>
+    /// Interface of cell data modifiers.
+    /// </summary>
+    interface ICellDataModifier
+    {
+        /// <summary>
+        /// Modifies the corresponding data of the given cell.
+        /// </summary>
+        /// <param name="cell">The cell to modify.</param>
+        void ModifyData(ICell cell);
+
+        /// <summary>
+        /// Undos the last modification on the corresponding data of the given cell.
+        /// </summary>
+        /// <param name="cell">The cell to undo.</param>
+        void UndoModification(ICell cell);
+    }
+
+    /// <summary>
+    /// Walkability flag modifier.
+    /// </summary>
+    class WalkabilityFlagModifier : ICellDataModifier
+    {
+        /// <summary>
+        /// Constructs a WalkabilityFlagModifier instance.
+        /// </summary>
+        /// <param name="newValue">The new value of the walkability flag.</param>
+        public WalkabilityFlagModifier(bool newValue)
+        {
+            this.newValue = newValue;
+        }
+
+        #region ICellDataModifier methods
+
+        /// <see cref="ICellDataModifier.ModifyData"/>
+        public void ModifyData(ICell cell) { cell.ChangeWalkability(this.newValue); }
+
+        /// <see cref="ICellDataModifier.UndoModification"/>
+        public void UndoModification(ICell cell) { cell.UndoWalkabilityChange(); }
+
+        #endregion ICellDataModifier methods
+
+        /// <summary>
+        /// The new value of the walkability flag.
+        /// </summary>
+        private bool newValue;
+    }
+
+    /// <summary>
+    /// Buildability flag modifier.
+    /// </summary>
+    class BuildabilityFlagModifier : ICellDataModifier
+    {
+        /// <summary>
+        /// Constructs a BuildabilityFlagModifier instance.
+        /// </summary>
+        /// <param name="newValue">The new value of the buildability flag.</param>
+        public BuildabilityFlagModifier(bool newValue)
+        {
+            this.newValue = newValue;
+        }
+
+        #region ICellDataModifier methods
+
+        /// <see cref="ICellDataModifier.ModifyData"/>
+        public void ModifyData(ICell cell) { cell.ChangeBuildability(this.newValue); }
+
+        /// <see cref="ICellDataModifier.UndoModification"/>
+        public void UndoModification(ICell cell) { cell.UndoBuildabilityChange(); }
+
+        #endregion ICellDataModifier methods
+
+        /// <summary>
+        /// The new value of the buildability flag.
+        /// </summary>
+        private bool newValue;
+    }
+
+    /// <summary>
+    /// Ground level value modifier.
+    /// </summary>
+    class GroundLevelModifier : ICellDataModifier
+    {
+        /// <summary>
+        /// Constructs a GroundLevelModifier instance.
+        /// </summary>
+        /// <param name="newValue">The new value of the ground level.</param>
+        public GroundLevelModifier(int newValue)
+        {
+            this.newValue = newValue;
+        }
+
+        #region ICellDataModifier methods
+
+        /// <see cref="ICellDataModifier.ModifyData"/>
+        public void ModifyData(ICell cell) { cell.ChangeGroundLevel(this.newValue); }
+
+        /// <see cref="ICellDataModifier.UndoModification"/>
+        public void UndoModification(ICell cell) { cell.UndoGroundLevelChange(); }
+
+        #endregion ICellDataModifier methods
+
+        /// <summary>
+        /// The new value of the ground level.
+        /// </summary>
+        private int newValue;
+    }
+
+    /// <summary>
     /// This changeset overwrites a specific field in every cells of the target.
     /// </summary>
     class CellDataChangeSetBase : ICellDataChangeSet
@@ -15,63 +123,16 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// Constructs a changeset for overwriting an integer field.
         /// </summary>
-        /// <param name="targetField">The name of the target field.</param>
-        /// <param name="value">The new value of the target field.</param>
+        /// <param name="modifier">Reference to the modifier object.</param>
         /// <param name="tileset">The tileset of this changeset.</param>
-        public CellDataChangeSetBase(string targetField, int value, TileSet tileset)
+        public CellDataChangeSetBase(ICellDataModifier modifier, TileSet tileset)
         {
             if (tileset == null) { throw new ArgumentNullException("tileset"); }
+            if (modifier == null) { throw new ArgumentNullException("modifier"); }
 
-            this.targetFieldIdx = tileset.GetCellDataFieldIndex(targetField);
-            this.targetField = targetField;
-            this.targetFieldType = tileset.GetCellDataFieldType(this.targetFieldIdx);
-            if (this.targetFieldType != CellDataType.INT) { throw new TileSetException(string.Format("Field '{0}' was not declared as CellDataType.INT!", targetField)); }
-            this.intValue = value;
             this.tileset = tileset;
+            this.modifier = modifier;
         }
-
-        /// <summary>
-        /// Constructs a changeset for overwriting a bool field.
-        /// </summary>
-        /// <param name="targetField">The name of the target field.</param>
-        /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this changeset.</param>
-        public CellDataChangeSetBase(string targetField, bool value, TileSet tileset)
-        {
-            if (tileset == null) { throw new ArgumentNullException("tileset"); }
-
-            this.targetFieldIdx = tileset.GetCellDataFieldIndex(targetField);
-            this.targetField = targetField;
-            this.targetFieldType = tileset.GetCellDataFieldType(this.targetFieldIdx);
-            if (this.targetFieldType != CellDataType.BOOL) { throw new TileSetException(string.Format("Field '{0}' was not declared as CellDataType.BOOL!", targetField)); }
-            this.boolValue = value;
-            this.tileset = tileset;
-        }
-
-        /// <summary>
-        /// Gets the name of the field that this changeset overwrites.
-        /// </summary>
-        public string TargetField { get { return this.targetField; } }
-
-        /// <summary>
-        /// Gets the index of the field that this changeset overwrites.
-        /// </summary>
-        public int TargetFieldIdx { get { return this.targetFieldIdx; } }
-
-        /// <summary>
-        /// Gets the type of the field that this changeset overwrites.
-        /// </summary>
-        public CellDataType TargetFieldType { get { return this.targetFieldType; } }
-
-        /// <summary>
-        /// Gets the target value of the field that this changeset overwrites (in case of CellDataType.INT).
-        /// </summary>
-        public int IntValue { get { return this.intValue; } }
-
-        /// <summary>
-        /// Gets the target value of the field that this changeset overwrites (in case of CellDataType.BOOL).
-        /// </summary>
-        public bool BoolValue { get { return this.boolValue; } }
 
         #region ICellDataChangeSet methods
 
@@ -81,7 +142,9 @@ namespace RC.Engine.Maps.Core
             HashSet<RCIntVector> targetset = this.CollectTargetSet(target);
             foreach (RCIntVector targetCell in targetset)
             {
-                this.ApplyOnCell(target, targetCell);
+                ICell cell = target.GetCell(targetCell);
+                if (cell == null) { throw new MapException(string.Format("Cell at index {0} not found in the changeset target!", targetCell)); }
+                this.modifier.ModifyData(cell);
             }
         }
 
@@ -91,7 +154,9 @@ namespace RC.Engine.Maps.Core
             HashSet<RCIntVector> targetset = this.CollectTargetSet(target);
             foreach (RCIntVector targetCell in targetset)
             {
-                this.UndoOnCell(target, targetCell);
+                ICell cell = target.GetCell(targetCell);
+                if (cell == null) { throw new MapException(string.Format("Cell at index {0} not found in the changeset target!", targetCell)); }
+                this.modifier.UndoModification(cell);
             }
         }
 
@@ -123,66 +188,9 @@ namespace RC.Engine.Maps.Core
         }
 
         /// <summary>
-        /// Applies the changeset on the cell of the given target at the given index.
+        /// Reference to the modifier object.
         /// </summary>
-        /// <param name="target">The target of the operation.</param>
-        /// <param name="index">The index of the cell to be applied.</param>
-        private void ApplyOnCell(ICellDataChangeSetTarget target, RCIntVector index)
-        {
-            ICell cell = target.GetCell(index);
-            if (cell == null) { throw new MapException(string.Format("Cell at index {0} not found in the changeset target!", index)); }
-
-            if (this.targetFieldType == CellDataType.INT)
-            {
-                cell.Data.WriteInt(this.targetFieldIdx, this.intValue);
-            }
-            else if (this.targetFieldType == CellDataType.BOOL)
-            {
-                cell.Data.WriteBool(this.targetFieldIdx, this.boolValue);
-            }
-            else
-            {
-                throw new MapException("Unknown field type!");
-            }
-        }
-
-        /// <summary>
-        /// Undos the changeset on the cell of the given target at the given index.
-        /// </summary>
-        /// <param name="target">The target of the operation.</param>
-        /// <param name="index">The index of the cell to be undone.</param>
-        private void UndoOnCell(ICellDataChangeSetTarget target, RCIntVector index)
-        {
-            ICell cell = target.GetCell(index);
-            if (cell == null) { throw new MapException(string.Format("Cell at index {0} not found in the changeset target!", index)); }
-
-            cell.Data.Undo();
-        }
-
-        /// <summary>
-        /// The name of the field that this changeset overwrites.
-        /// </summary>
-        private string targetField;
-
-        /// <summary>
-        /// The index of the field that this changeset overwrites.
-        /// </summary>
-        private int targetFieldIdx;
-
-        /// <summary>
-        /// The type of the field that this changeset overwrites.
-        /// </summary>
-        private CellDataType targetFieldType;
-
-        /// <summary>
-        /// The target value of the field that this changeset overwrites (in case of CellDataType.INT).
-        /// </summary>
-        private int intValue;
-
-        /// <summary>
-        /// The target value of the field that this changeset overwrites (in case of CellDataType.BOOL).
-        /// </summary>
-        private bool boolValue;
+        private ICellDataModifier modifier;
 
         /// <summary>
         /// The tileset of this changeset.

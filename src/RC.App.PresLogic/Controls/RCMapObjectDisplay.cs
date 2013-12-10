@@ -42,7 +42,8 @@ namespace RC.App.PresLogic.Controls
             this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player7));
             this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Neutral));
 
-            this.brushPalette = new BrushPaletteSpriteGroup();
+            this.selectionBoxBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.selectionBoxBrush.Upload();
             this.CurrentMouseStatus = MouseStatus.None;
             this.selectionBoxStartPosition = RCIntVector.Undefined;
             this.selectionBoxCurrPosition = RCIntVector.Undefined;
@@ -115,7 +116,6 @@ namespace RC.App.PresLogic.Controls
             {
                 spriteGroup.Load();
             }
-            this.brushPalette.Load();
         }
 
         /// <see cref="RCMapDisplayExtension.StopExtensionProc_i"/>
@@ -125,7 +125,6 @@ namespace RC.App.PresLogic.Controls
             {
                 spriteGroup.Unload();
             }
-            this.brushPalette.Unload();
         }
 
         /// <see cref="RCMapDisplayExtension.RenderExtension_i"/>
@@ -133,31 +132,6 @@ namespace RC.App.PresLogic.Controls
         {
             /// Retrieve the list of the visible map objects.
             List<MapObjectInstance> mapObjects = this.mapObjectView.GetVisibleMapObjects(this.DisplayedArea);
-
-            /// Render the selection indicators and the object values.
-            foreach (MapObjectInstance obj in mapObjects)
-            {
-                if (obj.SelectionIndicatorColorIdx != -1 && obj.SelectionIndicator != RCIntRectangle.Undefined)
-                {
-                    renderContext.RenderRectangle(this.brushPalette[obj.SelectionIndicatorColorIdx],
-                                                  obj.SelectionIndicator);
-                    if (obj.Values != null)
-                    {
-                        int row = obj.SelectionIndicator.Bottom;
-                        int col = obj.SelectionIndicator.Left;
-                        foreach (Tuple<int, RCNumber> val in obj.Values)
-                        {
-                            int width = ((RCNumber)obj.SelectionIndicator.Width * val.Item2).Round();
-                            if (width > 0)
-                            {
-                                renderContext.RenderRectangle(this.brushPalette[val.Item1],
-                                                              new RCIntRectangle(col, row, width, 1));
-                            }
-                            row++;
-                        }
-                    }
-                }
-            }
 
             /// Render the object sprites.
             foreach (MapObjectInstance obj in mapObjects)
@@ -177,7 +151,7 @@ namespace RC.App.PresLogic.Controls
             /// Render the selection box if necessary.
             if (this.CurrentMouseStatus == MouseStatus.Selecting)
             {
-                renderContext.RenderRectangle(this.brushPalette[0], this.CalculateSelectionBox());
+                renderContext.RenderRectangle(this.selectionBoxBrush, this.CalculateSelectionBox());
             }
         }
 
@@ -350,9 +324,9 @@ namespace RC.App.PresLogic.Controls
         }
 
         /// <summary>
-        /// The brush palette for drawing the selection indicators and value bars of map objects.
+        /// The brush for drawing the selection box.
         /// </summary>
-        private SpriteGroup brushPalette;
+        private UISprite selectionBoxBrush;
 
         /// <summary>
         /// This sprite-group contains the sprites of the map object types.

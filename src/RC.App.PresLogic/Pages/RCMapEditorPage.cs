@@ -136,6 +136,7 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplay.MouseSensor.Move += this.OnMouseMoveOverDisplay;
             this.mapDisplay.MouseSensor.ButtonDown += this.OnMouseDown;
             this.mapDisplay.MouseSensor.ButtonUp += this.OnMouseUp;
+            this.mapDisplay.MouseSensor.Wheel += this.OnMouseWheel;
 
             /// Create and register the map editor panel.
             this.mapEditorPanel = new RCMapEditorPanel(new RCIntRectangle(223, 0, 97, 200),
@@ -400,6 +401,21 @@ namespace RC.App.PresLogic.Pages
             }
         }
 
+        /// <summary>
+        /// Called when the mouse wheel has been rotated.
+        /// </summary>
+        private void OnMouseWheel(UISensitiveObject sender, UIMouseEventArgs evtArgs)
+        {
+            if (this.activatorBtn == UIMouseButton.Undefined && this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
+            {
+                int objectID = this.mapObjectView.GetMapObjectID(this.mapDisplay.DisplayedArea, evtArgs.Position);
+                if (objectID != -1)
+                {
+                    this.mapEditorBE.ChangeResourceAmount(objectID, Math.Sign(evtArgs.WheelDelta) * RESOURCE_AMOUNT_DELTA);
+                }
+            }
+        }
+
         #endregion Mouse event handlers
 
         /// <summary>
@@ -511,6 +527,7 @@ namespace RC.App.PresLogic.Pages
         public const string MINERALFIELD_NAME = "MineralField";
         public const string VESPENEGEYSER_NAME = "VespeneGeyser";
         public const int MAPEDITOR_MS_PER_FRAME = 60;
+        public const int RESOURCE_AMOUNT_DELTA = 10;
 
         #region Map editor settings
 

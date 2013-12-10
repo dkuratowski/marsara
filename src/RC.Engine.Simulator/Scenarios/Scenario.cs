@@ -71,15 +71,16 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <summary>
-        /// Gets the entity with the given ID.
+        /// Gets the entity of the given type with the given ID.
         /// </summary>
         /// <param name="id">The ID of the entity.</param>
+        /// <typeparam name="T">The type of the entity.</typeparam>
         /// <returns>
-        /// The entity with the given ID or null if no entity with the given ID is added to this scenario.
+        /// The entity with the given ID or null if no entity of the given type with the given ID is added to this scenario.
         /// </returns>
         public T GetEntity<T>(int id) where T : Entity
         {
-            return this.entitySet.ContainsKey(id) ? (T)this.entitySet[id] : null;
+            return this.entitySet.ContainsKey(id) ? this.entitySet[id] as T : null;
         }
 
         /// <summary>

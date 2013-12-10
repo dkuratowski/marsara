@@ -27,7 +27,10 @@ namespace RC.Engine.Maps.Core
             this.parentMap = map;
             this.parentQuadTile = quadTile;
             this.quadCoords = quadCoords;
-            this.data = null;
+            this.walkabilityFlag = new Stack<bool>();
+            this.buildabilityFlag = new Stack<bool>();
+            this.groundLevel = new Stack<int>();
+            this.isLocked = false;
             this.mapCoords = this.parentQuadTile.MapCoords * (new RCIntVector(MapStructure.NAVCELL_PER_QUAD, MapStructure.NAVCELL_PER_QUAD)) + this.quadCoords;
             this.neighbours = new Cell[8];
             this.detachedNeighbours = new List<Tuple<Cell, MapDirection>>();
@@ -37,9 +40,6 @@ namespace RC.Engine.Maps.Core
 
         #region ICell methods
 
-        /// <see cref="ICell.Data"/>
-        public ICellData Data { get { return this.data; } }
-
         /// <see cref="ICell.ParentQuadTile"/>
         public IQuadTile ParentQuadTile { get { return this.parentQuadTile; } }
 
@@ -48,6 +48,67 @@ namespace RC.Engine.Maps.Core
 
         /// <see cref="ICell.MapCoords"/>
         public RCIntVector MapCoords { get { return this.mapCoords; } }
+
+        /// <see cref="ICell.IsWalkable"/>
+        public bool IsWalkable { get { return this.walkabilityFlag.Peek(); } }
+
+        /// <see cref="ICell.IsBuildable"/>
+        public bool IsBuildable { get { return this.buildabilityFlag.Peek(); } }
+
+        /// <see cref="ICell.GroundLevel"/>
+        public int GroundLevel { get { return this.groundLevel.Peek(); } }
+
+        /// <see cref="ICell.GroundLevel"/>
+        public void Lock()
+        {
+            if (this.parentMap.Status != MapStructure.MapStatus.Opened) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.parentMap.Status)); }
+            this.isLocked = true;
+        }
+
+        /// <see cref="ICell.ChangeWalkability"/>
+        public void ChangeWalkability(bool newVal)
+        {
+            if (this.isLocked) { throw new InvalidOperationException("Cell data locked!"); }
+            this.walkabilityFlag.Push(newVal);
+        }
+
+        /// <see cref="ICell.ChangeBuildability"/>
+        public void ChangeBuildability(bool newVal)
+        {
+            if (this.isLocked) { throw new InvalidOperationException("Cell data locked!"); }
+            this.buildabilityFlag.Push(newVal);
+        }
+
+        /// <see cref="ICell.ChangeGroundLevel"/>
+        public void ChangeGroundLevel(int newVal)
+        {
+            if (this.isLocked) { throw new InvalidOperationException("Cell data locked!"); }
+            this.groundLevel.Push(newVal);
+        }
+
+        /// <see cref="ICell.UndoWalkabilityChange"/>
+        public void UndoWalkabilityChange()
+        {
+            if (this.isLocked) { throw new InvalidOperationException("Cell data locked!"); }
+            if (this.walkabilityFlag.Count == 0) { throw new InvalidOperationException("The very first walkability change has already been undone!"); }
+            this.walkabilityFlag.Pop();
+        }
+
+        /// <see cref="ICell.UndoBuildabilityChange"/>
+        public void UndoBuildabilityChange()
+        {
+            if (this.isLocked) { throw new InvalidOperationException("Cell data locked!"); }
+            if (this.buildabilityFlag.Count == 0) { throw new InvalidOperationException("The very first buildability change has already been undone!"); }
+            this.buildabilityFlag.Pop();
+        }
+
+        /// <see cref="ICell.UndoGroundLevelChange"/>
+        public void UndoGroundLevelChange()
+        {
+            if (this.isLocked) { throw new InvalidOperationException("Cell data locked!"); }
+            if (this.groundLevel.Count == 0) { throw new InvalidOperationException("The very first ground level change has already been undone!"); }
+            this.groundLevel.Pop();
+        }
 
         #endregion ICell methods
 
@@ -114,7 +175,13 @@ namespace RC.Engine.Maps.Core
         public void InitializeFields()
         {
             if (this.parentMap.Status != MapStructure.MapStatus.Opening) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.parentMap.Status)); }
-            this.data = this.parentMap.Tileset.DefaultCellData.Clone();
+
+            this.walkabilityFlag.Clear();
+            this.buildabilityFlag.Clear();
+            this.groundLevel.Clear();
+            this.walkabilityFlag.Push(DEFAULT_WALKABILITY);
+            this.buildabilityFlag.Push(DEFAULT_BUILDABILITY);
+            this.groundLevel.Push(DEFAULT_GROUNDLEVEL);
         }
 
         /// <summary>
@@ -123,7 +190,11 @@ namespace RC.Engine.Maps.Core
         public void UninitializeFields()
         {
             if (this.parentMap.Status != MapStructure.MapStatus.Closing) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.parentMap.Status)); }
-            this.data = null;
+
+            this.walkabilityFlag.Clear();
+            this.buildabilityFlag.Clear();
+            this.groundLevel.Clear();
+            this.isLocked = false;
         }
 
         /// <summary>
@@ -178,9 +249,24 @@ namespace RC.Engine.Maps.Core
         private RCIntVector isoIndices;
 
         /// <summary>
-        /// Reference to the data attached to this cell.
+        /// Stores the current and the previous values of the walkability flag of this cell.
         /// </summary>
-        private ICellData data;
+        private Stack<bool> walkabilityFlag;
+
+        /// <summary>
+        /// Stores the current and the previous values of the buildability flag of this cell.
+        /// </summary>
+        private Stack<bool> buildabilityFlag;
+
+        /// <summary>
+        /// Stores the current and the previous values of the ground level of this cell.
+        /// </summary>
+        private Stack<int> groundLevel;
+
+        /// <summary>
+        /// This flag indicates whether this Cell object has been locked or not. Writing data of locked cells is not possible.
+        /// </summary>
+        private bool isLocked;
 
         /// <summary>
         /// List of the neighbours of this cell.
@@ -201,5 +287,12 @@ namespace RC.Engine.Maps.Core
         /// Reference to the isometric tile that this cell belongs to.
         /// </summary>
         private IsoTile parentIsoTile;
+
+        /// <summary>
+        /// The default values of the cell data.
+        /// </summary>
+        private const bool DEFAULT_WALKABILITY = true;
+        private const bool DEFAULT_BUILDABILITY = true;
+        private const int DEFAULT_GROUNDLEVEL = 0;
     }
 }

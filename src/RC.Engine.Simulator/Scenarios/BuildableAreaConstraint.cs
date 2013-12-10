@@ -15,7 +15,6 @@ namespace RC.Engine.Simulator.Scenarios
         /// <see cref="EntityConstraint.CheckImpl"/>
         protected override HashSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position)
         {
-            int isBuildableFieldIdx = scenario.Map.Tileset.GetCellDataFieldIndex("IsBuildable");
             RCIntRectangle objArea = new RCIntRectangle(position, scenario.Map.CellToQuadSize(this.EntityType.Area.Read()));
             HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
             for (int absY = objArea.Top; absY < objArea.Bottom; absY++)
@@ -26,6 +25,7 @@ namespace RC.Engine.Simulator.Scenarios
                     if (absQuadCoords.X >= 0 && absQuadCoords.X < scenario.Map.Size.X &&
                         absQuadCoords.Y >= 0 && absQuadCoords.Y < scenario.Map.Size.Y)
                     {
+                        /// TODO: Implement IsBuildable flag at quadratic tile level!
                         IQuadTile checkedQuadTile = scenario.Map.GetQuadTile(absQuadCoords);
                         bool isBuildable = true;
                         for (int row = 0; row < checkedQuadTile.CellSize.Y; row++)
@@ -33,12 +33,13 @@ namespace RC.Engine.Simulator.Scenarios
                             for (int col = 0; col < checkedQuadTile.CellSize.X; col++)
                             {
                                 ICell checkedCell = checkedQuadTile.GetCell(new RCIntVector(col, row));
-                                if (!checkedCell.Data.ReadBool(isBuildableFieldIdx))
+                                if (!checkedCell.IsBuildable)
                                 {
                                     isBuildable = false;
                                     break;
                                 }
                             }
+                            if (!isBuildable) { break; }
                         }
                         if (!isBuildable) { retList.Add(absQuadCoords - position); }
                     }

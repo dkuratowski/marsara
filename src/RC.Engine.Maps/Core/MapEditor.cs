@@ -18,7 +18,6 @@ namespace RC.Engine.Maps.Core
         #region IMapEditor methods
 
         /// <see cref="IMapEditor.DrawTerrain"/>
-        /// TODO: Make this method void!
         public IEnumerable<IIsoTile> DrawTerrain(IMapAccess targetMap, IIsoTile targetTile, ITerrainType terrainType)
         {
             if (targetMap == null) { throw new ArgumentNullException("targetMap"); }

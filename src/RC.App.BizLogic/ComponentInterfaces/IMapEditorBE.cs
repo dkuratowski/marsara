@@ -148,6 +148,14 @@ namespace RC.App.BizLogic.ComponentInterfaces
         bool RemoveEntity(RCIntRectangle displayedArea, RCIntVector position);
 
         /// <summary>
+        /// Changes the amount of resource in the given object if it is a resource object.
+        /// </summary>
+        /// <param name="objectID">The ID of the target object.</param>
+        /// <param name="delta">The difference between the current and the new resource amount.</param>
+        /// <returns>True if the resource amount has been changed, false otherwise.</returns>
+        bool ChangeResourceAmount(int objectID, int delta);
+
+        /// <summary>
         /// Steps the animations on the edited map.
         /// </summary>
         void StepAnimations();

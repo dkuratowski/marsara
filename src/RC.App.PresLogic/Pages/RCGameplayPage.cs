@@ -35,14 +35,12 @@ namespace RC.App.PresLogic.Pages
         {
             this.gameplayBE = ComponentManager.GetInterface<IGameplayBE>();
             this.mapTerrainView = null;
-            this.mapDebugView = null;
             this.mapObjectView = null;
             this.tilesetView = null;
             this.metadataView = null;
 
             this.mapDisplay = null;
             this.mapDisplayBasic = null;
-            this.mapDebugDisplayEx = null;
             this.mapObjectDisplayEx = null;
             this.objectPlacementDisplayEx = null;
             this.currentConnectionStatus = ConnectionStatus.Offline;
@@ -96,7 +94,6 @@ namespace RC.App.PresLogic.Pages
 
             /// Create and start the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135), this.mapTerrainView, this.tilesetView);
-            //this.mapDebugDisplayEx = new RCMapDebugDisplay(this.mapDisplayBasic, this.mapDebugView);
             this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView, this.metadataView);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.mapObjectDisplayEx, this.mapTerrainView);
             this.mapDisplay = this.objectPlacementDisplayEx;
@@ -209,7 +206,6 @@ namespace RC.App.PresLogic.Pages
 
             /// Remove the views.
             this.mapTerrainView = null;
-            this.mapDebugView = null;
             this.mapObjectView = null;
             this.tilesetView = null;
             this.metadataView = null;
@@ -308,11 +304,6 @@ namespace RC.App.PresLogic.Pages
         private RCMapDisplayBasic mapDisplayBasic;
 
         /// <summary>
-        /// Extension of the map display that displays debug informations.
-        /// </summary>
-        private RCMapDebugDisplay mapDebugDisplayEx;
-
-        /// <summary>
         /// Extension of the map display that displays the map objects.
         /// </summary>
         private RCMapObjectDisplay mapObjectDisplayEx;
@@ -336,11 +327,6 @@ namespace RC.App.PresLogic.Pages
         /// Reference to the map object view.
         /// </summary>
         private IMapObjectView mapObjectView;
-
-        /// <summary>
-        /// Reference to the map debug view.
-        /// </summary>
-        private IMapDebugView mapDebugView;
 
         /// <summary>
         /// Reference to the tileset view.

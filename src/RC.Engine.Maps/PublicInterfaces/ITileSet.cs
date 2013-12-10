@@ -11,30 +11,6 @@ namespace RC.Engine.Maps.PublicInterfaces
     public interface ITileSet
     {
         /// <summary>
-        /// Gets the index of the given field in the cell-data declaration of this tileset.
-        /// </summary>
-        /// <param name="nameOfField">The name of the field.</param>
-        /// <returns>The index of the given field.</returns>
-        /// <exception cref="TileSetException">If no field was declared with the given name.</exception>
-        int GetCellDataFieldIndex(string nameOfField);
-
-        /// <summary>
-        /// Gets the name of the given field in the cell-data declaration of this tileset.
-        /// </summary>
-        /// <param name="index">The index of the field.</param>
-        /// <returns>The name of the field.</returns>
-        /// <exception cref="TileSetException">If no field was declared with the given index.</exception>
-        string GetCellDataFieldName(int index);
-
-        /// <summary>
-        /// Gets the type of the given field in the cell-data declaration of this tileset.
-        /// </summary>
-        /// <param name="index">The index of the field.</param>
-        /// <returns>The type of the field.</returns>
-        /// <exception cref="TileSetException">If no field was declared with the given index.</exception>
-        CellDataType GetCellDataFieldType(int index);
-
-        /// <summary>
         /// Gets the terrain type of this tileset with the given name.
         /// </summary>
         /// <param name="name">The name of the terrain type.</param>
@@ -79,11 +55,6 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// Gets the list of all tile variants defined in this tileset.
         /// </summary>
         IEnumerable<IIsoTileVariant> TileVariants { get; }
-
-        /// <summary>
-        /// Gets the default values of the declared cell data fields.
-        /// </summary>
-        ICellData DefaultCellData { get; }
 
         /// <summary>
         /// Gets the name of this tileset.

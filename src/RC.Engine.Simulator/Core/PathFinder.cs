@@ -39,7 +39,6 @@ namespace RC.Engine.Simulator.Core
             this.pathfinderTreeRoot = new PFTreeNode(subdivisionLevels);
 
             /// Add the obstacles to the pathfinder tree.
-            int isWalkableFieldIdx = map.Tileset.GetCellDataFieldIndex("IsWalkable");
             for (int row = 0; row < this.pathfinderTreeRoot.AreaOnMap.Height; row++)
             {
                 for (int column = 0; column < this.pathfinderTreeRoot.AreaOnMap.Width; column++)
@@ -52,7 +51,7 @@ namespace RC.Engine.Simulator.Core
                     else
                     {
                         /// Add obstacle depending on the "IsWalkable" flag of the cell.
-                        if (!map.GetCell(new RCIntVector(column, row)).Data.ReadBool(isWalkableFieldIdx))
+                        if (!map.GetCell(new RCIntVector(column, row)).IsWalkable)
                         {
                             this.pathfinderTreeRoot.AddObstacle(new RCIntVector(column, row));
                         }

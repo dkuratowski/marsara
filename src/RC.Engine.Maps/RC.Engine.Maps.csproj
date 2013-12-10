@@ -95,7 +95,6 @@
     <Compile Include="Core\TerrainObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicInterfaces\ICell.cs" />
-    <Compile Include="PublicInterfaces\ICellData.cs" />
     <Compile Include="PublicInterfaces\ICellDataChangeSet.cs" />
     <Compile Include="PublicInterfaces\ICellDataChangeSetTarget.cs" />
     <Compile Include="PublicInterfaces\IIsoTile.cs" />
@@ -110,7 +109,6 @@
     <Compile Include="PublicInterfaces\ITerrainType.cs" />
     <Compile Include="PublicInterfaces\ITileSet.cs" />
     <Compile Include="Core\MapHelper.cs" />
-    <Compile Include="Core\CellData.cs" />
     <Compile Include="Core\ComplexCondition.cs" />
     <Compile Include="Core\IsoTileConstraint.cs" />
     <Compile Include="Core\NeighbourCondition.cs" />

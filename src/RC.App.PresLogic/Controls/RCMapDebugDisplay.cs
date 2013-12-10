@@ -18,53 +18,28 @@ namespace RC.App.PresLogic.Controls
         /// Constructs an RCMapDebugDisplay extension for the given map display control.
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
-        /// <param name="mapDebugView">Reference to a map debug view.</param>
-        public RCMapDebugDisplay(RCMapDisplay extendedControl, IMapDebugView mapDebugView)
-            : base(extendedControl, mapDebugView)
+        /// <param name="mapTerrainView">Reference to a map terrain view.</param>
+        public RCMapDebugDisplay(RCMapDisplay extendedControl, IMapTerrainView mapTerrainView)
+            : base(extendedControl, mapTerrainView)
         {
-            if (mapDebugView == null) { throw new ArgumentNullException("mapDebugView"); }
+            if (mapTerrainView == null) { throw new ArgumentNullException("mapTerrainView"); }
 
-            this.mapDebugView = mapDebugView;
-            this.brushPalette = new BrushPaletteSpriteGroup();
+            this.mapTerrainView = mapTerrainView;
         }
 
         #region Overrides
 
-        /// <see cref="RCMapDisplayExtension.StartExtensionProc_i"/>
-        protected override void StartExtensionProc_i()
-        {
-            this.brushPalette.Load();
-        }
-
-        /// <see cref="RCMapDisplayExtension.StopExtensionProc_i"/>
-        protected override void StopExtensionProc_i()
-        {
-            this.brushPalette.Unload();
-        }
-
         /// <see cref="RCMapDisplayExtension.RenderExtension_i"/>
         protected override void RenderExtension_i(IUIRenderContext renderContext)
         {
-            /// Retrieve the list of the visible pathfinder tree nodes.
-            List<RCIntRectangle> pathfinderTreeNodes = this.mapDebugView.GetVisiblePathfinderTreeNodes(this.DisplayedArea);
-
-            /// Render the tree nodes.
-            foreach (RCIntRectangle treeNode in pathfinderTreeNodes)
-            {
-                renderContext.RenderRectangle(this.brushPalette[3], treeNode);
-            }
+            /// TODO: implement!
         }
 
         #endregion Overrides
 
         /// <summary>
-        /// Reference to the map debug view.
+        /// Reference to the map terrain view.
         /// </summary>
-        private IMapDebugView mapDebugView;
-
-        /// <summary>
-        /// The brush palette for drawing the informations coming from the debug view.
-        /// </summary>
-        private SpriteGroup brushPalette;
+        private IMapTerrainView mapTerrainView;
     }
 }

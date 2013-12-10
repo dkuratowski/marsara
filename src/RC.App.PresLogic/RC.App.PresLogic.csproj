@@ -68,7 +68,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BrushPaletteSpriteGroup.cs" />
     <Compile Include="ClockSignal.cs" />
     <Compile Include="Controls\RCIsoTileDisplay.cs" />
     <Compile Include="Controls\RCDropdownSelector.cs" />

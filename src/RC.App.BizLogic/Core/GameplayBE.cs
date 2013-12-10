@@ -37,7 +37,6 @@ namespace RC.App.BizLogic.Core
             this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
             this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
             this.scenarioLoader = ComponentManager.GetInterface<IScenarioLoader>();
-            this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
         }
 
         /// <see cref="IComponent.Stop"/>
@@ -70,12 +69,6 @@ namespace RC.App.BizLogic.Core
             //                               10));
         }
 
-        /// <see cref="IGameplayBE.CreateMapDebugView"/>
-        public IMapDebugView CreateMapDebugView()
-        {
-            return new MapDebugView(this.testMap, this.pathFinder);
-        }
-
         /// <see cref="IGameplayBE.CreateTileSetView"/>
         public ITileSetView CreateTileSetView()
         {
@@ -98,7 +91,7 @@ namespace RC.App.BizLogic.Core
         /// TODO: Remove this section when no longer necessary *********************************************************
         public void StartTestScenario()
         {
-            byte[] mapBytes = File.ReadAllBytes(".\\maps\\testmap.rcm");
+            byte[] mapBytes = File.ReadAllBytes(".\\maps\\testmap2.rcm");
             MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
             this.testMap = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
             this.testScenario = this.scenarioLoader.LoadScenario(this.testMap, mapBytes);
@@ -116,10 +109,5 @@ namespace RC.App.BizLogic.Core
         /// Reference to the RC.Engine.Simulator.ScenarioLoader component.
         /// </summary>
         private IScenarioLoader scenarioLoader;
-
-        /// <summary>
-        /// Reference to the RC.Engine.Simulator.PathFinder component.
-        /// </summary>
-        private IPathFinder pathFinder;
     }
 }

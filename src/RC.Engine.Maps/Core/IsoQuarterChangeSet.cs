@@ -17,32 +17,13 @@ namespace RC.Engine.Maps.Core
         /// Constructs a changeset for overwriting an integer field.
         /// </summary>
         /// <param name="targetQuarter">The quarter of the isometric tile to perform the changeset.</param>
-        /// <param name="targetField">The name of the target field.</param>
-        /// <param name="value">The new value of the target field.</param>
+        /// <param name="modifier">Reference to the modifier.</param>
         /// <param name="tileset">The tileset of this changeset.</param>
-        public IsoQuarterChangeSet(MapDirection targetQuarter, string targetField, int value, TileSet tileset)
-            : base(targetField, value, tileset)
+        public IsoQuarterChangeSet(MapDirection targetQuarter, ICellDataModifier modifier, TileSet tileset)
+            : base(modifier, tileset)
         {
             this.CheckAndAssignCtorParams(targetQuarter);
         }
-
-        /// <summary>
-        /// Constructs a changeset for overwriting a bool field.
-        /// </summary>
-        /// <param name="targetQuarter">The quarter of the isometric tile to perform the changeset.</param>
-        /// <param name="targetField">The name of the target field.</param>
-        /// <param name="value">The new value of the target field.</param>
-        /// <param name="tileset">The tileset of this changeset.</param>
-        public IsoQuarterChangeSet(MapDirection targetQuarter, string targetField, bool value, TileSet tileset)
-            : base(targetField, value, tileset)
-        {
-            this.CheckAndAssignCtorParams(targetQuarter);
-        }
-
-        /// <summary>
-        /// Gets the target quarter of this changeset.
-        /// </summary>
-        public MapDirection TargetQuarter { get { return this.targetQuarter; } }
 
         /// <see cref="CellDataChangeSetBase.CollectTargetSet"/>
         protected override HashSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)

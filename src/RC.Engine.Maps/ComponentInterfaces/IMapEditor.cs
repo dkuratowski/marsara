@@ -20,7 +20,6 @@ namespace RC.Engine.Maps.ComponentInterfaces
         /// <param name="targetMap">The target map.</param>
         /// <param name="targetTile">The target isometric tile.</param>
         /// <param name="terrainType">The terrain type to draw.</param>
-        /// TODO: make this method void!
         IEnumerable<IIsoTile> DrawTerrain(IMapAccess targetMap, IIsoTile targetTile, ITerrainType terrainType);
 
         /// <summary>

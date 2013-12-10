@@ -89,7 +89,7 @@ namespace RC.Engine.Simulator.Scenarios
                 if (quadEntity != null)
                 {
                     scenario.VisibleEntities.DetachContent(entity);
-                    quadEntity.ElementType.CheckConstraints(scenario, quadEntity.QuadCoords);
+                    if (quadEntity.ElementType.CheckConstraints(scenario, quadEntity.QuadCoords).Count != 0) { throw new MapException(string.Format("Entity at {0} is voilating its placement constraints!", quadEntity.QuadCoords)); }
                     scenario.VisibleEntities.AttachContent(entity);
                 }
             }

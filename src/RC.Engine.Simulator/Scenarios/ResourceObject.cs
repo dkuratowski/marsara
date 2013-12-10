@@ -87,7 +87,12 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// The initial amount of minerals in a mineral field.
         /// </summary>
-        private const int INITIAL_RESOURCE_AMOUNT = 1500;
+        public const int INITIAL_RESOURCE_AMOUNT = 1500;
+
+        /// <summary>
+        /// The initial amount of minerals in a mineral field.
+        /// </summary>
+        public const int MINIMUM_RESOURCE_AMOUNT = 10;
     }
 
     /// <summary>
@@ -119,6 +124,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// The initial amount of vespene gas in a vespene geyser.
         /// </summary>
-        private const int INITIAL_RESOURCE_AMOUNT = 5000;
+        public const int INITIAL_RESOURCE_AMOUNT = 5000;
+
+        /// <summary>
+        /// The minimum amount of vespene gas in a vespene geyser.
+        /// </summary>
+        public const int MINIMUM_RESOURCE_AMOUNT = 0;
     }
 }
