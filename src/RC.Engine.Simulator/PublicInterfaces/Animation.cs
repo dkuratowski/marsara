@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RC.Engine.Maps.PublicInterfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,11 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// </summary>
         public interface IInstructionContext
         {
+            /// <summary>
+            /// Gets the direction of the animation being played.
+            /// </summary>
+            MapDirection Direction { get; }
+
             /// <summary>
             /// Gets or sets the value of the instruction pointer in the context.
             /// </summary>
@@ -80,15 +86,19 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <summary>
         /// Constructs a new frame instruction.
         /// </summary>
-        /// <param name="spriteIndices">The indices of the sprites to be displayed.</param>
+        /// <param name="spriteIndices">The indices of the sprites to be displayed mapped by the corresponding map directions.</param>
         /// <param name="duration">The waiting time in frames.</param>
-        public NewFrameInstruction(int[] spriteIndices, int duration)
+        public NewFrameInstruction(Dictionary<MapDirection, int[]> spriteIndices, int duration)
         {
-            if (spriteIndices == null || spriteIndices.Length == 0) { throw new ArgumentNullException("spriteIndices"); }
+            if (spriteIndices == null || spriteIndices.Count == 0) { throw new ArgumentNullException("spriteIndices"); }
             if (duration < 1) { throw new ArgumentOutOfRangeException("duration"); }
 
-            this.spriteIndices = new int[spriteIndices.Length];
-            for (int i = 0; i < spriteIndices.Length; i++) { this.spriteIndices[i] = spriteIndices[i]; }
+            this.spriteIndices = new Dictionary<MapDirection, int[]>();
+            foreach (KeyValuePair<MapDirection, int[]> item in spriteIndices)
+            {
+                this.spriteIndices.Add(item.Key, new int[item.Value.Length]);
+                for (int i = 0; i < spriteIndices[item.Key].Length; i++) { this.spriteIndices[item.Key][i] = spriteIndices[item.Key][i]; }
+            }
             this.duration = duration;
         }
 
@@ -97,7 +107,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <see cref="Animation.IInstruction.Execute"/>
         public bool Execute(Animation.IInstructionContext ctx)
         {
-            if (ctx[0] == 0) { ctx.SetFrame(this.spriteIndices); }
+            if (ctx[0] == 0) { ctx.SetFrame(this.spriteIndices[ctx.Direction]); }
             ctx[0]++;
             if (ctx[0] >= this.duration) { ctx.InstructionPointer++; }
             return true;
@@ -106,9 +116,9 @@ namespace RC.Engine.Simulator.PublicInterfaces
         #endregion Animation.IInstruction members
 
         /// <summary>
-        /// The indices of the sprites to be displayed.
+        /// The indices of the sprites to be displayed mapped by the corresponding map directions.
         /// </summary>
-        private int[] spriteIndices;
+        private Dictionary<MapDirection, int[]> spriteIndices;
 
         /// <summary>
         /// The waiting time in frames.

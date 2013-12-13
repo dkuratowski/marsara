@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Scenarios
 {
@@ -33,7 +34,7 @@ namespace RC.Engine.Simulator.Scenarios
             this.ownerMaskColorStr = ownerMaskColorStr;
             this.sourceRegions = new List<RCIntRectangle>();
             this.offsets = new List<RCIntVector>();
-            this.indexTable = new Dictionary<string, int>();
+            this.indexTable = new Dictionary<string, Dictionary<MapDirection, int>>();
 
             this.metadata = metadata;
         }
@@ -53,11 +54,12 @@ namespace RC.Engine.Simulator.Scenarios
         public int Index { get { return this.index; } }
 
         /// <see cref="ISpritePalette.GetSpriteIndex"/>
-        public int GetSpriteIndex(string spriteName)
+        public int GetSpriteIndex(string spriteName, MapDirection direction)
         {
             if (spriteName == null) { throw new ArgumentNullException("spriteName"); }
             if (!this.indexTable.ContainsKey(spriteName)) { throw new SimulatorException(string.Format("Sprite with name '{0}' doesn't exist!", spriteName)); }
-            return this.indexTable[spriteName];
+
+            return this.indexTable[spriteName].ContainsKey(direction) ? this.indexTable[spriteName][direction] : -1;
         }
 
         /// <see cref="ISpritePalette.GetSection"/>
@@ -76,7 +78,6 @@ namespace RC.Engine.Simulator.Scenarios
         {
             if (!this.metadata.IsFinalized)
             {
-
             }
         }
 
@@ -97,17 +98,42 @@ namespace RC.Engine.Simulator.Scenarios
         /// <param name="name">The name of the sprite to add.</param>
         /// <param name="sourceRegion">The source region of the sprite to add.</param>
         /// <param name="offset">The offset of the sprite to add.</param>
-        public void AddSprite(string name, RCIntRectangle sourceRegion, RCIntVector offset)
+        public void AddSprite(string name, MapDirection direction, RCIntRectangle sourceRegion, RCIntVector offset)
         {
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (name == null) { throw new ArgumentNullException("name"); }
             if (sourceRegion == RCIntRectangle.Undefined) { throw new ArgumentNullException("sourceRegion"); }
             if (offset == RCIntVector.Undefined) { throw new ArgumentNullException("offset"); }
-            if (this.indexTable.ContainsKey(name)) { throw new SimulatorException(string.Format("Sprite with name '{0}' already exists!", name)); }
+            if (this.indexTable.ContainsKey(name) && this.indexTable[name].ContainsKey(direction)) { throw new SimulatorException(string.Format("Sprite with name '{0}' and direction '{1}' already exists!", name, direction)); }
 
-            this.indexTable.Add(name, this.sourceRegions.Count);
+            if (!this.indexTable.ContainsKey(name)) { this.indexTable.Add(name, new Dictionary<MapDirection, int>()); }
+            this.indexTable[name].Add(direction, this.sourceRegions.Count);
             this.sourceRegions.Add(sourceRegion);
             this.offsets.Add(offset);
+        }
+
+        /// <summary>
+        /// Force giving index for the MapDirection.Undefined variant of all sprites where it is not defined.
+        /// </summary>
+        public void AddSpritesWithUndefinedDirection()
+        {
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+
+            foreach (Dictionary<MapDirection, int> item in this.indexTable.Values)
+            {
+                if (!item.ContainsKey(MapDirection.Undefined))
+                {
+                    if (item.ContainsKey(MapDirection.North)) { item[MapDirection.Undefined] = item[MapDirection.North]; }
+                    else if (item.ContainsKey(MapDirection.NorthEast)) { item[MapDirection.Undefined] = item[MapDirection.NorthEast]; }
+                    else if (item.ContainsKey(MapDirection.East)) { item[MapDirection.Undefined] = item[MapDirection.East]; }
+                    else if (item.ContainsKey(MapDirection.SouthEast)) { item[MapDirection.Undefined] = item[MapDirection.SouthEast]; }
+                    else if (item.ContainsKey(MapDirection.South)) { item[MapDirection.Undefined] = item[MapDirection.South]; }
+                    else if (item.ContainsKey(MapDirection.SouthWest)) { item[MapDirection.Undefined] = item[MapDirection.SouthWest]; }
+                    else if (item.ContainsKey(MapDirection.West)) { item[MapDirection.Undefined] = item[MapDirection.West]; }
+                    else if (item.ContainsKey(MapDirection.NorthWest)) { item[MapDirection.Undefined] = item[MapDirection.NorthWest]; }
+                    else { throw new InvalidOperationException("Unexpected case!"); }
+                }
+            }
         }
 
         /// <summary>
@@ -141,9 +167,9 @@ namespace RC.Engine.Simulator.Scenarios
         private List<RCIntVector> offsets;
 
         /// <summary>
-        /// The indices of the sprites mapped by their names.
+        /// The indices of the sprites mapped by their names and directions.
         /// </summary>
-        private Dictionary<string, int> indexTable;
+        private Dictionary<string, Dictionary<MapDirection, int>> indexTable;
 
         /// <summary>
         /// Reference to the metadata object that this sprite palette belongs to.

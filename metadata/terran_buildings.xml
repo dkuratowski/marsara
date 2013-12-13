@@ -7,59 +7,106 @@
     </costs>
     <generalData>
       <size>Large</size>
-      <area>14.0;9.5</area>
+      <area>16.0;12.0</area>
       <maxHP>1500</maxHP>
       <armor>1</armor>
       <sightRange>11</sightRange>
       <speed>0.25</speed>
     </generalData>
     <spritePalette image="terran_commandcenter.png" transparentColor="255;0;255" ownerMaskColor="0;255;255">
-      <sprite name="Normal" sourceRegion="1;1;62;48" offset="-3;-8" />
-      <sprite name="Working" sourceRegion="64;1;62;48" offset="-3;-8" />
-      <sprite name="Building0" sourceRegion="1;50;62;48" offset="-3;-8" />
-      <sprite name="Building1" sourceRegion="64;50;62;48" offset="-3;-8" />
-      <sprite name="Building2" sourceRegion="127;50;62;48" offset="-3;-8" />
-      <sprite name="TakingOff0" sourceRegion="1;99;62;48" offset="-3;-8" />
-      <sprite name="TakingOff1" sourceRegion="64;99;62;48" offset="-3;-8" />
-      <sprite name="TakingOff2" sourceRegion="127;99;62;48" offset="-3;-8" />
-      <sprite name="Flying" sourceRegion="190;99;62;48" offset="-3;-8" />
-      <sprite name="Normal_SmallBurn0" sourceRegion="1;148;62;48" offset="-3;-8" />
-      <sprite name="Working_SmallBurn0" sourceRegion="64;148;62;48" offset="-3;-8" />
-      <sprite name="Normal_SmallBurn1" sourceRegion="127;148;62;48" offset="-3;-8" />
-      <sprite name="Working_SmallBurn1" sourceRegion="190;148;62;48" offset="-3;-8" />
-      <sprite name="Normal_HeavyBurn0" sourceRegion="1;197;62;48" offset="-3;-8" />
-      <sprite name="Working_HeavyBurn0" sourceRegion="64;197;62;48" offset="-3;-8" />
-      <sprite name="Normal_HeavyBurn1" sourceRegion="127;197;62;48" offset="-3;-8" />
-      <sprite name="Working_HeavyBurn1" sourceRegion="190;197;62;48" offset="-3;-8" />
-      <sprite name="TakingOff0_SmallBurn0" sourceRegion="1;246;62;48" offset="-3;-8" />
-      <sprite name="TakingOff1_SmallBurn0" sourceRegion="64;246;62;48" offset="-3;-8" />
-      <sprite name="TakingOff2_SmallBurn0" sourceRegion="127;246;62;48" offset="-3;-8" />
-      <sprite name="Flying_SmallBurn0" sourceRegion="190;246;62;48" offset="-3;-8" />
-      <sprite name="TakingOff0_SmallBurn1" sourceRegion="1;295;62;48" offset="-3;-8" />
-      <sprite name="TakingOff1_SmallBurn1" sourceRegion="64;295;62;48" offset="-3;-8" />
-      <sprite name="TakingOff2_SmallBurn1" sourceRegion="127;295;62;48" offset="-3;-8" />
-      <sprite name="Flying_SmallBurn1" sourceRegion="190;295;62;48" offset="-3;-8" />
-      <sprite name="TakingOff0_HeavyBurn0" sourceRegion="1;344;62;48" offset="-3;-8" />
-      <sprite name="TakingOff1_HeavyBurn0" sourceRegion="64;344;62;48" offset="-3;-8" />
-      <sprite name="TakingOff2_HeavyBurn0" sourceRegion="127;344;62;48" offset="-3;-8" />
-      <sprite name="Flying_HeavyBurn0" sourceRegion="190;344;62;48" offset="-3;-8" />
-      <sprite name="TakingOff0_HeavyBurn1" sourceRegion="1;393;62;48" offset="-3;-8" />
-      <sprite name="TakingOff1_HeavyBurn1" sourceRegion="64;393;62;48" offset="-3;-8" />
-      <sprite name="TakingOff2_HeavyBurn1" sourceRegion="127;393;62;48" offset="-3;-8" />
-      <sprite name="Flying_HeavyBurn1" sourceRegion="190;393;62;48" offset="-3;-8" />
-      <sprite name="Destroying0" sourceRegion="1;442;62;48" offset="-3;-8" />
-      <sprite name="Destroying1" sourceRegion="64;442;62;48" offset="-3;-8" />
-      <sprite name="Destroying2" sourceRegion="127;442;62;48" offset="-3;-8" />
-      <sprite name="Destroying3" sourceRegion="190;442;62;48" offset="-3;-8" />
-      <sprite name="Destroying4" sourceRegion="253;442;62;48" offset="-3;-8" />
-      <sprite name="Destroying5" sourceRegion="316;442;62;48" offset="-3;-8" />
-      <sprite name="Flying_Destroying0" sourceRegion="1;491;62;48" offset="-3;-8" />
-      <sprite name="Flying_Destroying1" sourceRegion="64;491;62;48" offset="-3;-8" />
-      <sprite name="Flying_Destroying2" sourceRegion="127;491;62;48" offset="-3;-8" />
-      <sprite name="Flying_Destroying3" sourceRegion="190;491;62;48" offset="-3;-8" />
-      <sprite name="Flying_Destroying4" sourceRegion="253;491;62;48" offset="-3;-8" />
-      <sprite name="Flying_Destroying5" sourceRegion="316;491;62;48" offset="-3;-8" />
+      <sprite name="Construction0" sourceRegion="1;1;62;48" offset="0;0" />
+      <sprite name="Construction1" sourceRegion="64;1;62;48" offset="0;0" />
+      <sprite name="Construction2" sourceRegion="127;1;62;48" offset="0;0" />
+      <sprite name="MainPart" sourceRegion="1;50;62;48" offset="0;0" />
+      <sprite name="WindowLight" sourceRegion="168;64;16;11" offset="10;26" />
+      <sprite name="LeftLeg" sourceRegion="64;91;13;7" offset="6;37" />
+      <sprite name="LeftLeg_TakingOff0" sourceRegion="64;91;13;7" offset="6;35" />
+      <sprite name="LeftLeg_TakingOff1" sourceRegion="64;91;13;7" offset="6;33" />
+      <sprite name="LeftLeg_TakingOff2" sourceRegion="64;91;13;7" offset="6;31" />
+      <sprite name="RightLeg" sourceRegion="78;91;12;7" offset="44;36" />
+      <sprite name="RightLeg_TakingOff0" sourceRegion="78;91;12;7" offset="44;34" />
+      <sprite name="RightLeg_TakingOff1" sourceRegion="78;91;12;7" offset="44;32" />
+      <sprite name="RightLeg_TakingOff2" sourceRegion="78;91;12;7" offset="44;30" />
+      <sprite name="Door_Closing0" sourceRegion="157;50;10;13" offset="28;30" />
+      <sprite name="Door_Closing1" sourceRegion="157;64;10;13" offset="28;30" />
+      <sprite name="Door_Closing2" sourceRegion="157;78;10;13" offset="28;30" />
+      <sprite name="Door_Closed" sourceRegion="168;50;10;13" offset="28;30" />
+      <sprite name="FlameLL0" sourceRegion="64;50;6;19" offset="9;1" />
+      <sprite name="FlameLL1" sourceRegion="64;70;80;20" offset="7;0" />
+      <sprite name="FlameL0" sourceRegion="71;50;6;19" offset="19;0" />
+      <sprite name="FlameL1" sourceRegion="73;70;5;20" offset="20;-1" />
+      <sprite name="FlameM0" sourceRegion="78;50;6;19" offset="28;2" />
+      <sprite name="FlameM1" sourceRegion="79;70;5;20" offset="26;1" />
+      <sprite name="FlameR0" sourceRegion="85;50;6;19" offset="36;-2" />
+      <sprite name="FlameR1" sourceRegion="85;70;5;20" offset="35;-4" />
+      <sprite name="FlameRR0" sourceRegion="92;50;6;19" offset="44;1" />
+      <sprite name="FlameRR1" sourceRegion="91;70;6;20" offset="45;2" />	  
+      <sprite name="DestructionBurn0" sourceRegion="99;82;45;16" offset="6;8" />
+      <sprite name="DestructionBurn1" sourceRegion="99;50;57;31" offset="2;3" />
+      <sprite name="DestructionBurn2" sourceRegion="1;99;62;48" offset="0;0" />
+      <sprite name="DestructionBurn3" sourceRegion="64;99;62;48" offset="0;0" />
+      <sprite name="DestructionBurn4" sourceRegion="127;99;62;48" offset="0;0" />
+      <sprite name="DestructionBurn5" sourceRegion="190;99;62;48" offset="0;0" />
     </spritePalette>
+    <animationPalette>
+      <animation name="Construction">
+        <frame sprites="Construction0" duration="600" />
+        <frame sprites="Construction1" duration="600" />
+        <frame sprites="Construction2" duration="600" />
+      </animation>
+      <animation name="Normal" isPreview="true">
+        <frame sprites="LeftLeg,RightLeg,MainPart" />
+      </animation>
+      <animation name="Producing">
+		<label name="Begin" />
+        <frame sprites="LeftLeg,RightLeg,MainPart,WindowLight" duration="24" />
+        <frame sprites="LeftLeg,RightLeg,MainPart" duration="10" />
+		<goto label="Begin" />
+      </animation>
+      <animation name="TakingOff">
+        <frame sprites="LeftLeg,RightLeg,MainPart,Door_Closing0" duration="12" />
+        <frame sprites="LeftLeg_TakingOff0,RightLeg_TakingOff0,MainPart,Door_Closing1" duration="20" />
+        <frame sprites="LeftLeg_TakingOff1,RightLeg_TakingOff1,MainPart,Door_Closing2" duration="20" />
+        <frame sprites="LeftLeg_TakingOff2,RightLeg_TakingOff2,MainPart,Door_Closed" duration="20" />
+      </animation>
+      <animation name="Flying">
+        <frame sprites="MainPart,Door_Closed" />
+      </animation>
+      <animation name="Landing">
+        <frame sprites="LeftLeg_TakingOff2,RightLeg_TakingOff2,MainPart,Door_Closed" duration="20" />
+        <frame sprites="LeftLeg_TakingOff1,RightLeg_TakingOff1,MainPart,Door_Closing2" duration="20" />
+        <frame sprites="LeftLeg_TakingOff0,RightLeg_TakingOff0,MainPart,Door_Closing1" duration="20" />
+        <frame sprites="LeftLeg,RightLeg,MainPart,Door_Closing0" duration="12" />
+      </animation>
+      <animation name="DestructionNormal">
+        <frame sprites="LeftLeg,MainPart,DestructionBurn0" duration="4" />
+        <frame sprites="RightLeg,MainPart,DestructionBurn1" duration="4" />
+        <frame sprites="DestructionBurn2" duration="4" />
+        <frame sprites="DestructionBurn3" duration="4" />
+        <frame sprites="DestructionBurn4" duration="4" />
+        <frame sprites="DestructionBurn5" duration="4" />
+      </animation>
+      <animation name="DestructionFlying">
+        <frame sprites="MainPart,DestructionBurn0" duration="4" />
+        <frame sprites="MainPart,DestructionBurn1" duration="4" />
+        <frame sprites="DestructionBurn2" duration="4" />
+        <frame sprites="DestructionBurn3" duration="4" />
+        <frame sprites="DestructionBurn4" duration="4" />
+        <frame sprites="DestructionBurn5" duration="4" />
+      </animation>
+	  <animation name="SmallBurn">
+		<label name="Begin" />
+		<frame sprites="FlameL0,FlameR0" duration="10" />
+		<frame sprites="FlameL1,FlameR1" duration="10" />
+		<goto label="Begin" />
+	  </animation>
+	  <animation name="HeavyBurn">
+		<label name="Begin" />
+		<frame sprites="FlameLL0,FlameL0,FlameM0,FlameR0,FlameRR0" duration="10" />
+		<frame sprites="FlameLL1,FlameL1,FlameM1,FlameR1,FlameRR1" duration="10" />
+		<goto label="Begin" />
+	  </animation>
+    </animationPalette>
   </buildingType>
   <buildingType name="SupplyDepot" hasOwner="true">
     <costs>

@@ -33,7 +33,7 @@ namespace RC.App.BizLogic.Core
                 Animation previewAnimDef = this.objectType.AnimationPalette.PreviewAnimation;
                 if (previewAnimDef != null)
                 {
-                    this.previewAnimation = new AnimationPlayer(previewAnimDef);
+                    this.previewAnimation = new AnimationPlayer(previewAnimDef, MapDirection.Undefined);
                 }
             }
         }

@@ -123,7 +123,10 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         public void StepAnimations()
         {
-            foreach (Entity entity in this.entitySet.Values) { if (entity.CurrentAnimation != null) { entity.CurrentAnimation.Step(); } }
+            foreach (Entity entity in this.entitySet.Values)
+            {
+                foreach (AnimationPlayer animation in entity.CurrentAnimations) { animation.Step(); }
+            }
         }
 
         #endregion Public members

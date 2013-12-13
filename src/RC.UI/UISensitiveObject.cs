@@ -363,7 +363,7 @@ namespace RC.UI
             UISensitiveObject sensitiveChild = whichChild as UISensitiveObject;
             if (sensitiveChild != null)
             {
-                int childIndex = this.sensitiveChildren.IndexOf(this);
+                int childIndex = this.sensitiveChildren.IndexOf(sensitiveChild);
                 if (-1 != childIndex && childIndex < this.sensitiveChildren.Count - 1)
                 {
                     for (int i = childIndex; i < this.sensitiveChildren.Count - 1; i++)

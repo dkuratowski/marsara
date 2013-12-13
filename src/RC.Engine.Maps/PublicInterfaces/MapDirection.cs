@@ -11,6 +11,8 @@ namespace RC.Engine.Maps.PublicInterfaces
     /// </summary>
     public enum MapDirection
     {
+        Undefined = -1,
+
         [EnumMapping("North")]
         North = 0,
 

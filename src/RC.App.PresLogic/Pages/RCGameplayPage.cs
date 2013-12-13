@@ -9,6 +9,9 @@ using RC.App.PresLogic.Panels;
 using RC.Common;
 using RC.UI;
 using RC.App.BizLogic.ComponentInterfaces;
+using System.Threading;
+using RC.Common.Diagnostics;
+using System.Diagnostics;
 
 namespace RC.App.PresLogic.Pages
 {
@@ -117,6 +120,7 @@ namespace RC.App.PresLogic.Pages
             if (this.currentConnectionStatus != ConnectionStatus.Online) { throw new InvalidOperationException("The gameplay page is not online!"); }
 
             /// TODO: deactivate mouse handling
+            this.menuButtonPanel.MouseSensor.ButtonDown -= this.OnMenuButtonPressed;
             this.mapObjectDisplayEx.MouseActivityStarted -= this.OnMouseActivityStarted;
             this.mapObjectDisplayEx.MouseActivityFinished -= this.OnMouseActivityFinished;
             this.scrollHandler.MouseActivityStarted -= this.OnMouseActivityStarted;
@@ -145,7 +149,9 @@ namespace RC.App.PresLogic.Pages
 
             private set
             {
-                if (this.CurrentConnectionStatusChanged != null) { this.CurrentConnectionStatusChanged(this, new EventArgs()); }
+                bool valueChanged = this.currentConnectionStatus != value;
+                this.currentConnectionStatus = value;
+                if (valueChanged && this.CurrentConnectionStatusChanged != null) { this.CurrentConnectionStatusChanged(this, new EventArgs()); }
             }
         }
 
@@ -170,6 +176,12 @@ namespace RC.App.PresLogic.Pages
             this.Connect();
         }
 
+        /// <see cref="RCAppPage.OnInactivating"/>
+        protected override void OnInactivating()
+        {
+            this.Disconnect();
+        }
+
         /// <summary>
         /// This method is called when the map display started successfully.
         /// </summary>
@@ -190,8 +202,15 @@ namespace RC.App.PresLogic.Pages
             this.mapObjectDisplayEx.MouseActivityStarted += this.OnMouseActivityStarted;
             this.mapObjectDisplayEx.MouseActivityFinished += this.OnMouseActivityFinished;
 
-            /// PROTOTYPE CODE for start updating the simulation state (later the simulation shall be updated from the DSS-thread)
-            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.UpdateSimulation);
+            this.menuButtonPanel.MouseSensor.ButtonDown += this.OnMenuButtonPressed;
+
+            /// PROTOTYPE CODE
+            this.testScheduler = new Scheduler(40, true);
+            this.testScheduler.AddSimulatorMethod(this.TestSimulatorMethod);
+            this.evtStopTestDssThread = new ManualResetEvent(false);
+            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnSystemUpdate);
+            this.testDssThread = new RCThread(this.TestDssThreadProc, "TestDssThread");
+            this.testDssThread.Start();
 
             /// The page is now online.
             this.CurrentConnectionStatus = ConnectionStatus.Online;
@@ -217,20 +236,48 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplay = null;
             this.scrollHandler = null;
 
-            /// PROTOTYPE CODE for stop updating the simulation state (later the simulation shall be updated from the DSS-thread)
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.UpdateSimulation);
+            /// PROTOTYPE CODE
+            this.evtStopTestDssThread.Set();
+            this.testScheduler.Dispose();
+            this.testDssThread.Join();
+            this.evtStopTestDssThread.Close();
+            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnSystemUpdate);
 
             /// The page is now offline.
             this.CurrentConnectionStatus = ConnectionStatus.Offline;
+
+            /// TODO: later we don't need to stop the render loop here!
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.Stop();
         }
 
-        /// <summary>
-        /// PROTOTYPE CODE for updating the simulation state (later the simulation shall be updated from the DSS-thread)
-        /// </summary>
-        /// <param name="evtArgs"></param>
-        private void UpdateSimulation(UIUpdateSystemEventArgs evtArgs)
+        /// PROTOTYPE CODE
+        private Scheduler testScheduler;
+
+        /// PROTOTYPE CODE
+        private ManualResetEvent evtStopTestDssThread;
+
+        /// PROTOTYPE CODE
+        private RCThread testDssThread;
+
+        /// PROTOTYPE CODE
+        private void OnSystemUpdate(UIUpdateSystemEventArgs evtArgs) { this.testScheduler.SystemUpdate(evtArgs.TimeSinceLastUpdate); }
+
+        /// PROTOTYPE CODE
+        private void TestDssThreadProc()
+        {
+            while (!this.evtStopTestDssThread.WaitOne(0))
+            {
+                RCThread.Sleep(30);
+                this.testScheduler.SendSignal();
+                //TraceManager.WriteAllTrace("SignalComplete", PresLogicTraceFilters.INFO);
+            }
+        }
+
+        /// PROTOTYPE CODE
+        private void TestSimulatorMethod()
         {
             this.gameplayBE.UpdateSimulation();
+            //TraceManager.WriteAllTrace("FrameComplete", PresLogicTraceFilters.INFO);
         }
 
         /// <summary>
@@ -261,6 +308,25 @@ namespace RC.App.PresLogic.Pages
             {
                 this.mapObjectDisplayEx.ActivateMouseHandling();
             }
+        }
+
+        /// <summary>
+        /// This method is called when the "Menu" button has been pressed.
+        /// </summary>
+        /// <param name="sender">Reference to the button.</param>
+        private void OnMenuButtonPressed(UISensitiveObject sender, UIMouseEventArgs evtArgs)
+        {
+            //this.scrollHandler.DeactivateMouseHandling();
+            //this.mapObjectDisplayEx.DeactivateMouseHandling();
+            //this.scrollHandler.MouseActivityStarted -= this.OnMouseActivityStarted;
+            //this.scrollHandler.MouseActivityFinished -= this.OnMouseActivityFinished;
+            //this.mapObjectDisplayEx.MouseActivityStarted -= this.OnMouseActivityStarted;
+            //this.mapObjectDisplayEx.MouseActivityFinished -= this.OnMouseActivityFinished;
+
+            //this.menuButtonPanel.MouseSensor.ButtonDown -= this.OnMenuButtonPressed;
+
+            //this.StatusChanged += this.OnPageStatusChanged;
+            this.Deactivate();
         }
 
         /// <summary>

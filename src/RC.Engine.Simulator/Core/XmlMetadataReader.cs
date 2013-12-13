@@ -8,6 +8,7 @@ using System.IO;
 using RC.Common;
 using RC.Common.Configuration;
 using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Core
 {
@@ -227,17 +228,29 @@ namespace RC.Engine.Simulator.Core
                                                             ownerMaskColorAttr != null ? ownerMaskColorAttr.Value : null,
                                                             metadata);
 
-            /// Load the frames.
-            foreach (XElement frameElem in spritePaletteElem.Elements(XmlMetadataConstants.SPRITE_ELEM))
+            /// Load the sprites.
+            foreach (XElement spriteElem in spritePaletteElem.Elements(XmlMetadataConstants.SPRITE_ELEM))
             {
-                XAttribute frameNameAttr = frameElem.Attribute(XmlMetadataConstants.SPRITE_NAME_ATTR);
-                XAttribute sourceRegionAttr = frameElem.Attribute(XmlMetadataConstants.SPRITE_SOURCEREGION_ATTR);
-                XAttribute offsetAttr = frameElem.Attribute(XmlMetadataConstants.SPRITE_OFFSET_ATTR);
-                if (frameNameAttr == null) { throw new SimulatorException("Frame name not defined in sprite palette!"); }
+                XAttribute spriteNameAttr = spriteElem.Attribute(XmlMetadataConstants.SPRITE_NAME_ATTR);
+                XAttribute spriteDirectionAttr = spriteElem.Attribute(XmlMetadataConstants.SPRITE_DIRECTION_ATTR);
+                XAttribute sourceRegionAttr = spriteElem.Attribute(XmlMetadataConstants.SPRITE_SOURCEREGION_ATTR);
+                XAttribute offsetAttr = spriteElem.Attribute(XmlMetadataConstants.SPRITE_OFFSET_ATTR);
+                if (spriteNameAttr == null) { throw new SimulatorException("Sprite name not defined for a sprite in sprite palette!"); }
                 if (sourceRegionAttr == null) { throw new SimulatorException("Source region not defined in sprite palette!"); }
                 if (offsetAttr == null) { throw new SimulatorException("Offset not defined in sprite palette!"); }
-                spritePalette.AddSprite(frameNameAttr.Value, XmlHelper.LoadIntRectangle(sourceRegionAttr.Value), XmlHelper.LoadIntVector(offsetAttr.Value));
+
+                MapDirection direction = MapDirection.Undefined;
+                if (spriteDirectionAttr != null)
+                {
+                    if (!EnumMap<MapDirection, string>.Demap(spriteDirectionAttr.Value, out direction))
+                    {
+                        throw new SimulatorException(string.Format("Unexpected sprite direction '{0}'!", spriteDirectionAttr.Value));
+                    }
+                }
+                spritePalette.AddSprite(spriteNameAttr.Value, direction, XmlHelper.LoadIntRectangle(sourceRegionAttr.Value), XmlHelper.LoadIntVector(offsetAttr.Value));
             }
+
+            spritePalette.AddSpritesWithUndefinedDirection();
             return spritePalette;
         }
 
@@ -324,10 +337,25 @@ namespace RC.Engine.Simulator.Core
             string[] spriteNames = spritesAttr.Value.Split(',');
             if (spriteNames.Length == 0) { throw new SimulatorException("Syntax error!"); }
 
-            int[] spriteIndices = new int[spriteNames.Length];
-            for (int i = 0; i < spriteNames.Length; i++)
+            Dictionary<MapDirection, int[]> spriteIndices = new Dictionary<MapDirection, int[]>()
             {
-                spriteIndices[i] = spritePalette.GetSpriteIndex(spriteNames[i]);
+                { MapDirection.Undefined, new int[spriteNames.Length] },
+                { MapDirection.North, new int[spriteNames.Length] },
+                { MapDirection.NorthEast, new int[spriteNames.Length] },
+                { MapDirection.East, new int[spriteNames.Length] },
+                { MapDirection.SouthEast, new int[spriteNames.Length] },
+                { MapDirection.South, new int[spriteNames.Length] },
+                { MapDirection.SouthWest, new int[spriteNames.Length] },
+                { MapDirection.West, new int[spriteNames.Length] },
+                { MapDirection.NorthWest, new int[spriteNames.Length] },
+            };
+
+            foreach (KeyValuePair<MapDirection, int[]> item in spriteIndices)
+            {
+                for (int i = 0; i < spriteNames.Length; i++)
+                {
+                    spriteIndices[item.Key][i] = spritePalette.GetSpriteIndex(spriteNames[i], item.Key);
+                }
             }
 
             return new NewFrameInstruction(spriteIndices, durationAttr != null ? XmlHelper.LoadInt(durationAttr.Value) : 1);

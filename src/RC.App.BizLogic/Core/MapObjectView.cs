@@ -50,10 +50,9 @@ namespace RC.App.BizLogic.Core
                 RCIntRectangle displayRect =
                     (RCIntRectangle)((entity.Position - cellWindow.Location + HALF_VECT) * PIXEL_PER_NAVCELL_VECT) - displayOffset;
                 List<MapSpriteInstance> entitySprites = new List<MapSpriteInstance>();
-                if (entity.CurrentAnimation != null)
+                foreach (AnimationPlayer animation in entity.CurrentAnimations)
                 {
-                    //RCIntVector topLeftDisplayCoords = 
-                    foreach (int spriteIdx in entity.CurrentAnimation.CurrentFrame)
+                    foreach (int spriteIdx in animation.CurrentFrame)
                     {
                         entitySprites.Add(new MapSpriteInstance()
                         {

@@ -28,17 +28,17 @@
     <ctorParam type="STRING">RC.App.ConsoleTrace</ctorParam>
   </registerTrace>
 
-  <!--registerTrace>
+  <!--<registerTrace>
     <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
     <class>RC.Common.Diagnostics.RCLogTrace</class>
-    <ctorParam type="STRING">RC.UI.RCLogTrace</ctorParam>
-    <ctorParam type="STRING">RC.UI</ctorParam>
-  </registerTrace-->
+    <ctorParam type="STRING">RC.App.RCLogTrace</ctorParam>
+    <ctorParam type="STRING">RC.App</ctorParam>
+  </registerTrace>-->
 
-  <!--registerTrace>
+  <!--<registerTrace>
     <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
     <class>RC.Common.Diagnostics.LogfileTrace</class>
-    <ctorParam type="STRING">RC.DssServices.LogfileTrace</ctorParam>
-    <ctorParam type="STRING">RC.DssServices</ctorParam>
-  </registerTrace-->
+    <ctorParam type="STRING">RC.App.LogfileTrace</ctorParam>
+    <ctorParam type="STRING">RC.App</ctorParam>
+  </registerTrace>-->
 </traceConfig>

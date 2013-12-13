@@ -29,7 +29,7 @@ namespace RC.Engine.Simulator.Scenarios
 
             this.elementType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetElementType(elementTypeName);
             this.scenario = null;
-            this.currentAnimation = null;
+            this.currentAnimations = new List<AnimationPlayer>();
 
             this.position.Write(RCNumVector.Undefined);
             this.id.Write(-1);
@@ -47,9 +47,9 @@ namespace RC.Engine.Simulator.Scenarios
         public IScenarioElementType ElementType { get { return this.elementType; } }
 
         /// <summary>
-        /// Gets the player of the currently active animation of this entity.
+        /// Gets the players of the currently active animations of this entity.
         /// </summary>
-        public AnimationPlayer CurrentAnimation { get { return this.currentAnimation; } }
+        public IEnumerable<AnimationPlayer> CurrentAnimations { get { return this.currentAnimations; } }
 
         /// <summary>
         /// Gets the owner of this entity or null if this entity is neutral or is a start location.
@@ -75,13 +75,48 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <summary>
-        /// Sets the current animation of this entity.
+        /// Sets the current animation of this entity with undefined direction.
         /// </summary>
-        /// <param name="animationName">The name of the animation.</param>
+        /// <param name="animationName">The name of the animation to play.</param>
         protected void SetCurrentAnimation(string animationName)
         {
+            this.SetCurrentAnimation(animationName, MapDirection.Undefined);
+        }
+
+        /// <summary>
+        /// Sets the current animation of this entity with the given direction.
+        /// </summary>
+        /// <param name="animationName">The name of the animation to play.</param>
+        /// <param name="direction">The direction of the animation.</param>
+        protected void SetCurrentAnimation(string animationName, MapDirection direction)
+        {
             if (animationName == null) { throw new ArgumentNullException("animationName"); }
-            this.currentAnimation = new AnimationPlayer(this.elementType.AnimationPalette.GetAnimation(animationName));
+            this.SetCurrentAnimations(new List<string>() { animationName }, direction);
+        }
+
+        /// <summary>
+        /// Sets the current animations of this entity with undefined direction.
+        /// </summary>
+        /// <param name="animationNames">The names of the animations to play.</param>
+        protected void SetCurrentAnimations(List<string> animationNames)
+        {
+            this.SetCurrentAnimations(animationNames, MapDirection.Undefined);
+        }
+
+        /// <summary>
+        /// Sets the current animations of this entity with the given direction.
+        /// </summary>
+        /// <param name="animationNames">The names of the animations to play.</param>
+        /// <param name="direction">The direction of the animations.</param>
+        protected void SetCurrentAnimations(List<string> animationNames, MapDirection direction)
+        {
+            if (animationNames == null) { throw new ArgumentNullException("animationNames"); }
+
+            this.currentAnimations.Clear();
+            foreach (string name in animationNames)
+            {
+                this.currentAnimations.Add(new AnimationPlayer(this.elementType.AnimationPalette.GetAnimation(name), direction));
+            }
         }
 
         #region IMapContent members
@@ -159,9 +194,9 @@ namespace RC.Engine.Simulator.Scenarios
         #endregion Heaped members
 
         /// <summary>
-        /// The player of the currently active animation of this entity.
+        /// The player of the currently active animations of this entity.
         /// </summary>
-        private AnimationPlayer currentAnimation;
+        private List<AnimationPlayer> currentAnimations;
 
         /// <summary>
         /// Reference to the player who owns this entity or null if this entity is neutral or is a start location.

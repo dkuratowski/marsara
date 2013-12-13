@@ -24,7 +24,7 @@ namespace RC.App.PresLogic.Controls
         {
             this.objects = null;
             this.objectPlacementView = null;
-            this.clockSignal = null;
+            this.scheduler = null;
             this.objectPlacementMaskGreen = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ObjectPlacementMaskGreen");
             this.objectPlacementMaskRed = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ObjectPlacementMaskRed");
             this.lastKnownMousePosition = RCIntVector.Undefined;
@@ -35,17 +35,17 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         /// <param name="objPlacementView">The object placement view that will provide the object placement box to be displayed.</param>
         /// <param name="objectGroup">The sprite-group indexed by the object placement view.</param>
-        /// <param name="clockSignal">The clock signal that is used to animate the object placement box.</param>
-        public void StartPlacingObject(IObjectPlacementView objPlacementView, SpriteGroup objectGroup, ClockSignal clockSignal)
+        /// <param name="scheduler">The scheduler that is used to animate the object placement box.</param>
+        public void StartPlacingObject(IObjectPlacementView objPlacementView, SpriteGroup objectGroup, Scheduler scheduler)
         {
             if (objPlacementView == null) { throw new ArgumentNullException("objPlacementView"); }
             if (objectGroup == null) { throw new ArgumentNullException("objectGroup"); }
-            if (clockSignal == null) { throw new ArgumentNullException("clockSignal"); }
+            if (scheduler == null) { throw new ArgumentNullException("scheduler"); }
             if (this.objectPlacementView != null) { throw new InvalidOperationException("Object placement has already been started!"); }
 
             this.objectPlacementView = objPlacementView;
-            this.clockSignal = clockSignal;
-            this.clockSignal.AddTarget(this.objectPlacementView.StepAnimation);
+            this.scheduler = scheduler;
+            this.scheduler.AddSimulatorMethod(this.objectPlacementView.StepAnimation);
             this.objects = objectGroup;
         }
 
@@ -54,8 +54,8 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         public void StopPlacingObject()
         {
-            if (this.PlacingObject) { this.clockSignal.RemoveTarget(this.objectPlacementView.StepAnimation); }            
-            this.clockSignal = null;
+            if (this.PlacingObject) { this.scheduler.RemoveSimulatorMethod(this.objectPlacementView.StepAnimation); }            
+            this.scheduler = null;
             this.objectPlacementView = null;
             this.objects = null;
         }
@@ -129,9 +129,9 @@ namespace RC.App.PresLogic.Controls
         private IObjectPlacementView objectPlacementView;
 
         /// <summary>
-        /// The clock signal that is used to animate the object placement box.
+        /// The scheduler that is used to animate the object placement box.
         /// </summary>
-        private ClockSignal clockSignal;
+        private Scheduler scheduler;
 
         /// <summary>
         /// List of the objects.

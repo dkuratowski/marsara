@@ -1,4 +1,5 @@
 ﻿using RC.Common;
+using RC.Engine.Maps.PublicInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,8 +36,10 @@ namespace RC.Engine.Simulator.Scenarios
         /// Gets the index of the given sprite.
         /// </summary>
         /// <param name="spriteName">The name of the sprite.</param>
-        /// <returns>The index of the given sprite.</returns>
-        int GetSpriteIndex(string spriteName);
+        /// <param name="direction">The direction of the sprite or MapDirection.Undefined if the direction is undefined.</param>
+        /// <returns>The index of the given sprite or -1 if the given sprite has no variant in the given direction.</returns>
+        /// <exception cref="SimulatorException">If no sprite with the given name exists.</exception>
+        int GetSpriteIndex(string spriteName, MapDirection direction);
 
         /// <summary>
         /// Gets the section of the given sprite.

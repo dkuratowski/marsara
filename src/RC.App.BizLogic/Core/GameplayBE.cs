@@ -85,7 +85,7 @@ namespace RC.App.BizLogic.Core
         /// PROTOTYPE CODE
         public void UpdateSimulation()
         {
-            //this.scenarioLoader.SimulateNextFrame();
+            this.testScenario.StepAnimations();
         }
 
         /// TODO: Remove this section when no longer necessary *********************************************************

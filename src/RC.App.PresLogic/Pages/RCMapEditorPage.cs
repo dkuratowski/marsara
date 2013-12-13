@@ -158,9 +158,10 @@ namespace RC.App.PresLogic.Pages
             this.mapEditorPanel.Show();
             this.mapEditorPanel.ResetControls();
 
-            /// Start the clock signal of the map editor.
-            this.clockSignal = new ClockSignal(MAPEDITOR_MS_PER_FRAME);
-            this.clockSignal.AddTarget(this.mapEditorBE.StepAnimations);
+            /// Start the scheduler of the map editor.
+            this.scheduler = new Scheduler(MAPEDITOR_MS_PER_FRAME, false);
+            this.scheduler.AddSimulatorMethod(this.mapEditorBE.StepAnimations);
+            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnSystemUpdate);
         }
 
         /// <summary>
@@ -175,7 +176,8 @@ namespace RC.App.PresLogic.Pages
             if (newState == Status.Inactive)
             {
                 /// Stop the clock signal of the map editor.
-                this.clockSignal.Dispose();
+                UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnSystemUpdate);
+                this.scheduler.Dispose();
 
                 this.StatusChanged -= this.OnPageStatusChanged;
 
@@ -212,7 +214,7 @@ namespace RC.App.PresLogic.Pages
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateTerrainObjectPlacementView(this.mapEditorPanel.SelectedItem),
                     this.mapDisplayBasic.TerrainObjectSprites,
-                    this.clockSignal);
+                    this.scheduler);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
@@ -220,7 +222,7 @@ namespace RC.App.PresLogic.Pages
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateMapObjectPlacementView(STARTLOCATION_NAME),
                     this.mapObjectDisplayEx.GetMapObjectSprites((PlayerEnum)(this.mapEditorPanel.SelectedIndex)),
-                    this.clockSignal);
+                    this.scheduler);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
@@ -228,7 +230,7 @@ namespace RC.App.PresLogic.Pages
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateMapObjectPlacementView(this.mapEditorPanel.SelectedItem),
                     this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral),
-                    this.clockSignal);
+                    this.scheduler);
             }
             else
             {
@@ -247,7 +249,7 @@ namespace RC.App.PresLogic.Pages
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateTerrainObjectPlacementView(this.mapEditorPanel.SelectedItem),
                     this.mapDisplayBasic.TerrainObjectSprites,
-                    this.clockSignal);
+                    this.scheduler);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
@@ -255,7 +257,7 @@ namespace RC.App.PresLogic.Pages
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateMapObjectPlacementView(STARTLOCATION_NAME),
                     this.mapObjectDisplayEx.GetMapObjectSprites((PlayerEnum)(this.mapEditorPanel.SelectedIndex)),
-                    this.clockSignal);
+                    this.scheduler);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
@@ -263,7 +265,7 @@ namespace RC.App.PresLogic.Pages
                 this.objectPlacementDisplayEx.StartPlacingObject(
                     this.mapEditorBE.CreateMapObjectPlacementView(this.mapEditorPanel.SelectedItem),
                     this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral),
-                    this.clockSignal);
+                    this.scheduler);
             }
         }
 
@@ -283,11 +285,13 @@ namespace RC.App.PresLogic.Pages
         private void OnExitPressed(UISensitiveObject sender)
         {
             this.scrollHandler.DeactivateMouseHandling();
+            this.mapDisplay.MouseSensor.Wheel -= this.OnMouseWheel;
             this.mapDisplay.MouseSensor.ButtonDown -= this.OnMouseDown;
             this.mapDisplay.MouseSensor.ButtonUp -= this.OnMouseUp;
             this.mapDisplay.MouseSensor.Move -= this.OnMouseMoveOverDisplay;
 
             this.mapEditorPanel.EditModeChanged -= this.OnEditModeChanged;
+            this.mapEditorPanel.SelectedItemChanged -= this.OnSelectedItemChanged;
             this.mapEditorPanel.SaveButton.Pressed -= this.OnSaveMapPressed;
             this.mapEditorPanel.ExitButton.Pressed -= this.OnExitPressed;
 
@@ -317,7 +321,7 @@ namespace RC.App.PresLogic.Pages
                         this.objectPlacementDisplayEx.StartPlacingObject(
                             this.mapEditorBE.CreateTerrainObjectPlacementView(this.mapEditorPanel.SelectedItem),
                             this.mapDisplayBasic.TerrainObjectSprites,
-                            this.clockSignal);
+                            this.scheduler);
                     }
                 }
             }
@@ -337,7 +341,7 @@ namespace RC.App.PresLogic.Pages
                         this.objectPlacementDisplayEx.StartPlacingObject(
                             this.mapEditorBE.CreateMapObjectPlacementView(this.mapEditorPanel.SelectedItem),
                             this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral),
-                            this.clockSignal);
+                            this.scheduler);
                     }
                 }
             }
@@ -436,6 +440,14 @@ namespace RC.App.PresLogic.Pages
         }
 
         /// <summary>
+        /// This method is called on system updates.
+        /// </summary>
+        private void OnSystemUpdate(UIUpdateSystemEventArgs evtArgs)
+        {
+            this.scheduler.SystemUpdate(evtArgs.TimeSinceLastUpdate);
+        }
+
+        /// <summary>
         /// Reference to the map editor backend component.
         /// </summary>
         private IMapEditorBE mapEditorBE;
@@ -516,9 +528,9 @@ namespace RC.App.PresLogic.Pages
         private ScrollHandler scrollHandler;
 
         /// <summary>
-        /// The clock signal of the map editor.
+        /// The scheduler of the map editor.
         /// </summary>
-        private ClockSignal clockSignal;
+        private Scheduler scheduler;
 
         /// <summary>
         /// Name of the scenario element types that can be placed on the scenario.

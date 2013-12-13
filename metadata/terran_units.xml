@@ -21,109 +21,89 @@
     </groundWeapon>
     <createdIn>CommandCenter</createdIn>
     <spritePalette image="terran_scv.png" transparentColor="255;0;255" ownerMaskColor="0;255;255">
-      <sprite name="StandingN" sourceRegion="1;1;13;11" offset="-3;-4" />
-      <sprite name="StandingNE" sourceRegion="15;1;12;12" offset="-1;-4" />
-      <sprite name="StandingE" sourceRegion="28;1;11;13" offset="0;-3" />
-      <sprite name="StandingSE" sourceRegion="40;1;12;12" offset="0;0" />
-      <sprite name="StandingS" sourceRegion="53;1;13;11" offset="-3;0" />
-      <sprite name="StandingSW" sourceRegion="67;1;12;12" offset="-5;0" />
-      <sprite name="StandingW" sourceRegion="80;1;11;13" offset="-4;-3" />
-      <sprite name="StandingNW" sourceRegion="92;1;12;12" offset="-5;-5" />
-      <sprite name="WorkingN_0" sourceRegion="1;17;13;15" offset="-3;-8" />
-      <sprite name="WorkingN_1" sourceRegion="15;17;14;13" offset="-3;-9" />
-      <sprite name="WorkingNE_0" sourceRegion="30;17;15;13" offset="0;-6" />
-      <sprite name="WorkingNE_1" sourceRegion="46;17;14;13" offset="0;-7" />
-      <sprite name="WorkingE_0" sourceRegion="61;17;13;15" offset="0;-3" />
-      <sprite name="WorkingE_1" sourceRegion="75;17;14;13" offset="0;-3" />
-      <sprite name="WorkingSE_0" sourceRegion="90;17;15;13" offset="0;0" />
-      <sprite name="WorkingSE_1" sourceRegion="106;17;14;13" offset="0;0" />
-      <sprite name="WorkingS_0" sourceRegion="1;33;13;16" offset="-3;0" />
-      <sprite name="WorkingS_1" sourceRegion="15;33;13;14" offset="-3;0" />
-      <sprite name="WorkingSW_0" sourceRegion="29;33;16;13" offset="-7;0" />
-      <sprite name="WorkingSW_1" sourceRegion="46;33;13;14" offset="-6;0" />
-      <sprite name="WorkingW_0" sourceRegion="60;33;13;16" offset="-8;-3" />
-      <sprite name="WorkingW_1" sourceRegion="74;33;13;14" offset="-9;-3" />
-      <sprite name="WorkingNW_0" sourceRegion="88;33;16;13" offset="-7;-6" />
-      <sprite name="WorkingNW_1" sourceRegion="105;33;13;14" offset="-6;-7" />
-      <sprite name="MovingN" sourceRegion="1;50;13;13" offset="-3;-4" />
-      <sprite name="MovingNE" sourceRegion="15;50;13;13" offset="-1;-5" />
-      <sprite name="MovingE" sourceRegion="29;50;13;13" offset="-2;-3" />
-      <sprite name="MovingSE" sourceRegion="43;50;13;13" offset="-1;-1" />
-      <sprite name="MovingS" sourceRegion="57;50;13;13" offset="-3;-2" />
-      <sprite name="MovingSW" sourceRegion="71;50;13;13" offset="-5;-1" />
-      <sprite name="MovingW" sourceRegion="85;50;13;13" offset="-4;-3" />
-      <sprite name="MovingNW" sourceRegion="99;50;13;13" offset="-5;-5" />
-      <sprite name="StandingWithGasN" sourceRegion="1;64;13;11" offset="-3;-4" />
-      <sprite name="StandingWithGasNE" sourceRegion="15;64;12;12" offset="-1;-4" />
-      <sprite name="StandingWithGasE" sourceRegion="28;64;11;13" offset="0;-3" />
-      <sprite name="StandingWithGasSE" sourceRegion="40;64;12;12" offset="0;0" />
-      <sprite name="StandingWithGasS" sourceRegion="53;64;13;11" offset="-3;0" />
-      <sprite name="StandingWithGasSW" sourceRegion="67;64;12;12" offset="-5;0" />
-      <sprite name="StandingWithGasW" sourceRegion="80;64;11;13" offset="-4;-3" />
-      <sprite name="StandingWithGasNW" sourceRegion="92;64;12;12" offset="-5;-5" />
-      <sprite name="WorkingWithGasN_0" sourceRegion="1;80;13;15" offset="-3;-8" />
-      <sprite name="WorkingWithGasN_1" sourceRegion="15;80;14;13" offset="-3;-9" />
-      <sprite name="WorkingWithGasNE_0" sourceRegion="30;80;15;13" offset="0;-6" />
-      <sprite name="WorkingWithGasNE_1" sourceRegion="46;80;14;13" offset="0;-7" />
-      <sprite name="WorkingWithGasE_0" sourceRegion="61;80;13;15" offset="0;-3" />
-      <sprite name="WorkingWithGasE_1" sourceRegion="75;80;14;13" offset="0;-3" />
-      <sprite name="WorkingWithGasSE_0" sourceRegion="90;80;15;13" offset="0;0" />
-      <sprite name="WorkingWithGasSE_1" sourceRegion="106;80;14;13" offset="0;0" />
-      <sprite name="WorkingWithGasS_0" sourceRegion="1;96;13;16" offset="-3;0" />
-      <sprite name="WorkingWithGasS_1" sourceRegion="15;96;13;14" offset="-3;0" />
-      <sprite name="WorkingWithGasSW_0" sourceRegion="29;96;16;13" offset="-7;0" />
-      <sprite name="WorkingWithGasSW_1" sourceRegion="46;96;13;14" offset="-6;0" />
-      <sprite name="WorkingWithGasW_0" sourceRegion="60;96;13;16" offset="-8;-3" />
-      <sprite name="WorkingWithGasW_1" sourceRegion="74;96;13;14" offset="-9;-3" />
-      <sprite name="WorkingWithGasNW_0" sourceRegion="88;96;16;13" offset="-7;-6" />
-      <sprite name="WorkingWithGasNW_1" sourceRegion="105;96;13;14" offset="-6;-7" />
-      <sprite name="MovingWithGasN" sourceRegion="1;113;13;13" offset="-3;-4" />
-      <sprite name="MovingWithGasNE" sourceRegion="15;113;13;13" offset="-1;-5" />
-      <sprite name="MovingWithGasE" sourceRegion="29;113;13;13" offset="-2;-3" />
-      <sprite name="MovingWithGasSE" sourceRegion="43;113;13;13" offset="-1;-1" />
-      <sprite name="MovingWithGasS" sourceRegion="57;113;13;13" offset="-3;-2" />
-      <sprite name="MovingWithGasSW" sourceRegion="71;113;13;13" offset="-5;-1" />
-      <sprite name="MovingWithGasW" sourceRegion="85;113;13;13" offset="-4;-3" />
-      <sprite name="MovingWithGasNW" sourceRegion="99;113;13;13" offset="-5;-5" />
-      <sprite name="StandingWithMineralsN" sourceRegion="1;127;13;11" offset="-3;-4" />
-      <sprite name="StandingWithMineralsNE" sourceRegion="15;127;12;12" offset="-1;-4" />
-      <sprite name="StandingWithMineralsE" sourceRegion="28;127;11;13" offset="0;-3" />
-      <sprite name="StandingWithMineralsSE" sourceRegion="40;127;12;12" offset="0;0" />
-      <sprite name="StandingWithMineralsS" sourceRegion="53;127;13;11" offset="-3;0" />
-      <sprite name="StandingWithMineralsSW" sourceRegion="67;127;12;12" offset="-5;0" />
-      <sprite name="StandingWithMineralsW" sourceRegion="80;127;11;13" offset="-4;-3" />
-      <sprite name="StandingWithMineralsNW" sourceRegion="92;127;12;12" offset="-5;-5" />
-      <sprite name="WorkingWithMineralsN_0" sourceRegion="1;143;13;15" offset="-3;-8" />
-      <sprite name="WorkingWithMineralsN_1" sourceRegion="15;143;14;13" offset="-3;-9" />
-      <sprite name="WorkingWithMineralsNE_0" sourceRegion="30;143;15;13" offset="0;-6" />
-      <sprite name="WorkingWithMineralsNE_1" sourceRegion="46;143;14;13" offset="0;-7" />
-      <sprite name="WorkingWithMineralsE_0" sourceRegion="61;143;13;15" offset="0;-3" />
-      <sprite name="WorkingWithMineralsE_1" sourceRegion="75;143;14;13" offset="0;-3" />
-      <sprite name="WorkingWithMineralsSE_0" sourceRegion="90;143;15;13" offset="0;0" />
-      <sprite name="WorkingWithMineralsSE_1" sourceRegion="106;143;14;13" offset="0;0" />
-      <sprite name="WorkingWithMineralsS_0" sourceRegion="1;159;13;16" offset="-3;0" />
-      <sprite name="WorkingWithMineralsS_1" sourceRegion="15;159;13;14" offset="-3;0" />
-      <sprite name="WorkingWithMineralsSW_0" sourceRegion="29;159;16;13" offset="-7;0" />
-      <sprite name="WorkingWithMineralsSW_1" sourceRegion="46;159;13;14" offset="-6;0" />
-      <sprite name="WorkingWithMineralsW_0" sourceRegion="60;159;13;16" offset="-8;-3" />
-      <sprite name="WorkingWithMineralsW_1" sourceRegion="74;159;13;14" offset="-9;-3" />
-      <sprite name="WorkingWithMineralsNW_0" sourceRegion="88;159;16;13" offset="-7;-6" />
-      <sprite name="WorkingWithMineralsNW_1" sourceRegion="105;159;13;14" offset="-6;-7" />
-      <sprite name="MovingWithMineralsN" sourceRegion="1;176;13;13" offset="-3;-4" />
-      <sprite name="MovingWithMineralsNE" sourceRegion="15;176;13;13" offset="-1;-5" />
-      <sprite name="MovingWithMineralsE" sourceRegion="29;176;13;13" offset="-2;-3" />
-      <sprite name="MovingWithMineralsSE" sourceRegion="43;176;13;13" offset="-1;-1" />
-      <sprite name="MovingWithMineralsS" sourceRegion="57;176;13;13" offset="-3;-2" />
-      <sprite name="MovingWithMineralsSW" sourceRegion="71;176;13;13" offset="-5;-1" />
-      <sprite name="MovingWithMineralsW" sourceRegion="85;176;13;13" offset="-4;-3" />
-      <sprite name="MovingWithMineralsNW" sourceRegion="99;176;13;13" offset="-5;-5" />
-      <sprite name="Die_0" sourceRegion="1;190;13;11" offset="-3;0" />
-      <sprite name="Die_1" sourceRegion="15;190;14;12" offset="-3;-1" />
-      <sprite name="Die_2" sourceRegion="30;190;16;12" offset="-4;-1" />
-      <sprite name="Die_3" sourceRegion="47;190;17;13" offset="-5;-2" />
-      <sprite name="Die_4" sourceRegion="65;190;18;14" offset="-5;-2" />
-      <sprite name="Die_5" sourceRegion="84;190;18;14" offset="-5;-2" />
+      <sprite name="Body" direction="North" sourceRegion="1;1;13;11" offset="-3;-4" />
+      <sprite name="Body" direction="NorthEast" sourceRegion="15;1;12;12" offset="-1;-4" />
+      <sprite name="Body" direction="East" sourceRegion="28;1;11;13" offset="0;-3" />
+      <sprite name="Body" direction="SouthEast" sourceRegion="40;1;12;12" offset="0;0" />
+      <sprite name="Body" direction="South" sourceRegion="53;1;13;11" offset="-3;0" />
+      <sprite name="Body" direction="SouthWest" sourceRegion="67;1;12;12" offset="-5;0" />
+      <sprite name="Body" direction="West" sourceRegion="80;1;11;13" offset="-4;-3" />
+      <sprite name="Body" direction="NorthWest" sourceRegion="92;1;12;12" offset="-5;-5" />	  
+	  <sprite name="Sparkling0" direction="North" sourceRegion="105;1;4;3" offset="6;-6" />
+	  <sprite name="Sparkling0" direction="NorthEast" sourceRegion="105;1;4;3" offset="11;-1" />
+	  <sprite name="Sparkling0" direction="East" sourceRegion="105;1;4;3" offset="10;7" />
+	  <sprite name="Sparkling0" direction="SouthEast" sourceRegion="105;1;4;3" offset="5;12" />
+	  <sprite name="Sparkling0" direction="South" sourceRegion="105;1;4;3" offset="-3;10" />
+	  <sprite name="Sparkling0" direction="SouthWest" sourceRegion="105;1;4;3" offset="-8;5" />
+	  <sprite name="Sparkling0" direction="West" sourceRegion="105;1;4;3" offset="-2;-7" />
+	  <sprite name="Sparkling0" direction="NorthWest" sourceRegion="105;1;4;3" offset="-2;-8" />	  
+	  <sprite name="Sparkling1" direction="North" sourceRegion="110;1;6;4" offset="5;-7" />
+	  <sprite name="Sparkling1" direction="NorthEast" sourceRegion="110;1;6;4" offset="10;-2" />
+	  <sprite name="Sparkling1" direction="East" sourceRegion="110;1;6;4" offset="9;6" />
+	  <sprite name="Sparkling1" direction="SouthEast" sourceRegion="110;1;6;4" offset="4;11" />
+	  <sprite name="Sparkling1" direction="South" sourceRegion="110;1;6;4" offset="-4;9" />
+	  <sprite name="Sparkling1" direction="SouthWest" sourceRegion="110;1;6;4" offset="-9;4" />
+	  <sprite name="Sparkling1" direction="West" sourceRegion="110;1;6;4" offset="-3;-8" />
+	  <sprite name="Sparkling1" direction="NorthWest" sourceRegion="110;1;6;4" offset="-3;-9" />	  
+	  <sprite name="Engine" direction="North" sourceRegion="105;6;5;2" offset="1;7" />
+	  <sprite name="Engine" direction="NorthEast" sourceRegion="105;12;4;4" offset="-2;5" />
+	  <sprite name="Engine" direction="East" sourceRegion="111;6;2;5" offset="-2;1" />
+	  <sprite name="Engine" direction="SouthEast" sourceRegion="110;12;4;4" offset="-1;-1" />
+	  <sprite name="Engine" direction="South" sourceRegion="105;9;5;2" offset="1;-2" />
+	  <sprite name="Engine" direction="SouthWest" sourceRegion="105;12;4;4" offset="4;-1" />
+	  <sprite name="Engine" direction="West" sourceRegion="114;6;2;5" offset="7;1" />
+	  <sprite name="Engine" direction="NorthWest" sourceRegion="110;12;4;4" offset="4;4" />	  
+	  <sprite name="Gas" direction="North" sourceRegion="103;17;5;5" offset="1;-4" />
+	  <sprite name="Gas" direction="NorthEast" sourceRegion="103;17;5;5" offset="4;-2" />
+	  <sprite name="Gas" direction="East" sourceRegion="103;17;5;5" offset="6;1" />
+	  <sprite name="Gas" direction="SouthEast" sourceRegion="103;17;5;5" offset="5;5" />
+	  <sprite name="Gas" direction="South" sourceRegion="103;17;5;5" offset="1;6" />
+	  <sprite name="Gas" direction="SouthWest" sourceRegion="103;17;5;5" offset="-3;5" />
+	  <sprite name="Gas" direction="West" sourceRegion="103;17;5;5" offset="-4;1" />
+	  <sprite name="Gas" direction="NorthWest" sourceRegion="103;17;5;5" offset="-3;-3" />
+	  <sprite name="Minerals" direction="North" sourceRegion="109;17;5;5" offset="1;-4" />
+	  <sprite name="Minerals" direction="NorthEast" sourceRegion="109;17;5;5" offset="4;-2" />
+	  <sprite name="Minerals" direction="East" sourceRegion="109;17;5;5" offset="6;1" />
+	  <sprite name="Minerals" direction="SouthEast" sourceRegion="109;17;5;5" offset="5;5" />
+	  <sprite name="Minerals" direction="South" sourceRegion="109;17;5;5" offset="1;6" />
+	  <sprite name="Minerals" direction="SouthWest" sourceRegion="109;17;5;5" offset="-3;5" />
+	  <sprite name="Minerals" direction="West" sourceRegion="109;17;5;5" offset="-4;1" />
+	  <sprite name="Minerals" direction="NorthWest" sourceRegion="109;17;5;5" offset="-3;-3" />	  
+      <sprite name="Dying0" sourceRegion="1;15;13;11" offset="-3;0" />
+      <sprite name="Dying1" sourceRegion="15;15;14;12" offset="-3;-1" />
+      <sprite name="Dying2" sourceRegion="30;15;16;12" offset="-4;-1" />
+      <sprite name="Dying3" sourceRegion="47;15;17;13" offset="-5;-2" />
+      <sprite name="Dying4" sourceRegion="65;15;18;14" offset="-5;-2" />
+      <sprite name="Dying5" sourceRegion="84;15;18;14" offset="-5;-2" />
     </spritePalette>
+	<animationPalette>
+		<animation name="Stopped" isPreview="true">
+			<frame sprites="Body" />
+		</animation>
+		<animation name="Moving">
+			<frame sprites="Body,Engine" />
+		</animation>
+		<animation name="BringingMinerals">
+			<frame sprites="Minerals" />
+		</animation>
+		<animation name="BringingGas">
+			<frame sprites="Gas" />
+		</animation>
+		<animation name="Working">
+			<label name="Begin"/>
+			<frame sprites="Sparkling0" duration="5"/>
+			<frame sprites="Sparkling1" duration="5"/>
+			<goto label="Begin"/>
+		</animation>
+		<animation name="Dying">
+			<frame sprites="Dying0" duration="4"/>
+			<frame sprites="Dying1" duration="4"/>
+			<frame sprites="Dying2" duration="4"/>
+			<frame sprites="Dying3" duration="4"/>
+			<frame sprites="Dying4" duration="4"/>
+			<frame sprites="Dying5" duration="4"/>
+		</animation>
+	</animationPalette>
   </unitType>
   
   <unitType name="Marine" hasOwner="true">

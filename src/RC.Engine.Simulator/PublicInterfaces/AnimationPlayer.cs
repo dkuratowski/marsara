@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RC.Engine.Maps.PublicInterfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,12 +12,14 @@ namespace RC.Engine.Simulator.PublicInterfaces
     public class AnimationPlayer : Animation.IInstructionContext
     {
         /// <summary>
-        /// Constructs an animation player that plays the given animation.
+        /// Constructs an animation player that plays the given animation in the given direction.
         /// </summary>
         /// <param name="animation">The animation to be played.</param>
-        public AnimationPlayer(Animation animation)
+        /// <param name="direction">The direction of the animation.</param>
+        public AnimationPlayer(Animation animation, MapDirection direction)
         {
             if (animation == null) { throw new ArgumentNullException("animation"); }
+            this.direction = direction;
             this.instructionPointer = 0;
             this.animation = animation;
             this.registers = new int[REGISTER_COUNT];
@@ -43,6 +46,9 @@ namespace RC.Engine.Simulator.PublicInterfaces
         }
 
         #region Animation.IInstructionContext members
+
+        /// <see cref="Animation.IInstructionContext.Direction"/>
+        public MapDirection Direction { get { return this.direction; } }
 
         /// <see cref="Animation.IInstructionContext.SetInstructionPointer"/>
         int Animation.IInstructionContext.InstructionPointer
@@ -71,6 +77,11 @@ namespace RC.Engine.Simulator.PublicInterfaces
         }
 
         #endregion Animation.IInstructionContext members
+
+        /// <summary>
+        /// The direction of the animation being played.
+        /// </summary>
+        private MapDirection direction;
 
         /// <summary>
         /// The index of the next instruction.

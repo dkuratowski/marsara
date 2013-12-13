@@ -79,6 +79,7 @@
     <Compile Include="Core\MapViewBase.cs" />
     <Compile Include="Core\MetadataView.cs" />
     <Compile Include="Core\ObjectPlacementView.cs" />
+    <Compile Include="PublicInterfaces\Scheduler.cs" />
     <Compile Include="Core\TerrainObjectPlacementView.cs" />
     <Compile Include="Core\TileSetStore.cs" />
     <Compile Include="Core\TileSetView.cs" />
