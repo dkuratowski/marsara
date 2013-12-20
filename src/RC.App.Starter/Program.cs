@@ -228,11 +228,17 @@ namespace RC.App.Starter
                                                 });
 
             ComponentManager.RegisterComponents("RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[3]
+                                                new string[4]
                                                 {
                                                     "RC.App.BizLogic.TileSetStore",
+                                                    "RC.App.BizLogic.MultiplayerGameManager",
                                                     "RC.App.BizLogic.MapEditorBE",
                                                     "RC.App.BizLogic.GameplayBE"
+                                                });
+            ComponentManager.RegisterComponents("RC.App.PresLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                                                new string[1]
+                                                {
+                                                    "RC.App.PresLogic.TaskManagerAdapter"
                                                 });
             ComponentManager.RegisterPluginAssembly("RC.Engine.Simulator.Terran, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
             ComponentManager.StartComponents();

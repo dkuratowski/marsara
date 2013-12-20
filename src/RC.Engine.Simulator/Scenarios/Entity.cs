@@ -59,7 +59,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// Gets the scenario that this entity belongs to.
         /// </summary>
-        protected Scenario Scenario { get { return this.scenario; } }
+        public Scenario Scenario { get { return this.scenario; } }
 
         /// <summary>
         /// Sets the position of this entity.
@@ -160,6 +160,25 @@ namespace RC.Engine.Simulator.Scenarios
             this.scenario = null;
             this.id.Write(-1);
             this.OnRemovedFromScenarioImpl();
+        }
+
+        /// <summary>
+        /// The method is called when this entity has been added to a player.
+        /// </summary>
+        /// <param name="owner">The player that owns this entity.</param>
+        internal void OnAddedToPlayer(Player owner)
+        {
+            if (this.owner != null) { throw new InvalidOperationException("The entity is already added to a player!"); }
+            this.owner = owner;
+        }
+
+        /// <summary>
+        /// The method is called when this entity has been removed from the player it is currently owned by.
+        /// </summary>
+        internal void OnRemovedFromPlayer()
+        {
+            if (this.owner == null) { throw new InvalidOperationException("The entity doesn't not belong to a player!"); }
+            this.owner = null;
         }
 
         /// <summary>

@@ -20,20 +20,26 @@ namespace RC.App.BizLogic.Core
         /// </summary>
         /// <param name="objectType">Reference to the type of the map object being placed.</param>
         /// <param name="scenario">Reference to the scenario.</param>
-        public MapObjectPlacementView(IScenarioElementType objectType, Scenario scenario)
+        /// <param name="scheduler">
+        /// Reference to a scheduler that will step the preview animation of the map object being placed.
+        /// </param>
+        public MapObjectPlacementView(IScenarioElementType objectType, Scenario scenario, Scheduler scheduler)
             : base(scenario.Map)
         {
             if (objectType == null) { throw new ArgumentNullException("objectType"); }
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
+            if (scheduler == null) { throw new ArgumentNullException("scheduler"); }
 
             this.scenario = scenario;
             this.objectType = objectType;
+            this.scheduler = scheduler;
             if (this.objectType.AnimationPalette != null)
             {
                 Animation previewAnimDef = this.objectType.AnimationPalette.PreviewAnimation;
                 if (previewAnimDef != null)
                 {
                     this.previewAnimation = new AnimationPlayer(previewAnimDef, MapDirection.Undefined);
+                    this.scheduler.AddScheduledFunction(this.previewAnimation.Step);
                 }
             }
         }
@@ -70,10 +76,13 @@ namespace RC.App.BizLogic.Core
             return retList;
         }
 
-        /// <see cref="ObjectPlacementView.StepAnimation"/>
-        public override void StepAnimation()
+        /// <see cref="IDisposable.Dispose"/>
+        public override void Dispose()
         {
-            this.previewAnimation.Step();
+            if (this.previewAnimation != null)
+            {
+                this.scheduler.RemoveScheduledFunction(this.previewAnimation.Step);
+            }
         }
 
         #endregion ObjectPlacementView overrides
@@ -92,5 +101,10 @@ namespace RC.App.BizLogic.Core
         /// Reference to the preview animation of the map object being placed.
         /// </summary>
         private AnimationPlayer previewAnimation;
+
+        /// <summary>
+        /// Reference to a scheduler that will step the preview animation of the map object being placed. 
+        /// </summary>
+        private Scheduler scheduler;
     }
 }

@@ -24,7 +24,6 @@ namespace RC.App.PresLogic.Controls
         {
             this.objects = null;
             this.objectPlacementView = null;
-            this.scheduler = null;
             this.objectPlacementMaskGreen = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ObjectPlacementMaskGreen");
             this.objectPlacementMaskRed = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ObjectPlacementMaskRed");
             this.lastKnownMousePosition = RCIntVector.Undefined;
@@ -36,16 +35,13 @@ namespace RC.App.PresLogic.Controls
         /// <param name="objPlacementView">The object placement view that will provide the object placement box to be displayed.</param>
         /// <param name="objectGroup">The sprite-group indexed by the object placement view.</param>
         /// <param name="scheduler">The scheduler that is used to animate the object placement box.</param>
-        public void StartPlacingObject(IObjectPlacementView objPlacementView, SpriteGroup objectGroup, Scheduler scheduler)
+        public void StartPlacingObject(IObjectPlacementView objPlacementView, SpriteGroup objectGroup)
         {
             if (objPlacementView == null) { throw new ArgumentNullException("objPlacementView"); }
             if (objectGroup == null) { throw new ArgumentNullException("objectGroup"); }
-            if (scheduler == null) { throw new ArgumentNullException("scheduler"); }
             if (this.objectPlacementView != null) { throw new InvalidOperationException("Object placement has already been started!"); }
 
             this.objectPlacementView = objPlacementView;
-            this.scheduler = scheduler;
-            this.scheduler.AddSimulatorMethod(this.objectPlacementView.StepAnimation);
             this.objects = objectGroup;
         }
 
@@ -54,8 +50,7 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         public void StopPlacingObject()
         {
-            if (this.PlacingObject) { this.scheduler.RemoveSimulatorMethod(this.objectPlacementView.StepAnimation); }            
-            this.scheduler = null;
+            if (this.objectPlacementView != null) { this.objectPlacementView.Dispose(); }
             this.objectPlacementView = null;
             this.objects = null;
         }
@@ -127,11 +122,6 @@ namespace RC.App.PresLogic.Controls
         /// Reference to the object placement view or null if there is no object being placed.
         /// </summary>
         private IObjectPlacementView objectPlacementView;
-
-        /// <summary>
-        /// The scheduler that is used to animate the object placement box.
-        /// </summary>
-        private Scheduler scheduler;
 
         /// <summary>
         /// List of the objects.

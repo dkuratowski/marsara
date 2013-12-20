@@ -25,6 +25,7 @@ namespace RC.App.BizLogic.Core
         {
             this.activeMap = null;
             this.activeScenario = null;
+            this.timeScheduler = null;
         }
 
         #region IComponent methods
@@ -41,7 +42,7 @@ namespace RC.App.BizLogic.Core
         /// <see cref="IComponent.Stop"/>
         public void Stop()
         {
-            /// Do nothing
+            if (this.timeScheduler != null) { this.timeScheduler.Dispose(); }
         }
 
         #endregion IComponent methods
@@ -55,6 +56,8 @@ namespace RC.App.BizLogic.Core
 
             this.activeMap = this.mapLoader.NewMap(mapName, this.tilesetStore.GetTileSet(tilesetName), defaultTerrain, mapSize);
             this.activeScenario = this.scenarioLoader.NewScenario(this.activeMap);
+            this.timeScheduler = new Scheduler(MAPEDITOR_MS_PER_FRAMES);
+            this.timeScheduler.AddScheduledFunction(this.activeScenario.StepAnimations);
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
@@ -67,6 +70,8 @@ namespace RC.App.BizLogic.Core
             MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
             this.activeMap = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
             this.activeScenario = this.scenarioLoader.LoadScenario(this.activeMap, mapBytes);
+            this.timeScheduler = new Scheduler(MAPEDITOR_MS_PER_FRAMES);
+            this.timeScheduler.AddScheduledFunction(this.activeScenario.StepAnimations);
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
@@ -90,6 +95,8 @@ namespace RC.App.BizLogic.Core
         {
             if (this.activeMap != null)
             {
+                this.timeScheduler.Dispose();
+                this.timeScheduler = null;
                 this.activeMap.Close();
                 this.activeMap = null;
                 this.activeScenario = null;
@@ -147,7 +154,7 @@ namespace RC.App.BizLogic.Core
             if (mapObjectTypeName == null) { throw new ArgumentNullException("mapObjectTypeName"); }
 
             IScenarioElementType elementType = this.scenarioLoader.Metadata.GetElementType(mapObjectTypeName);
-            return new MapObjectPlacementView(elementType, this.activeScenario);
+            return new MapObjectPlacementView(elementType, this.activeScenario, this.timeScheduler);
         }
 
         /// <see cref="IMapEditorBE.DrawTerrain"/>
@@ -363,13 +370,6 @@ namespace RC.App.BizLogic.Core
             return false;
         }
 
-        /// <see cref="IMapEditorBE.StepAnimations"/>
-        public void StepAnimations()
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            this.activeScenario.StepAnimations();
-        }
-
         #endregion IMapEditorBE methods
 
         /// <summary>
@@ -401,5 +401,15 @@ namespace RC.App.BizLogic.Core
         /// Reference to the currently active scenario.
         /// </summary>
         private Scenario activeScenario;
+
+        /// <summary>
+        /// Reference to the scheduler of the map editor.
+        /// </summary>
+        private Scheduler timeScheduler;
+
+        /// <summary>
+        /// The elapsed time between frames in the map editor in frames.
+        /// </summary>
+        private const int MAPEDITOR_MS_PER_FRAMES = 40;
     }
 }

@@ -45,12 +45,14 @@
     <Compile Include="ComponentInterfaces\IScenarioLoader.cs" />
     <Compile Include="ComponentInterfaces\IHeapManagerPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
+    <Compile Include="ComponentInterfaces\IPlayerInitializer.cs" />
     <Compile Include="Scenarios\AddonType.cs" />
     <Compile Include="Core\BinaryHeap.cs" />
     <Compile Include="PublicInterfaces\Animation.cs" />
     <Compile Include="PublicInterfaces\AnimationPlayer.cs" />
     <Compile Include="Scenarios\AnimationPalette.cs" />
     <Compile Include="Scenarios\BuildableAreaConstraint.cs" />
+    <Compile Include="Scenarios\Building.cs" />
     <Compile Include="Scenarios\BuildingType.cs" />
     <Compile Include="Core\Constants.cs" />
     <Compile Include="PublicInterfaces\ConstValue.cs" />
@@ -69,6 +71,7 @@
     <Compile Include="Scenarios\IWeaponData.cs" />
     <Compile Include="Scenarios\Player.cs" />
     <Compile Include="Scenarios\QuadEntity.cs" />
+    <Compile Include="Scenarios\RaceEnum.cs" />
     <Compile Include="Scenarios\Requirement.cs" />
     <Compile Include="Scenarios\MinimumDistanceConstraint.cs" />
     <Compile Include="Scenarios\ResourceObject.cs" />
@@ -82,6 +85,7 @@
     <Compile Include="Core\HeapManager.cs" />
     <Compile Include="Scenarios\ScenarioMetadata.cs" />
     <Compile Include="Scenarios\StartLocation.cs" />
+    <Compile Include="Scenarios\Unit.cs" />
     <Compile Include="Scenarios\UnitType.cs" />
     <Compile Include="Scenarios\UpgradeType.cs" />
     <Compile Include="Scenarios\WeaponData.cs" />

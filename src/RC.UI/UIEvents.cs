@@ -71,12 +71,15 @@ namespace RC.UI
             if (queue == null) { throw new ArgumentNullException("queue"); }
             if (handlerFunc == null) { throw new ArgumentNullException("handlerFunc"); }
 
-            if (!handlers.ContainsKey(queue))
+            lock (handlers)
             {
-                handlers.Add(queue, new HashSet<UIEventHandler<T>>());
-            }
+                if (!handlers.ContainsKey(queue))
+                {
+                    handlers.Add(queue, new HashSet<UIEventHandler<T>>());
+                }
 
-            handlers[queue].Add(handlerFunc);
+                handlers[queue].Add(handlerFunc);
+            }
         }
 
         /// <summary>
@@ -89,12 +92,15 @@ namespace RC.UI
             if (queue == null) { throw new ArgumentNullException("queue"); }
             if (handlerFunc == null) { throw new ArgumentNullException("handlerFunc"); }
 
-            if (handlers.ContainsKey(queue))
+            lock (handlers)
             {
-                handlers[queue].Remove(handlerFunc);
-                if (handlers[queue].Count == 0)
+                if (handlers.ContainsKey(queue))
                 {
-                    handlers.Remove(queue);
+                    handlers[queue].Remove(handlerFunc);
+                    if (handlers[queue].Count == 0)
+                    {
+                        handlers.Remove(queue);
+                    }
                 }
             }
         }
@@ -110,25 +116,30 @@ namespace RC.UI
             if (evtArgs == null) { throw new ArgumentNullException("evtArgs"); }
             if (dispatching) { throw new UIException("Recursive call on UIEventDispatcher<T>.Dispatch"); }
 
-            if (handlers.ContainsKey(queue))
+            dispatching = true;
+            UIEventHandler<T>[] handlersCopy = null;
+            lock (handlers)
             {
-                dispatching = true;
-
-                UIEventHandler<T>[] handlersCopy = new UIEventHandler<T>[handlers[queue].Count];
-                int i = 0;
-                foreach (UIEventHandler<T> handler in handlers[queue])
+                if (handlers.ContainsKey(queue))
                 {
-                    handlersCopy[i] = handler;
-                    i++;
+                    handlersCopy = new UIEventHandler<T>[handlers[queue].Count];
+                    int i = 0;
+                    foreach (UIEventHandler<T> handler in handlers[queue])
+                    {
+                        handlersCopy[i] = handler;
+                        i++;
+                    }
                 }
+            }
 
+            if (handlersCopy != null)
+            {
                 foreach (UIEventHandler<T> handler in handlersCopy)
                 {
                     handler(evtArgs);
                 }
-
-                dispatching = false;
             }
+            dispatching = false;
         }
 
         /// <summary>

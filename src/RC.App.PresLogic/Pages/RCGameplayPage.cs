@@ -119,6 +119,8 @@ namespace RC.App.PresLogic.Pages
         {
             if (this.currentConnectionStatus != ConnectionStatus.Online) { throw new InvalidOperationException("The gameplay page is not online!"); }
 
+            this.gameplayBE.StopTestScenario();
+
             /// TODO: deactivate mouse handling
             this.menuButtonPanel.MouseSensor.ButtonDown -= this.OnMenuButtonPressed;
             this.mapObjectDisplayEx.MouseActivityStarted -= this.OnMouseActivityStarted;
@@ -204,14 +206,6 @@ namespace RC.App.PresLogic.Pages
 
             this.menuButtonPanel.MouseSensor.ButtonDown += this.OnMenuButtonPressed;
 
-            /// PROTOTYPE CODE
-            this.testScheduler = new Scheduler(40, true);
-            this.testScheduler.AddSimulatorMethod(this.TestSimulatorMethod);
-            this.evtStopTestDssThread = new ManualResetEvent(false);
-            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnSystemUpdate);
-            this.testDssThread = new RCThread(this.TestDssThreadProc, "TestDssThread");
-            this.testDssThread.Start();
-
             /// The page is now online.
             this.CurrentConnectionStatus = ConnectionStatus.Online;
         }
@@ -236,48 +230,11 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplay = null;
             this.scrollHandler = null;
 
-            /// PROTOTYPE CODE
-            this.evtStopTestDssThread.Set();
-            this.testScheduler.Dispose();
-            this.testDssThread.Join();
-            this.evtStopTestDssThread.Close();
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnSystemUpdate);
-
             /// The page is now offline.
             this.CurrentConnectionStatus = ConnectionStatus.Offline;
 
             /// TODO: later we don't need to stop the render loop here!
             UIRoot.Instance.GraphicsPlatform.RenderLoop.Stop();
-        }
-
-        /// PROTOTYPE CODE
-        private Scheduler testScheduler;
-
-        /// PROTOTYPE CODE
-        private ManualResetEvent evtStopTestDssThread;
-
-        /// PROTOTYPE CODE
-        private RCThread testDssThread;
-
-        /// PROTOTYPE CODE
-        private void OnSystemUpdate(UIUpdateSystemEventArgs evtArgs) { this.testScheduler.SystemUpdate(evtArgs.TimeSinceLastUpdate); }
-
-        /// PROTOTYPE CODE
-        private void TestDssThreadProc()
-        {
-            while (!this.evtStopTestDssThread.WaitOne(0))
-            {
-                RCThread.Sleep(30);
-                this.testScheduler.SendSignal();
-                //TraceManager.WriteAllTrace("SignalComplete", PresLogicTraceFilters.INFO);
-            }
-        }
-
-        /// PROTOTYPE CODE
-        private void TestSimulatorMethod()
-        {
-            this.gameplayBE.UpdateSimulation();
-            //TraceManager.WriteAllTrace("FrameComplete", PresLogicTraceFilters.INFO);
         }
 
         /// <summary>
@@ -316,16 +273,6 @@ namespace RC.App.PresLogic.Pages
         /// <param name="sender">Reference to the button.</param>
         private void OnMenuButtonPressed(UISensitiveObject sender, UIMouseEventArgs evtArgs)
         {
-            //this.scrollHandler.DeactivateMouseHandling();
-            //this.mapObjectDisplayEx.DeactivateMouseHandling();
-            //this.scrollHandler.MouseActivityStarted -= this.OnMouseActivityStarted;
-            //this.scrollHandler.MouseActivityFinished -= this.OnMouseActivityFinished;
-            //this.mapObjectDisplayEx.MouseActivityStarted -= this.OnMouseActivityStarted;
-            //this.mapObjectDisplayEx.MouseActivityFinished -= this.OnMouseActivityFinished;
-
-            //this.menuButtonPanel.MouseSensor.ButtonDown -= this.OnMenuButtonPressed;
-
-            //this.StatusChanged += this.OnPageStatusChanged;
             this.Deactivate();
         }
 

@@ -13,6 +13,7 @@ using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Maps.Core;
 using RC.Common;
 using RC.Engine.Simulator.Scenarios;
+using System.Threading;
 
 namespace RC.App.BizLogic.Core
 {
@@ -34,9 +35,8 @@ namespace RC.App.BizLogic.Core
         /// <see cref="IComponent.Start"/>
         public void Start()
         {
-            this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
-            this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
             this.scenarioLoader = ComponentManager.GetInterface<IScenarioLoader>();
+            this.multiplayerGameManager = ComponentManager.GetInterface<IMultiplayerGameManager>();
         }
 
         /// <see cref="IComponent.Stop"/>
@@ -52,27 +52,19 @@ namespace RC.App.BizLogic.Core
         /// <see cref="IGameplayBE.CreateMapTerrainView"/>
         public IMapTerrainView CreateMapTerrainView()
         {
-            return new MapTerrainView(this.testMap);
+            return new MapTerrainView(this.multiplayerGameManager.GameScenario.Map);
         }
 
         /// <see cref="IGameplayBE.CreateMapObjectView"/>
         public IMapObjectView CreateMapObjectView()
         {
-            return new MapObjectView(this.testScenario);
-            /// TODO: get the map content manager from the loaded scenario !!!
-            //return new MapObjectView(this.testMap, new BspMapContentManager<IGameObject>(
-            //            new RCNumRectangle(-(RCNumber)1 / (RCNumber)2,
-            //                               -(RCNumber)1 / (RCNumber)2,
-            //                               this.testMap.CellSize.X,
-            //                               this.testMap.CellSize.Y),
-            //                               16,
-            //                               10));
+            return new MapObjectView(this.multiplayerGameManager.GameScenario);
         }
 
         /// <see cref="IGameplayBE.CreateTileSetView"/>
         public ITileSetView CreateTileSetView()
         {
-            return new TileSetView(this.testMap.Tileset);
+            return new TileSetView(this.multiplayerGameManager.GameScenario.Map.Tileset);
         }
 
         /// <see cref="IGameplayBE.CreateMetadataView"/>
@@ -81,26 +73,17 @@ namespace RC.App.BizLogic.Core
             return new MetadataView(this.scenarioLoader.Metadata);
         }
 
-        /// <see cref="IGameplayBE.CreateTileSetView"/>
-        /// PROTOTYPE CODE
-        public void UpdateSimulation()
-        {
-            this.testScenario.StepAnimations();
-        }
-
         /// TODO: Remove this section when no longer necessary *********************************************************
         public void StartTestScenario()
         {
-            byte[] mapBytes = File.ReadAllBytes(".\\maps\\testmap2.rcm");
-            MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
-            this.testMap = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
-            this.testScenario = this.scenarioLoader.LoadScenario(this.testMap, mapBytes);
+            this.multiplayerGameManager.CreateNewGame(".\\maps\\testmap3.rcm", GameTypeEnum.Melee, GameSpeedEnum.Fastest);
         }
 
-        private Scenario testScenario;
-        private IMapAccess testMap;
-        private IMapLoader mapLoader;
-        private ITileSetStore tilesetStore;
+        public void StopTestScenario()
+        {
+            this.multiplayerGameManager.LeaveCurrentGame();
+        }
+
         /// TODO_END ***************************************************************************************************
 
         #endregion IGameplayBE methods
@@ -109,5 +92,10 @@ namespace RC.App.BizLogic.Core
         /// Reference to the RC.Engine.Simulator.ScenarioLoader component.
         /// </summary>
         private IScenarioLoader scenarioLoader;
+
+        /// <summary>
+        /// Reference to the RC.App.BizLogic.MultiplayerGameManager component.
+        /// </summary>
+        private IMultiplayerGameManager multiplayerGameManager;
     }
 }

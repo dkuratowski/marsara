@@ -9,7 +9,7 @@ namespace RC.App.BizLogic.PublicInterfaces
     /// <summary>
     /// Interface of views of an object being placed onto the map.
     /// </summary>
-    public interface IObjectPlacementView : IMapView
+    public interface IObjectPlacementView : IMapView, IDisposable
     {
         /// <summary>
         /// Gets the object placement box at the given mouse position inside the given displayed area.
@@ -18,10 +18,5 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// <param name="position">The position of the mouse pointer in pixels.</param>
         /// <returns>The object placement box to be displayed.</returns>
         ObjectPlacementBox GetObjectPlacementBox(RCIntRectangle displayedArea, RCIntVector position);
-
-        /// <summary>
-        /// Steps the animation of the object placement box.
-        /// </summary>
-        void StepAnimation();
     }
 }

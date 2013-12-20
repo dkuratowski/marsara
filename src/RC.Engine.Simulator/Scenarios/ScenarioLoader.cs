@@ -18,7 +18,7 @@ namespace RC.Engine.Simulator.Scenarios
     /// Implementation of the ScenarioLoader component.
     /// </summary>
     [Component("RC.Engine.Simulator.ScenarioLoader")]
-    class ScenarioLoader : IScenarioLoader, IScenarioLoaderPluginInstall, IComponent
+    class ScenarioLoader : IScenarioLoader, IPlayerInitializer, IScenarioLoaderPluginInstall, IComponent
     {
         /// <summary>
         /// Constructs a ScenarioLoader instance.
@@ -27,6 +27,7 @@ namespace RC.Engine.Simulator.Scenarios
         {
             this.metadata = null;
             this.entityConstraints = new Dictionary<string, List<EntityConstraint>>();
+            this.playerInitializers = new Dictionary<RaceEnum, Player.Initializer>();
 
             this.RegisterEntityConstraint(MineralField.MINERALFIELD_TYPE_NAME, new BuildableAreaConstraint());
             this.RegisterEntityConstraint(MineralField.MINERALFIELD_TYPE_NAME, new MinimumDistanceConstraint<StartLocation>(new RCIntVector(3, 3)));
@@ -145,6 +146,18 @@ namespace RC.Engine.Simulator.Scenarios
 
         #endregion IScenarioLoader methods
 
+        #region IPlayerInitializer methods
+
+        /// <see cref="IPlayerInitializer.Initialize"/>
+        public void Initialize(Player player, RaceEnum race)
+        {
+            if (player == null) { throw new ArgumentNullException("player"); }
+            if (!this.playerInitializers.ContainsKey(race)) { throw new SimulatorException(string.Format("Player initializer not found for race '{0}'!", race)); }
+            this.playerInitializers[race](player);
+        }
+
+        #endregion IPlayerInitializer methods
+
         #region IScenarioLoaderPluginInstall methods
 
         /// <see cref="IScenarioLoaderPluginInstall.RegisterEntityConstraint"/>
@@ -153,6 +166,14 @@ namespace RC.Engine.Simulator.Scenarios
             if (entityType == null) { throw new ArgumentNullException("entityType"); }
             if (!this.entityConstraints.ContainsKey(entityType)) { this.entityConstraints.Add(entityType, new List<EntityConstraint>()); }
             this.entityConstraints[entityType].Add(constraint);
+        }
+
+        /// <see cref="IScenarioLoaderPluginInstall.RegisterPlayerInitializer"/>
+        public void RegisterPlayerInitializer(RaceEnum race, Player.Initializer initializer)
+        {
+            if (initializer == null) { throw new ArgumentNullException("initializer"); }
+            if (this.playerInitializers.ContainsKey(race)) { throw new InvalidOperationException(string.Format("Player initializer has already been registered for race '{0}'!", race)); }
+            this.playerInitializers[race] = initializer;
         }
 
         #endregion IScenarioLoaderPluginInstall methods
@@ -201,6 +222,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// List of the registered entity constraints mapped by the names of the corresponding entity types.
         /// </summary>
         private Dictionary<string, List<EntityConstraint>> entityConstraints;
+
+        /// <summary>
+        /// List of the registered player initializers mapped by the corresponding races.
+        /// </summary>
+        private Dictionary<RaceEnum, Player.Initializer> playerInitializers;
 
         /// <summary>
         /// Reference to the simulation metadata.

@@ -22,6 +22,13 @@ namespace RC.App.BizLogic.Core
         {
         }
 
+        #region IDisposable members
+
+        /// <see cref="IDisposable.Dispose"/>
+        public virtual void Dispose() { }
+
+        #endregion IDisposable members
+
         #region IObjectPlacementView members
 
         /// <see cref="IObjectPlacementView.GetObjectPlacementBox"/>
@@ -87,9 +94,6 @@ namespace RC.App.BizLogic.Core
 
             return placementBox;
         }
-
-        /// <see cref="IObjectPlacementView.StepAnimation"/>
-        public virtual void StepAnimation() { }
 
         #endregion IObjectPlacementView members
 

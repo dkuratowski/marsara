@@ -154,10 +154,5 @@ namespace RC.App.BizLogic.ComponentInterfaces
         /// <param name="delta">The difference between the current and the new resource amount.</param>
         /// <returns>True if the resource amount has been changed, false otherwise.</returns>
         bool ChangeResourceAmount(int objectID, int delta);
-
-        /// <summary>
-        /// Steps the animations on the edited map.
-        /// </summary>
-        void StepAnimations();
     }
 }

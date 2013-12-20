@@ -47,9 +47,9 @@ namespace RC.App.BizLogic.ComponentInterfaces
         void StartTestScenario();
 
         /// <summary>
-        /// PROTOTYPE CODE
-        /// Updates the simulation and all of its components. Later the simulation shall be executed from the DSS-thread.
+        /// Temporary method for testing.
         /// </summary>
-        void UpdateSimulation();
+        /// TODO: remove this method when no longer necessary.
+        void StopTestScenario();
     }
 }
