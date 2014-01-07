@@ -41,8 +41,8 @@ namespace RC.App.BizLogic.Core
 
             List<MapObjectInstance> retList = new List<MapObjectInstance>();
             HashSet<Entity> visibleEntities = this.scenario.VisibleEntities.GetContents(
-                new RCNumRectangle(cellWindow.X - (RCNumber)1 / (RCNumber)2,
-                                   cellWindow.Y - (RCNumber)1 / (RCNumber)2,
+                new RCNumRectangle(cellWindow.X - HALF_VECT.X,
+                                   cellWindow.Y - HALF_VECT.Y,
                                    cellWindow.Width,
                                    cellWindow.Height));
             foreach (Entity entity in visibleEntities)

@@ -41,6 +41,13 @@ namespace RC.App.BizLogic.ComponentInterfaces
         IMapObjectView CreateMapObjectView();
 
         /// <summary>
+        /// Creates a control view on the map objects of the currently opened scenario.
+        /// </summary>
+        /// <returns>The view on the map objects of the currently opened scenario.</returns>
+        /// <exception cref="InvalidOperationException">If there is no opened scenario.</exception>
+        IMapObjectControlView CreateMapObjectControlView();
+
+        /// <summary>
         /// Temporary method for testing.
         /// </summary>
         /// TODO: remove this method when no longer necessary.

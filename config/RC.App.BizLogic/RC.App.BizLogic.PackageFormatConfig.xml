@@ -1,5 +1,10 @@
 <packageFormatConfig>
-  <packageFormat namespace="RC.App.BizLogic" name="TestPackageFormat">
-    <field type="INT">Test field</field>
+  <packageFormat namespace="RC.App.BizLogic" name="Command">
+    <field type="STRING">The mnemonic of the command.</field>
+    <field type="INT_ARRAY">The list of the IDs of the command recipients.</field>
+    <field type="INT">Target position (X coordinate, RCNumber).</field>
+    <field type="INT">Target position (Y coordinate, RCNumber).</field>
+    <field type="INT">Target entity ID.</field>
+    <field type="STRING">Target type name.</field>
   </packageFormat>
 </packageFormatConfig>

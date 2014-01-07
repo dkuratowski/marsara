@@ -11,6 +11,7 @@ using RC.Engine.Maps.ComponentInterfaces;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Scenarios;
+using RC.App.BizLogic.PublicInterfaces;
 
 namespace RC.App.BizLogic.Core
 {
@@ -57,6 +58,7 @@ namespace RC.App.BizLogic.Core
             this.gameScenario.FinalizePlayers();
             this.commandDispatcher = new CommandDispatcher();
             this.triggeredScheduler = new TriggeredScheduler(1000 / (int)gameSpeed);
+            this.triggeredScheduler.AddScheduledFunction(this.ExecuteFrame);
             this.triggeredScheduler.AddScheduledFunction(this.gameScenario.StepAnimations);
             this.testDssTaskCanFinishEvt = new ManualResetEvent(false);
             this.dssTask = this.taskManager.StartTask(this.TestDssTaskMethod, "DssThread");
@@ -84,9 +86,9 @@ namespace RC.App.BizLogic.Core
         }
 
         /// <see cref="IMultiplayerGameManager.PostCommand"/>
-        public void PostCommand(CommandTypeEnum commandType, List<int> targetObjectIDs, RCIntVector targetCoords)
+        public void PostCommand(RCCommand cmd)
         {
-            throw new NotImplementedException();
+            this.commandDispatcher.PushOutgoingCommand(cmd);
         }
 
         /// <see cref="IMultiplayerGameManager.GameScenario"/>
@@ -95,13 +97,39 @@ namespace RC.App.BizLogic.Core
             get { return this.gameScenario; }
         }
 
+        /// <see cref="IMultiplayerGameManager.GameScenario"/>
+        public IMultiplayerOperation StartCurrentGame()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <see cref="IMultiplayerGameManager.GameScenario"/>
+        public event GameCountdownHdl GameCountdown;
+
         #endregion IMultiplayerGameManager methods
+
+        /// <summary>
+        /// Internal function that actually executes the next simulation frame.
+        /// </summary>
+        private void ExecuteFrame()
+        {
+            this.commandDispatcher.DispatchOutgoingCommands();
+            List<RCCommand> incomingCommands = this.commandDispatcher.GetIncomingCommands();
+            foreach (RCCommand command in incomingCommands)
+            {
+                command.Execute();
+            }
+        }
 
         /// PROTOTYPE CODE
         private void TestDssTaskMethod(object param)
         {
             while (!this.testDssTaskCanFinishEvt.WaitOne(0))
             {
+                foreach (RCPackage cmdPackage in this.commandDispatcher.GetOutgoingCommands())
+                {
+                    this.commandDispatcher.PushIncomingCommand(cmdPackage);
+                }
                 this.triggeredScheduler.Trigger();
             }
         }

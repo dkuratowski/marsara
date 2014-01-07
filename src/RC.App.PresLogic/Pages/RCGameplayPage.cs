@@ -39,6 +39,7 @@ namespace RC.App.PresLogic.Pages
             this.gameplayBE = ComponentManager.GetInterface<IGameplayBE>();
             this.mapTerrainView = null;
             this.mapObjectView = null;
+            this.mapObjectControlView = null;
             this.tilesetView = null;
             this.metadataView = null;
 
@@ -92,12 +93,13 @@ namespace RC.App.PresLogic.Pages
             this.mapTerrainView = this.gameplayBE.CreateMapTerrainView();
             //this.mapDebugView = this.gameplayBE.CreateMapDebugView();
             this.mapObjectView = this.gameplayBE.CreateMapObjectView();
+            this.mapObjectControlView = this.gameplayBE.CreateMapObjectControlView();
             this.tilesetView = this.gameplayBE.CreateTileSetView();
             this.metadataView = this.gameplayBE.CreateMetadataView();
 
             /// Create and start the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135), this.mapTerrainView, this.tilesetView);
-            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView, this.metadataView);
+            this.mapObjectDisplayEx = new RCMapObjectGameplayDisplay(this.mapDisplayBasic, this.mapObjectView, this.mapObjectControlView, this.metadataView);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.mapObjectDisplayEx, this.mapTerrainView);
             this.mapDisplay = this.objectPlacementDisplayEx;
             this.mapDisplay.Started += this.OnMapDisplayStarted;
@@ -220,6 +222,7 @@ namespace RC.App.PresLogic.Pages
             /// Remove the views.
             this.mapTerrainView = null;
             this.mapObjectView = null;
+            this.mapObjectControlView = null;
             this.tilesetView = null;
             this.metadataView = null;
 
@@ -340,6 +343,11 @@ namespace RC.App.PresLogic.Pages
         /// Reference to the map object view.
         /// </summary>
         private IMapObjectView mapObjectView;
+
+        /// <summary>
+        /// Reference to the map object control view.
+        /// </summary>
+        private IMapObjectControlView mapObjectControlView;
 
         /// <summary>
         /// Reference to the tileset view.

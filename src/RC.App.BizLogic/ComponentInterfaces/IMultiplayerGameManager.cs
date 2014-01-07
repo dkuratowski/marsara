@@ -5,6 +5,7 @@ using System.Text;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Simulator.Scenarios;
+using RC.App.BizLogic.PublicInterfaces;
 
 namespace RC.App.BizLogic.ComponentInterfaces
 {
@@ -85,6 +86,12 @@ namespace RC.App.BizLogic.ComponentInterfaces
     delegate void MultiplayerOperationFinishedHdl(bool succeeded, string errorMessage);
 
     /// <summary>
+    /// Handlers of the IMultiplayerGameManager.GameCountdown event.
+    /// </summary>
+    /// <param name="remainingTime">The remaining time to the beginning of the multiplayer game.</param>
+    delegate void GameCountdownHdl(int remainingTime);
+
+    /// <summary>
     /// The interface of an asynchronous multiplayer operation.
     /// </summary>
     interface IMultiplayerOperation
@@ -93,15 +100,6 @@ namespace RC.App.BizLogic.ComponentInterfaces
         /// This event is raised on the UI-thread when the multiplayer operation has been finished.
         /// </summary>
         event MultiplayerOperationFinishedHdl Finished;
-    }
-
-    /// <summary>
-    /// Enumerates the possible command types.
-    /// </summary>
-    enum CommandTypeEnum
-    {
-        Move = 0,
-        Stop = 1
     }
 
     /// <summary>
@@ -115,6 +113,7 @@ namespace RC.App.BizLogic.ComponentInterfaces
     /// This is an internal interface that can be accessed indirectly from the PresLogic via the appropriate
     /// backend components and views.
     /// </summary>
+    /// TODO: finalize the interface!
     [ComponentInterface]
     interface IMultiplayerGameManager
     {
@@ -141,6 +140,13 @@ namespace RC.App.BizLogic.ComponentInterfaces
         IMultiplayerOperation LeaveCurrentGame();
 
         /// <summary>
+        /// Starts the simulation of the multiplayer game that this peer is currently connected to.
+        /// This method can only be called by the peer that is the host of the game.
+        /// </summary>
+        /// <returns>A reference to the started operation.</returns>
+        IMultiplayerOperation StartCurrentGame();
+
+        /// <summary>
         /// Gets the list of the multiplayer games currently available on the network.
         /// </summary>
         /// <returns>The list of the currently available multiplayer games on the network.</returns>
@@ -149,16 +155,18 @@ namespace RC.App.BizLogic.ComponentInterfaces
         /// <summary>
         /// Posts a command to the multiplayer game that this peer is currently connected to.
         /// </summary>
-        /// <param name="commandType">The type of the command.</param>
-        /// <param name="targetObjectIDs">The IDs of the target objects of the command.</param>
-        /// <param name="targetCoords">
-        /// The target coordinates of the command (optional depending on the command type).
-        /// </param>
-        void PostCommand(CommandTypeEnum commandType, List<int> targetObjectIDs, RCIntVector targetCoords);
+        /// <param name="cmd">The command to post.</param>
+        void PostCommand(RCCommand cmd);
 
         /// <summary>
         /// Gets a reference to the scenario of the multiplayer game that this peer is currently connected to.
         /// </summary>
         Scenario GameScenario { get; }
+
+        /// <summary>
+        /// This event is raised several times on every peer when the start of the multiplayer game that this peer is currently connected
+        /// to has been initiated by the host. The event indicates the remaining time until the start of the game.
+        /// </summary>
+        event GameCountdownHdl GameCountdown;
     }
 }

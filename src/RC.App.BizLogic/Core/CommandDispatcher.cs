@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common;
+using RC.App.BizLogic.PublicInterfaces;
 
 namespace RC.App.BizLogic.Core
 {
@@ -23,7 +24,7 @@ namespace RC.App.BizLogic.Core
         {
             this.commandBuffer = new List<RCPackage>();
             this.outgoingCommands = new List<RCPackage>();
-            this.incomingCommands = new List<Tuple<RCPackage, int>>();
+            this.incomingCommands = new List<RCPackage>();
         }
 
         #region Methods for the UI-thread
@@ -32,10 +33,10 @@ namespace RC.App.BizLogic.Core
         /// Pushes a command into the command buffer.
         /// </summary>
         /// <param name="commandPackage">The command to push.</param>
-        public void PushOutgoingCommand(RCPackage commandPackage)
+        public void PushOutgoingCommand(RCCommand command)
         {
-            if (commandPackage == null) { throw new ArgumentNullException("commandPackage"); }
-            this.commandBuffer.Add(commandPackage);
+            if (command == null) { throw new ArgumentNullException("command"); }
+            this.commandBuffer.Add(command.ToPackage());
         }
 
         /// <summary>
@@ -52,13 +53,16 @@ namespace RC.App.BizLogic.Core
         }
 
         /// <summary>
-        /// Gets the list of the incoming commands and their senders (0 - host). Calling this method
-        /// automatically clears the incoming command queue.
+        /// Gets the list of the incoming commands. Calling this method automatically clears the incoming command queue.
         /// </summary>
         /// <returns>A list of the incoming commands.</returns>
-        public List<Tuple<RCPackage, int>> GetIncomingCommands()
+        public List<RCCommand> GetIncomingCommands()
         {
-            List<Tuple<RCPackage, int>> retList = new List<Tuple<RCPackage, int>>(this.incomingCommands);
+            List<RCCommand> retList = new List<RCCommand>();
+            foreach (RCPackage cmdPackage in this.incomingCommands)
+            {
+                retList.Add(RCCommand.FromPackage(cmdPackage));
+            }
             this.incomingCommands.Clear();
             return retList;
         }
@@ -71,12 +75,10 @@ namespace RC.App.BizLogic.Core
         /// Pushes a command into the incoming command queue.
         /// </summary>
         /// <param name="commandPackage">The command to push.</param>
-        /// <param name="senderIndex">The index of the sender (0 - host).</param>
-        public void PushIncomingCommand(RCPackage commandPackage, int senderIndex)
+        public void PushIncomingCommand(RCPackage commandPackage)
         {
-            if (senderIndex < 0) { throw new ArgumentOutOfRangeException("senderIndex"); }
             if (commandPackage == null) { throw new ArgumentNullException("commandPackage"); }
-            this.incomingCommands.Add(new Tuple<RCPackage, int>(commandPackage, senderIndex));
+            this.incomingCommands.Add(commandPackage);
         }
 
         /// <summary>
@@ -104,8 +106,8 @@ namespace RC.App.BizLogic.Core
         private List<RCPackage> outgoingCommands;
 
         /// <summary>
-        /// The list of the incoming commands and their senders (0 - host) that can be executed by the UI-thread.
+        /// The list of the incoming commands that can be executed by the UI-thread.
         /// </summary>
-        private List<Tuple<RCPackage, int>> incomingCommands;
+        private List<RCPackage> incomingCommands;
     }
 }

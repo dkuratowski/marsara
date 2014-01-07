@@ -157,6 +157,34 @@ namespace RC.App.PresLogic.Controls
 
         #endregion Overrides
 
+        #region Overridables
+
+        /// <summary>
+        /// Handles the right click mouse event.
+        /// </summary>
+        /// <param name="position">The position of the right click.</param>
+        protected virtual void OnRightClick(RCIntVector position) { }
+
+        /// <summary>
+        /// Handles the left click mouse event.
+        /// </summary>
+        /// <param name="position">The position of the left click.</param>
+        protected virtual void OnLeftClick(RCIntVector position) { }
+
+        /// <summary>
+        /// Handles the double click mouse event.
+        /// </summary>
+        /// <param name="position">The position of the double click.</param>
+        protected virtual void OnDoubleClick(RCIntVector position) { }
+
+        /// <summary>
+        /// Handles the selection box mouse event.
+        /// </summary>
+        /// <param name="selectionBox">The position of the selection box.</param>
+        protected virtual void OnSelectionBox(RCIntRectangle selectionBox) { }
+
+        #endregion Overridables
+
         #region Mouse event handling
 
         /// <summary>
@@ -180,8 +208,8 @@ namespace RC.App.PresLogic.Controls
             {
                 if (evtArgs.Button == UIMouseButton.Right)
                 {
-                    /// TODO: send command to the selected units
-                    TraceManager.WriteAllTrace("RIGHT_CLICK", PresLogicTraceFilters.INFO);
+                    /// Handle the mouse event.
+                    this.OnRightClick(evtArgs.Position);
                     this.CurrentMouseStatus = MouseStatus.RightDown;
                 }
                 else if (evtArgs.Button == UIMouseButton.Left)
@@ -243,8 +271,8 @@ namespace RC.App.PresLogic.Controls
             {
                 this.CurrentMouseStatus = MouseStatus.None;
 
-                /// TODO: handle single unit selection
-                TraceManager.WriteAllTrace("LEFT_CLICK", PresLogicTraceFilters.INFO);
+                /// Handle the mouse event.
+                this.OnLeftClick(evtArgs.Position);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
@@ -254,9 +282,8 @@ namespace RC.App.PresLogic.Controls
             {
                 this.CurrentMouseStatus = MouseStatus.None;
 
-                /// TODO: handle selection box
-                RCIntRectangle selectionBox = this.CalculateSelectionBox();
-                TraceManager.WriteAllTrace(string.Format("SELECTION {0}", selectionBox), PresLogicTraceFilters.INFO);
+                /// Handle the mouse event.
+                this.OnSelectionBox(this.CalculateSelectionBox());
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
@@ -268,14 +295,16 @@ namespace RC.App.PresLogic.Controls
             }
             else if (this.CurrentMouseStatus == MouseStatus.DoubleClicked && evtArgs.Button == UIMouseButton.Left)
             {
-                /// TODO: handle double click
-                TraceManager.WriteAllTrace("DOUBLE_CLICK", PresLogicTraceFilters.INFO);
+                /// Handle the mouse event.
+                this.OnDoubleClick(evtArgs.Position);
 
                 this.CurrentMouseStatus = MouseStatus.None;
             }
         }
 
         #endregion Mouse event handling
+
+        #region Internal methods
 
         /// <summary>
         /// Calculates the current selection box in the coordinate-system of this display.
@@ -322,6 +351,8 @@ namespace RC.App.PresLogic.Controls
                 }
             }
         }
+
+        #endregion Internal methods
 
         /// <summary>
         /// The brush for drawing the selection box.

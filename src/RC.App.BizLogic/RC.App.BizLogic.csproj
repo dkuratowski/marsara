@@ -70,6 +70,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentInterfaces\IMultiplayerGameManager.cs" />
+    <Compile Include="Core\MapObjectControlView.cs" />
+    <Compile Include="PublicInterfaces\IMapObjectControlView.cs" />
     <Compile Include="Core\BizLogicConstants.cs" />
     <Compile Include="Core\CommandDispatcher.cs" />
     <Compile Include="Core\GameplayBE.cs" />
@@ -104,6 +106,7 @@
     <Compile Include="PublicInterfaces\ITileSetView.cs" />
     <Compile Include="PublicInterfaces\ObjectPlacementBox.cs" />
     <Compile Include="PublicInterfaces\PlayerEnum.cs" />
+    <Compile Include="PublicInterfaces\RCCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj">
