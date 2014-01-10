@@ -185,7 +185,8 @@ namespace RC.Engine.Simulator.Scenarios
         /// </returns>
         public Player GetPlayer(int index)
         {
-            throw new NotImplementedException();
+            if (index < 0 || index >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("index"); }
+            return this.players[index];
         }
 
         /// <summary>

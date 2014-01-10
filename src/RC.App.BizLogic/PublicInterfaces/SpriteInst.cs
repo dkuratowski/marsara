@@ -7,17 +7,17 @@ using RC.Common;
 namespace RC.App.BizLogic.PublicInterfaces
 {
     /// <summary>
-    /// This structure contains informations for displaying an instance of a map sprite type on the map.
+    /// This structure contains informations for displaying an instance of a sprite on the map.
     /// </summary>
-    public struct MapSpriteInstance
+    public struct SpriteInst
     {
         /// <summary>
-        /// The index of the map sprite instance to be displayed.
+        /// The index of the sprite instance to be displayed.
         /// </summary>
         public int Index { get; set; }
 
         /// <summary>
-        /// The coordinates of the upper-left pixel of the rendered part of the map sprite in the coordinate system of
+        /// The coordinates of the upper-left pixel of the rendered part of the sprite instance in the coordinate system of
         /// the display area.
         /// </summary>
         public RCIntVector DisplayCoords { get; set; }

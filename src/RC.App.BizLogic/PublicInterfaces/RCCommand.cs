@@ -121,6 +121,9 @@ namespace RC.App.BizLogic.PublicInterfaces
                 case MoveCommand.MNEMONIC:
                     command = new MoveCommand();
                     break;
+                case FastCommand.MNEMONIC:
+                    command = new FastCommand();
+                    break;
                 default:
                     break;
             }
@@ -184,5 +187,31 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// The mnemonic of a move command.
         /// </summary>
         public const string MNEMONIC = "MOV";
+    }
+
+    /// <summary>
+    /// Represents a FastCommand instance.
+    /// </summary>
+    class FastCommand : RCCommand
+    {
+        /// <summary>
+        /// Constructs a FastCommand instance.
+        /// </summary>
+        internal FastCommand() { }
+
+        #region RCCommand overrides
+
+        /// <see cref="RCCommand.Execute"/>
+        public override void Execute()
+        {
+            TraceManager.WriteAllTrace(string.Format("FAST {0}", this.TargetPosition), BizLogicTraceFilters.INFO);
+        }
+
+        #endregion RCCommand overrides
+
+        /// <summary>
+        /// The mnemonic of a move command.
+        /// </summary>
+        public const string MNEMONIC = "FAST";
     }
 }

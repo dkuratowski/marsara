@@ -56,6 +56,7 @@ namespace RC.App.BizLogic.Core
             StartLocation startLocation = this.gameScenario.GetVisibleEntities<StartLocation>()[0];
             this.gameScenario.CreatePlayer(0, startLocation, RaceEnum.Terran);
             this.gameScenario.FinalizePlayers();
+            this.entitySelector = new EntitySelector(this.gameScenario, 0);
             this.commandDispatcher = new CommandDispatcher();
             this.triggeredScheduler = new TriggeredScheduler(1000 / (int)gameSpeed);
             this.triggeredScheduler.AddScheduledFunction(this.ExecuteFrame);
@@ -95,6 +96,12 @@ namespace RC.App.BizLogic.Core
         public Scenario GameScenario
         {
             get { return this.gameScenario; }
+        }
+
+        /// <see cref="IMultiplayerGameManager.Selector"/>
+        public EntitySelector Selector
+        {
+            get { return this.entitySelector; }
         }
 
         /// <see cref="IMultiplayerGameManager.GameScenario"/>
@@ -162,6 +169,11 @@ namespace RC.App.BizLogic.Core
         /// Reference to the active scenario.
         /// </summary>
         private Scenario gameScenario;
+
+        /// <summary>
+        /// Reference to the entity selector of the local player.
+        /// </summary>
+        private EntitySelector entitySelector;
 
         /// <summary>
         /// Reference to the RC.Engine.Simulator.ScenarioLoader component.

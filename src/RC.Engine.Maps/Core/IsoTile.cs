@@ -197,8 +197,8 @@ namespace RC.Engine.Maps.Core
                 for (int row = 0; row < MapStructure.QUAD_PER_ISO_HORZ * MapStructure.NAVCELL_PER_QUAD; row++)
                 {
                     if (this.cells[col, row] != null &&
-                        (this.cells[col, row].MapCoords.X >= this.parentMap.Size.X ||
-                         this.cells[col, row].MapCoords.Y >= this.parentMap.Size.Y))
+                        (this.cells[col, row].MapCoords.X >= this.parentMap.Size.X * MapStructure.NAVCELL_PER_QUAD ||
+                         this.cells[col, row].MapCoords.Y >= this.parentMap.Size.Y * MapStructure.NAVCELL_PER_QUAD))
                     {
                         this.detachedCells.Add(this.cells[col, row]);
                         this.cells[col, row] = null;

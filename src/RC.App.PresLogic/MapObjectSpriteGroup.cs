@@ -29,7 +29,7 @@ namespace RC.App.PresLogic
         protected override List<UISprite> Load_i()
         {
             List<UISprite> retList = new List<UISprite>();
-            foreach (MapSpriteType objType in this.metadataView.GetMapObjectTypes())
+            foreach (SpriteDef objType in this.metadataView.GetMapObjectTypes())
             {
                 if (this.owner == PlayerEnum.Neutral || objType.HasOwner)
                 {

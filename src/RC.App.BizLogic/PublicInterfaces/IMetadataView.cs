@@ -14,6 +14,6 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// Gets the map sprite types for each ma object types defined in the game engine metadata.
         /// </summary>
         /// <returns>The list of the map sprite types for map object types.</returns>
-        List<MapSpriteType> GetMapObjectTypes();
+        List<SpriteDef> GetMapObjectTypes();
     }
 }

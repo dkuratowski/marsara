@@ -39,13 +39,16 @@ namespace RC.App.PresLogic.Pages
             this.gameplayBE = ComponentManager.GetInterface<IGameplayBE>();
             this.mapTerrainView = null;
             this.mapObjectView = null;
+            this.selectionIndicatorView = null;
             this.mapObjectControlView = null;
             this.tilesetView = null;
             this.metadataView = null;
 
             this.mapDisplay = null;
             this.mapDisplayBasic = null;
+            this.mapWalkabilityDisplay = null;
             this.mapObjectDisplayEx = null;
+            this.selectionDisplayEx = null;
             this.objectPlacementDisplayEx = null;
             this.currentConnectionStatus = ConnectionStatus.Offline;
 
@@ -91,22 +94,25 @@ namespace RC.App.PresLogic.Pages
 
             /// Create the necessary views.
             this.mapTerrainView = this.gameplayBE.CreateMapTerrainView();
-            //this.mapDebugView = this.gameplayBE.CreateMapDebugView();
             this.mapObjectView = this.gameplayBE.CreateMapObjectView();
+            this.selectionIndicatorView = this.gameplayBE.CreateSelIndicatorView();
             this.mapObjectControlView = this.gameplayBE.CreateMapObjectControlView();
             this.tilesetView = this.gameplayBE.CreateTileSetView();
             this.metadataView = this.gameplayBE.CreateMetadataView();
 
             /// Create and start the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135), this.mapTerrainView, this.tilesetView);
-            this.mapObjectDisplayEx = new RCMapObjectGameplayDisplay(this.mapDisplayBasic, this.mapObjectView, this.mapObjectControlView, this.metadataView);
-            this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.mapObjectDisplayEx, this.mapTerrainView);
+            //this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic, this.mapTerrainView);
+            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView, this.metadataView);
+            this.selectionDisplayEx = new RCSelectionDisplay(this.mapObjectDisplayEx, this.selectionIndicatorView);
+            this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.selectionDisplayEx, this.mapTerrainView);
             this.mapDisplay = this.objectPlacementDisplayEx;
             this.mapDisplay.Started += this.OnMapDisplayStarted;
             this.mapDisplay.Start();
 
-            /// Create the scroll handler for the map display.
+            /// Create the handlers for the map display.
             this.scrollHandler = new ScrollHandler(this, this.mapDisplay);
+            this.mouseHandler = new MouseHandler(this.selectionDisplayEx, this.selectionDisplayEx, this.mapObjectControlView);
 
             /// Set the connection status to ConnectionStatus.Connecting.
             this.CurrentConnectionStatus = ConnectionStatus.Connecting;
@@ -125,11 +131,11 @@ namespace RC.App.PresLogic.Pages
 
             /// TODO: deactivate mouse handling
             this.menuButtonPanel.MouseSensor.ButtonDown -= this.OnMenuButtonPressed;
-            this.mapObjectDisplayEx.MouseActivityStarted -= this.OnMouseActivityStarted;
-            this.mapObjectDisplayEx.MouseActivityFinished -= this.OnMouseActivityFinished;
+            this.mouseHandler.MouseActivityStarted -= this.OnMouseActivityStarted;
+            this.mouseHandler.MouseActivityFinished -= this.OnMouseActivityFinished;
             this.scrollHandler.MouseActivityStarted -= this.OnMouseActivityStarted;
             this.scrollHandler.MouseActivityFinished -= this.OnMouseActivityFinished;
-            this.mapObjectDisplayEx.DeactivateMouseHandling();
+            this.mouseHandler.DeactivateMouseHandling();
             this.scrollHandler.DeactivateMouseHandling();
 
             /// Detach the map display control from this page.
@@ -200,11 +206,11 @@ namespace RC.App.PresLogic.Pages
 
             /// TODO: activate mouse handling
             this.scrollHandler.ActivateMouseHandling();
-            this.mapObjectDisplayEx.ActivateMouseHandling();
+            this.mouseHandler.ActivateMouseHandling();
             this.scrollHandler.MouseActivityStarted += this.OnMouseActivityStarted;
             this.scrollHandler.MouseActivityFinished += this.OnMouseActivityFinished;
-            this.mapObjectDisplayEx.MouseActivityStarted += this.OnMouseActivityStarted;
-            this.mapObjectDisplayEx.MouseActivityFinished += this.OnMouseActivityFinished;
+            this.mouseHandler.MouseActivityStarted += this.OnMouseActivityStarted;
+            this.mouseHandler.MouseActivityFinished += this.OnMouseActivityFinished;
 
             this.menuButtonPanel.MouseSensor.ButtonDown += this.OnMenuButtonPressed;
 
@@ -222,16 +228,20 @@ namespace RC.App.PresLogic.Pages
             /// Remove the views.
             this.mapTerrainView = null;
             this.mapObjectView = null;
+            this.selectionIndicatorView = null;
             this.mapObjectControlView = null;
             this.tilesetView = null;
             this.metadataView = null;
 
             /// Remove the map display control.
             this.mapDisplayBasic = null;
+            this.mapWalkabilityDisplay = null;
             this.mapObjectDisplayEx = null;
+            this.selectionDisplayEx = null;
             this.objectPlacementDisplayEx = null;
             this.mapDisplay = null;
             this.scrollHandler = null;
+            this.mouseHandler = null;
 
             /// The page is now offline.
             this.CurrentConnectionStatus = ConnectionStatus.Offline;
@@ -245,13 +255,13 @@ namespace RC.App.PresLogic.Pages
         /// </summary>
         private void OnMouseActivityStarted(object sender, EventArgs evtArgs)
         {
-            if (sender == this.mapObjectDisplayEx)
+            if (sender == this.mouseHandler)
             {
                 this.scrollHandler.DeactivateMouseHandling();
             }
             else if (sender == this.scrollHandler)
             {
-                this.mapObjectDisplayEx.DeactivateMouseHandling();
+                this.mouseHandler.DeactivateMouseHandling();
             }
         }
 
@@ -260,13 +270,13 @@ namespace RC.App.PresLogic.Pages
         /// </summary>
         private void OnMouseActivityFinished(object sender, EventArgs evtArgs)
         {
-            if (sender == this.mapObjectDisplayEx)
+            if (sender == this.mouseHandler)
             {
                 this.scrollHandler.ActivateMouseHandling();
             }
             else if (sender == this.scrollHandler)
             {
-                this.mapObjectDisplayEx.ActivateMouseHandling();
+                this.mouseHandler.ActivateMouseHandling();
             }
         }
 
@@ -320,9 +330,20 @@ namespace RC.App.PresLogic.Pages
         private RCMapDisplayBasic mapDisplayBasic;
 
         /// <summary>
+        /// Extension of the map display that displays the walkability of the map cells.
+        /// </summary>
+        private RCMapWalkabilityDisplay mapWalkabilityDisplay;
+
+        /// <summary>
         /// Extension of the map display that displays the map objects.
         /// </summary>
         private RCMapObjectDisplay mapObjectDisplayEx;
+
+        /// <summary>
+        /// Extension of the map display that displays the selection box and the selection indicators of the selected
+        /// map objects.
+        /// </summary>
+        private RCSelectionDisplay selectionDisplayEx;
 
         /// <summary>
         /// Extension of the map display that displays the object placement boxes.
@@ -343,6 +364,11 @@ namespace RC.App.PresLogic.Pages
         /// Reference to the map object view.
         /// </summary>
         private IMapObjectView mapObjectView;
+
+        /// <summary>
+        /// Reference to the seleciton indicator view.
+        /// </summary>
+        private ISelectionIndicatorView selectionIndicatorView;
 
         /// <summary>
         /// Reference to the map object control view.
@@ -368,5 +394,10 @@ namespace RC.App.PresLogic.Pages
         /// Reference to the object that controls the scrolling of the map display.
         /// </summary>
         private ScrollHandler scrollHandler;
+
+        /// <summary>
+        /// Reference to the mouse handler of the map display.
+        /// </summary>
+        private MouseHandler mouseHandler;
     }
 }

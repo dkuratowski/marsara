@@ -25,7 +25,7 @@ namespace RC.App.PresLogic
         protected override List<UISprite> Load_i()
         {
             List<UISprite> retList = new List<UISprite>();
-            foreach (MapSpriteType terrainObjectType in this.tilesetView.GetTerrainObjectTypes())
+            foreach (SpriteDef terrainObjectType in this.tilesetView.GetTerrainObjectTypes())
             {
                 UISprite terrainObject = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(terrainObjectType.ImageData, UIWorkspace.Instance.PixelScaling);
                 terrainObject.TransparentColor = terrainObjectType.TransparentColorStr != null ?

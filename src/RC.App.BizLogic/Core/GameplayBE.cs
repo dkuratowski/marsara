@@ -61,10 +61,16 @@ namespace RC.App.BizLogic.Core
             return new MapObjectView(this.multiplayerGameManager.GameScenario);
         }
 
+        /// <see cref="IGameplayBE.CreateSelIndicatorView"/>
+        public ISelectionIndicatorView CreateSelIndicatorView()
+        {
+            return new SelectionIndicatorView(this.multiplayerGameManager.Selector);
+        }
+
         /// <see cref="IGameplayBE.CreateMapObjectControlView"/>
         public IMapObjectControlView CreateMapObjectControlView()
         {
-            return new MapObjectControlView(this.multiplayerGameManager.GameScenario);
+            return new MapObjectControlView(this.multiplayerGameManager.GameScenario, this.multiplayerGameManager.Selector);
         }
 
         /// <see cref="IGameplayBE.CreateTileSetView"/>

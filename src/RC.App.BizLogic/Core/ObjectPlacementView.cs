@@ -49,14 +49,14 @@ namespace RC.App.BizLogic.Core
             RCIntVector objectQuadraticSize = this.GetObjectQuadraticSize();
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objectQuadraticSize / 2;
 
-            List<MapSpriteInstance> spritesToDisplay = this.GetObjectSprites();
+            List<SpriteInst> spritesToDisplay = this.GetObjectSprites();
             RCIntVector topLeftDisplayCoords =
                     (this.Map.QuadToCellRect(new RCIntRectangle(topLeftQuadCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
                   * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
                   - displayOffset;
             for (int i = 0; i < spritesToDisplay.Count; i++)
             {
-                spritesToDisplay[i] = new MapSpriteInstance()
+                spritesToDisplay[i] = new SpriteInst()
                 {
                     Index = spritesToDisplay[i].Index,
                     DisplayCoords = topLeftDisplayCoords + spritesToDisplay[i].DisplayCoords,
@@ -120,6 +120,6 @@ namespace RC.App.BizLogic.Core
         /// <returns>
         /// A list of sprites with coordinates relative to the top left corner of the area of the object.
         /// </returns>
-        protected abstract List<MapSpriteInstance> GetObjectSprites();
+        protected abstract List<SpriteInst> GetObjectSprites();
     }
 }

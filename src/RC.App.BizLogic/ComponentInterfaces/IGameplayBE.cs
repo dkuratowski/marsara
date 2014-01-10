@@ -41,6 +41,13 @@ namespace RC.App.BizLogic.ComponentInterfaces
         IMapObjectView CreateMapObjectView();
 
         /// <summary>
+        /// Creates a view on the selection indicators of the currently selected objects.
+        /// </summary>
+        /// <returns>The view on the selection indicators of the currently selected objects.</returns>
+        /// <exception cref="InvalidOperationException">If there is no opened scenario.</exception>
+        ISelectionIndicatorView CreateSelIndicatorView();
+
+        /// <summary>
         /// Creates a control view on the map objects of the currently opened scenario.
         /// </summary>
         /// <returns>The view on the map objects of the currently opened scenario.</returns>

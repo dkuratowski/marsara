@@ -57,5 +57,11 @@ namespace RC.App.BizLogic.Core
         /// Reference to the map.
         /// </summary>
         private IMapAccess map;
+
+        /// <summary>
+        /// Constants for coordinate transformations.
+        /// </summary>
+        public static readonly RCNumVector PIXEL_PER_NAVCELL_VECT = new RCNumVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL);
+        public static readonly RCNumVector HALF_VECT = new RCNumVector(1, 1) / 2;
     }
 }

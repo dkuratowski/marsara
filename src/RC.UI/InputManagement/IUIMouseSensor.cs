@@ -65,6 +65,11 @@ namespace RC.UI
         event UIMouseEventHdl Wheel;
 
         /// <summary>
+        /// Occurs when the state of this mouse sensor has been reset.
+        /// </summary>
+        event EventHandler StateReset;
+
+        /// <summary>
         /// Attaches this mouse sensor to the given target sensor so that the events arrived to the target sensor will be propagated to
         /// this mouse sensor.
         /// </summary>
@@ -99,10 +104,7 @@ namespace RC.UI
         /// </summary>
         public void Reset()
         {
-            this.activatorButton = UIMouseButton.Undefined;
-            this.activeOver = false;
-            this.StopDoubleClickTimer();
-            this.targetObject.ResetState();
+            this.PropagateReset(this, new EventArgs());
         }
 
         #region Trigger methods
@@ -243,6 +245,14 @@ namespace RC.UI
         private void PropagateClick(UISensitiveObject sender, UIMouseEventArgs evtArgs) { if (this.Click != null) { this.Click(sender, evtArgs); } }
         private void PropagateDoubleClick(UISensitiveObject sender, UIMouseEventArgs evtArgs) { if (this.DoubleClick != null) { this.DoubleClick(sender, evtArgs); } }
         private void PropagateWheel(UISensitiveObject sender, UIMouseEventArgs evtArgs) { if (this.Wheel != null) { this.Wheel(sender, evtArgs); } }
+        private void PropagateReset(object sender, EventArgs evtArgs)
+        {
+            this.activatorButton = UIMouseButton.Undefined;
+            this.activeOver = false;
+            this.StopDoubleClickTimer();
+            this.targetObject.ResetState();
+            if (this.StateReset != null) { this.StateReset(sender, evtArgs); }
+        }
 
         #endregion Propagation methods
 
@@ -292,6 +302,9 @@ namespace RC.UI
         /// <see cref="IUIMouseSensor.Wheel"/>
         public event UIMouseEventHdl Wheel;
 
+        /// <see cref="IUIMouseSensor.StateReset"/>
+        public event EventHandler StateReset;
+
         /// <see cref="IUIMouseSensor.AttachTo"/>
         public void AttachTo(IUIMouseSensor target)
         {
@@ -305,6 +318,7 @@ namespace RC.UI
             target.Click += this.PropagateClick;
             target.DoubleClick += this.PropagateDoubleClick;
             target.Wheel += this.PropagateWheel;
+            target.StateReset += this.PropagateReset;
         }
 
         /// <see cref="IUIMouseSensor.DetachFrom"/>
@@ -320,6 +334,7 @@ namespace RC.UI
             target.Click -= this.PropagateClick;
             target.DoubleClick -= this.PropagateDoubleClick;
             target.Wheel -= this.PropagateWheel;
+            target.StateReset -= this.PropagateReset;
         }
 
         #endregion IUIMouseSensor members

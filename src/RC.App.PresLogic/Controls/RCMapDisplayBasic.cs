@@ -61,14 +61,14 @@ namespace RC.App.PresLogic.Controls
             if (this.DisplayedArea != RCIntRectangle.Undefined)
             {
                 /// Display the currently visible tiles.
-                foreach (MapSpriteInstance tileDisplayInfo in this.mapView.GetVisibleIsoTiles(this.DisplayedArea))
+                foreach (SpriteInst tileDisplayInfo in this.mapView.GetVisibleIsoTiles(this.DisplayedArea))
 	            {
                     UISprite tileToDisplay = this.tiles[tileDisplayInfo.Index];
                     renderContext.RenderSprite(tileToDisplay, tileDisplayInfo.DisplayCoords, tileDisplayInfo.Section);
                 }
 
                 /// Display the currently visible terrain objects.
-                foreach (MapSpriteInstance terrainObjDisplayInfo in this.mapView.GetVisibleTerrainObjects(this.DisplayedArea))
+                foreach (SpriteInst terrainObjDisplayInfo in this.mapView.GetVisibleTerrainObjects(this.DisplayedArea))
                 {
                     UISprite terrainObjToDisplay = this.terrainObjects[terrainObjDisplayInfo.Index];
                     renderContext.RenderSprite(terrainObjToDisplay, terrainObjDisplayInfo.DisplayCoords, terrainObjDisplayInfo.Section);

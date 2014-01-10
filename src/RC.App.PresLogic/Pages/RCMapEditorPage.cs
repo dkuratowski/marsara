@@ -108,7 +108,8 @@ namespace RC.App.PresLogic.Pages
 
             /// Create the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize - new RCIntVector(97, 0), this.mapTerrainView, this.tilesetView);
-            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView, this.metadataView);
+            this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic, this.mapTerrainView);
+            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapWalkabilityDisplay, this.mapObjectView, this.metadataView);
             this.isotileDisplayEx = new RCIsoTileDisplay(this.mapObjectDisplayEx, this.mapTerrainView);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.isotileDisplayEx, this.mapTerrainView);
             this.resourceAmountDisplayEx = new RCResourceAmountDisplay(this.objectPlacementDisplayEx, this.mapObjectDataView, this.mapTerrainView);
@@ -461,6 +462,11 @@ namespace RC.App.PresLogic.Pages
         /// The basic part of the map display.
         /// </summary>
         private RCMapDisplayBasic mapDisplayBasic;
+
+        /// <summary>
+        /// Extension of the map display that displays the walkability of map cells.
+        /// </summary>
+        private RCMapWalkabilityDisplay mapWalkabilityDisplay;
 
         /// <summary>
         /// Extension of the map display that displays the map objects.

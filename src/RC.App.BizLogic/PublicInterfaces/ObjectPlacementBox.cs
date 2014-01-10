@@ -14,7 +14,7 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// <summary>
         /// The sprites of the object to be displayed.
         /// </summary>
-        public List<MapSpriteInstance> Sprites { get; set; }
+        public List<SpriteInst> Sprites { get; set; }
 
         /// <summary>
         /// The illegal parts of the object placement box.

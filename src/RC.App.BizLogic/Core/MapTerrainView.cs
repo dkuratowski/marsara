@@ -24,7 +24,7 @@ namespace RC.App.BizLogic.Core
         #region IMapTerrainView methods
 
         /// <see cref="IMapTerrainView.GetVisibleIsoTiles"/>
-        public List<MapSpriteInstance> GetVisibleIsoTiles(RCIntRectangle displayedArea)
+        public List<SpriteInst> GetVisibleIsoTiles(RCIntRectangle displayedArea)
         {
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
@@ -33,7 +33,7 @@ namespace RC.App.BizLogic.Core
             RCIntVector displayOffset;
             this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
-            List<MapSpriteInstance> retList = new List<MapSpriteInstance>();
+            List<SpriteInst> retList = new List<SpriteInst>();
             HashSet<IIsoTile> tmpIsoTileList = new HashSet<IIsoTile>();
 
             RCIntVector topLeftNavCellCoords = new RCIntVector(Math.Max(0, cellWindow.Left), Math.Max(0, cellWindow.Top));
@@ -50,7 +50,7 @@ namespace RC.App.BizLogic.Core
 
                     tmpIsoTileList.Add(isotile);
                     retList.Add(
-                        new MapSpriteInstance()
+                        new SpriteInst()
                         {
                             Index = isotile.Variant.Index,
                             DisplayCoords = (isotile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
@@ -72,7 +72,7 @@ namespace RC.App.BizLogic.Core
 
                             tmpIsoTileList.Add(isotile);
                             retList.Add(
-                                new MapSpriteInstance()
+                                new SpriteInst()
                                 {
                                     Index = isotile.Variant.Index,
                                     DisplayCoords = (isotile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
@@ -95,7 +95,7 @@ namespace RC.App.BizLogic.Core
 
                             tmpIsoTileList.Add(isotile);
                             retList.Add(
-                                new MapSpriteInstance()
+                                new SpriteInst()
                                 {
                                     Index = isotile.Variant.Index,
                                     DisplayCoords = (isotile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
@@ -132,7 +132,7 @@ namespace RC.App.BizLogic.Core
         }
 
         /// <see cref="IMapTerrainView.GetVisibleTerrainObjects"/>
-        public List<MapSpriteInstance> GetVisibleTerrainObjects(RCIntRectangle displayedArea)
+        public List<SpriteInst> GetVisibleTerrainObjects(RCIntRectangle displayedArea)
         {
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
@@ -141,7 +141,7 @@ namespace RC.App.BizLogic.Core
             RCIntVector displayOffset;
             this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
-            List<MapSpriteInstance> retList = new List<MapSpriteInstance>();
+            List<SpriteInst> retList = new List<SpriteInst>();
             HashSet<ITerrainObject> visibleTerrainObjects = this.Map.TerrainObjects.GetContents(
                 new RCNumRectangle(cellWindow.X - (RCNumber)1/(RCNumber)2,
                                    cellWindow.Y - (RCNumber)1/(RCNumber)2,
@@ -149,7 +149,7 @@ namespace RC.App.BizLogic.Core
                                    cellWindow.Height));
             foreach (ITerrainObject terrainObj in visibleTerrainObjects)
             {
-                retList.Add(new MapSpriteInstance()
+                retList.Add(new SpriteInst()
                 {
                     Index = terrainObj.Type.Index,
                     DisplayCoords = (this.Map.QuadToCellRect(new RCIntRectangle(terrainObj.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
@@ -187,6 +187,32 @@ namespace RC.App.BizLogic.Core
             }
 
             return RCIntVector.Undefined;
+        }
+
+        /// <see cref="IMapTerrainView.GetWalkableCells"/>
+        public List<RCIntRectangle> GetWalkableCells(RCIntRectangle displayedArea)
+        {
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
+
+            RCIntRectangle cellWindow;
+            RCIntVector displayOffset;
+            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+
+            List<RCIntRectangle> retList = new List<RCIntRectangle>();
+            for (int row = cellWindow.Top; row < cellWindow.Bottom; row++)
+            {
+                for (int col = cellWindow.Left; col < cellWindow.Right; col++)
+                {
+                    RCIntVector cellCoords = new RCIntVector(col, row);
+                    if (this.Map.GetCell(cellCoords).IsBuildable)
+                    {
+                        retList.Add(new RCIntRectangle((cellCoords - cellWindow.Location) * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL) - displayOffset,
+                                                       new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)));
+                    }
+                }
+            }
+            return retList;
         }
 
         #endregion IMapTerrainView methods

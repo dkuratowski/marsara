@@ -79,7 +79,7 @@ namespace RC.App.PresLogic.Controls
             {
                 ObjectPlacementBox placementBox = this.objectPlacementView.GetObjectPlacementBox(this.DisplayedArea, this.lastKnownMousePosition);
 
-                foreach (MapSpriteInstance spriteToDisplay in placementBox.Sprites)
+                foreach (SpriteInst spriteToDisplay in placementBox.Sprites)
                 {
                     UISprite uiSpriteToDisplay = this.objects[spriteToDisplay.Index];
                     renderContext.RenderSprite(uiSpriteToDisplay, spriteToDisplay.DisplayCoords, spriteToDisplay.Section);

@@ -59,14 +59,14 @@ namespace RC.App.BizLogic.Core
         }
 
         /// <see cref="ObjectPlacementView.GetObjectSprites"/>
-        protected override List<MapSpriteInstance> GetObjectSprites()
+        protected override List<SpriteInst> GetObjectSprites()
         {
-            if (this.previewAnimation == null) { return new List<MapSpriteInstance>(); }
+            if (this.previewAnimation == null) { return new List<SpriteInst>(); }
 
-            List<MapSpriteInstance> retList = new List<MapSpriteInstance>();
+            List<SpriteInst> retList = new List<SpriteInst>();
             foreach (int spriteIdx in this.previewAnimation.CurrentFrame)
             {
-                retList.Add(new MapSpriteInstance()
+                retList.Add(new SpriteInst()
                 {
                     Index = this.objectType.SpritePalette.Index,
                     DisplayCoords = this.objectType.SpritePalette.GetOffset(spriteIdx),

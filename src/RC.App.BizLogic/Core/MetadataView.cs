@@ -25,16 +25,16 @@ namespace RC.App.BizLogic.Core
         #region IMetadataView members
 
         /// <see cref="IMetadataView.GetMapObjectTypes"/>
-        public List<MapSpriteType> GetMapObjectTypes()
+        public List<SpriteDef> GetMapObjectTypes()
         {
-            List<MapSpriteType> retList = new List<MapSpriteType>();
+            List<SpriteDef> retList = new List<SpriteDef>();
             foreach (IScenarioElementType objType in this.metadata.AllTypes)
             {
                 if (objType.SpritePalette != null)
                 {
                     byte[] imageData = new byte[objType.SpritePalette.ImageData.Length];
                     Array.Copy(objType.SpritePalette.ImageData, imageData, objType.SpritePalette.ImageData.Length);
-                    MapSpriteType info = new MapSpriteType();
+                    SpriteDef info = new SpriteDef();
                     info.ImageData = imageData;
                     info.TransparentColorStr = objType.SpritePalette.TransparentColorStr;
                     info.OwnerMaskColorStr = objType.SpritePalette.OwnerMaskColorStr;
@@ -52,11 +52,11 @@ namespace RC.App.BizLogic.Core
         /// </summary>
         /// <param name="objType">The object type.</param>
         /// <returns>The created map sprite type.</returns>
-        private MapSpriteType CreateMapSpriteType(IScenarioElementType objType)
+        private SpriteDef CreateMapSpriteType(IScenarioElementType objType)
         {
             byte[] imageData = new byte[objType.SpritePalette.ImageData.Length];
             Array.Copy(objType.SpritePalette.ImageData, imageData, objType.SpritePalette.ImageData.Length);
-            MapSpriteType info = new MapSpriteType();
+            SpriteDef info = new SpriteDef();
             info.ImageData = imageData;
             info.TransparentColorStr = objType.SpritePalette.TransparentColorStr;
             info.OwnerMaskColorStr = objType.SpritePalette.OwnerMaskColorStr;

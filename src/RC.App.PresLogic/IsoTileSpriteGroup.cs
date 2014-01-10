@@ -28,7 +28,7 @@ namespace RC.App.PresLogic
         protected override List<UISprite> Load_i()
         {
             List<UISprite> retList = new List<UISprite>();
-            foreach (MapSpriteType tileType in this.tilesetView.GetIsoTileTypes())
+            foreach (SpriteDef tileType in this.tilesetView.GetIsoTileTypes())
             {
                 UISprite tile = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(tileType.ImageData, UIWorkspace.Instance.PixelScaling);
                 tile.TransparentColor = tileType.TransparentColorStr != null ?

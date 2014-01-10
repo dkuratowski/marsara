@@ -70,7 +70,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentInterfaces\IMultiplayerGameManager.cs" />
+    <Compile Include="Core\EntitySelector.cs" />
     <Compile Include="Core\MapObjectControlView.cs" />
+    <Compile Include="Core\SelectionIndicatorView.cs" />
     <Compile Include="PublicInterfaces\IMapObjectControlView.cs" />
     <Compile Include="Core\BizLogicConstants.cs" />
     <Compile Include="Core\CommandDispatcher.cs" />
@@ -100,13 +102,16 @@
     <Compile Include="PublicInterfaces\IMetadataView.cs" />
     <Compile Include="PublicInterfaces\IObjectPlacementView.cs" />
     <Compile Include="ComponentInterfaces\ITaskManager.cs" />
-    <Compile Include="PublicInterfaces\MapObjectInstance.cs" />
-    <Compile Include="PublicInterfaces\MapSpriteInstance.cs" />
-    <Compile Include="PublicInterfaces\MapSpriteType.cs" />
+    <Compile Include="PublicInterfaces\ISelectionIndicatorView.cs" />
+    <Compile Include="PublicInterfaces\ObjectInst.cs" />
+    <Compile Include="PublicInterfaces\SelIndicatorInst.cs" />
+    <Compile Include="PublicInterfaces\SpriteInst.cs" />
+    <Compile Include="PublicInterfaces\SpriteDef.cs" />
     <Compile Include="PublicInterfaces\ITileSetView.cs" />
     <Compile Include="PublicInterfaces\ObjectPlacementBox.cs" />
     <Compile Include="PublicInterfaces\PlayerEnum.cs" />
     <Compile Include="PublicInterfaces\RCCommand.cs" />
+    <Compile Include="PublicInterfaces\SelIndicatorTypeEnum.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj">

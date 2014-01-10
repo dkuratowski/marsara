@@ -19,11 +19,14 @@ namespace RC.App.BizLogic.Core
         /// Constructs a MapObjectControlView instance.
         /// </summary>
         /// <param name="scenario">The subject of this view.</param>
-        public MapObjectControlView(Scenario scenario)
+        /// <param name="selector">The selector of the local player.</param>
+        public MapObjectControlView(Scenario scenario, EntitySelector selector)
             : base(scenario.Map)
         {
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
+            if (selector == null) { throw new ArgumentNullException("selector"); }
             this.scenario = scenario;
+            this.selector = selector;
 
             /// PROTOTYPE CODE
             this.gameManager = ComponentManager.GetInterface<IMultiplayerGameManager>();
@@ -34,7 +37,16 @@ namespace RC.App.BizLogic.Core
         /// <see cref="IMapObjectControlView.LeftClick"/>
         public void LeftClick(RCIntRectangle displayedArea, RCIntVector position)
         {
-            /// TODO: implement!
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
+
+            RCIntRectangle cellWindow;
+            RCIntVector displayOffset;
+            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+
+            RCNumVector mapCoords = new RCNumVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
+                                                    (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL) - HALF_VECT;
+            this.selector.Select(mapCoords);
         }
 
         /// <see cref="IMapObjectControlView.RightClick"/>
@@ -45,14 +57,17 @@ namespace RC.App.BizLogic.Core
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
 
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+            if (this.selector.CurrentSelection.Count != 0)
+            {
+                RCIntRectangle cellWindow;
+                RCIntVector displayOffset;
+                this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
-            int[] commandRecipients = new int[5] { 49, 50, 51, 52, 53 };
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            this.gameManager.PostCommand(RCCommand.Create(MoveCommand.MNEMONIC, commandRecipients, navCellCoords, -1, null));
+                RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
+                                                            (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+
+                this.gameManager.PostCommand(RCCommand.Create(FastCommand.MNEMONIC, this.selector.CurrentSelection.ToArray(), navCellCoords, -1, null));
+            }
         }
 
         /// <see cref="IMapObjectControlView.DoubleClick"/>
@@ -64,7 +79,20 @@ namespace RC.App.BizLogic.Core
         /// <see cref="IMapObjectControlView.SelectionBox"/>
         public void SelectionBox(RCIntRectangle displayedArea, RCIntRectangle selectionBox)
         {
-            /// TODO: implement!
+            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
+            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
+
+            RCIntRectangle cellWindow;
+            RCIntVector displayOffset;
+            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+
+            RCNumRectangle mapCoords =
+                new RCNumRectangle(
+                    new RCNumVector((displayedArea + selectionBox.Location).X / BizLogicConstants.PIXEL_PER_NAVCELL,
+                                    (displayedArea + selectionBox.Location).Y / BizLogicConstants.PIXEL_PER_NAVCELL) - HALF_VECT,
+                    new RCNumVector((RCNumber)selectionBox.Size.X / (RCNumber)BizLogicConstants.PIXEL_PER_NAVCELL,
+                                    (RCNumber)selectionBox.Size.Y / (RCNumber)BizLogicConstants.PIXEL_PER_NAVCELL));
+            this.selector.Select(mapCoords);
         }
 
         #endregion IMapObjectView methods
@@ -76,6 +104,11 @@ namespace RC.App.BizLogic.Core
         /// Reference to the scenario.
         /// </summary>
         private Scenario scenario;
+
+        /// <summary>
+        /// Reference to the entity selector of the local player.
+        /// </summary>
+        private EntitySelector selector;
 
         /// <summary>
         /// Constants for coordinate transformations.

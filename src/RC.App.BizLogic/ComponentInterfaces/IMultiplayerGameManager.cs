@@ -6,6 +6,7 @@ using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Simulator.Scenarios;
 using RC.App.BizLogic.PublicInterfaces;
+using RC.App.BizLogic.Core;
 
 namespace RC.App.BizLogic.ComponentInterfaces
 {
@@ -162,6 +163,11 @@ namespace RC.App.BizLogic.ComponentInterfaces
         /// Gets a reference to the scenario of the multiplayer game that this peer is currently connected to.
         /// </summary>
         Scenario GameScenario { get; }
+
+        /// <summary>
+        /// Gets the entity selector of the local player.
+        /// </summary>
+        EntitySelector Selector { get; }
 
         /// <summary>
         /// This event is raised several times on every peer when the start of the multiplayer game that this peer is currently connected

@@ -41,11 +41,11 @@ namespace RC.App.BizLogic.Core
         }
 
         /// <see cref="ObjectPlacementView.GetObjectSprites"/>
-        protected override List<MapSpriteInstance> GetObjectSprites()
+        protected override List<SpriteInst> GetObjectSprites()
         {
-            return new List<MapSpriteInstance>()
+            return new List<SpriteInst>()
             {
-                new MapSpriteInstance()
+                new SpriteInst()
                 {
                     Index = this.terrainObjectType.Index,
                     DisplayCoords = new RCIntVector(0, 0),

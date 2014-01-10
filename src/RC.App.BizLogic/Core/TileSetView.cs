@@ -25,14 +25,14 @@ namespace RC.App.BizLogic.Core
         #region ITileSetView methods
 
         /// <see cref="ITileSetView.GetIsoTileTypes"/>
-        public List<MapSpriteType> GetIsoTileTypes()
+        public List<SpriteDef> GetIsoTileTypes()
         {
-            List<MapSpriteType> retList = new List<MapSpriteType>();
+            List<SpriteDef> retList = new List<SpriteDef>();
             foreach (IIsoTileVariant tile in this.tileset.TileVariants)
             {
                 byte[] imageData = new byte[tile.ImageData.Length];
                 Array.Copy(tile.ImageData, imageData, tile.ImageData.Length);
-                MapSpriteType info = new MapSpriteType();
+                SpriteDef info = new SpriteDef();
                 info.ImageData = imageData;
                 info.TransparentColorStr = tile.GetProperty(BizLogicConstants.TILEPROP_TRANSPARENTCOLOR);
                 retList.Add(info);
@@ -41,14 +41,14 @@ namespace RC.App.BizLogic.Core
         }
 
         /// <see cref="ITileSetView.GetTerrainObjectTypes"/>
-        public List<MapSpriteType> GetTerrainObjectTypes()
+        public List<SpriteDef> GetTerrainObjectTypes()
         {
-            List<MapSpriteType> retList = new List<MapSpriteType>();
+            List<SpriteDef> retList = new List<SpriteDef>();
             foreach (ITerrainObjectType terrainObjectType in this.tileset.TerrainObjectTypes)
             {
                 byte[] imageData = new byte[terrainObjectType.ImageData.Length];
                 Array.Copy(terrainObjectType.ImageData, imageData, terrainObjectType.ImageData.Length);
-                MapSpriteType info = new MapSpriteType();
+                SpriteDef info = new SpriteDef();
                 info.ImageData = imageData;
                 info.TransparentColorStr = terrainObjectType.GetProperty(BizLogicConstants.TERRAINOBJPROP_TRANSPARENTCOLOR);
                 retList.Add(info);
