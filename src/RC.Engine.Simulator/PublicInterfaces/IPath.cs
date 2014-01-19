@@ -13,20 +13,39 @@ namespace RC.Engine.Simulator.PublicInterfaces
     public interface IPath
     {
         /// <summary>
-        /// Gets a section of the computed path.
+        /// Gets whether the path is ready for use or not.
+        /// </summary>
+        bool IsReadyForUse { get; }
+
+        /// <summary>
+        /// Gets whether the given target node has been found or the pathfinding algorithm has reached it's iteration limit without finding the target node.
+        /// </summary>
+        bool IsTargetFound { get; }
+
+        /// <summary>
+        /// Aborts searching the path.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">If the path is ready for use or has already been aborted.</exception>
+        void AbortSearch();
+
+        /// <summary>
+        /// Gets a section of the path.
         /// </summary>
         /// <param name="index">The index of the section to get.</param>
         /// <returns>The area of the section.</returns>
+        /// <exception cref="InvalidOperationException">If the path is not ready for use or has already been aborted.</exception>
         RCIntRectangle this[int index] { get; }
 
         /// <summary>
-        /// The total number of sections on this computed path.
+        /// Gets the total number of sections on this path.
         /// </summary>
+        /// <exception cref="InvalidOperationException">If the path is not ready for use or has already been aborted.</exception>
         int Length { get; }
 
         /// <summary>
-        /// Forgets every blocked edges used to compute this path.
+        /// Forgets every blocked edges that was used when the path was computed.
         /// </summary>
+        /// <exception cref="InvalidOperationException">If the path is not ready for use or has already been aborted.</exception>
         void ForgetBlockedEdges();
     }
 }

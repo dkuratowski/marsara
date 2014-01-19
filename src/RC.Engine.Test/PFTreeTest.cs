@@ -39,7 +39,8 @@ namespace RC.Engine.Test
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            Path testPath = new Path(pfTreeRoot.GetLeafNode(new RCIntVector(50, 240)), new RCIntVector(490, 119), new RCNumVector(2, 2));
+            Path testPath = new Path(pfTreeRoot.GetLeafNode(new RCIntVector(50, 240)), pfTreeRoot.GetLeafNode(new RCIntVector(490, 119)), 10000);
+            testPath.Search(1048576);
             watch.Stop();
             Console.WriteLine(watch.ElapsedMilliseconds);
             for (int i = 0; i < testPath.Length; ++i)
@@ -100,6 +101,13 @@ namespace RC.Engine.Test
                 }
             }
 
+            /// Search the neighbours of the leaf nodes.
+            foreach (PFTreeNode leafNode in pfTreeRoot.GetAllLeafNodes())
+            {
+                leafNode.SearchNeighbours();
+            }
+
+            pfTreeRoot.SetLeafNodeIndices();
             testMapBmp.Dispose();
             return pfTreeRoot;
         }

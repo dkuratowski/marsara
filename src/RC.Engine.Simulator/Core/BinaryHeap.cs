@@ -28,6 +28,8 @@ namespace RC.Engine.Simulator.Core
             this.type = type;
             this.nextIndex = 0;
             this.heapArray = new List<Tuple<int, T>>();
+            //this.heapArrayKeys = new List<int>();
+            //this.heapArrayItems = new List<T>();
         }
 
         /// <summary>
@@ -39,6 +41,8 @@ namespace RC.Engine.Simulator.Core
         {
             /// Add the new item to the bottom level of the heap.
             this.heapArray.Add(new Tuple<int, T>(key, item));
+            //this.heapArrayKeys.Add(key);
+            //this.heapArrayItems.Add(item);
 
             /// Restore the heap-property if necessary.
             this.Upheap();
@@ -58,14 +62,22 @@ namespace RC.Engine.Simulator.Core
             if (this.nextIndex == 1)
             {
                 this.heapArray.Clear();
+                //this.heapArrayKeys.Clear();
+                //this.heapArrayItems.Clear();
                 this.nextIndex = 0;
                 return;
             }
 
             /// Replace the root of the heap with the last element.
             Tuple<int, T> tmp = this.heapArray[this.nextIndex - 1];
+            //int tmpKey = this.heapArrayKeys[this.nextIndex - 1];
+            //T tmpItem = this.heapArrayItems[this.nextIndex - 1];
             this.heapArray.RemoveAt(this.nextIndex - 1);
+            //this.heapArrayKeys.RemoveAt(this.nextIndex - 1);
+            //this.heapArrayItems.RemoveAt(this.nextIndex - 1);
             this.heapArray[0] = tmp;
+            //this.heapArrayKeys[0] = tmpKey;
+            //this.heapArrayItems[0] = tmpItem;
 
             /// Decrement the nextIndex pointer to the end of the heap array.
             this.nextIndex--;
@@ -117,9 +129,7 @@ namespace RC.Engine.Simulator.Core
                     (this.heapArray[currIdx].Item1 < this.heapArray[parentIdx].Item1))
                 {
                     /// Swap the current item with its parent.
-                    Tuple<int, T> tmp = this.heapArray[parentIdx];
-                    this.heapArray[parentIdx] = this.heapArray[currIdx];
-                    this.heapArray[currIdx] = tmp;
+                    this.SwapItems(parentIdx, currIdx);
 
                     /// Go to the parent item and continue the upheap.
                     currIdx = parentIdx;
@@ -157,9 +167,7 @@ namespace RC.Engine.Simulator.Core
                         (this.heapArray[leftIdx].Item1 < this.heapArray[currIdx].Item1))
                     {
                         /// Swap the current item with its left child.
-                        Tuple<int, T> tmp = this.heapArray[leftIdx];
-                        this.heapArray[leftIdx] = this.heapArray[currIdx];
-                        this.heapArray[currIdx] = tmp;
+                        this.SwapItems(leftIdx, currIdx);
 
                         currIdx = leftIdx;
                         continue;
@@ -181,9 +189,7 @@ namespace RC.Engine.Simulator.Core
                     int childIdx = this.heapArray[leftIdx].Item1 > this.heapArray[rightIdx].Item1 ?
                                    (this.type == HeapType.MaxHeap ? leftIdx : rightIdx) :
                                    (this.type == HeapType.MaxHeap ? rightIdx : leftIdx);
-                    Tuple<int, T> tmp = this.heapArray[childIdx];
-                    this.heapArray[childIdx] = this.heapArray[currIdx];
-                    this.heapArray[currIdx] = tmp;
+                    this.SwapItems(childIdx, currIdx);
 
                     currIdx = childIdx;
                     continue;
@@ -193,9 +199,7 @@ namespace RC.Engine.Simulator.Core
                          (this.heapArray[leftIdx].Item1 < this.heapArray[currIdx].Item1 && this.heapArray[rightIdx].Item1 >= this.heapArray[currIdx].Item1))
                 {
                     /// If the heap-property is wrong only with the left child, we have to swap the current item with the left child
-                    Tuple<int, T> tmp = this.heapArray[leftIdx];
-                    this.heapArray[leftIdx] = this.heapArray[currIdx];
-                    this.heapArray[currIdx] = tmp;
+                    this.SwapItems(leftIdx, currIdx);
 
                     currIdx = leftIdx;
                     continue;
@@ -205,9 +209,7 @@ namespace RC.Engine.Simulator.Core
                          (this.heapArray[leftIdx].Item1 >= this.heapArray[currIdx].Item1 && this.heapArray[rightIdx].Item1 < this.heapArray[currIdx].Item1))
                 {
                     /// If the heap-property is wrong only with the right child, we have to swap the current item with the right child
-                    Tuple<int, T> tmp = this.heapArray[rightIdx];
-                    this.heapArray[rightIdx] = this.heapArray[currIdx];
-                    this.heapArray[currIdx] = tmp;
+                    this.SwapItems(rightIdx, currIdx);
 
                     currIdx = rightIdx;
                     continue;
@@ -221,9 +223,37 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
+        /// Swaps two items in the underlying heap array.
+        /// </summary>
+        /// <param name="idxA">The index of the first item.</param>
+        /// <param name="idxB">The index of the second item.</param>
+        private void SwapItems(int idxA, int idxB)
+        {
+            Tuple<int, T> tmp = this.heapArray[idxA];
+            //int tmpKey = this.heapArrayKeys[idxA];
+            //T tmpItem = this.heapArrayItems[idxA];
+            this.heapArray[idxA] = this.heapArray[idxB];
+            //this.heapArrayKeys[idxA] = this.heapArrayKeys[idxB];
+            //this.heapArrayItems[idxA] = this.heapArrayItems[idxB];
+            this.heapArray[idxB] = tmp;
+            //this.heapArrayKeys[idxB] = tmpKey;
+            //this.heapArrayItems[idxB] = tmpItem;
+        }
+
+        /// <summary>
         /// The underlying array that stores the keys and the corresponding items of the heap.
         /// </summary>
         private List<Tuple<int, T>> heapArray;
+
+        /// <summary>
+        /// The underlying array that stores the keys of the heap.
+        /// </summary>
+        //private List<int> heapArrayKeys;
+
+        /// <summary>
+        /// The underlying array that stores the corresponding items of the heap.
+        /// </summary>
+        //private List<T> heapArrayItems;
 
         /// <summary>
         /// The next free index in the heap array.

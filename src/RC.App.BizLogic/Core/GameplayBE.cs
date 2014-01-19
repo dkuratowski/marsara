@@ -88,7 +88,7 @@ namespace RC.App.BizLogic.Core
         /// TODO: Remove this section when no longer necessary *********************************************************
         public void StartTestScenario()
         {
-            this.multiplayerGameManager.CreateNewGame(".\\maps\\testmap3.rcm", GameTypeEnum.Melee, GameSpeedEnum.Fastest);
+            this.multiplayerGameManager.CreateNewGame(".\\maps\\testmap4.rcm", GameTypeEnum.Melee, GameSpeedEnum.Fastest);
         }
 
         public void StopTestScenario()

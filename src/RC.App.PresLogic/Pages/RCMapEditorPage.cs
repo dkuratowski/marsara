@@ -108,8 +108,8 @@ namespace RC.App.PresLogic.Pages
 
             /// Create the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize - new RCIntVector(97, 0), this.mapTerrainView, this.tilesetView);
-            this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic, this.mapTerrainView);
-            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapWalkabilityDisplay, this.mapObjectView, this.metadataView);
+            //this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic, this.mapTerrainView);
+            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView, this.metadataView);
             this.isotileDisplayEx = new RCIsoTileDisplay(this.mapObjectDisplayEx, this.mapTerrainView);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.isotileDisplayEx, this.mapTerrainView);
             this.resourceAmountDisplayEx = new RCResourceAmountDisplay(this.objectPlacementDisplayEx, this.mapObjectDataView, this.mapTerrainView);
@@ -140,7 +140,7 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplay.MouseSensor.Wheel += this.OnMouseWheel;
 
             /// Create and register the map editor panel.
-            this.mapEditorPanel = new RCMapEditorPanel(new RCIntRectangle(223, 0, 97, 200),
+            this.mapEditorPanel = new RCMapEditorPanel(new RCIntRectangle(this.Range.Right - 97, 0, 97, 200),
                                                        new RCIntRectangle(0, 0, 97, 200),
                                                        UIPanel.ShowMode.Appear, UIPanel.HideMode.Disappear,
                                                        0, 0,

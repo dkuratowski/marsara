@@ -48,13 +48,31 @@ namespace RC.Engine.Simulator.Terran
             scenario.AddEntity(commandCenter);
             player.AddBuilding(commandCenter);
 
-            for (int i = 0; i < 5; i++)
+            SCV[] scvList = new SCV[12];
+            RCIntVector cmdCenterTopLeft = commandCenter.Scenario.Map.GetQuadTile(commandCenter.QuadCoords).GetCell(new RCIntVector(0, 0)).MapCoords;
+            for (int i = 0; i < scvList.Length; i++)
             {
                 SCV scv = new SCV();
                 scenario.AddEntity(scv);
                 player.AddUnit(scv);
-                scv.AddToMap(new RCNumVector(commandCenter.Position.Left + i * (scv.ElementType.Area.Read().X + 2), commandCenter.Position.Bottom));
+                scv.AddToMap(new RCNumVector(cmdCenterTopLeft + SCV_POSITIONS[i] - scv.ElementType.Area.Read() / 2));
             }
         }
+
+        private static RCIntVector[] SCV_POSITIONS = new RCIntVector[12]
+        {
+            new RCIntVector(1, 14),
+            new RCIntVector(4, 14),
+            new RCIntVector(7, 14),
+            new RCIntVector(10, 14),
+            new RCIntVector(13, 14),
+            new RCIntVector(1, 17),
+            new RCIntVector(4, 17),
+            new RCIntVector(7, 17),
+            new RCIntVector(10, 17),
+            new RCIntVector(13, 17),
+            new RCIntVector(6, 20),
+            new RCIntVector(9, 20),
+        };
     }
 }

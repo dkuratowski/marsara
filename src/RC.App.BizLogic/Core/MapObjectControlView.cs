@@ -109,10 +109,5 @@ namespace RC.App.BizLogic.Core
         /// Reference to the entity selector of the local player.
         /// </summary>
         private EntitySelector selector;
-
-        /// <summary>
-        /// Constants for coordinate transformations.
-        /// </summary>
-        private static readonly RCNumVector HALF_VECT = new RCNumVector(1, 1) / 2;
     }
 }

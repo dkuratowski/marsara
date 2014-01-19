@@ -94,9 +94,16 @@
       <Project>{2B041172-C0FC-42DB-A344-079F40491FE5}</Project>
       <Name>RC.Engine.Simulator</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RC.UI\RC.UI.csproj">
+      <Project>{e3b50bcb-7eaf-4fd5-a5f4-c78e5c0eebc3}</Project>
+      <Name>RC.UI</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="pathfinder_testmap.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="pathfinder_testmap2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

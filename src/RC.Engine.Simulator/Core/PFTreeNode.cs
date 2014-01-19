@@ -21,11 +21,13 @@ namespace RC.Engine.Simulator.Core
             if (subdivisionLevels > MAX_LEVELS) { throw new ArgumentOutOfRangeException("subdivisionLevels", string.Format("Number of subdivision levels must be less than {0}!", MAX_LEVELS)); }
 
             this.areaOnMap = new RCIntRectangle(0, 0, (int)Math.Pow(2, subdivisionLevels), (int)Math.Pow(2, subdivisionLevels));
-            this.center = new RCNumVector((RCNumber)(this.areaOnMap.Left + this.areaOnMap.Right - 1) / 2, (RCNumber)(this.areaOnMap.Top + this.areaOnMap.Bottom - 1) / 2);
+            this.center = new RCIntVector((this.areaOnMap.Left + this.areaOnMap.Right - 1) / 2, (this.areaOnMap.Top + this.areaOnMap.Bottom - 1) / 2);
             this.walkability = Walkability.Walkable;
             this.children = new PFTreeNode[4];
             this.parent = null;
             this.root = this;
+            this.index = -1;
+            this.leafCount = 1;
         }
 
         /// <summary>
@@ -34,9 +36,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="cellCoords">The coordinates of the obstacle cell.</param>
         public void AddObstacle(RCIntVector cellCoords)
         {
-            if (this.parent != null) { throw new InvalidOperationException("Non root node!"); }
-            if (!this.areaOnMap.Contains(cellCoords)) { throw new ArgumentOutOfRangeException("cellCoords"); }
-            this.AddObstacleImpl(cellCoords);
+            this.root.AddObstacleImpl(cellCoords);
         }
 
         /// <summary>
@@ -46,9 +46,7 @@ namespace RC.Engine.Simulator.Core
         /// <returns>The leaf node that contains the given cell.</returns>
         public PFTreeNode GetLeafNode(RCIntVector cellCoords)
         {
-            if (this.parent != null) { return this.root.GetLeafNodeImpl(cellCoords); }
-            if (!this.areaOnMap.Contains(cellCoords)) { throw new ArgumentOutOfRangeException("cellCoords"); }
-            else { return this.GetLeafNodeImpl(cellCoords); }
+            return this.root.GetLeafNodeImpl(cellCoords);
         }
 
         /// <summary>
@@ -58,8 +56,7 @@ namespace RC.Engine.Simulator.Core
         public HashSet<PFTreeNode> GetAllLeafNodes()
         {
             HashSet<PFTreeNode> retList = new HashSet<PFTreeNode>();
-            if (this.parent != null) { this.root.GetAllLeafNodesImpl(retList); }
-            else { this.GetAllLeafNodesImpl(retList); }
+            this.root.GetAllLeafNodesImpl(retList);
             return retList;
         }
 
@@ -71,8 +68,7 @@ namespace RC.Engine.Simulator.Core
         public HashSet<PFTreeNode> GetAllLeafNodes(RCIntRectangle area)
         {
             HashSet<PFTreeNode> retList = new HashSet<PFTreeNode>();
-            if (this.parent != null) { this.root.GetAllLeafNodesImpl(retList, area); }
-            else { this.GetAllLeafNodesImpl(retList, area); }
+            this.root.GetAllLeafNodesImpl(retList, area);
             return retList;
         }
 
@@ -126,7 +122,17 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Gets the coordinates of the center of this node.
         /// </summary>
-        public RCNumVector Center { get { return this.center; } }
+        public RCIntVector Center { get { return this.center; } }
+
+        /// <summary>
+        /// The index of this PFTreeNode.
+        /// </summary>
+        public int Index { get { return this.index; } }
+
+        /// <summary>
+        /// Gets the total number of leaf nodes in the pathfinding tree.
+        /// </summary>
+        public int LeafCount { get { return this.root.leafCount; } }
 
         /// <summary>
         /// Gets whether this node is walkable or not.
@@ -156,17 +162,32 @@ namespace RC.Engine.Simulator.Core
         private PFTreeNode(RCIntRectangle areaOnMap, PFTreeNode parent, Walkability walkability)
         {
             this.areaOnMap = areaOnMap;
-            this.center = new RCNumVector((RCNumber)(this.areaOnMap.Left + this.areaOnMap.Right - 1) / 2, (RCNumber)(this.areaOnMap.Top + this.areaOnMap.Bottom - 1) / 2);
+            this.center = new RCIntVector((this.areaOnMap.Left + this.areaOnMap.Right - 1) / 2, (this.areaOnMap.Top + this.areaOnMap.Bottom - 1) / 2);
             this.walkability = walkability;
             this.children = new PFTreeNode[4];
             this.parent = parent;
             this.root = parent.root;
+            this.index = -1;
+        }
+
+        /// <summary>
+        /// Sets the indices of the leaf nodes in the pathfinding tree.
+        /// </summary>
+        internal void SetLeafNodeIndices()
+        {
+            int currentIndex = 0;
+            foreach (PFTreeNode node in this.GetAllLeafNodes())
+            {
+                if (node.index != -1) { throw new InvalidOperationException("Node index already set!"); }
+                node.index = currentIndex;
+                currentIndex++;
+            }
         }
 
         /// <summary>
         /// Searches the neighbours of this node.
         /// </summary>
-        private void SearchNeighbours()
+        internal void SearchNeighbours()
         {
             this.neighboursCache = new HashSet<PFTreeNode>();
 
@@ -221,6 +242,8 @@ namespace RC.Engine.Simulator.Core
         /// <param name="cellCoords">The coordinates of the obstacle cell.</param>
         private void AddObstacleImpl(RCIntVector cellCoords)
         {
+            if (!this.areaOnMap.Contains(cellCoords)) { throw new ArgumentOutOfRangeException("cellCoords"); }
+
             if (this.areaOnMap.Width == 1)
             {
                 /// End of recursion.
@@ -237,6 +260,7 @@ namespace RC.Engine.Simulator.Core
                 else if (this.children[SOUTHEAST_CHILD_IDX].areaOnMap.Contains(cellCoords)) { this.children[SOUTHEAST_CHILD_IDX].AddObstacleImpl(cellCoords); }
                 else if (this.children[SOUTHWEST_CHILD_IDX].areaOnMap.Contains(cellCoords)) { this.children[SOUTHWEST_CHILD_IDX].AddObstacleImpl(cellCoords); }
                 this.walkability = Walkability.Mixed;
+                this.root.leafCount += 3;
             }
             else if (this.walkability == Walkability.Mixed)
             {
@@ -255,6 +279,7 @@ namespace RC.Engine.Simulator.Core
                 {
                     this.children = new PFTreeNode[4];
                     this.walkability = Walkability.NonWalkable;
+                    this.root.leafCount -= 3;
                 }
             }
         }
@@ -265,6 +290,8 @@ namespace RC.Engine.Simulator.Core
         /// <param name="cellCoords">The coordinates of the obstacle cell.</param>
         private PFTreeNode GetLeafNodeImpl(RCIntVector cellCoords)
         {
+            if (!this.areaOnMap.Contains(cellCoords)) { throw new ArgumentOutOfRangeException("cellCoords"); }
+
             if (this.walkability != Walkability.Mixed) { return this; }
 
             if (this.children[NORTHWEST_CHILD_IDX].areaOnMap.Contains(cellCoords)) { return this.children[NORTHWEST_CHILD_IDX].GetLeafNodeImpl(cellCoords); }
@@ -341,7 +368,7 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// The coordinates of the center of this node.
         /// </summary>
-        private RCNumVector center;
+        private RCIntVector center;
 
         /// <summary>
         /// The walkability property of this node.
@@ -362,6 +389,16 @@ namespace RC.Engine.Simulator.Core
         /// Reference to the root node.
         /// </summary>
         private PFTreeNode root;
+
+        /// <summary>
+        /// The index of this PFTreeNode if this is a leaf node; -1 otherwise.
+        /// </summary>
+        private int index;
+
+        /// <summary>
+        /// The total number of the leaf nodes in the pathfinding tree if this is the root node; -1 otherwise.
+        /// </summary>
+        private int leafCount;
 
         /// <summary>
         /// Reference to the neighbours of this node.

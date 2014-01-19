@@ -404,7 +404,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// The maximum size of a map in quadratic tiles.
         /// </summary>
-        public const int MAX_MAPSIZE = 64; // TODO: change back to 256
+        public const int MAX_MAPSIZE = 256;
 
         /// <summary>
         /// Number of quadratic tile rows intersecting horizontally the half of an isometric tile.

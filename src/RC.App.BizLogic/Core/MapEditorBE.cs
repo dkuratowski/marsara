@@ -214,7 +214,7 @@ namespace RC.App.BizLogic.Core
 
             if (placedTerrainObject != null)
             {
-                RCNumRectangle terrObjRect = new RCNumRectangle(placedTerrainObject.GetCell(new RCIntVector(0, 0)).MapCoords, placedTerrainObject.CellSize)
+                RCNumRectangle terrObjRect = new RCNumRectangle(this.activeMap.GetQuadTile(placedTerrainObject.MapCoords).GetCell(new RCIntVector(0, 0)).MapCoords, placedTerrainObject.CellSize)
                                            - new RCNumVector(1, 1) / 2;
                 foreach (QuadEntity affectedEntity in this.activeScenario.GetVisibleEntities<QuadEntity>(terrObjRect))
                 {

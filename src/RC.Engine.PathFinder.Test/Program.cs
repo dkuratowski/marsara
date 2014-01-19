@@ -14,7 +14,8 @@ namespace RC.Engine.PathFinder.Test
         [STAThread]
         static void Main()
         {
-            ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
+            //ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
+            ConfigurationManager.Initialize("..\\..\\..\\RC.App.Starter\\bin\\Debug\\RC.App.root");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());

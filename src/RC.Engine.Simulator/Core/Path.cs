@@ -18,19 +18,19 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="fromNode">The node that contains the starting cell of the path.</param>
         /// <param name="toCoords">The coordinates of the target cell of the path.</param>
-        /// <param name="size">The size of the object that requested the pathfinding.</param>
-        public Path(PFTreeNode fromNode, RCIntVector toCoords, RCNumVector size)
+        /// <param name="iterationLimit">The maximum number of iterations to execute when searching this path.</param>
+        public Path(PFTreeNode fromNode, PFTreeNode toNode, int iterationLimit)
         {
             this.fromNode = fromNode;
-            this.toCoords = toCoords;
+            this.toNode = toNode;
             this.lastNodeOnPath = null;
             this.nodesOnPath = null;
-            this.toNode = this.fromNode.GetLeafNode(toCoords);
-            this.objectSize = size;
-            this.blockedEdges = new Dictionary<PFTreeNode, HashSet<PFTreeNode>>();
+            this.isAborted = false;
+            this.iterationLimit = iterationLimit;
+            this.iterationsExecuted = 0;
+            this.blockedEdges = new HashSet<Tuple<int, int>>();
 
-            this.SearchPath();
-            this.CollectNodes();
+            this.InitSearchAlgorithm();
         }
 
         /// <summary>
@@ -38,40 +38,75 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="originalPath">The original path.</param>
         /// <param name="abortedSectionIdx">The index of the aborted section of the original path.</param>
-        public Path(Path originalPath, int abortedSectionIdx)
+        /// <param name="iterationLimit">The maximum number of iterations to execute when searching this path.</param>
+        public Path(Path originalPath, int abortedSectionIdx, int iterationLimit)
         {
             this.fromNode = originalPath.nodesOnPath[abortedSectionIdx];
-            this.toCoords = originalPath.toCoords;
+            this.toNode = originalPath.toNode;
             this.lastNodeOnPath = null;
             this.nodesOnPath = null;
-            this.toNode = originalPath.toNode;
-            this.objectSize = originalPath.objectSize;
-            
-            this.blockedEdges = new Dictionary<PFTreeNode, HashSet<PFTreeNode>>();
-            foreach (KeyValuePair<PFTreeNode, HashSet<PFTreeNode>> item in originalPath.blockedEdges)
-            {
-                this.blockedEdges.Add(item.Key, new HashSet<PFTreeNode>(item.Value));
-            }
-            this.AddBlockedEdge(originalPath.nodesOnPath[abortedSectionIdx], originalPath.nodesOnPath[abortedSectionIdx + 1]);
+            this.isAborted = false;
+            this.iterationLimit = iterationLimit;
+            this.iterationsExecuted = 0;
 
-            this.SearchPath();
-            this.CollectNodes();
+            this.blockedEdges = new HashSet<Tuple<int, int>>();
+            foreach (Tuple<int, int> item in originalPath.blockedEdges)
+            {
+                this.blockedEdges.Add(item);
+            }
+            this.blockedEdges.Add(new Tuple<int,int>(originalPath.nodesOnPath[abortedSectionIdx].Index,
+                                                     originalPath.nodesOnPath[abortedSectionIdx + 1].Index));
+
+            this.InitSearchAlgorithm();
         }
 
         #region IPath methods
+
+        /// <see cref="IPath.IsReadyForUse"/>
+        public bool IsReadyForUse { get { return this.nodesOnPath != null; } }
+
+        /// <see cref="IPath.IsTargetFound"/>
+        public bool IsTargetFound
+        {
+            get
+            {
+                if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
+                return this.lastNodeOnPath == this.toNode;
+            }
+        }
+
+        /// <see cref="IPath.AbortSearch"/>
+        public void AbortSearch()
+        {
+            if (this.IsReadyForUse) { throw new InvalidOperationException("Path is ready for use!"); }
+            if (this.isAborted) { throw new InvalidOperationException("Path has already been aborted!"); }
+            this.isAborted = true;
+        }
         
         /// <see cref="IPath.this[]"/>
         public RCIntRectangle this[int index]
         {
-            get { return this.nodesOnPath[index].AreaOnMap; }
+            get
+            {
+                if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
+                return this.nodesOnPath[index].AreaOnMap;
+            }
         }
 
         /// <see cref="IPath.Length"/>
-        public int Length { get { return this.nodesOnPath.Count; } }
+        public int Length
+        {
+            get
+            {
+                if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
+                return this.nodesOnPath.Count;
+            }
+        }
 
         /// <see cref="IPath.ForgetBlockedEdges"/>
         public void ForgetBlockedEdges()
         {
+            if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
             this.blockedEdges.Clear();
         }
 
@@ -87,7 +122,13 @@ namespace RC.Engine.Simulator.Core
         {
             get
             {
-                return this.completedNodesMap.Keys;
+                if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
+                List<PFTreeNode> retList = new List<PFTreeNode>();
+                for (int i = 0; i < this.completedNodesMap.Length; i++)
+                {
+                    if (this.completedNodesMap[i] != null) { retList.Add(this.completedNodesMap[i].Node); }
+                }
+                return retList;
             }
         }
 
@@ -96,36 +137,36 @@ namespace RC.Engine.Simulator.Core
         #region Internal methods
 
         /// <summary>
+        /// Gets whether searching this path has been aborted or not.
+        /// </summary>
+        internal bool IsAborted { get { return this.isAborted; } }
+
+        /// <summary>
         /// Implements the A* pathfinding algorithm.
         /// </summary>
-        private void SearchPath()
+        /// <param name="maxIterations">The maximum number of iterations to execute in this call.</param>
+        /// <returns>The number of iterations actually executed.</returns>
+        internal int Search(int maxIterations)
         {
-            /// Initialize the A* pathfinding algorithm.
-            this.queuedNodes = new BinaryHeap<PathNode>(BinaryHeap<PathNode>.HeapType.MinHeap);
-            this.queuedNodesMap = new Dictionary<PFTreeNode, PathNode>();
-            this.completedNodesMap = new Dictionary<PFTreeNode, PathNode>();
-            RCNumber sourceEstimation = MapUtils.ComputeDistance(this.fromNode.Center, this.toCoords);
-            this.queuedNodes.Insert(sourceEstimation.Bits,
-                new PathNode()
-                {
-                    Node = this.fromNode,
-                    DistanceFromSource = 0,
-                    EstimationToTarget = sourceEstimation,
-                    PrevNode = null
-                });
+            if (this.IsReadyForUse) { throw new InvalidOperationException("Path is ready for use!"); }
+            if (this.isAborted) { throw new InvalidOperationException("Path has already been aborted!"); }
+            if (maxIterations <= 0) { throw new ArgumentOutOfRangeException("maxIterations", "Number of iteration must be greater than 0!"); }
 
-            /// Here begins the A* pathfinding algorithm. It runs until the priority queue becomes empty.
-            /// TODO: We might have to limit the number of iterations.
-            while (this.queuedNodes.Count != 0)
+            /// Here begins the A* pathfinding algorithm. It runs while the priority queue is not empty and we haven't reached the maximum number of iterations
+            /// and the iteration limit.
+            int iterationsInCurrCall = 0;
+            bool toNodeReached = false;
+            while (this.queuedNodes.Count != 0 && iterationsInCurrCall < maxIterations && this.iterationsExecuted < this.iterationLimit)
             {
                 /// Get the current node from the priority queue and add it to the completed set.
                 PathNode currentPathNode = this.queuedNodes.MaxMinItem;
                 this.queuedNodes.DeleteMaxMin();
-                this.completedNodesMap.Add(currentPathNode.Node, currentPathNode);
+                this.queuedNodesMap[currentPathNode.Node.Index] = null;
+                this.completedNodesMap[currentPathNode.Node.Index] = currentPathNode;
 
                 /// Save it's reference if its distance to the target node is less than the minimum distance found.
                 if (this.lastNodeOnPath == null ||
-                    MapUtils.ComputeDistance(currentPathNode.Node.Center, this.toCoords) < MapUtils.ComputeDistance(this.lastNodeOnPath.Center, this.toCoords))
+                    Path.ComputeDistance(currentPathNode.Node.Center, this.toNode.Center) < Path.ComputeDistance(this.lastNodeOnPath.Center, this.toNode.Center))
                 {
                     this.lastNodeOnPath = currentPathNode.Node;
                 }
@@ -136,20 +177,18 @@ namespace RC.Engine.Simulator.Core
                     /// Process the current neighbour only if it is walkable, is not yet in the completed set, and the edge from the current node
                     /// to that neighbour is not blocked.
                     if (neighbour.IsWalkable &&
-                        neighbour.AreaOnMap.Width >= this.objectSize.X &&
-                        neighbour.AreaOnMap.Height >= this.objectSize.Y &&
-                        !this.completedNodesMap.ContainsKey(neighbour) &&
+                        this.completedNodesMap[neighbour.Index] == null &&
                         !this.IsEdgeBlocked(currentPathNode.Node, neighbour))
                     {
                         /// Compute an estimated distance from the current neighbour to the target.
-                        RCNumber neighbourEstimation = MapUtils.ComputeDistance(neighbour.Center, this.toCoords);
+                        int neighbourEstimation = Path.ComputeDistance(neighbour.Center, this.toNode.Center);
                         PathNode neighbourPathNode = null;
                         bool newNode = false;
 
-                        if (this.queuedNodesMap.ContainsKey(neighbour))
+                        if (this.queuedNodesMap[neighbour.Index] != null)
                         {
                             /// If the current neighbour is already queued just take it from there.
-                            neighbourPathNode = this.queuedNodesMap[neighbour];
+                            neighbourPathNode = this.queuedNodesMap[neighbour.Index];
                         }
                         else
                         {
@@ -164,7 +203,8 @@ namespace RC.Engine.Simulator.Core
                         }
 
                         /// Reconsider the distance from source to the current neighbour and overwrite if necessary.
-                        RCNumber currentToNeighbourDist = MapUtils.ComputeDistance(currentPathNode.Node.Center, neighbourPathNode.Node.Center);
+                        int currentToNeighbourDist = Path.ComputeDistance(currentPathNode.Node.Center, neighbourPathNode.Node.Center);
+                        //int currentToNeighbourDist = 1;// Math.Max(32 - neighbourPathNode.Node.AreaOnMap.Width, 1);
                         if (neighbourPathNode.DistanceFromSource == -1 ||
                             neighbourPathNode.DistanceFromSource > currentPathNode.DistanceFromSource + currentToNeighbourDist)
                         {
@@ -175,15 +215,25 @@ namespace RC.Engine.Simulator.Core
                         /// If the neighbour has not yet been queued do it now.
                         if (newNode)
                         {
-                            this.queuedNodes.Insert((neighbourPathNode.DistanceFromSource + neighbourPathNode.EstimationToTarget).Bits,
+                            this.queuedNodes.Insert((neighbourPathNode.DistanceFromSource + neighbourPathNode.EstimationToTarget),
                                                     neighbourPathNode);
-                            this.queuedNodesMap.Add(neighbour, neighbourPathNode);
+                            this.queuedNodesMap[neighbour.Index] =  neighbourPathNode;
                         }
                     }
                 } /// End of neighbour processing.
 
-                if (currentPathNode.Node == this.toNode) { break; }
+                iterationsInCurrCall++;
+                this.iterationsExecuted++;
+                if (currentPathNode.Node == this.toNode)
+                {
+                    /// Path found.
+                    toNodeReached = true;
+                    break;
+                }
             } /// End of processing the head of the queue.
+
+            if (toNodeReached || this.queuedNodes.Count == 0 || this.iterationsExecuted == this.iterationLimit) { this.CollectNodes(); }
+            return iterationsInCurrCall;
         }
 
         /// <summary>
@@ -196,28 +246,11 @@ namespace RC.Engine.Simulator.Core
             this.nodesOnPath.Add(currNode);
             while (currNode != this.fromNode)
             {
-                PathNode currPathNode = this.completedNodesMap[currNode];
+                PathNode currPathNode = this.completedNodesMap[currNode.Index];
                 currNode = currPathNode.PrevNode.Node;
                 this.nodesOnPath.Add(currNode);
             }
             this.nodesOnPath.Reverse();
-        }
-
-        /// <summary>
-        /// Registers a blocked edge between two nodes in the pathfinder tree.
-        /// </summary>
-        /// <param name="nodeA">The first node of the blocked edge.</param>
-        /// <param name="nodeB">The second node of the blocked edge.</param>
-        private void AddBlockedEdge(PFTreeNode nodeA, PFTreeNode nodeB)
-        {
-            if (!this.blockedEdges.ContainsKey(nodeA))
-            {
-                this.blockedEdges.Add(nodeA, new HashSet<PFTreeNode>());
-                this.blockedEdges.Add(nodeB, new HashSet<PFTreeNode>());
-            }
-
-            this.blockedEdges[nodeA].Add(nodeB);
-            this.blockedEdges[nodeB].Add(nodeA);
         }
 
         /// <summary>
@@ -228,7 +261,41 @@ namespace RC.Engine.Simulator.Core
         /// <returns>True if the edge is blocked, false otherwise.</returns>
         private bool IsEdgeBlocked(PFTreeNode nodeA, PFTreeNode nodeB)
         {
-            return this.blockedEdges.ContainsKey(nodeA) && this.blockedEdges[nodeA].Contains(nodeB);
+            return this.blockedEdges.Contains(new Tuple<int, int>(nodeA.Index, nodeB.Index)) ||
+                   this.blockedEdges.Contains(new Tuple<int, int>(nodeB.Index, nodeA.Index));
+        }
+
+        /// <summary>
+        /// Initializes the A* pathfinding algorithm.
+        /// </summary>
+        private void InitSearchAlgorithm()
+        {
+            this.queuedNodes = new BinaryHeap<PathNode>(BinaryHeap<PathNode>.HeapType.MinHeap);
+            this.queuedNodesMap = new PathNode[this.fromNode.LeafCount];
+            this.completedNodesMap = new PathNode[this.fromNode.LeafCount];
+            int sourceEstimation = Path.ComputeDistance(this.fromNode.Center, this.toNode.Center);
+            this.queuedNodes.Insert(sourceEstimation,
+                new PathNode()
+                {
+                    Node = this.fromNode,
+                    DistanceFromSource = 0,
+                    EstimationToTarget = sourceEstimation,
+                    PrevNode = null
+                });
+        }
+
+        /// <summary>
+        /// Computes the distance between 2 points on the map for the pathfinding algorithm.
+        /// </summary>
+        /// <param name="fromCoords">The first point on the map.</param>
+        /// <param name="toCoords">The second point on the map.</param>
+        /// <returns>The computed distance between the given points.</returns>
+        private static int ComputeDistance(RCIntVector fromCoords, RCIntVector toCoords)
+        {
+            int horz = Math.Abs(toCoords.X - fromCoords.X);
+            int vert = Math.Abs(toCoords.Y - fromCoords.Y);
+            int diff = Math.Abs(horz - vert);
+            return (horz < vert ? horz : vert) * 3 + diff * 2;
         }
 
         #endregion Internal methods
@@ -250,29 +317,19 @@ namespace RC.Engine.Simulator.Core
         private PFTreeNode lastNodeOnPath;
 
         /// <summary>
-        /// The coordinates of the target cell of the path.
-        /// </summary>
-        private RCIntVector toCoords;
-
-        /// <summary>
-        /// The size of the object that requested the pathfinding.
-        /// </summary>
-        private RCNumVector objectSize;
-
-        /// <summary>
         /// The priority queue of the nodes for the pathfinding.
         /// </summary>
         private BinaryHeap<PathNode> queuedNodes;
 
         /// <summary>
-        /// The list of the nodes in the priority queue mapped by their corresponding tree nodes.
+        /// The list of the nodes in the priority queue mapped by the IDs of their corresponding tree nodes.
         /// </summary>
-        private Dictionary<PFTreeNode, PathNode> queuedNodesMap;
+        private PathNode[] queuedNodesMap;
 
         /// <summary>
-        /// The list of the completed nodes mapped by their corresponding tree nodes.
+        /// The list of the completed nodes mapped by the IDs of their corresponding tree nodes.
         /// </summary>
-        private Dictionary<PFTreeNode, PathNode> completedNodesMap;
+        private PathNode[] completedNodesMap;
 
         /// <summary>
         /// The list of the nodes among this path.
@@ -282,7 +339,22 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// List of the blocked edges in the pathfinding graph.
         /// </summary>
-        private Dictionary<PFTreeNode, HashSet<PFTreeNode>> blockedEdges;
+        private HashSet<Tuple<int, int>> blockedEdges;
+
+        /// <summary>
+        /// This flag indicates whether searching this path has been aborted or not.
+        /// </summary>
+        private bool isAborted;
+
+        /// <summary>
+        /// The maximum number of iterations to execute when searching this path.
+        /// </summary>
+        private int iterationLimit;
+
+        /// <summary>
+        /// The total number of iterations already executed.
+        /// </summary>
+        private int iterationsExecuted;
     }
 
     /// <summary>
@@ -298,12 +370,12 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// The distance of this node from the source.
         /// </summary>
-        public RCNumber DistanceFromSource = -1;
+        public int DistanceFromSource = -1;
 
         /// <summary>
         /// The estimated distance of this node from the target.
         /// </summary>
-        public RCNumber EstimationToTarget = -1;
+        public int EstimationToTarget = -1;
 
         /// <summary>
         /// Reference to the previous node on the path.

@@ -19,27 +19,34 @@ namespace RC.Engine.Simulator.ComponentInterfaces
         /// Initializes the pathfinder component with the given map.
         /// </summary>
         /// <param name="map">The map to initialize with.</param>
+        /// <param name="maxIterationsPerFrame">The maximum number of search iterations per frame.</param>
         /// <remarks>
         /// Don't call this method from the UI thread because initialization is a long running procedure. Use a background thread instead.
         /// </remarks>
-        void Initialize(IMapAccess map);
+        void Initialize(IMapAccess map, int maxIterationsPerFrame);
 
         /// <summary>
-        /// Computes a path from one cell to another on the map.
+        /// Continues searching the requested paths.
+        /// </summary>
+        void ContinueSearching();
+
+        /// <summary>
+        /// Starts searching a path from one cell to another on the map.
         /// </summary>
         /// <param name="fromCoords">The coordinates of the starting cell of the path.</param>
         /// <param name="toCoords">The coordinates of the target cell of the path.</param>
-        /// <param name="size">The size of the object that requested the pathfinding.</param>
-        /// <return>The interface of the computed path.</return>
-        IPath FindPath(RCIntVector fromCoords, RCIntVector toCoords, RCNumVector size);
+        /// <param name="iterationLimit">The maximum number of iterations to execute when searching the path.</param>
+        /// <return>The interface of the path.</return>
+        IPath StartPathSearching(RCIntVector fromCoords, RCIntVector toCoords, int iterationLimit);
 
         /// <summary>
-        /// Computes an alternative path to the target from the given section on the given original path.
+        /// Starts searching an alternative path to the target from the given section on the given original path.
         /// </summary>
         /// <param name="originalPath">The original path.</param>
         /// <param name="abortedSectionIdx">The index of the aborted section on the original path.</param>
-        /// <returns>The interface of the computed alternative path.</returns>
-        IPath FindAlternativePath(IPath originalPath, int abortedSectionIdx);
+        /// <param name="iterationLimit">The maximum number of iterations to execute when searching the path.</param>
+        /// <returns>The interface of the alternative path.</returns>
+        IPath StartAlternativePathSearching(IPath originalPath, int abortedSectionIdx, int iterationLimit);
 
         /// <summary>
         /// Checks whether the given area intersects a map obstacle or not.

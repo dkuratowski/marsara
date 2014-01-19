@@ -35,6 +35,7 @@ namespace RC.App.BizLogic.Core
             this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
             this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
             this.taskManager = ComponentManager.GetInterface<ITaskManager>();
+            this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
         }
 
         /// <see cref="IComponent.Stop"/>
@@ -52,6 +53,7 @@ namespace RC.App.BizLogic.Core
             byte[] mapBytes = File.ReadAllBytes(mapFile);
             MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
             IMapAccess map = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
+            this.pathFinder.Initialize(map, 5000); /// TODO: call this from a background task!
             this.gameScenario = this.scenarioLoader.LoadScenario(map, mapBytes);
             StartLocation startLocation = this.gameScenario.GetVisibleEntities<StartLocation>()[0];
             this.gameScenario.CreatePlayer(0, startLocation, RaceEnum.Terran);
@@ -194,5 +196,10 @@ namespace RC.App.BizLogic.Core
         /// Reference to the RC.App.PresLogic.TaskManagerAdapter component.
         /// </summary>
         private ITaskManager taskManager;
+
+        /// <summary>
+        /// Reference to the RC.Engine.Simulator.PathFinder component.
+        /// </summary>
+        private IPathFinder pathFinder;
     }
 }

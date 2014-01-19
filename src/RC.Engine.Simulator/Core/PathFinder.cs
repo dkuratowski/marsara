@@ -21,14 +21,16 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         public PathFinder()
         {
-            this.map = null;
             this.pathfinderTreeRoot = null;
+            this.pathsUnderSearch = null;
         }
 
         /// <see cref="IPathFinder.Initialize"/>
-        public void Initialize(IMapAccess map)
+        public void Initialize(IMapAccess map, int maxIterationsPerFrame)
         {
             if (map == null) { throw new ArgumentNullException("map"); }
+            if (maxIterationsPerFrame <= 0) { throw new ArgumentOutOfRangeException("maxIterationsPerFrame", "Maximum number of iterations per frame must be greater than 0!"); }
+            this.maxIterationsPerFrame = maxIterationsPerFrame;
 
             /// Find the number of subdivision levels.
             int boundingBoxSize = Math.Max(map.CellSize.X, map.CellSize.Y);
@@ -59,36 +61,63 @@ namespace RC.Engine.Simulator.Core
                 }
             }
 
-            this.map = map;
+            /// Search the neighbours of the leaf nodes.
+            foreach (PFTreeNode leafNode in this.pathfinderTreeRoot.GetAllLeafNodes())
+            {
+                leafNode.SearchNeighbours();
+            }
+
+            this.pathfinderTreeRoot.SetLeafNodeIndices();
+            this.pathsUnderSearch = new Queue<Path>();
         }
 
-        /// <see cref="IPathFinder.FindPath"/>
-        public IPath FindPath(RCIntVector fromCoords, RCIntVector toCoords, RCNumVector size)
+        /// <see cref="IPathFinder.ContinueSearching"/>
+        public void ContinueSearching()
         {
-            if (this.map == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
+            if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
+            if (this.pathsUnderSearch.Count == 0) { return; }
+
+            int remainingIterations = this.maxIterationsPerFrame;
+            do
+            {
+                Path pathToSearch = this.pathsUnderSearch.Peek();
+                if (!pathToSearch.IsAborted) { remainingIterations -= pathToSearch.Search(remainingIterations); }
+                if (pathToSearch.IsReadyForUse || pathToSearch.IsAborted) { this.pathsUnderSearch.Dequeue(); }
+            } while (remainingIterations > 0 && this.pathsUnderSearch.Count > 0);
+        }
+
+        /// <see cref="IPathFinder.StartPathSearching"/>
+        public IPath StartPathSearching(RCIntVector fromCoords, RCIntVector toCoords, int iterationLimit)
+        {
+            if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
             if (fromCoords == RCIntVector.Undefined) { throw new ArgumentNullException("fromCoords"); }
             if (toCoords == RCIntVector.Undefined) { throw new ArgumentNullException("toCoords"); }
-            if (size == RCNumVector.Undefined) { throw new ArgumentNullException("size"); }
+            if (iterationLimit <= 0) { throw new ArgumentOutOfRangeException("iterationLimit", "Iteration limit must be greater than 0!"); }
 
             PFTreeNode fromNode = this.pathfinderTreeRoot.GetLeafNode(fromCoords);
-            Path retPath = new Path(fromNode, toCoords, size);
+            PFTreeNode toNode = this.pathfinderTreeRoot.GetLeafNode(toCoords);
+            Path retPath = new Path(fromNode, toNode, iterationLimit);
+            this.pathsUnderSearch.Enqueue(retPath);
             return retPath;
         }
 
-        /// <see cref="IPathFinder.FindAlternativePath"/>
-        public IPath FindAlternativePath(IPath originalPath, int abortedSectionIdx)
+        /// <see cref="IPathFinder.StartAlternativePathSearching"/>
+        public IPath StartAlternativePathSearching(IPath originalPath, int abortedSectionIdx, int iterationLimit)
         {
-            if (this.map == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
+            if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
             if (originalPath == null) { throw new ArgumentNullException("originalPath"); }
             if (abortedSectionIdx < 0 || abortedSectionIdx >= originalPath.Length - 1) { throw new ArgumentOutOfRangeException("abortedSectionIdx"); }
+            if (iterationLimit <= 0) { throw new ArgumentOutOfRangeException("iterationLimit", "Iteration limit must be greater than 0!"); }
 
-            Path retPath = new Path((Path)originalPath, abortedSectionIdx);
+            Path retPath = new Path((Path)originalPath, abortedSectionIdx, iterationLimit);
+            this.pathsUnderSearch.Enqueue(retPath);
             return retPath;
         }
 
         /// <see cref="IPathFinder.CheckObstacleIntersection"/>
         public bool CheckObstacleIntersection(RCNumRectangle area)
         {
+            if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
             if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
 
             int left = area.Left.Round();
@@ -102,6 +131,7 @@ namespace RC.Engine.Simulator.Core
         /// <see cref="IPathFinder.GetTreeNodes"/>
         public List<RCIntRectangle> GetTreeNodes(RCIntRectangle area)
         {
+            if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
             if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
 
             List<RCIntRectangle> retList = new List<RCIntRectangle>();
@@ -113,9 +143,33 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Reference to the searched map.
+        /// Initializes the pathfinder component with the given pathfinder tree root.
         /// </summary>
-        private IMapAccess map;
+        /// <param name="pfTreeRoot">The tree root to initialize with.</param>
+        /// <param name="maxIterationsPerFrame">The maximum number of search iterations per frame.</param>
+        /// <remarks>TODO: this is only for debugging!</remarks>
+        internal void Initialize(PFTreeNode pfTreeRoot, int maxIterationsPerFrame)
+        {
+            if (pfTreeRoot == null) { throw new ArgumentNullException("pfTreeRoot"); }
+            if (maxIterationsPerFrame <= 0) { throw new ArgumentOutOfRangeException("maxIterationsPerFrame", "Maximum number of iterations per frame must be greater than 0!"); }
+            this.pathfinderTreeRoot = pfTreeRoot;
+            this.maxIterationsPerFrame = maxIterationsPerFrame;
+
+            /// Search the neighbours of the leaf nodes.
+            foreach (PFTreeNode leafNode in this.pathfinderTreeRoot.GetAllLeafNodes())
+            {
+                leafNode.SearchNeighbours();
+            }
+
+            this.pathfinderTreeRoot.SetLeafNodeIndices();
+            this.pathsUnderSearch = new Queue<Path>();
+        }
+
+        /// <summary>
+        /// Gets the root node of the pathfinder tree.
+        /// </summary>
+        /// <remarks>TODO: this is only for debugging!</remarks>
+        internal PFTreeNode PathfinderTreeRoot { get { return this.pathfinderTreeRoot; } }
 
         /// <summary>
         /// Reference to the root of the pathfinder tree.
@@ -123,8 +177,13 @@ namespace RC.Engine.Simulator.Core
         private PFTreeNode pathfinderTreeRoot;
 
         /// <summary>
-        /// Name of the cell data field that indicates walkability.
+        /// The FIFO list of the paths that are currently being searched.
         /// </summary>
-        private const string ISWALKABLE_FIELD_NAME = "IsWalkable";
+        private Queue<Path> pathsUnderSearch;
+
+        /// <summary>
+        /// The maximum number of search iterations per frame.
+        /// </summary>
+        private int maxIterationsPerFrame;
     }
 }
