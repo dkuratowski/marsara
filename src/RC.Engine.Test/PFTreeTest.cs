@@ -39,8 +39,9 @@ namespace RC.Engine.Test
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            Path testPath = new Path(pfTreeRoot.GetLeafNode(new RCIntVector(50, 240)), pfTreeRoot.GetLeafNode(new RCIntVector(490, 119)), 10000);
-            testPath.Search(1048576);
+            DirectPathFindingAlgorithm searchAlgorithm = new DirectPathFindingAlgorithm(pfTreeRoot.GetLeafNode(new RCIntVector(50, 240)), pfTreeRoot.GetLeafNode(new RCIntVector(490, 119)), 10000);
+            Path testPath = new DirectPath(searchAlgorithm);
+            searchAlgorithm.Continue(1048576);
             watch.Stop();
             Console.WriteLine(watch.ElapsedMilliseconds);
             for (int i = 0; i < testPath.Length; ++i)

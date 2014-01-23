@@ -46,6 +46,17 @@
     <Compile Include="ComponentInterfaces\IHeapManagerPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IPlayerInitializer.cs" />
+    <Compile Include="Core\DerivedPath.cs" />
+    <Compile Include="Core\DetourFindAlgorithm.cs" />
+    <Compile Include="Core\DirectPath.cs" />
+    <Compile Include="Core\EndpointConnectionAlgorithm.cs" />
+    <Compile Include="Core\PathCache.cs" />
+    <Compile Include="Core\PathCacheItem.cs" />
+    <Compile Include="Core\PathNode.cs" />
+    <Compile Include="Core\PathFindingAlgorithm.cs" />
+    <Compile Include="Core\Region.cs" />
+    <Compile Include="Core\RegionFindAlgorithm.cs" />
+    <Compile Include="Core\DirectPathFindingAlgorithm.cs" />
     <Compile Include="Scenarios\Addon.cs" />
     <Compile Include="Scenarios\AddonType.cs" />
     <Compile Include="Core\BinaryHeap.cs" />

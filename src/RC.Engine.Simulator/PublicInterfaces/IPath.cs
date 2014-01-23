@@ -23,12 +23,6 @@ namespace RC.Engine.Simulator.PublicInterfaces
         bool IsTargetFound { get; }
 
         /// <summary>
-        /// Aborts searching the path.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">If the path is ready for use or has already been aborted.</exception>
-        void AbortSearch();
-
-        /// <summary>
         /// Gets a section of the path.
         /// </summary>
         /// <param name="index">The index of the section to get.</param>

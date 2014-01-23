@@ -6,9 +6,69 @@ using System.Text;
 namespace RC.Engine.Simulator.Core
 {
     /// <summary>
+    /// The base class of items in a binary heap data structure.
+    /// </summary>
+    public class BinaryHeapItem
+    {
+        /// <summary>
+        /// Constructs a binary heap item.
+        /// </summary>
+        public BinaryHeapItem()
+        {
+            this.index = -1;
+            this.key = -1;
+        }
+
+        /// <summary>
+        /// Handles the event when the key of an item in the binary heap has been changed.
+        /// </summary>
+        /// <param name="itemIndex">The index of the item.</param>
+        public delegate void ItemKeyChangedHdl(int itemIndex);
+
+        /// <summary>
+        /// This event is raised when the key of an item in the binary heap has been changed.
+        /// </summary>
+        public event ItemKeyChangedHdl ItemKeyChanged;
+
+        /// <summary>
+        /// Gets the index of this binary heap item.
+        /// </summary>
+        public int HeapIndex
+        {
+            get { return this.index; }
+            internal set { this.index = value; }
+        }
+
+        /// <summary>
+        /// Gets the key of this binary heap item.
+        /// </summary>
+        public int Key { get { return this.key; } }
+
+        /// <summary>
+        /// Call this method from the derived classes to indicate that the key of this item has changed.
+        /// </summary>
+        /// <param name="newKey">The new key of this item.</param>
+        protected void OnKeyChanged(int newKey)
+        {
+            this.key = newKey;
+            if (this.ItemKeyChanged != null) { this.ItemKeyChanged(this.index); }
+        }
+
+        /// <summary>
+        /// The key of this item.
+        /// </summary>
+        private int key;
+
+        /// <summary>
+        /// The index of this item.
+        /// </summary>
+        private int index;
+    }
+
+    /// <summary>
     /// Represents a generic binary heap data structure.
     /// </summary>
-    public class BinaryHeap<T>
+    public class BinaryHeap<T> where T : BinaryHeapItem
     {
         /// <summary>
         /// Enumerates the possible types of a heap object.
@@ -27,25 +87,24 @@ namespace RC.Engine.Simulator.Core
         {
             this.type = type;
             this.nextIndex = 0;
-            this.heapArray = new List<Tuple<int, T>>();
-            //this.heapArrayKeys = new List<int>();
-            //this.heapArrayItems = new List<T>();
+            this.heapArray = new List<T>();
         }
 
         /// <summary>
-        /// Inserts a new item with the given key into the heap.
+        /// Inserts a new item into the heap.
         /// </summary>
-        /// <param name="key">The key of the new item.</param>
         /// <param name="item">The new item.</param>
-        public void Insert(int key, T item)
+        public void Insert(T item)
         {
+            if (item.Key < 0) { throw new ArgumentException("Key of the item must be non-negative!", "item"); }
+
             /// Add the new item to the bottom level of the heap.
-            this.heapArray.Add(new Tuple<int, T>(key, item));
-            //this.heapArrayKeys.Add(key);
-            //this.heapArrayItems.Add(item);
+            item.HeapIndex = this.nextIndex;
+            this.heapArray.Add(item);
+            item.ItemKeyChanged += this.OnItemKeyChanged;
 
             /// Restore the heap-property if necessary.
-            this.Upheap();
+            this.Upheap(this.nextIndex);
 
             /// Increment the nextIndex pointer to the end of the heap array.
             this.nextIndex++;
@@ -58,55 +117,39 @@ namespace RC.Engine.Simulator.Core
         {
             if (this.nextIndex == 0) { throw new InvalidOperationException("The heap is empty!"); }
 
+            this.heapArray[0].HeapIndex = -1;
+            this.heapArray[0].ItemKeyChanged -= this.OnItemKeyChanged;
+
             /// If we have only 1 more element left, just clear the array and return.
             if (this.nextIndex == 1)
             {
                 this.heapArray.Clear();
-                //this.heapArrayKeys.Clear();
-                //this.heapArrayItems.Clear();
                 this.nextIndex = 0;
                 return;
             }
 
             /// Replace the root of the heap with the last element.
-            Tuple<int, T> tmp = this.heapArray[this.nextIndex - 1];
-            //int tmpKey = this.heapArrayKeys[this.nextIndex - 1];
-            //T tmpItem = this.heapArrayItems[this.nextIndex - 1];
+            T tmp = this.heapArray[this.nextIndex - 1];
             this.heapArray.RemoveAt(this.nextIndex - 1);
-            //this.heapArrayKeys.RemoveAt(this.nextIndex - 1);
-            //this.heapArrayItems.RemoveAt(this.nextIndex - 1);
             this.heapArray[0] = tmp;
-            //this.heapArrayKeys[0] = tmpKey;
-            //this.heapArrayItems[0] = tmpItem;
+            this.heapArray[0].HeapIndex = 0;
 
             /// Decrement the nextIndex pointer to the end of the heap array.
             this.nextIndex--;
 
             /// Restore the heap-property if necessary.
-            this.Downheap();
+            this.Downheap(0);
         }
 
         /// <summary>
-        /// Gets the key with the maximum value in case of HeapType.MaxHeap or with the minimum value in case of HeapType.MinHeap.
-        /// </summary>
-        public int MaxMinKey
-        {
-            get
-            {
-                if (this.nextIndex == 0) { throw new InvalidOperationException("The heap is empty!"); }
-                return this.heapArray[0].Item1;
-            }
-        }
-
-        /// <summary>
-        /// Gets the item at the key with the maximum value in case of HeapType.MaxHeap or with the minimum value in case of HeapType.MinHeap.
+        /// Gets the item with the maximum key value in case of HeapType.MaxHeap or with the minimum key value in case of HeapType.MinHeap.
         /// </summary>
         public T MaxMinItem
         {
             get
             {
                 if (this.nextIndex == 0) { throw new InvalidOperationException("The heap is empty!"); }
-                return this.heapArray[0].Item2;
+                return this.heapArray[0];
             }
         }
 
@@ -116,17 +159,27 @@ namespace RC.Engine.Simulator.Core
         public int Count { get { return this.nextIndex; } }
 
         /// <summary>
+        /// This method is called when the key of a binary heap item has been changed.
+        /// </summary>
+        /// <param name="itemIdx">The index of the item.</param>
+        private void OnItemKeyChanged(int itemIdx)
+        {
+            this.Upheap(itemIdx);
+            this.Downheap(itemIdx);
+        }
+
+        /// <summary>
         /// Internal method to restore the heap-property after an Insert operation.
         /// </summary>
-        private void Upheap()
+        private void Upheap(int fromIdx)
         {
-            int currIdx = this.nextIndex;
+            int currIdx = fromIdx;
             while (currIdx != 0)
             {
                 int parentIdx = (currIdx - 1) / 2;
                 if ((this.type == HeapType.MaxHeap) ?
-                    (this.heapArray[currIdx].Item1 > this.heapArray[parentIdx].Item1) :
-                    (this.heapArray[currIdx].Item1 < this.heapArray[parentIdx].Item1))
+                    (this.heapArray[currIdx].Key > this.heapArray[parentIdx].Key) :
+                    (this.heapArray[currIdx].Key < this.heapArray[parentIdx].Key))
                 {
                     /// Swap the current item with its parent.
                     this.SwapItems(parentIdx, currIdx);
@@ -145,12 +198,12 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Internal method to restore the heap-property after a DeleteMaxMin operation.
         /// </summary>
-        private void Downheap()
+        private void Downheap(int fromIdx)
         {
             /// If the heap is empty, we have nothing to do
             if (this.nextIndex == 0) { return; }
 
-            int currIdx = 0;
+            int currIdx = fromIdx;
             while (true)
             {
                 int leftIdx = 2 * currIdx + 1;
@@ -163,8 +216,8 @@ namespace RC.Engine.Simulator.Core
                 if (rightIdx >= this.nextIndex)
                 {
                     if ((this.type == HeapType.MaxHeap) ?
-                        (this.heapArray[leftIdx].Item1 > this.heapArray[currIdx].Item1) :
-                        (this.heapArray[leftIdx].Item1 < this.heapArray[currIdx].Item1))
+                        (this.heapArray[leftIdx].Key > this.heapArray[currIdx].Key) :
+                        (this.heapArray[leftIdx].Key < this.heapArray[currIdx].Key))
                     {
                         /// Swap the current item with its left child.
                         this.SwapItems(leftIdx, currIdx);
@@ -181,12 +234,12 @@ namespace RC.Engine.Simulator.Core
 
                 /// If there is a right child, we have to compare with both.
                 if ((this.type == HeapType.MaxHeap) ?
-                    (this.heapArray[leftIdx].Item1 > this.heapArray[currIdx].Item1 && this.heapArray[rightIdx].Item1 > this.heapArray[currIdx].Item1) :
-                    (this.heapArray[leftIdx].Item1 < this.heapArray[currIdx].Item1 && this.heapArray[rightIdx].Item1 < this.heapArray[currIdx].Item1))
+                    (this.heapArray[leftIdx].Key > this.heapArray[currIdx].Key && this.heapArray[rightIdx].Key > this.heapArray[currIdx].Key) :
+                    (this.heapArray[leftIdx].Key < this.heapArray[currIdx].Key && this.heapArray[rightIdx].Key < this.heapArray[currIdx].Key))
                 {
                     /// If the heap-property is wrong with both of the children, we have to swap the current item with its larger child
                     /// in case of HeapType.MaxHeap or with its smaller child in case of HeapType.MinHeap.
-                    int childIdx = this.heapArray[leftIdx].Item1 > this.heapArray[rightIdx].Item1 ?
+                    int childIdx = this.heapArray[leftIdx].Key > this.heapArray[rightIdx].Key ?
                                    (this.type == HeapType.MaxHeap ? leftIdx : rightIdx) :
                                    (this.type == HeapType.MaxHeap ? rightIdx : leftIdx);
                     this.SwapItems(childIdx, currIdx);
@@ -195,8 +248,8 @@ namespace RC.Engine.Simulator.Core
                     continue;
                 }
                 else if ((this.type == HeapType.MaxHeap) ?
-                         (this.heapArray[leftIdx].Item1 > this.heapArray[currIdx].Item1 && this.heapArray[rightIdx].Item1 <= this.heapArray[currIdx].Item1) :
-                         (this.heapArray[leftIdx].Item1 < this.heapArray[currIdx].Item1 && this.heapArray[rightIdx].Item1 >= this.heapArray[currIdx].Item1))
+                         (this.heapArray[leftIdx].Key > this.heapArray[currIdx].Key && this.heapArray[rightIdx].Key <= this.heapArray[currIdx].Key) :
+                         (this.heapArray[leftIdx].Key < this.heapArray[currIdx].Key && this.heapArray[rightIdx].Key >= this.heapArray[currIdx].Key))
                 {
                     /// If the heap-property is wrong only with the left child, we have to swap the current item with the left child
                     this.SwapItems(leftIdx, currIdx);
@@ -205,8 +258,8 @@ namespace RC.Engine.Simulator.Core
                     continue;
                 }
                 else if ((this.type == HeapType.MaxHeap) ?
-                         (this.heapArray[leftIdx].Item1 <= this.heapArray[currIdx].Item1 && this.heapArray[rightIdx].Item1 > this.heapArray[currIdx].Item1) :
-                         (this.heapArray[leftIdx].Item1 >= this.heapArray[currIdx].Item1 && this.heapArray[rightIdx].Item1 < this.heapArray[currIdx].Item1))
+                         (this.heapArray[leftIdx].Key <= this.heapArray[currIdx].Key && this.heapArray[rightIdx].Key > this.heapArray[currIdx].Key) :
+                         (this.heapArray[leftIdx].Key >= this.heapArray[currIdx].Key && this.heapArray[rightIdx].Key < this.heapArray[currIdx].Key))
                 {
                     /// If the heap-property is wrong only with the right child, we have to swap the current item with the right child
                     this.SwapItems(rightIdx, currIdx);
@@ -229,31 +282,17 @@ namespace RC.Engine.Simulator.Core
         /// <param name="idxB">The index of the second item.</param>
         private void SwapItems(int idxA, int idxB)
         {
-            Tuple<int, T> tmp = this.heapArray[idxA];
-            //int tmpKey = this.heapArrayKeys[idxA];
-            //T tmpItem = this.heapArrayItems[idxA];
+            T tmp = this.heapArray[idxA];
             this.heapArray[idxA] = this.heapArray[idxB];
-            //this.heapArrayKeys[idxA] = this.heapArrayKeys[idxB];
-            //this.heapArrayItems[idxA] = this.heapArrayItems[idxB];
+            this.heapArray[idxA].HeapIndex = idxA;
             this.heapArray[idxB] = tmp;
-            //this.heapArrayKeys[idxB] = tmpKey;
-            //this.heapArrayItems[idxB] = tmpItem;
+            this.heapArray[idxB].HeapIndex = idxB;
         }
 
         /// <summary>
-        /// The underlying array that stores the keys and the corresponding items of the heap.
+        /// The underlying array that stores the items of the heap.
         /// </summary>
-        private List<Tuple<int, T>> heapArray;
-
-        /// <summary>
-        /// The underlying array that stores the keys of the heap.
-        /// </summary>
-        //private List<int> heapArrayKeys;
-
-        /// <summary>
-        /// The underlying array that stores the corresponding items of the heap.
-        /// </summary>
-        //private List<T> heapArrayItems;
+        private List<T> heapArray;
 
         /// <summary>
         /// The next free index in the heap array.

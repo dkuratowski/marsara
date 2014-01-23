@@ -28,6 +28,7 @@ namespace RC.Engine.Simulator.Core
             this.root = this;
             this.index = -1;
             this.leafCount = 1;
+            this.containerRegions = new HashSet<Region>();
         }
 
         /// <summary>
@@ -135,6 +136,11 @@ namespace RC.Engine.Simulator.Core
         public int LeafCount { get { return this.root.leafCount; } }
 
         /// <summary>
+        /// Gets whether this PFTreeNode is a leaf node or not.
+        /// </summary>
+        public bool IsLeafNode { get { return this.walkability != Walkability.Mixed; } }
+
+        /// <summary>
         /// Gets whether this node is walkable or not.
         /// </summary>
         public bool IsWalkable
@@ -168,6 +174,7 @@ namespace RC.Engine.Simulator.Core
             this.parent = parent;
             this.root = parent.root;
             this.index = -1;
+            this.containerRegions = new HashSet<Region>();
         }
 
         /// <summary>
@@ -235,6 +242,29 @@ namespace RC.Engine.Simulator.Core
                 }
             }
         }
+
+        /// <summary>
+        /// Adds this node to the given region.
+        /// </summary>
+        /// <param name="region">The region to which this node shall be added.</param>
+        internal void AddToRegion(Region region)
+        {
+            this.containerRegions.Add(region);
+        }
+
+        /// <summary>
+        /// Removes this node from the given region.
+        /// </summary>
+        /// <param name="region">The region from which this node shall be removed.</param>
+        internal void RemoveFromRegion(Region region)
+        {
+            this.containerRegions.Remove(region);
+        }
+
+        /// <summary>
+        /// Gets the regions containing this node.
+        /// </summary>
+        internal IEnumerable<Region> Regions { get { return this.containerRegions; } }
 
         /// <summary>
         /// The internal implementation of the PFTreeNode.AddObstacle method.
@@ -404,6 +434,11 @@ namespace RC.Engine.Simulator.Core
         /// Reference to the neighbours of this node.
         /// </summary>
         private HashSet<PFTreeNode> neighboursCache;
+
+        /// <summary>
+        /// List of the regions containing this node.
+        /// </summary>
+        private HashSet<Region> containerRegions;
 
         /// <summary>
         /// The indices of the child nodes depending on their location.

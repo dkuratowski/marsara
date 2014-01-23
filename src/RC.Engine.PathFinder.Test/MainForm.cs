@@ -36,7 +36,7 @@ namespace RC.Engine.PathFinder.Test
             ComponentManager.StartComponents();
             this.pathfinder = new Simulator.Core.PathFinder();
 
-            //this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\tilesets\\bandlands\\bandlands.xml", "..\\..\\..\\..\\maps\\testmap5.rcm"), 5000);
+            //this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\tilesets\\bandlands\\bandlands.xml", "..\\..\\..\\..\\maps\\testmap4.rcm"), 5000);
             this.pathfinder.Initialize(this.ReadTestMapFromImg("pathfinder_testmap2.png"), 5000);
 
             this.originalMapImg = new Bitmap(this.pathfinder.PathfinderTreeRoot.AreaOnMap.Width * CELL_SIZE, this.pathfinder.PathfinderTreeRoot.AreaOnMap.Height * CELL_SIZE);
@@ -135,7 +135,7 @@ namespace RC.Engine.PathFinder.Test
         /// <summary>
         /// The image that contains the currently computed path.
         /// </summary>
-        private Bitmap currentPathImg;
+        private Bitmap searchResultImg;
 
         /// <summary>
         /// Reference to the pathfinder component.
@@ -145,19 +145,19 @@ namespace RC.Engine.PathFinder.Test
         private List<RCIntVector> fromCoords;
         private RCIntVector toCoords;
 
-        private int currentPathsTime;
-        private int currentPathsCheckedNodes;
-        private int currentPathsFrames;
+        private int currentSearchTime;
+        private int currentSearchIterations;
+        private int currentSearchFrames;
 
         protected override void OnPaint(PaintEventArgs e)
         {
             e.Graphics.DrawImage(this.originalMapImg, 0, 0);
-            if (this.currentPathImg != null)
+            if (this.searchResultImg != null)
             {
-                e.Graphics.DrawImage(this.currentPathImg, 0, 0);
-                e.Graphics.DrawString(string.Format("Time: {0}", this.currentPathsTime), SystemFonts.CaptionFont, Brushes.Blue, 0.0f, 0.0f);
-                e.Graphics.DrawString(string.Format("CheckedNodes: {0}", this.currentPathsCheckedNodes), SystemFonts.CaptionFont, Brushes.Blue, 0.0f, 10.0f);
-                e.Graphics.DrawString(string.Format("Frames: {0}", this.currentPathsFrames), SystemFonts.CaptionFont, Brushes.Blue, 0.0f, 20.0f);
+                e.Graphics.DrawImage(this.searchResultImg, 0, 0);
+                e.Graphics.DrawString(string.Format("Time: {0}", this.currentSearchTime), SystemFonts.CaptionFont, Brushes.Blue, 0.0f, 0.0f);
+                e.Graphics.DrawString(string.Format("CheckedNodes: {0}", this.currentSearchIterations), SystemFonts.CaptionFont, Brushes.Blue, 0.0f, 10.0f);
+                e.Graphics.DrawString(string.Format("Frames: {0}", this.currentSearchFrames), SystemFonts.CaptionFont, Brushes.Blue, 0.0f, 20.0f);
             }
         }
 
@@ -179,29 +179,29 @@ namespace RC.Engine.PathFinder.Test
 
                 RCIntVector mapCoords = new RCIntVector(e.X, e.Y) / CELL_SIZE;
                 this.toCoords = mapCoords;
-                if (this.currentPathImg != null) { this.currentPathImg.Dispose(); }
+                if (this.searchResultImg != null) { this.searchResultImg.Dispose(); }
 
                 Stopwatch watch = new Stopwatch();
                 List<RC.Engine.Simulator.Core.Path> paths = new List<RC.Engine.Simulator.Core.Path>();
                 foreach (RCIntVector fromCoord in this.fromCoords) { paths.Add((RC.Engine.Simulator.Core.Path)this.pathfinder.StartPathSearching(fromCoord, toCoords, 5000)); }
-                this.currentPathsFrames = 0;
+                this.currentSearchFrames = 0;
                 watch.Start();
                 while (!CheckPathCompleteness(paths))
                 {
                     this.pathfinder.ContinueSearching();
-                    this.currentPathsFrames++;
+                    this.currentSearchFrames++;
                 }
                 watch.Stop();
 
-                this.currentPathsTime = (int)watch.ElapsedMilliseconds;
-                this.currentPathsCheckedNodes = 0;
+                this.currentSearchTime = (int)watch.ElapsedMilliseconds;
+                this.currentSearchIterations = 0;
                 foreach (RC.Engine.Simulator.Core.Path path in paths)
                 {
-                    this.currentPathsCheckedNodes += path.CompletedNodes.Count();
+                    this.currentSearchIterations += path.CompletedNodes.Count();
                 }
 
-                this.currentPathImg = new Bitmap(this.pathfinder.PathfinderTreeRoot.AreaOnMap.Width * CELL_SIZE, this.pathfinder.PathfinderTreeRoot.AreaOnMap.Height * CELL_SIZE, PixelFormat.Format24bppRgb);
-                Graphics outputGC = Graphics.FromImage(this.currentPathImg);
+                this.searchResultImg = new Bitmap(this.pathfinder.PathfinderTreeRoot.AreaOnMap.Width * CELL_SIZE, this.pathfinder.PathfinderTreeRoot.AreaOnMap.Height * CELL_SIZE, PixelFormat.Format24bppRgb);
+                Graphics outputGC = Graphics.FromImage(this.searchResultImg);
                 outputGC.Clear(Color.FromArgb(255, 0, 255));
                 HashSet<RCIntRectangle> sectionsOnPath = new HashSet<RCIntRectangle>();
                 foreach (RC.Engine.Simulator.Core.Path path in paths)
@@ -222,9 +222,42 @@ namespace RC.Engine.PathFinder.Test
                             outputGC.DrawRectangle(Pens.Black, sectionRect.X, sectionRect.Y, sectionRect.Width, sectionRect.Height);
                         }
                     }
+                    for (int i = 1; i < path.Length; ++i)
+                    {
+                        RCIntRectangle prevSectionRect = path[i - 1] * new RCIntVector(CELL_SIZE, CELL_SIZE);
+                        RCIntRectangle currSectionRect = path[i] * new RCIntVector(CELL_SIZE, CELL_SIZE);
+                        outputGC.DrawLine(Pens.Blue, (prevSectionRect.Left + prevSectionRect.Right) / 2, (prevSectionRect.Top + prevSectionRect.Bottom) / 2, (currSectionRect.Left + currSectionRect.Right) / 2, (currSectionRect.Top + currSectionRect.Bottom) / 2);
+                    }
                 }
                 outputGC.Dispose();
-                this.currentPathImg.MakeTransparent(Color.FromArgb(255, 0, 255));
+                this.searchResultImg.MakeTransparent(Color.FromArgb(255, 0, 255));
+
+                this.Invalidate();
+            }
+            else if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+            {
+                RCIntVector mapCoords = new RCIntVector(e.X, e.Y) / CELL_SIZE;
+                if (this.searchResultImg != null) { this.searchResultImg.Dispose(); }
+
+                this.currentSearchFrames = 1;
+                this.currentSearchIterations = 0;
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
+                RC.Engine.Simulator.Core.Region region = new Simulator.Core.Region(this.pathfinder.PathfinderTreeRoot.GetLeafNode(mapCoords), 40);
+                watch.Stop();
+                this.currentSearchTime = (int)watch.ElapsedMilliseconds;
+
+                this.searchResultImg = new Bitmap(this.pathfinder.PathfinderTreeRoot.AreaOnMap.Width * CELL_SIZE, this.pathfinder.PathfinderTreeRoot.AreaOnMap.Height * CELL_SIZE, PixelFormat.Format24bppRgb);
+                Graphics outputGC = Graphics.FromImage(this.searchResultImg);
+                outputGC.Clear(Color.FromArgb(255, 0, 255));
+                foreach (PFTreeNode node in region.ContainedNodes)
+                {
+                    RCIntRectangle sectionRect = node.AreaOnMap * new RCIntVector(CELL_SIZE, CELL_SIZE);
+                    outputGC.FillRectangle(Brushes.Cyan, sectionRect.X, sectionRect.Y, sectionRect.Width, sectionRect.Height);
+                    outputGC.DrawRectangle(Pens.Black, sectionRect.X, sectionRect.Y, sectionRect.Width, sectionRect.Height);
+                }
+                outputGC.Dispose();
+                this.searchResultImg.MakeTransparent(Color.FromArgb(255, 0, 255));
 
                 this.Invalidate();
             }

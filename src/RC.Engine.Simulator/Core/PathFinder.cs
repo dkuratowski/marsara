@@ -22,7 +22,9 @@ namespace RC.Engine.Simulator.Core
         public PathFinder()
         {
             this.pathfinderTreeRoot = null;
-            this.pathsUnderSearch = null;
+            this.algorithmQueue = null;
+            this.pathCache = null;
+            this.maxIterationsPerFrame = 0;
         }
 
         /// <see cref="IPathFinder.Initialize"/>
@@ -68,22 +70,23 @@ namespace RC.Engine.Simulator.Core
             }
 
             this.pathfinderTreeRoot.SetLeafNodeIndices();
-            this.pathsUnderSearch = new Queue<Path>();
+            this.algorithmQueue = new Queue<PathFindingAlgorithm>();
+            this.pathCache = new PathCache(PATH_CACHE_CAPACITY);
         }
 
         /// <see cref="IPathFinder.ContinueSearching"/>
         public void ContinueSearching()
         {
             if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
-            if (this.pathsUnderSearch.Count == 0) { return; }
+            if (this.algorithmQueue.Count == 0) { return; }
 
             int remainingIterations = this.maxIterationsPerFrame;
             do
             {
-                Path pathToSearch = this.pathsUnderSearch.Peek();
-                if (!pathToSearch.IsAborted) { remainingIterations -= pathToSearch.Search(remainingIterations); }
-                if (pathToSearch.IsReadyForUse || pathToSearch.IsAborted) { this.pathsUnderSearch.Dequeue(); }
-            } while (remainingIterations > 0 && this.pathsUnderSearch.Count > 0);
+                PathFindingAlgorithm currentAlgorithm = this.algorithmQueue.Peek();
+                remainingIterations -= currentAlgorithm.Continue(remainingIterations);
+                if (currentAlgorithm.IsFinished) { this.algorithmQueue.Dequeue(); }
+            } while (remainingIterations > 0 && this.algorithmQueue.Count > 0);
         }
 
         /// <see cref="IPathFinder.StartPathSearching"/>
@@ -94,11 +97,32 @@ namespace RC.Engine.Simulator.Core
             if (toCoords == RCIntVector.Undefined) { throw new ArgumentNullException("toCoords"); }
             if (iterationLimit <= 0) { throw new ArgumentOutOfRangeException("iterationLimit", "Iteration limit must be greater than 0!"); }
 
+            /// Determine the source and the target nodes in the pathfinding tree.
             PFTreeNode fromNode = this.pathfinderTreeRoot.GetLeafNode(fromCoords);
+            if (!fromNode.IsWalkable) { throw new ArgumentException("The starting cell of the path must be walkable!"); }
             PFTreeNode toNode = this.pathfinderTreeRoot.GetLeafNode(toCoords);
-            Path retPath = new Path(fromNode, toNode, iterationLimit);
-            this.pathsUnderSearch.Enqueue(retPath);
-            return retPath;
+
+            /// Try to find a cached path between the regions of the source and the target node.
+            PathCacheItem cachedAlgorithm = this.pathCache.FindCachedPathFinding(fromNode, toNode);
+            if (cachedAlgorithm != null)
+            {
+                /// Cached path was found -> Create a new Path instance based on the cached path.
+                EndpointConnectionAlgorithm srcConnectionAlgorithm = new EndpointConnectionAlgorithm(fromNode, cachedAlgorithm.SourceRegion, cachedAlgorithm.Algorithm, iterationLimit);
+                EndpointConnectionAlgorithm tgtConnectionAlgorithm = new EndpointConnectionAlgorithm(toNode, cachedAlgorithm.TargetRegion, cachedAlgorithm.Algorithm, iterationLimit);
+                Path retPath = new DerivedPath(srcConnectionAlgorithm, tgtConnectionAlgorithm);
+                this.algorithmQueue.Enqueue(srcConnectionAlgorithm);
+                this.algorithmQueue.Enqueue(tgtConnectionAlgorithm);
+                return retPath;
+            }
+            else
+            {
+                /// No cached path was found -> Create a totally new Path instance and save it to the cache.
+                DirectPathFindingAlgorithm searchAlgorithm = new DirectPathFindingAlgorithm(fromNode, toNode, iterationLimit);
+                Path newPath = new DirectPath(searchAlgorithm);
+                this.pathCache.SavePathFinding(searchAlgorithm);
+                this.algorithmQueue.Enqueue(searchAlgorithm);
+                return newPath;
+            }
         }
 
         /// <see cref="IPathFinder.StartAlternativePathSearching"/>
@@ -109,9 +133,12 @@ namespace RC.Engine.Simulator.Core
             if (abortedSectionIdx < 0 || abortedSectionIdx >= originalPath.Length - 1) { throw new ArgumentOutOfRangeException("abortedSectionIdx"); }
             if (iterationLimit <= 0) { throw new ArgumentOutOfRangeException("iterationLimit", "Iteration limit must be greater than 0!"); }
 
-            Path retPath = new Path((Path)originalPath, abortedSectionIdx, iterationLimit);
-            this.pathsUnderSearch.Enqueue(retPath);
-            return retPath;
+            PFTreeNode fromNode = ((Path)originalPath).GetPathNode(abortedSectionIdx);
+            //DetourFindAlgorithm detourAlgorithm = new DetourFindAlgorithm(fromNode, blockedEdges
+            return null;
+            //Path retPath = new Path((Path)originalPath, abortedSectionIdx, iterationLimit);
+            //this.algorithmQueue.Enqueue(retPath);
+            //return retPath;
         }
 
         /// <see cref="IPathFinder.CheckObstacleIntersection"/>
@@ -162,7 +189,8 @@ namespace RC.Engine.Simulator.Core
             }
 
             this.pathfinderTreeRoot.SetLeafNodeIndices();
-            this.pathsUnderSearch = new Queue<Path>();
+            this.algorithmQueue = new Queue<PathFindingAlgorithm>();
+            this.pathCache = new PathCache(PATH_CACHE_CAPACITY);
         }
 
         /// <summary>
@@ -177,13 +205,23 @@ namespace RC.Engine.Simulator.Core
         private PFTreeNode pathfinderTreeRoot;
 
         /// <summary>
-        /// The FIFO list of the paths that are currently being searched.
+        /// The FIFO list of the pathfinding algorithm that are currently being executed.
         /// </summary>
-        private Queue<Path> pathsUnderSearch;
+        private Queue<PathFindingAlgorithm> algorithmQueue;
+
+        /// <summary>
+        /// Reference to the path cache.
+        /// </summary>
+        private PathCache pathCache;
 
         /// <summary>
         /// The maximum number of search iterations per frame.
         /// </summary>
         private int maxIterationsPerFrame;
+
+        /// <summary>
+        /// The capacity of the path cache.
+        /// </summary>
+        private const int PATH_CACHE_CAPACITY = 20;
     }
 }
