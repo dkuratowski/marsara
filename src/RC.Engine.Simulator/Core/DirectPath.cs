@@ -17,10 +17,18 @@ namespace RC.Engine.Simulator.Core
         public DirectPath(DirectPathFindingAlgorithm searchAlgorithm)
         {
             this.searchAlgorithm = searchAlgorithm;
+            this.blockedEdges = new HashSet<Tuple<int, int>>();
+            searchAlgorithm.CopyBlockedEdges(ref this.blockedEdges);
         }
 
         /// <see cref="IPath.IsReadyForUse"/>
         public override bool IsReadyForUse { get { return this.searchAlgorithm.IsFinished; } }
+
+        /// <see cref="Path.CompletedNodes"/>
+        public override void CopyBlockedEdges(ref HashSet<Tuple<int, int>> targetSet)
+        {
+            foreach (Tuple<int, int> blockedEdge in this.blockedEdges) { targetSet.Add(blockedEdge); }
+        }
 
         /// <see cref="Path.CollectNodesOnPath"/>
         protected override List<PFTreeNode> CollectNodesOnPath()
@@ -38,10 +46,10 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <see cref="Path.FromNode"/>
-        protected override PFTreeNode FromNode { get { return this.searchAlgorithm.FromNode.Node; } }
+        public override PFTreeNode FromNode { get { return this.searchAlgorithm.FromNode.Node; } }
 
         /// <see cref="Path.ToNode"/>
-        protected override PFTreeNode ToNode { get { return this.searchAlgorithm.ToNode; } }
+        public override PFTreeNode ToNode { get { return this.searchAlgorithm.ToNode; } }
 
         /// <see cref="Path.CompletedNodes"/>
         protected internal override IEnumerable<PFTreeNode> CompletedNodes
@@ -54,9 +62,17 @@ namespace RC.Engine.Simulator.Core
             }
         }
 
+        /// <see cref="Path.ForgetBlockedEdgesImpl"/>
+        protected override void ForgetBlockedEdgesImpl() { this.blockedEdges.Clear(); }
+
         /// <summary>
         /// Reference to the algorithm that computes this path.
         /// </summary>
         private DirectPathFindingAlgorithm searchAlgorithm;
+
+        /// <summary>
+        /// List of the blocked edges.
+        /// </summary>
+        private HashSet<Tuple<int, int>> blockedEdges;
     }
 }

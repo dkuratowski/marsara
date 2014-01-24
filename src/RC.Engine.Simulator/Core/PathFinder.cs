@@ -125,20 +125,18 @@ namespace RC.Engine.Simulator.Core
             }
         }
 
-        /// <see cref="IPathFinder.StartAlternativePathSearching"/>
-        public IPath StartAlternativePathSearching(IPath originalPath, int abortedSectionIdx, int iterationLimit)
+        /// <see cref="IPathFinder.StartDetourSearching"/>
+        public IPath StartDetourSearching(IPath originalPath, int abortedSectionIdx, int iterationLimit)
         {
             if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
             if (originalPath == null) { throw new ArgumentNullException("originalPath"); }
             if (abortedSectionIdx < 0 || abortedSectionIdx >= originalPath.Length - 1) { throw new ArgumentOutOfRangeException("abortedSectionIdx"); }
             if (iterationLimit <= 0) { throw new ArgumentOutOfRangeException("iterationLimit", "Iteration limit must be greater than 0!"); }
 
-            PFTreeNode fromNode = ((Path)originalPath).GetPathNode(abortedSectionIdx);
-            //DetourFindAlgorithm detourAlgorithm = new DetourFindAlgorithm(fromNode, blockedEdges
-            return null;
-            //Path retPath = new Path((Path)originalPath, abortedSectionIdx, iterationLimit);
-            //this.algorithmQueue.Enqueue(retPath);
-            //return retPath;
+            DirectPathFindingAlgorithm searchAlgorithm = new DirectPathFindingAlgorithm((Path)originalPath, abortedSectionIdx, iterationLimit);
+            Path newPath = new DirectPath(searchAlgorithm);
+            this.algorithmQueue.Enqueue(searchAlgorithm);
+            return newPath;
         }
 
         /// <see cref="IPathFinder.CheckObstacleIntersection"/>
@@ -194,6 +192,26 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
+        /// Gets the leaf node with the given ID.
+        /// </summary>
+        /// <param name="id">The ID of the leaf node to get.</param>
+        /// <returns>The leaf node with the given ID.</returns>
+        /// <remarks>TODO: this is only for debugging!</remarks>
+        internal PFTreeNode GetLeafNodeByID(int id)
+        {
+            if (this.leafNodeMap == null)
+            {
+                this.leafNodeMap = new PFTreeNode[this.pathfinderTreeRoot.LeafCount];
+                foreach (PFTreeNode leafNode in this.pathfinderTreeRoot.GetAllLeafNodes())
+                {
+                    this.leafNodeMap[leafNode.Index] = leafNode;
+                }
+            }
+
+            return this.leafNodeMap[id];
+        }
+
+        /// <summary>
         /// Gets the root node of the pathfinder tree.
         /// </summary>
         /// <remarks>TODO: this is only for debugging!</remarks>
@@ -218,6 +236,12 @@ namespace RC.Engine.Simulator.Core
         /// The maximum number of search iterations per frame.
         /// </summary>
         private int maxIterationsPerFrame;
+
+        /// <summary>
+        /// The list of the leaf nodes mapped by their IDs.
+        /// </summary>
+        /// <remarks>TODO: this is only for debugging!</remarks>
+        private PFTreeNode[] leafNodeMap;
 
         /// <summary>
         /// The capacity of the path cache.

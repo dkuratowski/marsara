@@ -40,13 +40,13 @@ namespace RC.Engine.Simulator.ComponentInterfaces
         IPath StartPathSearching(RCIntVector fromCoords, RCIntVector toCoords, int iterationLimit);
 
         /// <summary>
-        /// Starts searching an alternative path to the target from the given section on the given original path.
+        /// Starts searching a detour to the target from the given section on the given original path.
         /// </summary>
         /// <param name="originalPath">The original path.</param>
         /// <param name="abortedSectionIdx">The index of the aborted section on the original path.</param>
-        /// <param name="iterationLimit">The maximum number of iterations to execute when searching the path.</param>
-        /// <returns>The interface of the alternative path.</returns>
-        IPath StartAlternativePathSearching(IPath originalPath, int abortedSectionIdx, int iterationLimit);
+        /// <param name="iterationLimit">The maximum number of iterations to execute when searching the detour.</param>
+        /// <returns>The interface of the detour.</returns>
+        IPath StartDetourSearching(IPath originalPath, int abortedSectionIdx, int iterationLimit);
 
         /// <summary>
         /// Checks whether the given area intersects a map obstacle or not.

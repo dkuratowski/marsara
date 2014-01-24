@@ -47,7 +47,6 @@
     <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IPlayerInitializer.cs" />
     <Compile Include="Core\DerivedPath.cs" />
-    <Compile Include="Core\DetourFindAlgorithm.cs" />
     <Compile Include="Core\DirectPath.cs" />
     <Compile Include="Core\EndpointConnectionAlgorithm.cs" />
     <Compile Include="Core\PathCache.cs" />

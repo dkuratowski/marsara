@@ -69,10 +69,10 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <see cref="Path.FromNode"/>
-        protected override PFTreeNode FromNode { get { return this.sourceConnectionAlgorithm.FromNode.Node; } }
+        public override PFTreeNode FromNode { get { return this.sourceConnectionAlgorithm.FromNode.Node; } }
 
         /// <see cref="Path.ToNode"/>
-        protected override PFTreeNode ToNode { get { return this.targetConnectionAlgorithm.FromNode.Node; } }
+        public override PFTreeNode ToNode { get { return this.targetConnectionAlgorithm.FromNode.Node; } }
 
         /// <see cref="Path.CompletedNodes"/>
         protected internal override IEnumerable<PFTreeNode> CompletedNodes

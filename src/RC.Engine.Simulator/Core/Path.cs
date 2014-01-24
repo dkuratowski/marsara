@@ -19,7 +19,6 @@ namespace RC.Engine.Simulator.Core
         public Path()
         {
             this.nodesOnPath = null;
-            this.blockedEdges = new HashSet<Tuple<int, int>>();
         }
 
         #region IPath methods
@@ -64,7 +63,7 @@ namespace RC.Engine.Simulator.Core
         public void ForgetBlockedEdges()
         {
             if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
-            this.blockedEdges.Clear();
+            this.ForgetBlockedEdgesImpl();
         }
 
         #endregion IPath methods
@@ -95,26 +94,27 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Checks whether the edge between the two given pathfinder tree nodes is blocked or not.
+        /// Copies the blocked edges of this path to the target set.
         /// </summary>
-        /// <param name="nodeA">The first node of the edge.</param>
-        /// <param name="nodeB">The second node of the edge.</param>
-        /// <returns>True if the edge is blocked, false otherwise.</returns>
-        public bool IsEdgeBlocked(PFTreeNode nodeA, PFTreeNode nodeB)
-        {
-            return this.blockedEdges.Contains(new Tuple<int, int>(nodeA.Index, nodeB.Index)) ||
-                   this.blockedEdges.Contains(new Tuple<int, int>(nodeB.Index, nodeA.Index));
-        }
+        /// <param name="targetSet">The target set to copy.</param>
+        /// <remarks>Can be overriden in the derived classes. The default implementation does nothing.</remarks>
+        public virtual void CopyBlockedEdges(ref HashSet<Tuple<int, int>> targetSet) { }
+
+        /// <summary>
+        /// Forgets every blocked edges that was used when the path was computed.
+        /// </summary>
+        /// <remarks>Can be overriden in the derived classes. The default implementation does nothing.</remarks>
+        protected virtual void ForgetBlockedEdgesImpl() { }
 
         /// <summary>
         /// Gets the source node of this path.
         /// </summary>
-        protected abstract PFTreeNode FromNode { get; }
+        public abstract PFTreeNode FromNode { get; }
 
         /// <summary>
         /// Gets the target node of this path.
         /// </summary>
-        protected abstract PFTreeNode ToNode { get; }
+        public abstract PFTreeNode ToNode { get; }
 
         #endregion Internal methods
 
@@ -127,10 +127,5 @@ namespace RC.Engine.Simulator.Core
         /// The list of the nodes among this path.
         /// </summary>
         private List<PFTreeNode> nodesOnPath;
-
-        /// <summary>
-        /// List of the blocked edges in the pathfinding graph.
-        /// </summary>
-        private HashSet<Tuple<int, int>> blockedEdges;
     }
 }
