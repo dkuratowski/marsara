@@ -162,6 +162,7 @@ namespace RC.Common.Diagnostics
         public static void WriteAllTrace(object obj, int traceFilterID)
         {
             if (obj == null) { throw new ArgumentNullException("obj"); }
+            if (traceFilterID == -1) { return; }
             if (traceFilterID < 0 || traceFilterID >= traceFilterStatuses.Count) { throw new ArgumentOutOfRangeException("traceFilterID"); }
 
             /// Trace only if the given trace filter is activated.

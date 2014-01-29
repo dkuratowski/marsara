@@ -53,7 +53,7 @@ namespace RC.Engine.Simulator.Scenarios
         private void SynchPosition()
         {
             ICell topLeftCell = this.Scenario.Map.GetQuadTile(this.quadCoords).GetCell(new RCIntVector(0, 0));
-            this.SetPosition(topLeftCell.MapCoords - new RCNumVector(1, 1) / 2);
+            this.SetPosition(topLeftCell.MapCoords - new RCNumVector(1, 1) / 2 + this.ElementType.Area.Read() / 2);
         }
         
         /// <summary>

@@ -124,7 +124,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// <see cref="IMapContent.Position"/>
         public RCNumRectangle Position
         {
-            get { return new RCNumRectangle(this.position.Read(), this.elementType.Area.Read()); }
+            get { return new RCNumRectangle(this.position.Read() - this.ElementType.Area.Read() / 2, this.elementType.Area.Read()); }
         }
 
         /// <see cref="IMapContent.PositionChanging"/>

@@ -44,7 +44,7 @@ namespace RC.App.Starter
                 root.GetEventSource("RC.UI.XnaPlugin.XnaMouseEventSource").Activate();
                 root.GetEventSource("RC.UI.XnaPlugin.XnaKeyboardEventSource").Activate();
 
-                /// Create the UIWorkspace and activate the event sources (TODO: make it configurable)
+                /// Create the UIWorkspace (TODO: make it configurable)
                 UIWorkspace workspace = new UIWorkspace(new RCIntVector(1024, 768), MapEditorSetup.Mode == MapEditorMode.Off ? new RCIntVector(320, 200) : new RCIntVector(1024, 768));
 
                 if (MapEditorSetup.Mode == MapEditorMode.Off)

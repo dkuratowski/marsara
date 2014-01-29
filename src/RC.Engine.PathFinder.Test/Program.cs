@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using RC.Common.Configuration;
+using RC.Engine.Simulator.Scenarios;
+using RC.Common;
 
 namespace RC.Engine.PathFinder.Test
 {
@@ -14,6 +16,16 @@ namespace RC.Engine.PathFinder.Test
         [STAThread]
         static void Main()
         {
+            //RCNumRectangle rectangleA = new RCNumRectangle(-1, -1, 2, 2);
+            //RCNumRectangle rectangleB = new RCNumRectangle(4, -1, 2, 2);
+            //RCNumVector velocityA = new RCNumVector(3, 3);
+            //RCNumVector velocityB = new RCNumVector(-3, 0);
+
+            //RCNumber ttc = MotionController.CalculateTimeToCollision(rectangleA, velocityA, rectangleB, velocityB);
+
+            //RCNumRectangle newRectA = rectangleA + velocityA * ttc;
+            //RCNumRectangle newRectB = rectangleB + velocityB * ttc;
+
             //ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
             ConfigurationManager.Initialize("..\\..\\..\\RC.App.Starter\\bin\\Debug\\RC.App.root");
             Application.EnableVisualStyles();

@@ -55,7 +55,7 @@ namespace RC.Engine.Simulator.Terran
                 SCV scv = new SCV();
                 scenario.AddEntity(scv);
                 player.AddUnit(scv);
-                scv.AddToMap(new RCNumVector(cmdCenterTopLeft + SCV_POSITIONS[i] - scv.ElementType.Area.Read() / 2));
+                scv.AddToMap(new RCNumVector(cmdCenterTopLeft + SCV_POSITIONS[i]));
             }
         }
 

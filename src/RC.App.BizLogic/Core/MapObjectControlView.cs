@@ -32,7 +32,7 @@ namespace RC.App.BizLogic.Core
             this.gameManager = ComponentManager.GetInterface<IMultiplayerGameManager>();
         }
 
-        #region IMapObjectView methods
+        #region IMapObjectControlView methods
 
         /// <see cref="IMapObjectControlView.LeftClick"/>
         public void LeftClick(RCIntRectangle displayedArea, RCIntVector position)
@@ -95,7 +95,7 @@ namespace RC.App.BizLogic.Core
             this.selector.Select(mapCoords);
         }
 
-        #endregion IMapObjectView methods
+        #endregion IMapObjectControlView methods
 
         /// PROTOTYPE CODE
         private IMultiplayerGameManager gameManager;
