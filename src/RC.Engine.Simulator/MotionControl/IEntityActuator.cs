@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RC.Engine.Simulator.Scenarios
+namespace RC.Engine.Simulator.MotionControl
 {
     /// <summary>
     /// Contains the informations about a dynamic obstacle that is needed for the motion controller.

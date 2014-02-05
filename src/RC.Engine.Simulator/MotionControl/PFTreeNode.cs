@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.MotionControl
 {
     /// <summary>
     /// Represents a node in the pathfinder tree.

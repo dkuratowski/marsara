@@ -1,10 +1,11 @@
 ﻿using RC.Common;
+using RC.Engine.Simulator.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.MotionControl
 {
     /// <summary>
     /// Abstract base class of the pathfinding algorithms.

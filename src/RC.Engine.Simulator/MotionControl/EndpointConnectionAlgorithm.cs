@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.MotionControl
 {
     /// <summary>
     /// Represents a pathfinding algorithm that connects a given endpoint to a path computed by a given cached algorithm.

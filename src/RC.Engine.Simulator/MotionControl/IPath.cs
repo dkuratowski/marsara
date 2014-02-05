@@ -5,7 +5,7 @@ using System.Text;
 using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
 
-namespace RC.Engine.Simulator.PublicInterfaces
+namespace RC.Engine.Simulator.MotionControl
 {
     /// <summary>
     /// The public interface of a path computed by the pathfinder component.

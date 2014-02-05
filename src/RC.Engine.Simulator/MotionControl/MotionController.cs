@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RC.Engine.Simulator.Scenarios
+namespace RC.Engine.Simulator.MotionControl
 {
     /// <summary>
     /// This class implements the motion controlling algorithm of the moving entities.

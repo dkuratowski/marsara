@@ -22,11 +22,6 @@ namespace RC.Engine.Simulator.Core
         /// The name of the field of the composite heap types that contains the data from the base class.
         /// </summary>
         public const string NAME_OF_BASE_TYPE_FIELD = "base";
-
-        /// <summary>
-        /// The name of the cell data field that indicates buildability.
-        /// </summary>
-        public const string ISBUILDABLE_FIELD_NAME = "IsBuildable";
     }
 
     /// <summary>

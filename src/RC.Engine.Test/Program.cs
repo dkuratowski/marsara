@@ -17,63 +17,138 @@ using RC.Engine.Simulator.InternalInterfaces;
 using RC.Engine.Simulator.PublicInterfaces;
 using System.Collections;
 using RC.Engine.Simulator.ComponentInterfaces;
+using RC.Engine.Simulator.MotionControl;
 
 namespace RC.Engine.Test
 {
     class Program
     {
+        static int CELL_SIZE = 8;
+        static List<Pen> PENS = new List<Pen>()
+        {
+            Pens.Red, Pens.Green, Pens.Blue, Pens.Cyan, Pens.Magenta, Pens.Orange, Pens.LightBlue
+        };
+
         static void Main(string[] args)
         {
-            ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
-            ComponentManager.RegisterComponents("RC.Engine.Simulator, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", new string[1] { "RC.Engine.Simulator.HeapManager" });
-            ComponentManager.RegisterPluginAssembly("RC.Engine.Simulator.Terran, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            ComponentManager.StartComponents();
+            TestWalkabilityGrid testGrid = new TestWalkabilityGrid((Bitmap)Bitmap.FromFile("testgrid.png"));
 
-            bool testResult = SimulationHeapTest.StressTest();
-            if (!testResult) { throw new Exception("Test failed!"); }
+            /// QUAD-TREE TEST **************************************************************************************************************************
+            //WalkabilityQuadTreeNode quadTreeRoot = WalkabilityQuadTreeNode.CreateQuadTree(testGrid);
+            //Bitmap outputBmp = new Bitmap(testGrid.Width * CELL_SIZE, testGrid.Height * CELL_SIZE);
+            //Graphics outputGC = Graphics.FromImage(outputBmp);
+            //HashSet<WalkabilityQuadTreeNode> leafNodes = new HashSet<WalkabilityQuadTreeNode>();
+            //quadTreeRoot.CollectLeafNodes(leafNodes);
+            //foreach (WalkabilityQuadTreeNode leafNode in leafNodes)
+            //{
+            //    RCIntRectangle nodeRect = leafNode.AreaOnGrid * new RCIntVector(CELL_SIZE, CELL_SIZE);
+            //    outputGC.FillRectangle(leafNode.IsWalkable ? Brushes.Green : Brushes.Red,
+            //        nodeRect.X, nodeRect.Y, nodeRect.Width, nodeRect.Height);
+            //    outputGC.DrawRectangle(Pens.Black, nodeRect.X, nodeRect.Y, nodeRect.Width, nodeRect.Height);
 
-            IHeapManager heapMgr = ComponentManager.GetInterface<IHeapManager>();
-            heapMgr.CreateHeap();
+            //    RCIntVector startPoint = new RCIntVector((nodeRect.Left + nodeRect.Right) / 2, (nodeRect.Top + nodeRect.Bottom) / 2);
+            //    foreach (WalkabilityQuadTreeNode neighbourNode in leafNode.Neighbours)
+            //    {
+            //        RCIntRectangle neighbourNodeRect = neighbourNode.AreaOnGrid * new RCIntVector(CELL_SIZE, CELL_SIZE);
+            //        RCIntVector endPoint = new RCIntVector((neighbourNodeRect.Left + neighbourNodeRect.Right) / 2, (neighbourNodeRect.Top + neighbourNodeRect.Bottom) / 2);
+            //        outputGC.DrawLine(Pens.Yellow, startPoint.X, startPoint.Y, endPoint.X, endPoint.Y);
+            //    }
+            //}
+            //outputGC.Dispose();
+            //outputBmp.Save("testgrid_neighbours.png", ImageFormat.Png);
+            //outputBmp.Dispose();
+            /// *****************************************************************************************************************************************
 
-            TreeBranch node0 = new TreeBranch();
-            TreeBranch node1 = new TreeBranch();
-            TreeBranch node2 = new TreeBranch();
-            TreeBranch node3 = new TreeBranch();
-            TreeLeaf node4 = new TreeLeaf();
-            TreeLeaf node5 = new TreeLeaf();
-            TreeLeaf node6 = new TreeLeaf();
-            TreeLeaf node7 = new TreeLeaf();
-            TreeLeaf node8 = new TreeLeaf();
-            node0.Children.New(3);
-            node0.Children[0].Write(node1);
-            node0.Children[1].Write(node2);
-            node0.Children[2].Write(node3);
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            NavMesh navmesh = new NavMesh(testGrid, 2);
+            Console.WriteLine(watch.ElapsedMilliseconds);
 
-            node1.Children.New(2);
-            node1.Children[0].Write(node4);
-            node1.Children[1].Write(node5);
+            Bitmap outputImg = new Bitmap(testGrid.Width * CELL_SIZE, testGrid.Height * CELL_SIZE, PixelFormat.Format24bppRgb);
+            Graphics gc = Graphics.FromImage(outputImg);
+            gc.Clear(Color.White);
 
-            node2.Children.New(1);
-            node2.Children[0].Write(node6);
+            /// Draw the original grid enlarged.
+            for (int row = 0; row < testGrid.Height; row++)
+            {
+                for (int col = 0; col < testGrid.Width; col++)
+                {
+                    if (!testGrid[new RCIntVector(col, row)])
+                    {
+                        gc.FillRectangle(Brushes.Black, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    }
+                }
+            }
 
-            node3.Children.New(2);
-            node3.Children[0].Write(node7);
-            node3.Children[1].Write(node8);
+            /// Draw the sectors.
+            int i = 0;
+            foreach (Sector sector in navmesh.Sectors)
+            {
+                //if (i == 6)
+                //{
+                    DrawPolygon(sector.Border, gc, PENS[i % PENS.Count]);
+                    foreach (Polygon wallPolygon in sector.Walls)
+                    {
+                        DrawPolygon(wallPolygon, gc, PENS[i % PENS.Count]);
+                    }
+                //}
+                ++i;
+            }
 
-            node4.Values.New(3);
-            node4.Values[0].Write(4);
-            node4.Values[1].Write(5);
-            node4.Values[2].Write(6);
+            gc.Dispose();
+            outputImg.Save("testoutput.png");
+            outputImg.Dispose();
 
-            node0.Dispose();
-            node1.Dispose();
-            node2.Dispose();
-            node3.Dispose();
-            node4.Dispose();
-            node5.Dispose();
-            node6.Dispose();
-            node7.Dispose();
-            node8.Dispose();
+            //ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
+            //ComponentManager.RegisterComponents("RC.Engine.Simulator, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", new string[1] { "RC.Engine.Simulator.HeapManager" });
+            //ComponentManager.RegisterPluginAssembly("RC.Engine.Simulator.Terran, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            //ComponentManager.StartComponents();
+
+            //bool testResult = SimulationHeapTest.StressTest();
+            //if (!testResult) { throw new Exception("Test failed!"); }
+
+            //IHeapManager heapMgr = ComponentManager.GetInterface<IHeapManager>();
+            //heapMgr.CreateHeap();
+
+            //TreeBranch node0 = new TreeBranch();
+            //TreeBranch node1 = new TreeBranch();
+            //TreeBranch node2 = new TreeBranch();
+            //TreeBranch node3 = new TreeBranch();
+            //TreeLeaf node4 = new TreeLeaf();
+            //TreeLeaf node5 = new TreeLeaf();
+            //TreeLeaf node6 = new TreeLeaf();
+            //TreeLeaf node7 = new TreeLeaf();
+            //TreeLeaf node8 = new TreeLeaf();
+            //node0.Children.New(3);
+            //node0.Children[0].Write(node1);
+            //node0.Children[1].Write(node2);
+            //node0.Children[2].Write(node3);
+
+            //node1.Children.New(2);
+            //node1.Children[0].Write(node4);
+            //node1.Children[1].Write(node5);
+
+            //node2.Children.New(1);
+            //node2.Children[0].Write(node6);
+
+            //node3.Children.New(2);
+            //node3.Children[0].Write(node7);
+            //node3.Children[1].Write(node8);
+
+            //node4.Values.New(3);
+            //node4.Values[0].Write(4);
+            //node4.Values[1].Write(5);
+            //node4.Values[2].Write(6);
+
+            //node0.Dispose();
+            //node1.Dispose();
+            //node2.Dispose();
+            //node3.Dispose();
+            //node4.Dispose();
+            //node5.Dispose();
+            //node6.Dispose();
+            //node7.Dispose();
+            //node8.Dispose();
 
             //PFTreeTest.PFTreeNeighbourTest();
             //TestSimulationHeap();
@@ -94,6 +169,24 @@ namespace RC.Engine.Test
 
             Console.WriteLine("Ready!");
             Console.ReadLine();
+        }
+
+        static void DrawPolygon(Polygon polygon, Graphics gc, Pen pen)
+        {
+            RCNumVector prevPoint = RCNumVector.Undefined;
+            for (int i = 0; i < polygon.Length; i++)
+            {
+                RCNumVector currPoint = (polygon[i] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                if (prevPoint != RCNumVector.Undefined)
+                {
+                    gc.DrawLine(pen, prevPoint.Round().X, prevPoint.Round().Y, currPoint.Round().X, currPoint.Round().Y);
+                }
+                prevPoint = currPoint;
+            }
+
+            RCNumVector lastPoint = (polygon[polygon.Length - 1] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
+            RCNumVector firstPoint = (polygon[0] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
+            gc.DrawLine(pen, lastPoint.Round().X, lastPoint.Round().Y, firstPoint.Round().X, firstPoint.Round().Y);
         }
 
         static void TestSimulationHeap()

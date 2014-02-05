@@ -1,5 +1,6 @@
 ﻿using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.MotionControl;
 using RC.Engine.Simulator.Scenarios;
 using System;
 using System.Collections.Generic;

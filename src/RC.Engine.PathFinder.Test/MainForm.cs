@@ -16,6 +16,7 @@ using RC.Engine.Maps.ComponentInterfaces;
 using System.IO;
 using RC.Common.Configuration;
 using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.MotionControl;
 
 namespace RC.Engine.PathFinder.Test
 {
@@ -25,7 +26,7 @@ namespace RC.Engine.PathFinder.Test
         {
             this.fromCoords = new List<RCIntVector>();
             this.toCoord = RCIntVector.Undefined;
-            this.computedPaths = new List<Simulator.Core.Path>();
+            this.computedPaths = new List<Simulator.MotionControl.Path>();
             this.blockedNodeIndex = 0;
             this.pathfinder = null;
 
@@ -46,10 +47,10 @@ namespace RC.Engine.PathFinder.Test
             ComponentManager.RegisterComponents("RC.Engine.Maps, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                                                 new string[2] { "RC.Engine.Maps.MapLoader", "RC.Engine.Maps.TileSetLoader" });
             ComponentManager.StartComponents();
-            this.pathfinder = new Simulator.Core.PathFinder();
+            this.pathfinder = new Simulator.MotionControl.PathFinder();
 
-            this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\tilesets\\bandlands\\bandlands.xml", "..\\..\\..\\..\\maps\\testmap4.rcm"), 5000);
-            //this.pathfinder.Initialize(this.ReadTestMapFromImg("pathfinder_testmap2.png"), 5000);
+            //this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\tilesets\\bandlands\\bandlands.xml", "..\\..\\..\\..\\maps\\testmap4.rcm"), 5000);
+            this.pathfinder.Initialize(this.ReadTestMapFromImg("pathfinder_testmap2.png"), 5000);
 
             this.originalMapImg = new Bitmap(this.pathfinder.PathfinderTreeRoot.AreaOnMap.Width * CELL_SIZE, this.pathfinder.PathfinderTreeRoot.AreaOnMap.Height * CELL_SIZE);
             Graphics outputGC = Graphics.FromImage(this.originalMapImg);
@@ -172,8 +173,8 @@ namespace RC.Engine.PathFinder.Test
                 if (this.blockedNodeSelectionImg != null) { this.blockedNodeSelectionImg.Dispose(); this.blockedNodeSelectionImg = null; }
 
                 Stopwatch watch = new Stopwatch();
-                this.computedPaths = new List<RC.Engine.Simulator.Core.Path>();
-                foreach (RCIntVector fromCoord in this.fromCoords) { this.computedPaths.Add((RC.Engine.Simulator.Core.Path)this.pathfinder.StartPathSearching(fromCoord, toCoord, 5000)); }
+                this.computedPaths = new List<RC.Engine.Simulator.MotionControl.Path>();
+                foreach (RCIntVector fromCoord in this.fromCoords) { this.computedPaths.Add((RC.Engine.Simulator.MotionControl.Path)this.pathfinder.StartPathSearching(fromCoord, toCoord, 5000)); }
                 this.lastSearchFrames = 0;
                 watch.Start();
                 while (!CheckPathCompleteness(this.computedPaths))
@@ -185,7 +186,7 @@ namespace RC.Engine.PathFinder.Test
 
                 this.lastSearchTime = (int)watch.ElapsedMilliseconds;
                 this.lastSearchIterations = 0;
-                foreach (RC.Engine.Simulator.Core.Path path in this.computedPaths)
+                foreach (RC.Engine.Simulator.MotionControl.Path path in this.computedPaths)
                 {
                     this.lastSearchIterations += path.CompletedNodes.Count();
                 }
@@ -194,7 +195,7 @@ namespace RC.Engine.PathFinder.Test
                 Graphics outputGC = Graphics.FromImage(this.searchResultImg);
                 outputGC.Clear(Color.FromArgb(255, 0, 255));
                 HashSet<RCIntRectangle> sectionsOnPath = new HashSet<RCIntRectangle>();
-                foreach (RC.Engine.Simulator.Core.Path path in this.computedPaths)
+                foreach (RC.Engine.Simulator.MotionControl.Path path in this.computedPaths)
                 {
                     for (int i = 0; i < path.Length; ++i)
                     {
@@ -234,9 +235,9 @@ namespace RC.Engine.PathFinder.Test
                 if (this.blockedNodeSelectionImg != null) { this.blockedNodeSelectionImg.Dispose(); this.blockedNodeSelectionImg = null; }
 
                 Stopwatch watch = new Stopwatch();
-                RC.Engine.Simulator.Core.Path originalPath = this.computedPaths[0];
-                this.computedPaths = new List<RC.Engine.Simulator.Core.Path>();
-                this.computedPaths.Add((RC.Engine.Simulator.Core.Path)this.pathfinder.StartDetourSearching(originalPath, this.blockedNodeIndex, 5000));
+                RC.Engine.Simulator.MotionControl.Path originalPath = this.computedPaths[0];
+                this.computedPaths = new List<RC.Engine.Simulator.MotionControl.Path>();
+                this.computedPaths.Add((RC.Engine.Simulator.MotionControl.Path)this.pathfinder.StartDetourSearching(originalPath, this.blockedNodeIndex, 5000));
                 this.lastSearchFrames = 0;
                 watch.Start();
                 while (!CheckPathCompleteness(this.computedPaths))
@@ -248,7 +249,7 @@ namespace RC.Engine.PathFinder.Test
 
                 this.lastSearchTime = (int)watch.ElapsedMilliseconds;
                 this.lastSearchIterations = 0;
-                foreach (RC.Engine.Simulator.Core.Path path in this.computedPaths)
+                foreach (RC.Engine.Simulator.MotionControl.Path path in this.computedPaths)
                 {
                     this.lastSearchIterations += path.CompletedNodes.Count();
                 }
@@ -334,9 +335,9 @@ namespace RC.Engine.PathFinder.Test
             this.Invalidate();
         }
 
-        private bool CheckPathCompleteness(List<RC.Engine.Simulator.Core.Path> pathsToCheck)
+        private bool CheckPathCompleteness(List<RC.Engine.Simulator.MotionControl.Path> pathsToCheck)
         {
-            foreach (RC.Engine.Simulator.Core.Path path in pathsToCheck) { if (!path.IsReadyForUse) { return false; } }
+            foreach (RC.Engine.Simulator.MotionControl.Path path in pathsToCheck) { if (!path.IsReadyForUse) { return false; } }
             return true;
         }
 
@@ -393,7 +394,7 @@ namespace RC.Engine.PathFinder.Test
         /// <summary>
         /// The list of the currently computed paths.
         /// </summary>
-        private List<RC.Engine.Simulator.Core.Path> computedPaths;
+        private List<RC.Engine.Simulator.MotionControl.Path> computedPaths;
 
         /// <summary>
         /// The index of the currently selected blocked node or -1 if multiple paths were computed.
@@ -403,6 +404,6 @@ namespace RC.Engine.PathFinder.Test
         /// <summary>
         /// Reference to the pathfinder component.
         /// </summary>
-        private Engine.Simulator.Core.PathFinder pathfinder;
+        private Engine.Simulator.MotionControl.PathFinder pathfinder;
     }
 }

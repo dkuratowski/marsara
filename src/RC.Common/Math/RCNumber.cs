@@ -232,6 +232,28 @@ namespace RC.Common
         }
 
         /// <summary>
+        /// Computes the square root of this RCNumber.
+        /// </summary>
+        /// <returns>The square root of this RCNumber.</returns>
+        public RCNumber Sqrt()
+        {
+            if (this < 0) { throw new InvalidOperationException("Only non-negative RCNumbers have square root!"); }
+
+            long rawValueShifted = this.rawValue << FRACTION_WIDTH;
+            long bitMask = SQRT_INITIAL_BITMASK;
+            long sqrtRawValue = 0;
+            while (bitMask > 0x00)
+            {
+                long currentSqrtTrial = sqrtRawValue | bitMask;
+                if (currentSqrtTrial * currentSqrtTrial < rawValueShifted) { sqrtRawValue = currentSqrtTrial; }
+                bitMask >>= 1;
+            }
+
+            return new RCNumber(Math.Abs((sqrtRawValue + 1) * (sqrtRawValue + 1) - rawValueShifted) > Math.Abs(sqrtRawValue * sqrtRawValue - rawValueShifted)
+                                ? sqrtRawValue : sqrtRawValue + 1);
+        }
+
+        /// <summary>
         /// Rounds this RCNumber to the nearest integer.
         /// </summary>
         /// <returns>
@@ -344,6 +366,11 @@ namespace RC.Common
         /// The number of the bits in the fraction part of RCNumbers.
         /// </summary>
         private const int FRACTION_WIDTH = 10;
+
+        /// <summary>
+        /// The first bitmask that is used in square root calculations.
+        /// </summary>
+        private const int SQRT_INITIAL_BITMASK = 0x01 << ((FRACTION_WIDTH + 31) / 2);
 
         /// <summary>
         /// Number of the displayed decimal digits.

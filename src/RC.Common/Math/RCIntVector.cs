@@ -159,7 +159,7 @@ namespace RC.Common
             this.isDefined = true;
             this.x = x;
             this.y = y;
-            this.lengthCache = default(CachedValue<float>);
+            this.lengthCache = default(CachedValue<RCNumber>);
             this.lengthCacheCreated = false;
         }
 
@@ -173,7 +173,7 @@ namespace RC.Common
             this.isDefined = true;
             this.x = other.x;
             this.y = other.y;
-            this.lengthCache = default(CachedValue<float>);
+            this.lengthCache = default(CachedValue<RCNumber>);
             this.lengthCacheCreated = false;
         }
 
@@ -245,7 +245,7 @@ namespace RC.Common
         /// <summary>
         /// Gets the length of this RCIntVector.
         /// </summary>
-        public float Length
+        public RCNumber Length
         {
             get
             {
@@ -267,7 +267,7 @@ namespace RC.Common
         /// Workaround: structs doesn't allow to define parameterless constructors, so we have to guarantee that
         /// the cache is created latest when first needed.
         /// </summary>
-        private CachedValue<float> LengthCache
+        private CachedValue<RCNumber> LengthCache
         {
             get
             {
@@ -275,10 +275,10 @@ namespace RC.Common
                 {
                     int x = this.x;
                     int y = this.y;
-                    this.lengthCache = new CachedValue<float>(
+                    this.lengthCache = new CachedValue<RCNumber>(
                         delegate()
                         {
-                            return (float)Math.Sqrt((double)x * (double)x + (double)y * (double)y);
+                            return ((RCNumber)(x * x + y * y)).Sqrt();
                         });
 
                     this.lengthCacheCreated = true;
@@ -301,7 +301,7 @@ namespace RC.Common
         /// <summary>
         /// The cache of the length of this RCIntVector.
         /// </summary>
-        private CachedValue<float> lengthCache;
+        private CachedValue<RCNumber> lengthCache;
 
         /// <summary>
         /// This flag indicates whether the length cache has already been created or not.

@@ -271,11 +271,12 @@ namespace RC.Common
             {
                 if (!this.lengthCacheCreated)
                 {
+                    RCNumber x = this.x;
+                    RCNumber y = this.y;
                     this.lengthCache = new CachedValue<RCNumber>(
                         delegate()
                         {
-                            /// TODO: implement
-                            throw new NotImplementedException();
+                            return (x * x + y * y).Sqrt();
                         });
 
                     this.lengthCacheCreated = true;

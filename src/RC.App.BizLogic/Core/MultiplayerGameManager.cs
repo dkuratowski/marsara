@@ -12,6 +12,7 @@ using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Scenarios;
 using RC.App.BizLogic.PublicInterfaces;
+using RC.Engine.Simulator.MotionControl;
 
 namespace RC.App.BizLogic.Core
 {

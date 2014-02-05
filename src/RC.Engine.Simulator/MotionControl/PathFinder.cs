@@ -8,7 +8,7 @@ using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Common;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.MotionControl
 {
     /// <summary>
     /// Implementation of the pathfinder component.

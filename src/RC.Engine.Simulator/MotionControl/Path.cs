@@ -6,7 +6,7 @@ using RC.Engine.Simulator.PublicInterfaces;
 using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Core
+namespace RC.Engine.Simulator.MotionControl
 {
     /// <summary>
     /// Represents a path computed by the pathfinder.

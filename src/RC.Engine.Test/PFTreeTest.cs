@@ -7,6 +7,7 @@ using RC.Common;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using RC.Engine.Simulator.MotionControl;
 
 namespace RC.Engine.Test
 {
