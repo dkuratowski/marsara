@@ -46,11 +46,13 @@
     <Compile Include="ComponentInterfaces\IHeapManagerPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IPlayerInitializer.cs" />
+    <Compile Include="MotionControl\Tessellation.cs" />
     <Compile Include="MotionControl\DerivedPath.cs" />
     <Compile Include="MotionControl\DirectPath.cs" />
     <Compile Include="MotionControl\EndpointConnectionAlgorithm.cs" />
     <Compile Include="MotionControl\IWalkabilityGrid.cs" />
     <Compile Include="MotionControl\NavMesh.cs" />
+    <Compile Include="MotionControl\NavMeshNode.cs" />
     <Compile Include="MotionControl\PathCache.cs" />
     <Compile Include="MotionControl\PathCacheItem.cs" />
     <Compile Include="MotionControl\PathNode.cs" />

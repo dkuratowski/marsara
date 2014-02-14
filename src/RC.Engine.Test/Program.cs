@@ -31,6 +31,8 @@ namespace RC.Engine.Test
 
         static void Main(string[] args)
         {
+            NavMeshNode testNode = new NavMeshNode(new RCNumVector(1, 1), new RCNumVector(2, 2), new RCNumVector(3, 3));
+
             TestWalkabilityGrid testGrid = new TestWalkabilityGrid((Bitmap)Bitmap.FromFile("testgrid.png"));
 
             /// QUAD-TREE TEST **************************************************************************************************************************
@@ -174,7 +176,7 @@ namespace RC.Engine.Test
         static void DrawPolygon(Polygon polygon, Graphics gc, Pen pen)
         {
             RCNumVector prevPoint = RCNumVector.Undefined;
-            for (int i = 0; i < polygon.Length; i++)
+            for (int i = 0; i < polygon.VertexCount; i++)
             {
                 RCNumVector currPoint = (polygon[i] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
                 if (prevPoint != RCNumVector.Undefined)
@@ -184,7 +186,7 @@ namespace RC.Engine.Test
                 prevPoint = currPoint;
             }
 
-            RCNumVector lastPoint = (polygon[polygon.Length - 1] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
+            RCNumVector lastPoint = (polygon[polygon.VertexCount - 1] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
             RCNumVector firstPoint = (polygon[0] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
             gc.DrawLine(pen, lastPoint.Round().X, lastPoint.Round().Y, firstPoint.Round().X, firstPoint.Round().Y);
         }

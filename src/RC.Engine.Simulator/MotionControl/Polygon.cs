@@ -32,7 +32,7 @@ namespace RC.Engine.Simulator.MotionControl
             StepDirection previousStep = StepDirection.None;
             if (grid[upperLeftCorner] && !grid[upperLeftCorner + new RCIntVector(0, -1)] && !grid[upperLeftCorner + new RCIntVector(-1, 0)])
             {
-                if (Polygon.GetIndexAt(grid, currentPos) == 5) { previousStep = StepDirection.Left; }
+                if (Polygon.GetIndexAt(grid, currentPos) == 5) { previousStep = StepDirection.Up; }
             }
             else if (grid[upperLeftCorner] || !grid[upperLeftCorner + new RCIntVector(0, -1)] || !grid[upperLeftCorner + new RCIntVector(-1, 0)] || !grid[upperLeftCorner + new RCIntVector(-1, -1)])
             {
@@ -60,7 +60,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <summary>
         /// Gets the number of vertices of this Polygon.
         /// </summary>
-        public int Length { get { return this.vertices.Count; } }
+        public int VertexCount { get { return this.vertices.Count; } }
 
         /// <summary>
         /// Gets the vertex of this Polygon with the given index.
@@ -68,6 +68,8 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="index">The index of the vertex to get.</param>
         /// <returns>The vertex of this Polygon with the given index.</returns>
         public RCNumVector this[int index] { get { return this.vertices[index]; } }
+
+        #region Polygon buildup methods
 
         /// <summary>
         /// A simple enumeration to represent the direction we just moved, and the direction we will next move.
@@ -92,74 +94,36 @@ namespace RC.Engine.Simulator.MotionControl
         private static StepDirection Step(IWalkabilityGrid grid, List<RCNumVector> vertexList, RCIntVector currentPos, StepDirection previousStep)
         {
             int currentIndex = Polygon.GetIndexAt(grid, currentPos);
-            if (currentIndex == 1 || currentIndex == 13)
-            {
-                RCNumVector newVertex = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2);
-                if (vertexList.Count > 0 && vertexList[0] == newVertex) { return StepDirection.None; }
-                if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex) { vertexList.Add(newVertex); }
-                return StepDirection.Down;
-            }
-            else if (currentIndex == 2 || currentIndex == 11)
-            {
-                RCNumVector newVertex = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2);
-                if (vertexList.Count > 0 && vertexList[0] == newVertex) { return StepDirection.None; }
-                if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex) { vertexList.Add(newVertex); }
-                return StepDirection.Right;
-            }
-            else if (currentIndex == 3)
-            {
-                return StepDirection.Right;
-            }
-            else if (currentIndex == 4 || currentIndex == 7)
-            {
-                RCNumVector newVertex = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2);
-                if (vertexList.Count > 0 && vertexList[0] == newVertex) { return StepDirection.None; }
-                if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex) { vertexList.Add(newVertex); }
-                return StepDirection.Up;
-            }
-            else if (currentIndex == 5)
-            {
-                if (previousStep == StepDirection.None || previousStep == StepDirection.Right)
-                {
-                    RCNumVector newVertex0 = new RCNumVector(currentPos) + new RCNumVector(0, (RCNumber)1 / (RCNumber)2);
-                    if (vertexList.Count > 0 && vertexList[0] == newVertex0) { return StepDirection.None; }
-                    if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex0) { vertexList.Add(newVertex0); }
-                    RCNumVector newVertex1 = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, 0);
-                    if (vertexList.Count > 0 && vertexList[0] == newVertex1) { return StepDirection.None; }
-                    if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex1) { vertexList.Add(newVertex1); }
-                    return StepDirection.Up;
-                }
-                else
-                {
-                    RCNumVector newVertex0 = new RCNumVector(currentPos) + new RCNumVector(1, (RCNumber)1 / (RCNumber)2);
-                    if (vertexList.Count > 0 && vertexList[0] == newVertex0) { return StepDirection.None; }
-                    if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex0) { vertexList.Add(newVertex0); }
-                    RCNumVector newVertex1 = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, 1);
-                    if (vertexList.Count > 0 && vertexList[0] == newVertex1) { return StepDirection.None; }
-                    if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex1) { vertexList.Add(newVertex1); }
-                    return StepDirection.Down;
-                }
-            }
-            else if (currentIndex == 6)
-            {
-                return StepDirection.Up;
-            }
-            else if (currentIndex == 8 || currentIndex == 14)
+            if (currentIndex == 1 || currentIndex == 7)
             {
                 RCNumVector newVertex = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2);
                 if (vertexList.Count > 0 && vertexList[0] == newVertex) { return StepDirection.None; }
                 if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex) { vertexList.Add(newVertex); }
                 return StepDirection.Left;
             }
-            else if (currentIndex == 9)
+            else if (currentIndex == 2 || currentIndex == 14)
             {
+                RCNumVector newVertex = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2);
+                if (vertexList.Count > 0 && vertexList[0] == newVertex) { return StepDirection.None; }
+                if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex) { vertexList.Add(newVertex); }
                 return StepDirection.Down;
             }
-            else if (currentIndex == 10)
+            else if (currentIndex == 3)
             {
-                if (previousStep == StepDirection.None || previousStep == StepDirection.Up)
+                return StepDirection.Left;
+            }
+            else if (currentIndex == 4 || currentIndex == 13)
+            {
+                RCNumVector newVertex = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2);
+                if (vertexList.Count > 0 && vertexList[0] == newVertex) { return StepDirection.None; }
+                if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex) { vertexList.Add(newVertex); }
+                return StepDirection.Right;
+            }
+            else if (currentIndex == 5)
+            {
+                if (previousStep == StepDirection.None || previousStep == StepDirection.Down)
                 {
-                    RCNumVector newVertex0 = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, 1);
+                    RCNumVector newVertex0 = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, 0);
                     if (vertexList.Count > 0 && vertexList[0] == newVertex0) { return StepDirection.None; }
                     if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex0) { vertexList.Add(newVertex0); }
                     RCNumVector newVertex1 = new RCNumVector(currentPos) + new RCNumVector(0, (RCNumber)1 / (RCNumber)2);
@@ -169,7 +133,7 @@ namespace RC.Engine.Simulator.MotionControl
                 }
                 else
                 {
-                    RCNumVector newVertex0 = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, 0);
+                    RCNumVector newVertex0 = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, 1);
                     if (vertexList.Count > 0 && vertexList[0] == newVertex0) { return StepDirection.None; }
                     if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex0) { vertexList.Add(newVertex0); }
                     RCNumVector newVertex1 = new RCNumVector(currentPos) + new RCNumVector(1, (RCNumber)1 / (RCNumber)2);
@@ -178,9 +142,47 @@ namespace RC.Engine.Simulator.MotionControl
                     return StepDirection.Right;
                 }
             }
+            else if (currentIndex == 6)
+            {
+                return StepDirection.Down;
+            }
+            else if (currentIndex == 8 || currentIndex == 11)
+            {
+                RCNumVector newVertex = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2);
+                if (vertexList.Count > 0 && vertexList[0] == newVertex) { return StepDirection.None; }
+                if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex) { vertexList.Add(newVertex); }
+                return StepDirection.Up;
+            }
+            else if (currentIndex == 9)
+            {
+                return StepDirection.Up;
+            }
+            else if (currentIndex == 10)
+            {
+                if (previousStep == StepDirection.None || previousStep == StepDirection.Right)
+                {
+                    RCNumVector newVertex0 = new RCNumVector(currentPos) + new RCNumVector(0, (RCNumber)1 / (RCNumber)2);
+                    if (vertexList.Count > 0 && vertexList[0] == newVertex0) { return StepDirection.None; }
+                    if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex0) { vertexList.Add(newVertex0); }
+                    RCNumVector newVertex1 = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, 1);
+                    if (vertexList.Count > 0 && vertexList[0] == newVertex1) { return StepDirection.None; }
+                    if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex1) { vertexList.Add(newVertex1); }
+                    return StepDirection.Down;
+                }
+                else
+                {
+                    RCNumVector newVertex0 = new RCNumVector(currentPos) + new RCNumVector(1, (RCNumber)1 / (RCNumber)2);
+                    if (vertexList.Count > 0 && vertexList[0] == newVertex0) { return StepDirection.None; }
+                    if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex0) { vertexList.Add(newVertex0); }
+                    RCNumVector newVertex1 = new RCNumVector(currentPos) + new RCNumVector((RCNumber)1 / (RCNumber)2, 0);
+                    if (vertexList.Count > 0 && vertexList[0] == newVertex1) { return StepDirection.None; }
+                    if (vertexList.Count == 0 || vertexList.Count > 0 && vertexList[vertexList.Count - 1] != newVertex1) { vertexList.Add(newVertex1); }
+                    return StepDirection.Up;
+                }
+            }
             else if (currentIndex == 12)
             {
-                return StepDirection.Left;
+                return StepDirection.Right;
             }
             else
             {
@@ -207,7 +209,7 @@ namespace RC.Engine.Simulator.MotionControl
                 maxErrorValue = (vertexList[vertexList.Count - 1] - vertexList[0]).Length * maxError;
                 for (int i = 1; i < vertexList.Count - 1; i++)
                 {
-                    RCNumber twoTimesTriangleArea = CalculateDoubleOfSignedArea(vertexList[0], vertexList[i], vertexList[vertexList.Count - 1]).Abs();
+                    RCNumber twoTimesTriangleArea = NavMesh.CalculateDoubleOfSignedArea(vertexList[0], vertexList[i], vertexList[vertexList.Count - 1]).Abs();
                     if (twoTimesTriangleArea > maxVertexValue)
                     {
                         index = i;
@@ -257,18 +259,6 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         /// <summary>
-        /// Calculates the double of the signed area of the triangle given by its 3 vertices.
-        /// </summary>
-        /// <param name="p0">The first vertex of the triangle.</param>
-        /// <param name="p1">The second vertex of the triangle.</param>
-        /// <param name="p2">The third vertex of the triangle.</param>
-        /// <returns>The double of the signed area of the given triangle.</returns>
-        private static RCNumber CalculateDoubleOfSignedArea(RCNumVector p0, RCNumVector p1, RCNumVector p2)
-        {
-            return p0.X * (p1.Y - p2.Y) + p1.X * (p2.Y - p0.Y) + p2.X * (p0.Y - p1.Y);
-        }
-
-        /// <summary>
         /// Constructs a 4-bit integer of the given 2x2 square that takes its bits (starting from the LSB) from the walkability informations at the top-left,
         /// top-right, bottom-left and bottom-right corners of the square, respectively. The appropriate bit will be 0 if the corresponding corner is walkable;
         /// otherwise 1.
@@ -284,6 +274,8 @@ namespace RC.Engine.Simulator.MotionControl
             bool bottomLeft = !grid[position + new RCIntVector(0, 1)];
             return (topLeft ? 0x08 : 0x00) | (topRight ? 0x04 : 0x00) | (bottomRight ? 0x02 : 0x00) | (bottomLeft ? 0x01 : 0x00);
         }
+
+        #endregion Polygon buildup methods
 
         /// <summary>
         /// The vertices of this polygon in order such that the walkable area is at left hand side.

@@ -370,7 +370,7 @@ namespace RC.Common
         /// <summary>
         /// The first bitmask that is used in square root calculations.
         /// </summary>
-        private const int SQRT_INITIAL_BITMASK = 0x01 << ((FRACTION_WIDTH + 31) / 2);
+        private const long SQRT_INITIAL_BITMASK = (long)0x01 << 31;
 
         /// <summary>
         /// Number of the displayed decimal digits.

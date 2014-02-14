@@ -25,14 +25,30 @@ namespace RC.Engine.Simulator.MotionControl
             if (!sectorArea.IsWalkable) { throw new ArgumentException("The area of the sector must be walkable!"); }
             if (maxError < 0) { throw new ArgumentOutOfRangeException("maxError", "The maximum error shall not be negative!"); }
 
+            /// Create the polygons of the border and the walls.
             this.border = new Polygon(grid, sectorArea.TopLeftCell, maxError);
+            if (this.border.VertexCount <= 2) { return; }
             this.walls = new List<Polygon>();
             foreach (WalkabilityGridArea wallArea in sectorArea.Children)
             {
                 if (wallArea.IsWalkable) { throw new ArgumentException("The area of the walls inside the sector must be non-walkable!"); }
                 Polygon wallPolygon = new Polygon(grid, wallArea.TopLeftCell, maxError);
-                if (wallPolygon.Length > 2) { this.walls.Add(wallPolygon); }
+                if (wallPolygon.VertexCount > 2) { this.walls.Add(wallPolygon); }
             }
+
+            /// Construct a tessellation of the vertices of the polygons.
+            Tessellation tessellation = new Tessellation();
+            for (int i = 0; i < this.border.VertexCount; i++) { tessellation.AddVertex(this.border[i]); }
+            for (int wallIdx = 0; wallIdx < this.walls.Count; wallIdx++)
+            {
+                for (int i = 0; i < this.walls[wallIdx].VertexCount; i++) { tessellation.AddVertex(this.walls[wallIdx][i]); }
+            }
+
+            /// Add the constraints to the tessellation.
+            tessellation.AddBorder(this.border);
+            foreach (Polygon wall in this.walls) { tessellation.AddBorder(wall); }
+
+            /// TODO: finish this constructor!
         }
 
         /// <summary>
@@ -52,8 +68,13 @@ namespace RC.Engine.Simulator.MotionControl
         private Polygon border;
 
         /// <summary>
-        /// List of the walls of this Sector.
+        /// List of the Polygons defining the walls of this Sector.
         /// </summary>
         private List<Polygon> walls;
+
+        /// <summary>
+        /// The list of the nodes of this Sector of the navmesh.
+        /// </summary>
+        private List<NavMeshNode> nodes;
     }
 }

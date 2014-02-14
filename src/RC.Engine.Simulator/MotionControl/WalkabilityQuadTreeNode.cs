@@ -33,21 +33,22 @@ namespace RC.Engine.Simulator.MotionControl
             WalkabilityQuadTreeNode rootNode = new WalkabilityQuadTreeNode(subdivisionLevels);
 
             /// Add the obstacles to the quad-tree.
-            for (int row = 0; row < rootNode.children[SOUTHEAST_CHILD_IDX].areaOnGrid.Height; row++)
+            WalkabilityQuadTreeNode relevantNode = rootNode.children[NORTHWEST_CHILD_IDX].children[SOUTHEAST_CHILD_IDX];
+            for (int row = 0; row < relevantNode.areaOnGrid.Height; row++)
             {
-                for (int column = 0; column < rootNode.children[SOUTHEAST_CHILD_IDX].areaOnGrid.Width; column++)
+                for (int column = 0; column < relevantNode.areaOnGrid.Width; column++)
                 {
                     if (row >= grid.Height || column >= grid.Width)
                     {
                         /// Everything out of the grid range is considered to be obstacle.
-                        rootNode.AddObstacle(new RCIntVector(column, row));
+                        relevantNode.AddObstacle(new RCIntVector(column, row));
                     }
                     else
                     {
                         /// Add obstacle depending on the walkability of the cell.
                         if (!grid[new RCIntVector(column, row)])
                         {
-                            rootNode.AddObstacle(new RCIntVector(column, row));
+                            relevantNode.AddObstacle(new RCIntVector(column, row));
                         }
                     }
                 }
@@ -155,17 +156,25 @@ namespace RC.Engine.Simulator.MotionControl
             if (subdivisionLevels <= 0) { throw new ArgumentOutOfRangeException("subdivisionLevels", "Number of subdivision levels must be greater than 0!"); }
             if (subdivisionLevels > MAX_LEVELS) { throw new ArgumentOutOfRangeException("subdivisionLevels", string.Format("Number of subdivision levels must be less than {0}!", MAX_LEVELS)); }
 
-            RCIntRectangle areaOnGrid = new RCIntRectangle(0, 0, (int)Math.Pow(2, subdivisionLevels), (int)Math.Pow(2, subdivisionLevels));
-            this.areaOnGrid = new RCIntRectangle(-areaOnGrid.Width, -areaOnGrid.Height, 2 * areaOnGrid.Width, 2 * areaOnGrid.Height);
+            RCIntRectangle relevantAreaOnGrid = new RCIntRectangle(0, 0, (int)Math.Pow(2, subdivisionLevels), (int)Math.Pow(2, subdivisionLevels));
+            this.areaOnGrid = new RCIntRectangle(-relevantAreaOnGrid.Width, -relevantAreaOnGrid.Height, 4 * relevantAreaOnGrid.Width, 4 * relevantAreaOnGrid.Height);
             this.walkability = Walkability.Mixed;
             this.parent = null;
             this.root = this;
             this.children = new WalkabilityQuadTreeNode[4]
             {
-                new WalkabilityQuadTreeNode(areaOnGrid + new RCIntVector(-areaOnGrid.Width, -areaOnGrid.Height), this, false),
-                new WalkabilityQuadTreeNode(areaOnGrid + new RCIntVector(0, -areaOnGrid.Height), this, false),
-                new WalkabilityQuadTreeNode(areaOnGrid, this, true),
-                new WalkabilityQuadTreeNode(areaOnGrid + new RCIntVector(-areaOnGrid.Width, 0), this, false)
+                new WalkabilityQuadTreeNode(new RCIntRectangle(relevantAreaOnGrid.Location + new RCIntVector(-relevantAreaOnGrid.Width, -relevantAreaOnGrid.Height), 2 * relevantAreaOnGrid.Size), this, false),
+                new WalkabilityQuadTreeNode(new RCIntRectangle(relevantAreaOnGrid.Location + new RCIntVector(relevantAreaOnGrid.Width, -relevantAreaOnGrid.Height), 2 * relevantAreaOnGrid.Size), this, false),
+                new WalkabilityQuadTreeNode(new RCIntRectangle(relevantAreaOnGrid.Location + new RCIntVector(relevantAreaOnGrid.Width, relevantAreaOnGrid.Height), 2 * relevantAreaOnGrid.Size), this, false),
+                new WalkabilityQuadTreeNode(new RCIntRectangle(relevantAreaOnGrid.Location + new RCIntVector(-relevantAreaOnGrid.Width, relevantAreaOnGrid.Height), 2 * relevantAreaOnGrid.Size), this, false)
+            };
+            this.children[NORTHWEST_CHILD_IDX].walkability = Walkability.Mixed;
+            this.children[NORTHWEST_CHILD_IDX].children = new WalkabilityQuadTreeNode[4]
+            {
+                new WalkabilityQuadTreeNode(relevantAreaOnGrid + new RCIntVector(-relevantAreaOnGrid.Width, -relevantAreaOnGrid.Height), this.children[NORTHWEST_CHILD_IDX], false),
+                new WalkabilityQuadTreeNode(relevantAreaOnGrid + new RCIntVector(0, -relevantAreaOnGrid.Height), this.children[NORTHWEST_CHILD_IDX], false),
+                new WalkabilityQuadTreeNode(relevantAreaOnGrid, this.children[NORTHWEST_CHILD_IDX], true),
+                new WalkabilityQuadTreeNode(relevantAreaOnGrid + new RCIntVector(-relevantAreaOnGrid.Width, 0), this.children[NORTHWEST_CHILD_IDX], false)
             };
         }
         
