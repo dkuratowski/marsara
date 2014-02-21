@@ -7,32 +7,32 @@ using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.BspMapContentMgr.Test
 {
-    class TestContent : IMapContent
+    class TestContent : ISearchTreeContent
     {
         public TestContent(RCNumRectangle initialPos)
         {
             this.currentPosition = initialPos;
         }
 
-        #region IMapContent Members
+        #region ISearchTreeContent Members
 
-        public RCNumRectangle Position
+        public RCNumRectangle BoundingBox
         {
             get { return this.currentPosition; }
             set
             {
                 if (this.currentPosition != value)
                 {
-                    if (this.PositionChanging != null) { this.PositionChanging(this); }
+                    if (this.BoundingBoxChanging != null) { this.BoundingBoxChanging(this); }
                     this.currentPosition = value;
-                    if (this.PositionChanged != null) { this.PositionChanged(this); }
+                    if (this.BoundingBoxChanged != null) { this.BoundingBoxChanged(this); }
                 }
             }
         }
 
-        public event MapContentPropertyChangeHdl PositionChanging;
+        public event ContentBoundingBoxChangeHdl BoundingBoxChanging;
 
-        public event MapContentPropertyChangeHdl PositionChanged;
+        public event ContentBoundingBoxChangeHdl BoundingBoxChanged;
 
         #endregion
 

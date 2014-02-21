@@ -13,7 +13,7 @@ namespace RC.Engine.Simulator.Scenarios
     /// <summary>
     /// Scenario elements that have activities on the map.
     /// </summary>
-    public abstract class Entity : HeapedObject, IMapContent
+    public abstract class Entity : HeapedObject, ISearchTreeContent
     {
         /// <summary>
         /// Constructs an entity instance.
@@ -69,9 +69,9 @@ namespace RC.Engine.Simulator.Scenarios
         {
             if (newPos == RCNumVector.Undefined) { throw new ArgumentNullException("newPos"); }
 
-            if (this.PositionChanging != null) { this.PositionChanging(this); }
+            if (this.BoundingBoxChanging != null) { this.BoundingBoxChanging(this); }
             this.position.Write(newPos);
-            if (this.PositionChanged != null) { this.PositionChanged(this); }
+            if (this.BoundingBoxChanged != null) { this.BoundingBoxChanged(this); }
         }
 
         /// <summary>
@@ -119,21 +119,21 @@ namespace RC.Engine.Simulator.Scenarios
             }
         }
 
-        #region IMapContent members
+        #region ISearchTreeContent members
 
-        /// <see cref="IMapContent.Position"/>
-        public RCNumRectangle Position
+        /// <see cref="ISearchTreeContent.BoundingBox"/>
+        public RCNumRectangle BoundingBox
         {
             get { return new RCNumRectangle(this.position.Read() - this.ElementType.Area.Read() / 2, this.elementType.Area.Read()); }
         }
 
-        /// <see cref="IMapContent.PositionChanging"/>
-        public event MapContentPropertyChangeHdl PositionChanging;
+        /// <see cref="ISearchTreeContent.BoundingBoxChanging"/>
+        public event ContentBoundingBoxChangeHdl BoundingBoxChanging;
 
-        /// <see cref="IMapContent.PositionChanged"/>
-        public event MapContentPropertyChangeHdl PositionChanged;
+        /// <see cref="ISearchTreeContent.BoundingBoxChanged"/>
+        public event ContentBoundingBoxChangeHdl BoundingBoxChanged;
 
-        #endregion IMapContent members
+        #endregion ISearchTreeContent members
 
         #region Internal members
 

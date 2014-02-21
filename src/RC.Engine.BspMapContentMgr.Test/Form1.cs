@@ -21,7 +21,7 @@ namespace RC.Engine.BspMapContentMgr.Test
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.contentManager = new BspMapContentManager<TestContent>(new RCNumRectangle(0, 0, this.Size.Width, this.Size.Height), 5, 10);
+            this.contentManager = new BspSearchTree<TestContent>(new RCNumRectangle(0, 0, this.Size.Width, this.Size.Height), 5, 10);
             this.nonSelectedContents = new HashSet<TestContent>();
             this.selectedContents = new HashSet<TestContent>();
             this.currentMode = Mode.None;
@@ -43,12 +43,12 @@ namespace RC.Engine.BspMapContentMgr.Test
         {
             foreach (TestContent content in this.nonSelectedContents)
             {
-                e.Graphics.DrawRectangle(Pens.Green, (int)content.Position.X, (int)content.Position.Y, (int)content.Position.Width, (int)content.Position.Height);
+                e.Graphics.DrawRectangle(Pens.Green, (int)content.BoundingBox.X, (int)content.BoundingBox.Y, (int)content.BoundingBox.Width, (int)content.BoundingBox.Height);
             }
 
             foreach (TestContent content in this.selectedContents)
             {
-                e.Graphics.DrawRectangle(Pens.Red, (int)content.Position.X, (int)content.Position.Y, (int)content.Position.Width, (int)content.Position.Height);
+                e.Graphics.DrawRectangle(Pens.Red, (int)content.BoundingBox.X, (int)content.BoundingBox.Y, (int)content.BoundingBox.Width, (int)content.BoundingBox.Height);
             }
 
             foreach (RCNumRectangle nodeRect in this.contentManager.GetTreeNodeBoundaries())
@@ -57,7 +57,7 @@ namespace RC.Engine.BspMapContentMgr.Test
             }
         }
 
-        private BspMapContentManager<TestContent> contentManager;
+        private BspSearchTree<TestContent> contentManager;
 
         private HashSet<TestContent> nonSelectedContents;
         private HashSet<TestContent> selectedContents;
@@ -157,7 +157,7 @@ namespace RC.Engine.BspMapContentMgr.Test
                 foreach (TestContent draggedContent in this.selectedContents)
                 {
                     this.stopwatch.Reset(); this.stopwatch.Start();
-                    draggedContent.Position += this.currentPos - this.beginPos;
+                    draggedContent.BoundingBox += this.currentPos - this.beginPos;
                     this.stopwatch.Stop(); this.avgPositionChange.NewItem((int)this.stopwatch.ElapsedMilliseconds);
                 }
                 this.Invalidate();

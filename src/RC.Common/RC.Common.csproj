@@ -95,6 +95,10 @@
     <Compile Include="EnumMapping.cs" />
     <Compile Include="Fifo.cs" />
     <Compile Include="FifoException.cs" />
+    <Compile Include="SearchTree\BspSearchTree.cs" />
+    <Compile Include="SearchTree\BspSearchTreeNode.cs" />
+    <Compile Include="SearchTree\ISearchTreeContent.cs" />
+    <Compile Include="SearchTree\ISearchTree.cs" />
     <Compile Include="Math\RCCoordTransformation.cs" />
     <Compile Include="Math\RCMatrix.cs" />
     <Compile Include="Math\RCNumber.cs" />

@@ -58,10 +58,10 @@ namespace RC.Engine.Maps.Core
             /// TODO: Attach this TerrainObject to the map!
         }
 
-        #region IMapContent methods
+        #region ISearchTreeContent methods
 
-        /// <see cref="IMapContent.Position"/>
-        public RCNumRectangle Position
+        /// <see cref="ISearchTreeContent.BoundingBox"/>
+        public RCNumRectangle BoundingBox
         {
             get
             {
@@ -73,13 +73,13 @@ namespace RC.Engine.Maps.Core
             }
         }
 
-        /// <see cref="IMapContent.PositionChanging"/>
-        public event MapContentPropertyChangeHdl PositionChanging;
+        /// <see cref="ISearchTreeContent.BoundingBoxChanging"/>
+        public event ContentBoundingBoxChangeHdl BoundingBoxChanging;
 
-        /// <see cref="IMapContent.PositionChanged"/>
-        public event MapContentPropertyChangeHdl PositionChanged;
+        /// <see cref="ISearchTreeContent.BoundingBoxChanged"/>
+        public event ContentBoundingBoxChangeHdl BoundingBoxChanged;
 
-        #endregion IMapContent methods
+        #endregion ISearchTreeContent methods
 
         #region ITerrainObject methods
 

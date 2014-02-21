@@ -7,9 +7,9 @@ using RC.Common;
 namespace RC.Engine.Simulator.MotionControl
 {
     /// <summary>
-    /// Represents a node in a navigation mesh that is a convex polygon.
+    /// Represents a node in a navmesh graph.
     /// </summary>
-    class NavMeshNode
+    class NavMeshNode : ISearchTreeContent
     {
         /// <summary>
         /// Constructs a triangular NavMeshNode.
@@ -19,42 +19,264 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="vertex2">The third vertex of the triangle.</param>
         internal NavMeshNode(RCNumVector vertex0, RCNumVector vertex1, RCNumVector vertex2)
         {
-            RCNumber doubleArea = NavMesh.CalculateDoubleOfSignedArea(vertex0, vertex1, vertex2);
-            if (doubleArea == 0) { throw new ArgumentException("The vertices of the triangle are colinear!"); }
-            this.vertices = doubleArea > 0 ? new List<RCNumVector>() { vertex0, vertex1, vertex2 } : new List<RCNumVector>() { vertex2, vertex1, vertex0 };
-            this.neighboursAtEdges = new List<NavMeshNode>() { null, null, null };
+            this.polygon = new Polygon(vertex0, vertex1, vertex2);
+            if (this.polygon.DoubleOfSignedArea == 0) { throw new ArgumentException("The vertices of the triangle are colinear!"); }
+            this.neighbours = new HashSet<NavMeshNode>();
+
+            /// If the vertices are in counter-clockwise order put them into clockwise order.
+            if (this.polygon.DoubleOfSignedArea < 0) { this.polygon = new Polygon(vertex2, vertex1, vertex0); }
+
+            /// Calculate the bounding box of this NavMeshNode.
+            this.UpdateBoundingBox();
+
+            this.id = nextID++;
+        }
+
+        private int id;
+        private static int nextID = 0;
+
+        #region ISearchTreeNode members
+
+        /// <see cref="ISearchTreeContent.BoundingBox"/>
+        public RCNumRectangle BoundingBox { get { return this.boundingBox; } }
+
+        /// <see cref="ISearchTreeContent.BoundingBoxChanging"/>
+        public event ContentBoundingBoxChangeHdl BoundingBoxChanging;
+
+        /// <see cref="ISearchTreeContent.BoundingBoxChanged"/>
+        public event ContentBoundingBoxChangeHdl BoundingBoxChanged;
+
+        #endregion ISearchTreeNode members
+
+        /// <summary>
+        /// Gets the neighbours of this node.
+        /// </summary>
+        public IEnumerable<NavMeshNode> Neighbours { get { return this.neighbours; } }
+
+        /// <summary>
+        /// Merges this NavMeshNode with one of its given parent. After the merge operation this NavMeshNode will represent the merged node and the
+        /// NavMeshNode given in the parameter will be detached from its parents and will become obsolate.
+        /// </summary>
+        /// <param name="neighbour">The neighbour to merge with.</param>
+        public void MergeWith(NavMeshNode neighbour)
+        {
+            if (neighbour == null) { throw new ArgumentNullException("neighbour"); }
+            if (!this.neighbours.Contains(neighbour)) { throw new ArgumentException("The given node is not the neighbour of this node!", "neighbour"); }
+
+            /// Remove the reference between the given neighbour and this node in both directions.
+            this.neighbours.Remove(neighbour);
+            neighbour.neighbours.Remove(this);
+
+            /// Process all the remaining neighbours of the given neighbour to point only to this node.
+            foreach (NavMeshNode neighbourOfNeighbour in neighbour.neighbours)
+            {
+                if (neighbourOfNeighbour.neighbours.Remove(neighbour))
+                {
+                    neighbourOfNeighbour.neighbours.Add(this);
+                    this.neighbours.Add(neighbourOfNeighbour);
+                }
+            }
+            neighbour.neighbours.Clear();
+
+            /// Merge the polygons of the two nodes.
+            this.MergePolygons(neighbour.polygon);
         }
 
         /// <summary>
-        /// Gets the number of vertices of the polygon represented by this NavMeshNode.
+        /// Joins the given vertex to all vertices on the boundary of this node and constructs new slices among these edges.
         /// </summary>
-        public int VertexCount { get { return this.vertices.Count; } }
+        /// <param name="vertex">The vertex inside this node.</param>
+        /// <returns>The list of the slices.</returns>
+        /// <exception cref="ArgumentException">If the given vertex is not inside the polygon of this node.</exception>
+        /// <exception cref="InvalidOperationException">If the polygon of this node is not convex.</exception>
+        public IEnumerable<NavMeshNode> Slice(RCNumVector vertex)
+        {
+            if (!this.polygon.Contains(vertex)) { throw new ArgumentException("The vertex shall be inside the polygon of this node!", "vertex"); }
+
+            /// Collect the original neighbours of this node in the order of the vertices of this node.
+            NavMeshNode[] originalNeighbours = new NavMeshNode[this.polygon.VertexCount];
+            foreach (NavMeshNode neighbour in this.neighbours)
+            {
+                List<int> commonNodeIndices = new List<int>();
+                for (int i = neighbour.polygon.VertexCount - 1; i >= 0; i--)
+                {
+                    int idx = this.polygon.IndexOf(neighbour.polygon[i]);
+                    if (idx != -1) { commonNodeIndices.Add(idx); }
+                }
+                if (commonNodeIndices.Count < 2) { throw new InvalidOperationException("Common edge not found between the sliced node and one of its neighbours!"); }
+                commonNodeIndices.Sort();
+                for (int i = 1; i < commonNodeIndices.Count; i++)
+                {
+                    if (commonNodeIndices[i] - commonNodeIndices[i - 1] == 1) { originalNeighbours[commonNodeIndices[i - 1]] = neighbour; }
+                }
+                if (commonNodeIndices[commonNodeIndices.Count - 1] == this.polygon.VertexCount - 1 && commonNodeIndices[0] == 0)
+                {
+                    originalNeighbours[commonNodeIndices[commonNodeIndices.Count - 1]] = neighbour;
+                }
+            }
+
+            /// Create the new slices and set their neighbourhood between each other and the original neighbours of this node.
+            HashSet<NavMeshNode> slices = new HashSet<NavMeshNode>();
+            NavMeshNode prevSlice = null;
+            NavMeshNode firstSlice = null;
+            NavMeshNode lastSlice = null;
+            for (int i = 0; i < this.polygon.VertexCount - 1; i++)
+            {
+                NavMeshNode newSlice = new NavMeshNode(this.polygon[i], this.polygon[i + 1], vertex);
+                slices.Add(newSlice);
+                if (i == 0) { firstSlice = newSlice; } else if (i == this.polygon.VertexCount - 2) { lastSlice = newSlice; }
+                if (prevSlice != null)
+                {
+                    prevSlice.neighbours.Add(newSlice);
+                    newSlice.neighbours.Add(prevSlice);
+                }
+                if (originalNeighbours[i] != null)
+                {
+                    originalNeighbours[i].neighbours.Remove(this);
+                    originalNeighbours[i].neighbours.Add(newSlice);
+                    newSlice.neighbours.Add(originalNeighbours[i]);
+                }
+                prevSlice = newSlice;
+            }
+
+            /// Finally modify the polygon of this node, add it to the slice list, set its neighbours and return with the created slice list.
+            this.polygon = new Polygon(this.polygon[this.polygon.VertexCount - 1], this.polygon[0], vertex);
+            this.UpdateBoundingBox();
+            this.neighbours.Clear();
+            this.neighbours.Add(firstSlice);
+            firstSlice.neighbours.Add(this);
+            this.neighbours.Add(lastSlice);
+            lastSlice.neighbours.Add(this);
+            if (originalNeighbours[originalNeighbours.Length - 1] != null)
+            {
+                this.neighbours.Add(originalNeighbours[originalNeighbours.Length - 1]);
+                originalNeighbours[originalNeighbours.Length - 1].neighbours.Add(this);
+            }
+            slices.Add(this);
+            return slices;
+        }
 
         /// <summary>
-        /// Gets the vertex of the polygon represented by this NavMeshNode with the given index.
+        /// Gets the polygon that represents the area of this node on the 2D plane.
         /// </summary>
-        /// <param name="index">The index of the vertex to get.</param>
-        /// <returns>The vertex of the polygon represented by this NavMeshNode with the given index.</returns>
-        public RCNumVector this[int index] { get { return this.vertices[index]; } }
+        public Polygon Polygon { get { return this.polygon; } }
 
         /// <summary>
-        /// Gets the neighbour at the other side of the given edge.
+        /// Merges the polygon of this node with the given polygon.
         /// </summary>
-        /// <param name="edgeIndex">The index of the edge.</param>
-        /// <returns>
-        /// The neighbour at the other side of the given edge or null if there is no neighbour at the other side of the given edge.
-        /// </returns>
-        /// <remarks>The endpoints of edge N are vertices N and N+1.</remarks>
-        public NavMeshNode GetNeighbourAtEdge(int edgeIndex) { return this.neighboursAtEdges[edgeIndex]; }
+        /// <param name="neighbour">The polygon to merge with.</param>
+        private void MergePolygons(Polygon neighbour)
+        {
+            /// Collect the vertices of this polygon in CW order and the vertices of the neighbour polygon in CCW order.
+            List<RCNumVector> thisPolygonCW = new List<RCNumVector>();
+            List<RCNumVector> neighbourPolygonCCW = new List<RCNumVector>();
+            for (int i = 0; i < this.polygon.VertexCount; i++) { thisPolygonCW.Add(this.polygon[i]); }
+            for (int i = neighbour.VertexCount - 1; i >= 0; i--) { neighbourPolygonCCW.Add(neighbour[i]); }
+
+            /// Calculate the first and the last index of the common part in the vertex list of this node.
+            int firstCommonIdxInThis = -1;
+            int lastCommonIdxInThis = -1;
+            for (int idxInThis = 0; idxInThis < thisPolygonCW.Count; idxInThis++)
+            {
+                int idxInNeighbour = neighbourPolygonCCW.IndexOf(thisPolygonCW[idxInThis]);
+                int nextIdxInNeighbour = neighbourPolygonCCW.IndexOf(thisPolygonCW[(idxInThis + 1) % thisPolygonCW.Count]);
+                if (idxInNeighbour != -1 && nextIdxInNeighbour == -1)
+                {
+                    if (lastCommonIdxInThis != -1) { throw new InvalidOperationException("The series of common edges is not continuous in the vertex list of this node!"); }
+                    lastCommonIdxInThis = idxInThis;
+                }
+                else if (idxInNeighbour == -1 && nextIdxInNeighbour != -1)
+                {
+                    if (firstCommonIdxInThis != -1) { throw new InvalidOperationException("The series of common edges is not continuous in the vertex list of this node!"); }
+                    firstCommonIdxInThis = (idxInThis + 1) % thisPolygonCW.Count;
+                }
+            }
+            if (lastCommonIdxInThis == -1 || firstCommonIdxInThis == -1) { throw new InvalidOperationException("The series of common edges could not be found in the vertex list of this node!"); }
+            
+            /// Calculate the first and the last index of the common part in the vertex list of the neighbour node.
+            int firstCommonIdxInNeighbour = -1;
+            int lastCommonIdxInNeighbour = -1;
+            for (int idxInNeighbour = 0; idxInNeighbour < neighbourPolygonCCW.Count; idxInNeighbour++)
+            {
+                int idxInThis = thisPolygonCW.IndexOf(neighbourPolygonCCW[idxInNeighbour]);
+                int nextIdxInThis = thisPolygonCW.IndexOf(neighbourPolygonCCW[(idxInNeighbour + 1) % neighbourPolygonCCW.Count]);
+                if (idxInThis != -1 && nextIdxInThis == -1)
+                {
+                    if (lastCommonIdxInNeighbour != -1) { throw new InvalidOperationException("The series of common edges is not continuous in the vertex list of the neighbour node!"); }
+                    lastCommonIdxInNeighbour = idxInNeighbour;
+                }
+                else if (idxInThis == -1 && nextIdxInThis != -1)
+                {
+                    if (firstCommonIdxInNeighbour != -1) { throw new InvalidOperationException("The series of common edges is not continuous in the vertex list of the neighbour node!"); }
+                    firstCommonIdxInNeighbour = (idxInNeighbour + 1) % neighbourPolygonCCW.Count;
+                }
+            }
+            if (lastCommonIdxInNeighbour == -1 || firstCommonIdxInNeighbour == -1) { throw new InvalidOperationException("The series of common edges could not be found in the vertex list of the neighbour node!"); }
+
+            /// Calculate the number of common vertices in this node and in the neighbour node. Check if they are equals.
+            int commonVerticesInThis = lastCommonIdxInThis >= firstCommonIdxInThis ? lastCommonIdxInThis - firstCommonIdxInThis + 1 : thisPolygonCW.Count - (firstCommonIdxInThis - lastCommonIdxInThis - 1);
+            int commonVerticesInNeighbour = lastCommonIdxInNeighbour >= firstCommonIdxInNeighbour ? lastCommonIdxInNeighbour - firstCommonIdxInNeighbour + 1 : neighbourPolygonCCW.Count - (firstCommonIdxInNeighbour - lastCommonIdxInNeighbour - 1);
+            if (commonVerticesInThis != commonVerticesInNeighbour) { throw new InvalidOperationException("Common vertex count mismatch!"); }
+
+            /// Collect the vertices of the new polygon.
+            List<RCNumVector> newPolygonCW = new List<RCNumVector>();
+            for (int i = lastCommonIdxInThis; i != firstCommonIdxInThis; i = (i + 1) % thisPolygonCW.Count)
+            {
+                newPolygonCW.Add(thisPolygonCW[i]);
+            }
+            newPolygonCW.Add(thisPolygonCW[firstCommonIdxInThis]);
+            for (int i = (firstCommonIdxInNeighbour + neighbourPolygonCCW.Count - 1) % neighbourPolygonCCW.Count;
+                 i != lastCommonIdxInNeighbour;
+                 i = (i + neighbourPolygonCCW.Count - 1) % neighbourPolygonCCW.Count)
+            {
+                newPolygonCW.Add(neighbourPolygonCCW[i]);
+            }
+
+            /// Create the new polygon and update the bounding box.
+            this.polygon = new Polygon(newPolygonCW);
+            if (this.polygon.DoubleOfSignedArea <= 0) { throw new InvalidOperationException("Vertices of the new polygon are in CCW order!"); }
+            this.UpdateBoundingBox();
+        }
 
         /// <summary>
-        /// The list of neighbours of this node in order of the edges.
+        /// Updates the bounding box of this NavMeshNode.
         /// </summary>
-        private List<NavMeshNode> neighboursAtEdges;
+        private void UpdateBoundingBox()
+        {
+            RCNumber minX = 0, maxX = 0, minY = 0, maxY = 0;
+            for (int i = 0; i < this.polygon.VertexCount; i++)
+            {
+                if (i == 0)
+                {
+                    minX = maxX = this.polygon[i].X;
+                    minY = maxY = this.polygon[i].Y;
+                    continue;
+                }
+
+                if (this.polygon[i].X < minX) { minX = this.polygon[i].X; }
+                if (this.polygon[i].X > maxX) { maxX = this.polygon[i].X; }
+                if (this.polygon[i].Y < minY) { minY = this.polygon[i].Y; }
+                if (this.polygon[i].Y > maxY) { maxY = this.polygon[i].Y; }
+            }
+
+            if (this.BoundingBoxChanging != null) { this.BoundingBoxChanging(this); }
+            this.boundingBox = new RCNumRectangle(minX, minY, maxX - minX, maxY - minY);
+            if (this.BoundingBoxChanged != null) { this.BoundingBoxChanged(this); }
+        }
 
         /// <summary>
-        /// The vertices of the polygon represented by this NavMeshNode in clockwise order.
+        /// The list of neighbours of this node.
         /// </summary>
-        private List<RCNumVector> vertices;
+        private HashSet<NavMeshNode> neighbours;
+
+        /// <summary>
+        /// The polygon that represents the area of this node on the 2D plane.
+        /// </summary>
+        private Polygon polygon;
+
+        /// <summary>
+        /// The bounding box of this NavMeshNode.
+        /// </summary>
+        private RCNumRectangle boundingBox;
     }
 }

@@ -2,23 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using RC.Common;
-using RC.Engine.Maps.PublicInterfaces;
 
-namespace RC.Engine.Maps.Core
+namespace RC.Common
 {
     /// <summary>
     /// This class represents a node in the BSP-tree.
     /// </summary>
-    class BspTreeNode<T> where T : IMapContent
+    class BspSearchTreeNode<T> where T : ISearchTreeContent
     {
         /// <summary>
-        /// Constructs a BspTreeNode instance.
+        /// Constructs a BspSearchTreeNode instance.
         /// </summary>
-        /// <param name="area">The rectangular area of this BspTreeNode in world-coordinates.</param>
+        /// <param name="area">The rectangular area covered by this BspSearchTreeNode.</param>
         /// <param name="capacity">The maximum number of contents this node can hold without subdivision.</param>
         /// <param name="minSize">The minimum size of a BSP-node.</param>
-        public BspTreeNode(RCNumRectangle area, int capacity, int minSize)
+        public BspSearchTreeNode(RCNumRectangle area, int capacity, int minSize)
         {
             this.contents = new HashSet<T>();
             this.isLeaf = true;
@@ -44,7 +42,7 @@ namespace RC.Engine.Maps.Core
         }
 
         /// <summary>
-        /// Attaches the given content to this BspTreeNode and it's appropriate descendants.
+        /// Attaches the given content to this BspSearchTreeNode and it's appropriate descendants.
         /// </summary>
         /// <param name="content">The content to be attached.</param>
         public void AttachContent(T content)
@@ -61,21 +59,21 @@ namespace RC.Engine.Maps.Core
                     this.Subdivide();
                     foreach (T item in this.contents)
                     {
-                        if (item.Position.IntersectsWith(this.firstChild.area)) { this.firstChild.AttachContent(item); }
-                        if (item.Position.IntersectsWith(this.secondChild.area)) { this.secondChild.AttachContent(item); }
+                        if (item.BoundingBox.IntersectsWith(this.firstChild.area)) { this.firstChild.AttachContent(item); }
+                        if (item.BoundingBox.IntersectsWith(this.secondChild.area)) { this.secondChild.AttachContent(item); }
                     }
                 }
             }
             else
             {
                 /// Not a leaf node -> propagate the call to the appropriate child(ren).
-                if (content.Position.IntersectsWith(this.firstChild.area)) { this.firstChild.AttachContent(content); }
-                if (content.Position.IntersectsWith(this.secondChild.area)) { this.secondChild.AttachContent(content); }
+                if (content.BoundingBox.IntersectsWith(this.firstChild.area)) { this.firstChild.AttachContent(content); }
+                if (content.BoundingBox.IntersectsWith(this.secondChild.area)) { this.secondChild.AttachContent(content); }
             }
         }
 
         /// <summary>
-        /// Detaches the given content from this BspTreeNode and it's appropriate descendants.
+        /// Detaches the given content from this BspSearchTreeNode and it's appropriate descendants.
         /// </summary>
         /// <param name="content">The content to be detached.</param>
         public void DetachContent(T content)
@@ -94,18 +92,18 @@ namespace RC.Engine.Maps.Core
                 else
                 {
                     /// Still over capacity -> propagate the call to the appropriate child(ren).
-                    if (content.Position.IntersectsWith(this.firstChild.area)) { this.firstChild.DetachContent(content); }
-                    if (content.Position.IntersectsWith(this.secondChild.area)) { this.secondChild.DetachContent(content); }
+                    if (content.BoundingBox.IntersectsWith(this.firstChild.area)) { this.firstChild.DetachContent(content); }
+                    if (content.BoundingBox.IntersectsWith(this.secondChild.area)) { this.secondChild.DetachContent(content); }
                 }
             }
         }
 
         /// <summary>
-        /// Collects every content attached to this BspTreeNode at the given position.
+        /// Collects every content attached to this BspSearchTreeNode at the given position.
         /// </summary>
         /// <param name="position">The position to check.</param>
         /// <param name="outputList">
-        /// A list the contains every map content attached to this BspTreeNode at the given position.
+        /// A list the contains every content attached to this BspSearchTreeNode at the given position.
         /// </param>
         public void CollectContents(RCNumVector position, ref HashSet<T> outputList)
         {
@@ -114,7 +112,7 @@ namespace RC.Engine.Maps.Core
                 /// Leaf node -> collect the contents at the given position
                 foreach (T content in this.contents)
                 {
-                    if (content.Position.Contains(position)) { outputList.Add(content); }
+                    if (content.BoundingBox.Contains(position)) { outputList.Add(content); }
                 }
             }
             else
@@ -126,32 +124,32 @@ namespace RC.Engine.Maps.Core
         }
         
         /// <summary>
-        /// Collects every content attached to this BspTreeNode inside the given selection box.
+        /// Collects every content attached to this BspSearchTreeNode inside the given rectangular area.
         /// </summary>
-        /// <param name="selectionBox">The selection box.</param>
+        /// <param name="area">The rectangular area.</param>
         /// <param name="outputList">
-        /// A list the contains every map content attached to this BspTreeNode inside the given selection box.
+        /// A list that contains every content attached to this BspSearchTreeNode inside the given rectangular area.
         /// </param>
-        public void CollectContents(RCNumRectangle selectionBox, ref HashSet<T> outputList)
+        public void CollectContents(RCNumRectangle area, ref HashSet<T> outputList)
         {
             if (this.isLeaf)
             {
                 /// Leaf node -> collect the contents inside the given selection box.
                 foreach (T content in this.contents)
                 {
-                    if (content.Position.IntersectsWith(selectionBox)) { outputList.Add(content); }
+                    if (content.BoundingBox.IntersectsWith(area)) { outputList.Add(content); }
                 }
             }
             else
             {
                 /// Not a leaf node -> propagate the call to the appropriate child(ren).
-                if (this.firstChild.area.IntersectsWith(selectionBox)) { this.firstChild.CollectContents(selectionBox, ref outputList); }
-                if (this.secondChild.area.IntersectsWith(selectionBox)) { this.secondChild.CollectContents(selectionBox, ref outputList); }
+                if (this.firstChild.area.IntersectsWith(area)) { this.firstChild.CollectContents(area, ref outputList); }
+                if (this.secondChild.area.IntersectsWith(area)) { this.secondChild.CollectContents(area, ref outputList); }
             }
         }
 
         /// <summary>
-        /// Subdivides this BspTreeNode if necessary.
+        /// Subdivides this BspSearchTreeNode if necessary.
         /// </summary>
         /// <remarks>Subdivision is only allowed in case of leaf-nodes.</remarks>
         private void Subdivide()
@@ -168,8 +166,8 @@ namespace RC.Engine.Maps.Core
                 RCNumRectangle secondChildArea = this.area.Width > this.area.Height
                                                ? firstChildArea + new RCNumVector(firstChildArea.Width, 0)
                                                : firstChildArea + new RCNumVector(0, firstChildArea.Height);
-                this.firstChild = new BspTreeNode<T>(firstChildArea, this.capacity, this.minSize);
-                this.secondChild = new BspTreeNode<T>(secondChildArea, this.capacity, this.minSize);
+                this.firstChild = new BspSearchTreeNode<T>(firstChildArea, this.capacity, this.minSize);
+                this.secondChild = new BspSearchTreeNode<T>(secondChildArea, this.capacity, this.minSize);
             }
             else
             {
@@ -182,7 +180,7 @@ namespace RC.Engine.Maps.Core
         }
 
         /// <summary>
-        /// Merges the children of this BspTreeNode.
+        /// Merges the children of this BspSearchTreeNode.
         /// </summary>
         /// <remarks>Merging is only allowed in case of non-leaf-nodes.</remarks>
         private void MergeChildren()
@@ -192,19 +190,19 @@ namespace RC.Engine.Maps.Core
         }
 
         /// <summary>
-        /// List of the map contents that instersects the area of this BspTreeNode.
+        /// List of the contents that have intersection with the area covered by this BspSearchTreeNode.
         /// </summary>
         private HashSet<T> contents;
 
         /// <summary>
-        /// Reference to the first child of this BspTreeNode.
+        /// Reference to the first child of this BspSearchTreeNode.
         /// </summary>
-        private BspTreeNode<T> firstChild;
+        private BspSearchTreeNode<T> firstChild;
 
         /// <summary>
-        /// Reference to the second child of this BspTreeNode.
+        /// Reference to the second child of this BspSearchTreeNode.
         /// </summary>
-        private BspTreeNode<T> secondChild;
+        private BspSearchTreeNode<T> secondChild;
 
         /// <summary>
         /// This flag indicates whether this is a leaf node or not.
@@ -222,7 +220,7 @@ namespace RC.Engine.Maps.Core
         private int minSize;
 
         /// <summary>
-        /// The rectangular area of this BspTreeNode in world-coordinates.
+        /// The rectangular area covered by this BspSearchTreeNode.
         /// </summary>
         private RCNumRectangle area;
     }

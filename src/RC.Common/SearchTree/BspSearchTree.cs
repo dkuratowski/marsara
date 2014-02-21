@@ -2,30 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using RC.Common;
-using RC.Engine.Maps.PublicInterfaces;
 
-namespace RC.Engine.Maps.Core
+namespace RC.Common
 {
     /// <summary>
-    /// Map content manager that uses a Binary Space Partitioning (BSP) tree.
+    /// Search tree that implements Binary Space Partitioning (BSP).
     /// </summary>
-    public class BspMapContentManager<T> : IMapContentManager<T> where T : IMapContent
+    public class BspSearchTree<T> : ISearchTree<T> where T : ISearchTreeContent
     {
         /// <summary>
-        /// Constructs a BspMapContentManager instance.
+        /// Constructs a BspSearchTree instance.
         /// </summary>
-        /// <param name="area">The rectangular area of the world in world-coordinates.</param>
+        /// <param name="area">The rectangular area covered by this search tree.</param>
         /// <param name="nodeCapacity">The maximum number of contents a BSP-tree node can hold without subdivision.</param>
         /// <param name="minNodeSize">The minimum size of a BSP-node.</param>
-        public BspMapContentManager(RCNumRectangle area, int nodeCapacity, int minNodeSize)
+        public BspSearchTree(RCNumRectangle area, int nodeCapacity, int minNodeSize)
         {
             if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
             if (nodeCapacity <= 0) { throw new ArgumentOutOfRangeException("nodeCapacity", "Node capacity must be greater than 0!"); }
             if (minNodeSize <= 0) { throw new ArgumentOutOfRangeException("minNodeSize", "Minimum BSP-node size must be positive!"); }
 
             this.attachedContents = new HashSet<T>();
-            this.rootNode = new BspTreeNode<T>(area, nodeCapacity, minNodeSize);
+            this.rootNode = new BspSearchTreeNode<T>(area, nodeCapacity, minNodeSize);
         }
 
         /// <summary>
@@ -39,15 +37,15 @@ namespace RC.Engine.Maps.Core
             return retList;
         }
 
-        #region IMapContentManager<T> methods
+        #region ISearchTree<T> methods
 
-        /// <see cref="IMapContentManager<T>.GetContents"/>
+        /// <see cref="ISearchTree<T>.GetContents"/>
         public HashSet<T> GetContents()
         {
             return new HashSet<T>(this.attachedContents);
         }
 
-        /// <see cref="IMapContentManager<T>.GetContents"/>
+        /// <see cref="ISearchTree<T>.GetContents"/>
         public HashSet<T> GetContents(RCNumVector position)
         {
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
@@ -57,70 +55,70 @@ namespace RC.Engine.Maps.Core
             return retList;
         }
 
-        /// <see cref="IMapContentManager<T>.GetContents"/>
-        public HashSet<T> GetContents(RCNumRectangle selectionBox)
+        /// <see cref="ISearchTree<T>.GetContents"/>
+        public HashSet<T> GetContents(RCNumRectangle area)
         {
-            if (selectionBox == RCNumRectangle.Undefined) { throw new ArgumentNullException("selectionBox"); }
+            if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
 
             HashSet<T> retList = new HashSet<T>();
-            this.rootNode.CollectContents(selectionBox, ref retList);
+            this.rootNode.CollectContents(area, ref retList);
             return retList;
         }
 
-        /// <see cref="IMapContentManager<T>.AttachContent"/>
+        /// <see cref="ISearchTree<T>.AttachContent"/>
         public void AttachContent(T content)
         {
             if (content == null) { throw new ArgumentNullException("content"); }
-            if (content.Position == RCNumRectangle.Undefined) { throw new ArgumentNullException("content.Position"); }
-            if (this.attachedContents.Contains(content)) { throw new InvalidOperationException("The given content is already attached to this content manager!"); }
+            if (content.BoundingBox == RCNumRectangle.Undefined) { throw new ArgumentNullException("content.BoundingBox"); }
+            if (this.attachedContents.Contains(content)) { throw new InvalidOperationException("The given content is already attached to this search tree!"); }
 
-            content.PositionChanging += this.OnContentPositionChanging;
-            content.PositionChanged += this.OnContentPositionChanged;
+            content.BoundingBoxChanging += this.OnContentPositionChanging;
+            content.BoundingBoxChanged += this.OnContentPositionChanged;
             this.rootNode.AttachContent(content);
             this.attachedContents.Add(content);
         }
 
-        /// <see cref="IMapContentManager<T>.DetachContent"/>
+        /// <see cref="ISearchTree<T>.DetachContent"/>
         public void DetachContent(T content)
         {
             if (content == null) { throw new ArgumentNullException("content"); }
-            if (!this.attachedContents.Contains(content)) { throw new InvalidOperationException("The given content is not attached to this content manager!"); }
+            if (!this.attachedContents.Contains(content)) { throw new InvalidOperationException("The given content is not attached to this search tree!"); }
 
             this.attachedContents.Remove(content);
             this.rootNode.DetachContent(content);
-            content.PositionChanging -= this.OnContentPositionChanging;
-            content.PositionChanged -= this.OnContentPositionChanged;
+            content.BoundingBoxChanging -= this.OnContentPositionChanging;
+            content.BoundingBoxChanged -= this.OnContentPositionChanged;
         }
 
-        /// <see cref="IMapContentManager<T>.HasContent"/>
+        /// <see cref="ISearchTree<T>.HasContent"/>
         public bool HasContent(T content)
         {
             if (content == null) { throw new ArgumentNullException("content"); }
             return this.attachedContents.Contains(content);
         }
 
-        #endregion IMapContentManager<T> methods
+        #endregion ISearchTree<T> methods
 
-        /// <see cref="IMapContent.PositionChanging"/>
-        private void OnContentPositionChanging(IMapContent sender)
+        /// <see cref="ISearchTreeContent.BoundingBoxChanging"/>
+        private void OnContentPositionChanging(ISearchTreeContent sender)
         {
             this.rootNode.DetachContent((T)sender);
         }
 
-        /// <see cref="IMapContent.PositionChanged"/>
-        private void OnContentPositionChanged(IMapContent sender)
+        /// <see cref="ISearchTreeContent.BoundingBoxChanged"/>
+        private void OnContentPositionChanged(ISearchTreeContent sender)
         {
             this.rootNode.AttachContent((T)sender);
         }
 
         /// <summary>
-        /// List of the map contents attached to this content manager.
+        /// List of the contents attached to this search tree.
         /// </summary>
         private HashSet<T> attachedContents;
 
         /// <summary>
         /// Reference to the root of the BSP-tree.
         /// </summary>
-        private BspTreeNode<T> rootNode;
+        private BspSearchTreeNode<T> rootNode;
     }
 }

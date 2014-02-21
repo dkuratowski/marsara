@@ -106,13 +106,13 @@ namespace RC.Engine.Maps.Core
         public IEnumerable<IIsoTile> IsometricTiles { get { return this.mapStructure.IsometricTiles; } }
 
         /// <see cref="IMapAccess.TerrainObjects"/>
-        public IMapContentManager<ITerrainObject> TerrainObjects
+        public ISearchTree<ITerrainObject> TerrainObjects
         {
             get
             {
                 if (this.terrainObjects == null)
                 {
-                    this.terrainObjects = new BspMapContentManager<ITerrainObject>(
+                    this.terrainObjects = new BspSearchTree<ITerrainObject>(
                         new RCNumRectangle(-(RCNumber)1 / (RCNumber)2,
                                            -(RCNumber)1 / (RCNumber)2,
                                            this.CellSize.X,
@@ -139,6 +139,6 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// The map content manager that contains the terrain objects of this map.
         /// </summary>
-        private IMapContentManager<ITerrainObject> terrainObjects;
+        private ISearchTree<ITerrainObject> terrainObjects;
     }
 }

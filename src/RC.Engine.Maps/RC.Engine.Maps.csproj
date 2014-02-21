@@ -76,15 +76,11 @@
     <Compile Include="Core\MapAccess.cs" />
     <Compile Include="Core\MapEditor.cs" />
     <Compile Include="Core\Constants.cs" />
-    <Compile Include="Core\BspMapContentManager.cs" />
-    <Compile Include="Core\BspTreeNode.cs" />
     <Compile Include="Core\FloodArea.cs" />
     <Compile Include="Core\IsoQuarterChangeSet.cs" />
     <Compile Include="Core\MapFileFormat.cs" />
     <Compile Include="Core\RectangleChangeSet.cs" />
     <Compile Include="Core\RowChangeSet.cs" />
-    <Compile Include="PublicInterfaces\IMapContent.cs" />
-    <Compile Include="PublicInterfaces\IMapContentManager.cs" />
     <Compile Include="Core\MapStructure.cs" />
     <Compile Include="PublicInterfaces\MapDirection.cs" />
     <Compile Include="Core\QuadTile.cs" />

@@ -48,7 +48,7 @@ namespace RC.App.BizLogic.Core
             foreach (Entity entity in visibleEntities)
             {
                 RCIntRectangle displayRect =
-                    (RCIntRectangle)((entity.Position - cellWindow.Location + MapViewBase.HALF_VECT) * MapViewBase.PIXEL_PER_NAVCELL_VECT) - displayOffset;
+                    (RCIntRectangle)((entity.BoundingBox - cellWindow.Location + MapViewBase.HALF_VECT) * MapViewBase.PIXEL_PER_NAVCELL_VECT) - displayOffset;
                 List<SpriteInst> entitySprites = new List<SpriteInst>();
                 foreach (AnimationPlayer animation in entity.CurrentAnimations)
                 {

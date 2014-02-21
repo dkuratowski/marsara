@@ -53,7 +53,7 @@ namespace RC.App.BizLogic.Core
                     retList.Add(new SelIndicatorInst()
                     {
                         SelIndicatorType = SelIndicatorTypeEnum.Friendly, // TODO: must base on the owner of the entity
-                        IndicatorRect = (RCIntRectangle)((entity.Position - cellWindow.Location + MapViewBase.HALF_VECT) * MapViewBase.PIXEL_PER_NAVCELL_VECT) - displayOffset,
+                        IndicatorRect = (RCIntRectangle)((entity.BoundingBox - cellWindow.Location + MapViewBase.HALF_VECT) * MapViewBase.PIXEL_PER_NAVCELL_VECT) - displayOffset,
                         HpNorm = (RCNumber)1, // TODO: must base on real data
                         ShieldNorm = (RCNumber)1, // TODO: must base on real data
                         EnergyNorm = (RCNumber)1 // TODO: must base on real data

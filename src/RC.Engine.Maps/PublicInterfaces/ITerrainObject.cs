@@ -9,7 +9,7 @@ namespace RC.Engine.Maps.PublicInterfaces
     /// <summary>
     /// Defines the interface of a terrain object on the map.
     /// </summary>
-    public interface ITerrainObject : IMapContent, ICellDataChangeSetTarget
+    public interface ITerrainObject : ISearchTreeContent, ICellDataChangeSetTarget
     {
         /// <summary>
         /// Gets the type of this terrain object as it is defined in the tileset.

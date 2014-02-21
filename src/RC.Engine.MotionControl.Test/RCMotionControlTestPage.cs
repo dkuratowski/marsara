@@ -23,7 +23,7 @@ namespace RC.Engine.MotionControl.Test
             this.brush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.brush.Upload();
 
-            this.entities = new BspMapContentManager<TestEntity>(new RCNumRectangle(HALF_VECT * (-1), MAP_SIZE), 16, 10);
+            this.entities = new BspSearchTree<TestEntity>(new RCNumRectangle(HALF_VECT * (-1), MAP_SIZE), 16, 10);
             for (int i = 0; i < ENTITY_COUNT; i++)
             {
                 RCNumVector size;
@@ -36,7 +36,7 @@ namespace RC.Engine.MotionControl.Test
                                                    RandomService.DefaultGenerator.Next((int)(MIN_ENTITY_SIZE.Y * 1000), (int)(MAX_ENTITY_SIZE.Y * 1000)) / (RCNumber)1000);
                     position = new RCNumVector(RandomService.DefaultGenerator.Next(MAP_SIZE.X), RandomService.DefaultGenerator.Next(MAP_SIZE.Y));
                     newEntity = new TestEntity(position, size, this.entities);
-                } while (this.entities.GetContents(newEntity.Position).Count != 0);
+                } while (this.entities.GetContents(newEntity.BoundingBox).Count != 0);
 
                 this.entities.AttachContent(newEntity);
             }
@@ -50,8 +50,8 @@ namespace RC.Engine.MotionControl.Test
         {
             foreach (TestEntity entity in this.entities.GetContents())
             {
-                RCIntRectangle displayPos = new RCIntRectangle((RCIntVector)((entity.Position.Location + HALF_VECT) * new RCNumVector(CELL_SIZE, CELL_SIZE)),
-                                                                (RCIntVector)(entity.Position.Size * new RCNumVector(CELL_SIZE, CELL_SIZE)));
+                RCIntRectangle displayPos = new RCIntRectangle((RCIntVector)((entity.BoundingBox.Location + HALF_VECT) * new RCNumVector(CELL_SIZE, CELL_SIZE)),
+                                                                (RCIntVector)(entity.BoundingBox.Size * new RCNumVector(CELL_SIZE, CELL_SIZE)));
                 renderContext.RenderRectangle(this.brush, displayPos);
             }
             //renderContext.RenderRectangle(this.brush, new RCIntRectangle(0, 0, 20, 20));
@@ -87,7 +87,7 @@ namespace RC.Engine.MotionControl.Test
         /// <summary>
         /// The map content manager that stores the test entities.
         /// </summary>
-        private IMapContentManager<TestEntity> entities;
+        private ISearchTree<TestEntity> entities;
 
         /// <summary>
         /// The brush that is used to draw the test entities.

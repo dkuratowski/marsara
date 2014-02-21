@@ -12,13 +12,13 @@ namespace RC.Engine.Simulator.MotionControl
     class Polygon
     {
         /// <summary>
-        /// Constructs a Polygon.
+        /// Constructs a Polygon that is the countour of a continuous walkable area on the given walkability grid.
         /// </summary>
         /// <param name="grid">The grid that contains the walkability informations.</param>
         /// <param name="upperLeftCorner">An upper-left corner cell in the area that shall be contoured by this Polygon.</param>
         /// <param name="maxError">The maximum error between the edge of the created polygon and the walkability informations.</param>
         /// <remarks>The polygon is created using the "Marching squares" and the "Douglas–Peucker" algorithms.</remarks>
-        public Polygon(IWalkabilityGrid grid, RCIntVector upperLeftCorner, RCNumber maxError)
+        public static Polygon FromGrid(IWalkabilityGrid grid, RCIntVector upperLeftCorner, RCNumber maxError)
         {
             if (grid == null) { throw new ArgumentNullException("grid"); }
             if (upperLeftCorner == RCIntVector.Undefined) { throw new ArgumentNullException("upperLeftCorner"); }
@@ -54,7 +54,65 @@ namespace RC.Engine.Simulator.MotionControl
             } while (nextStep != StepDirection.None);
 
             /// Create a smooth polygon from the found vertices.
-            this.vertices = Polygon.SimplifyPolyline(initialVertices, maxError, true);
+            Polygon newPolygon = new Polygon();
+            newPolygon.vertices = Polygon.SimplifyPolyline(initialVertices, maxError, true);
+            return newPolygon;
+        }
+
+        /// <summary>
+        /// Constructs a Polygon by giving its vertices.
+        /// </summary>
+        /// <param name="vertex0">The first vertex of this Polygon.</param>
+        /// <param name="vertex1">The second vertex of this Polygon.</param>
+        /// <param name="vertex2">The third vertex of this Polygon.</param>
+        /// <param name="otherVertices">List of the fourth and other vertices of this Polygon (optional).</param>
+        public Polygon(RCNumVector vertex0, RCNumVector vertex1, RCNumVector vertex2, params RCNumVector[] otherVertices)
+        {
+            if (vertex0 == RCNumVector.Undefined) { throw new ArgumentNullException("vertex0"); }
+            if (vertex1 == RCNumVector.Undefined) { throw new ArgumentNullException("vertex1"); }
+            if (vertex2 == RCNumVector.Undefined) { throw new ArgumentNullException("vertex2"); }
+
+            this.isAreaCalculated = false;
+            this.isConvexityDetermined = false;
+
+            HashSet<RCNumVector> vertexSet = new HashSet<RCNumVector>();
+            this.vertices = new List<RCNumVector>() { vertex0, vertex1, vertex2 };
+            if (!vertexSet.Add(vertex0)) { throw new ArgumentException("Duplicated vertices!"); }
+            if (!vertexSet.Add(vertex1)) { throw new ArgumentException("Duplicated vertices!"); }
+            if (!vertexSet.Add(vertex2)) { throw new ArgumentException("Duplicated vertices!"); }
+
+            foreach (RCNumVector vertex in otherVertices)
+            {
+                if (!vertexSet.Add(vertex)) { throw new ArgumentException("Duplicated vertices!"); }
+                this.vertices.Add(vertex);
+            }
+        }
+
+        /// <summary>
+        /// Constructs a Polygon by giving its vertices.
+        /// </summary>
+        /// <param name="vertexList">List of the vertices of this Polygon.</param>
+        /// <exception cref="ArgumentException">
+        /// If the given vertex list contains less than 3 vertices.
+        /// If the given vertex list contains RCNumVector.Undefined.
+        /// If the given vertex list contains duplicated vertices.
+        /// </exception>
+        public Polygon(List<RCNumVector> vertexList)
+        {
+            if (vertexList == null) { throw new ArgumentNullException("vertexList"); }
+            if (vertexList.Count < 3) { throw new ArgumentException("A polygon must have at least 3 vertices!", "vertexList"); }
+
+            this.isAreaCalculated = false;
+            this.isConvexityDetermined = false;
+
+            HashSet<RCNumVector> vertexSet = new HashSet<RCNumVector>();
+            this.vertices = new List<RCNumVector>();
+            foreach (RCNumVector vertex in vertexList)
+            {
+                if (vertex == RCNumVector.Undefined) { throw new ArgumentException("Undefined vertex found in the vertex list!", "vertexList"); }
+                if (!vertexSet.Add(vertex)) { throw new ArgumentException("Duplicated vertices!"); }
+                this.vertices.Add(vertex);
+            }
         }
 
         /// <summary>
@@ -68,6 +126,85 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="index">The index of the vertex to get.</param>
         /// <returns>The vertex of this Polygon with the given index.</returns>
         public RCNumVector this[int index] { get { return this.vertices[index]; } }
+
+        /// <summary>
+        /// Gets the index of the given vertex in the vertex-list of this polygon.
+        /// </summary>
+        /// <param name="vertex">The vertex to be searched.</param>
+        /// <returns>The zero-based index of the given vertex in the vertex-list of this polygon is found; otherwise -1.</returns>
+        public int IndexOf(RCNumVector vertex) { return this.vertices.IndexOf(vertex); }
+
+        /// <summary>
+        /// Gets the double of the signed area of this polygon. The signed area is positive if the vertices of this polygon
+        /// are ordered clockwise and negative if they are ordered counter-clockwise.
+        /// In case of self-intersecting polygons the signed area tells you whether the orientation is "mostly" clockwise or
+        /// counter-clockwise.
+        /// </summary>
+        public RCNumber DoubleOfSignedArea
+        {
+            get
+            {
+                if (!this.isAreaCalculated) { this.CalculateArea(); }
+                return this.doubleOfSignedArea;
+            }
+        }
+
+        /// <summary>
+        /// Gets whether this polygon is convex or not.
+        /// </summary>
+        public bool IsConvex
+        {
+            get
+            {
+                if (!this.isConvexityDetermined) { this.DetermineConvexity(); }
+                return this.isConvex;
+            }
+        }
+        
+        /// <summary>
+        /// Determines if the specified point is contained within this polygon.
+        /// </summary>
+        /// <param name="point">The point to test.</param>
+        /// <returns>Returns true if the point is contained within this polygon, false otherwise.</returns>
+        /// <remarks>Points on the edges are considered to be contained by this polygon.</remarks>
+        public bool Contains(RCNumVector point)
+        {
+            if (point == RCNumVector.Undefined) { throw new ArgumentNullException("point"); }
+
+            /// Count the intersections of a ray starting from the point and going to infinity along the positive X-axis.
+            int intersections = 0;
+            for (int edgeIdx = 0; edgeIdx < this.vertices.Count; edgeIdx++)
+            {
+                /// Get the endpoints of the current edge.
+                RCNumVector edgeBegin = this.vertices[edgeIdx];
+                RCNumVector edgeEnd = this.vertices[edgeIdx < this.vertices.Count - 1 ? edgeIdx + 1 : 0];
+
+                /// Check the trivial cases.
+                if (point == edgeBegin || point == edgeEnd) { return true; } /// Trivial containment.
+                if (point.Y == edgeBegin.Y && point.Y == edgeEnd.Y &&
+                   (point.X >= edgeBegin.X && point.X <= edgeEnd.X || point.X >= edgeEnd.X && point.X <= edgeBegin.X)) { return true; } /// Trivial containment.
+                if (point.X == edgeBegin.X && point.X == edgeEnd.X &&
+                   (point.Y >= edgeBegin.Y && point.Y <= edgeEnd.Y || point.Y >= edgeEnd.Y && point.Y <= edgeBegin.Y)) { return true; } /// Trivial containment.
+                if (edgeBegin.X < point.X && edgeEnd.X < point.X) { continue; } /// Trivial no intersection.
+                if (edgeBegin.Y <= point.Y && edgeEnd.Y <= point.Y) { continue; } /// Trivial no intersection.
+                if (edgeBegin.Y > point.Y && edgeEnd.Y > point.Y) { continue; } /// Trivial no intersection.
+                if (edgeBegin.X >= point.X && edgeEnd.X >= point.X &&
+                   (edgeBegin.Y <= point.Y && edgeEnd.Y > point.Y || edgeEnd.Y <= point.Y && edgeBegin.Y > point.Y))
+                {
+                    /// Trivial intersection.
+                    intersections++;
+                    continue;
+                }
+
+                /// Check the non-trivial case.
+                Polygon testTriangle = edgeBegin.Y < edgeEnd.Y ? new Polygon(point, edgeBegin, edgeEnd) : new Polygon(point, edgeEnd, edgeBegin);
+                if (testTriangle.DoubleOfSignedArea == 0) { return true; } /// Point exactly on the edge -> containment.
+                if (testTriangle.DoubleOfSignedArea > 0) { intersections++; }
+            }
+
+            /// The point is inside the polygon if and only if the number of intersections is odd.
+            return intersections % 2 != 0;
+        }
 
         #region Polygon buildup methods
 
@@ -209,7 +346,8 @@ namespace RC.Engine.Simulator.MotionControl
                 maxErrorValue = (vertexList[vertexList.Count - 1] - vertexList[0]).Length * maxError;
                 for (int i = 1; i < vertexList.Count - 1; i++)
                 {
-                    RCNumber twoTimesTriangleArea = NavMesh.CalculateDoubleOfSignedArea(vertexList[0], vertexList[i], vertexList[vertexList.Count - 1]).Abs();
+                    RCNumber twoTimesTriangleArea =
+                        (new Polygon(vertexList[0], vertexList[i], vertexList[vertexList.Count - 1])).DoubleOfSignedArea.Abs();
                     if (twoTimesTriangleArea > maxVertexValue)
                     {
                         index = i;
@@ -278,8 +416,75 @@ namespace RC.Engine.Simulator.MotionControl
         #endregion Polygon buildup methods
 
         /// <summary>
+        /// Internal ctor.
+        /// </summary>
+        private Polygon() { this.isAreaCalculated = false; this.isConvexityDetermined = false; }
+
+        /// <summary>
+        /// Calculates the orientation of this polygon.
+        /// </summary>
+        private void CalculateArea()
+        {
+            this.doubleOfSignedArea = 0;
+            for (int i = 0; i < this.vertices.Count; i++)
+            {
+                RCNumVector v1 = this.vertices[i];
+                RCNumVector v2 = this.vertices[(i + 1) % this.vertices.Count];
+                this.doubleOfSignedArea += (v1.X - v2.X) * (v1.Y + v2.Y);
+            }
+        }
+
+        /// <summary>
+        /// Determines the convexity of this polygon.
+        /// </summary>
+        private void DetermineConvexity()
+        {
+            int curveDirection = 0; /// 0: undefined, +1: CW, -1: CCW
+            for (int i = 0; i < this.vertices.Count; i++)
+            {
+                RCNumVector vPrev = this.vertices[i > 0 ? i - 1 : this.vertices.Count - 1];
+                RCNumVector vCurr = this.vertices[i];
+                RCNumVector vNext = this.vertices[(i + 1) % this.vertices.Count];
+
+                Polygon testTriangle = new Polygon(vCurr, vNext, vPrev);
+                if (testTriangle.DoubleOfSignedArea > 0)
+                {
+                    if (curveDirection == -1) { this.isConvex = false; return; }
+                    curveDirection = +1;
+                }
+                else if (testTriangle.DoubleOfSignedArea < 0)
+                {
+                    if (curveDirection == +1) { this.isConvex = false; return; }
+                    curveDirection = -1;
+                }
+            }
+            if (curveDirection == 0) { throw new InvalidOperationException("Unable to determine convexity!"); }
+            this.isConvex = true;
+        }
+
+        /// <summary>
         /// The vertices of this polygon in order such that the walkable area is at left hand side.
         /// </summary>
         private List<RCNumVector> vertices;
+
+        /// <summary>
+        /// The double of the signed area of this polygon.
+        /// </summary>
+        private RCNumber doubleOfSignedArea;
+
+        /// <summary>
+        /// True if this polygon is convex; otherwise false.
+        /// </summary>
+        private bool isConvex;
+
+        /// <summary>
+        /// This flag indicates whether the area of this polygon has already been calculated or not.
+        /// </summary>
+        private bool isAreaCalculated;
+
+        /// <summary>
+        /// This flag indicates whether the convexity of this polygon has already been determined or not.
+        /// </summary>
+        private bool isConvexityDetermined;
     }
 }

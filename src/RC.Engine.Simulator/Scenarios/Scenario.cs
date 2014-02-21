@@ -28,7 +28,7 @@ namespace RC.Engine.Simulator.Scenarios
 
             this.map = map;
             this.playerInitializer = ComponentManager.GetInterface<IPlayerInitializer>();
-            this.visibleEntities = new BspMapContentManager<Entity>(
+            this.visibleEntities = new BspSearchTree<Entity>(
                         new RCNumRectangle(-(RCNumber)1 / (RCNumber)2,
                                            -(RCNumber)1 / (RCNumber)2,
                                            this.map.CellSize.X,
@@ -197,7 +197,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// Gets the entities of the scenario that are visible on the map.
         /// </summary>
-        public IMapContentManager<Entity> VisibleEntities { get { return this.visibleEntities; } }
+        public ISearchTree<Entity> VisibleEntities { get { return this.visibleEntities; } }
 
         /// <summary>
         /// Steps the animations of the scenario.
@@ -235,7 +235,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// The entities of the scenario that are visible on the map.
         /// </summary>
-        private IMapContentManager<Entity> visibleEntities;
+        private ISearchTree<Entity> visibleEntities;
 
         /// <summary>
         /// The entities of the scenario mapped by their IDs.

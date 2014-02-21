@@ -18,6 +18,7 @@ using RC.Engine.Simulator.PublicInterfaces;
 using System.Collections;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.MotionControl;
+using System.Drawing.Drawing2D;
 
 namespace RC.Engine.Test
 {
@@ -31,7 +32,30 @@ namespace RC.Engine.Test
 
         static void Main(string[] args)
         {
-            NavMeshNode testNode = new NavMeshNode(new RCNumVector(1, 1), new RCNumVector(2, 2), new RCNumVector(3, 3));
+            //Polygon p = new Polygon(new RCNumVector(1, 1), new RCNumVector(2, 2), new RCNumVector(3, 1), new RCNumVector(5, 1), new RCNumVector(5, 5), new RCNumVector(3, 5), new RCNumVector(2, 4), new RCNumVector(1, 5));
+            //bool b = p.Contains(new RCNumVector(1, 1));
+            //b = p.Contains(new RCNumVector(2, 2));
+            //b = p.Contains(new RCNumVector(3, 1));
+            //b = p.Contains(new RCNumVector(5, 1));
+            //b = p.Contains(new RCNumVector(5, 5));
+            //b = p.Contains(new RCNumVector(3, 5));
+            //b = p.Contains(new RCNumVector(2, 4));
+            //b = p.Contains(new RCNumVector(1, 5));
+
+            //b = p.Contains((new RCNumVector(1, 1) + new RCNumVector(2, 2)) / 2);
+            //b = p.Contains((new RCNumVector(2, 2) + new RCNumVector(3, 1)) / 2);
+            //b = p.Contains((new RCNumVector(3, 1) + new RCNumVector(5, 1)) / 2);
+            //b = p.Contains((new RCNumVector(5, 1) + new RCNumVector(5, 5)) / 2);
+            //b = p.Contains((new RCNumVector(5, 5) + new RCNumVector(3, 5)) / 2);
+            //b = p.Contains((new RCNumVector(3, 5) + new RCNumVector(2, 4)) / 2);
+            //b = p.Contains((new RCNumVector(2, 4) + new RCNumVector(1, 5)) / 2);
+            //b = p.Contains((new RCNumVector(1, 5) + new RCNumVector(1, 1)) / 2);
+
+            //b = p.Contains(new RCNumVector((RCNumber)3 / (RCNumber)2, 2));
+            //b = p.Contains(new RCNumVector((RCNumber)3 / (RCNumber)2, 4));
+            //b = p.Contains(new RCNumVector(0, 4));
+            //b = p.Contains(new RCNumVector(0, 5));
+            //b = p.Contains(new RCNumVector(0, 1));
 
             TestWalkabilityGrid testGrid = new TestWalkabilityGrid((Bitmap)Bitmap.FromFile("testgrid.png"));
 
@@ -86,13 +110,18 @@ namespace RC.Engine.Test
             int i = 0;
             foreach (Sector sector in navmesh.Sectors)
             {
+                foreach (NavMeshNode node in sector.Nodes)
+                {
+                    DrawPolygon(node.Polygon, gc, PENS[i % PENS.Count]);
+                    //DrawNeighbourArrows(node, gc);
+                }
                 //if (i == 6)
                 //{
-                    DrawPolygon(sector.Border, gc, PENS[i % PENS.Count]);
-                    foreach (Polygon wallPolygon in sector.Walls)
-                    {
-                        DrawPolygon(wallPolygon, gc, PENS[i % PENS.Count]);
-                    }
+                    //DrawPolygon(sector.Border, gc, PENS[i % PENS.Count]);
+                    //foreach (Polygon wallPolygon in sector.Walls)
+                    //{
+                    //    DrawPolygon(wallPolygon, gc, PENS[i % PENS.Count]);
+                    //}
                 //}
                 ++i;
             }
@@ -189,6 +218,36 @@ namespace RC.Engine.Test
             RCNumVector lastPoint = (polygon[polygon.VertexCount - 1] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
             RCNumVector firstPoint = (polygon[0] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
             gc.DrawLine(pen, lastPoint.Round().X, lastPoint.Round().Y, firstPoint.Round().X, firstPoint.Round().Y);
+        }
+
+        static void DrawNeighbourArrows(NavMeshNode node, Graphics gc)
+        {
+            Pen oneWayPen = new Pen(Brushes.Yellow);
+            Pen biDirPen = new Pen(Brushes.Blue);
+            //GraphicsPath capPath = new GraphicsPath();
+            //capPath.AddLine(-20, 0, 20, 0);
+            //capPath.AddLine(-20, 0, 0, 20);
+            //capPath.AddLine(0, 20, 20, 0);
+
+            //arrowPen.CustomEndCap = new CustomLineCap(null, capPath);
+
+            RCNumVector nodeCenter = new RCNumVector(0, 0);
+            for (int i = 0; i < node.Polygon.VertexCount; i++) { nodeCenter += node.Polygon[i]; }
+            nodeCenter /= node.Polygon.VertexCount;
+            nodeCenter *= new RCNumVector(CELL_SIZE, CELL_SIZE);
+
+            foreach (NavMeshNode neighbour in node.Neighbours)
+            {
+                bool isBidirectional = false;
+                foreach (NavMeshNode neighbourOfNeighbour in neighbour.Neighbours) { if (neighbourOfNeighbour == node) { isBidirectional = true; break; } }
+                RCNumVector neighbourCenter = new RCNumVector(0, 0);
+                for (int i = 0; i < neighbour.Polygon.VertexCount; i++) { neighbourCenter += neighbour.Polygon[i]; }
+                neighbourCenter /= neighbour.Polygon.VertexCount;
+                neighbourCenter *= new RCNumVector(CELL_SIZE, CELL_SIZE);
+                gc.DrawLine(isBidirectional ? biDirPen : oneWayPen, nodeCenter.Round().X, nodeCenter.Round().Y, neighbourCenter.Round().X, neighbourCenter.Round().Y);
+            }
+            //capPath.Dispose();
+            oneWayPen.Dispose();
         }
 
         static void TestSimulationHeap()

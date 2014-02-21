@@ -85,6 +85,6 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// <summary>
         /// Gets the map content manager that contains the terrain objects of this map.
         /// </summary>
-        IMapContentManager<ITerrainObject> TerrainObjects { get; }
+        ISearchTree<ITerrainObject> TerrainObjects { get; }
     }
 }

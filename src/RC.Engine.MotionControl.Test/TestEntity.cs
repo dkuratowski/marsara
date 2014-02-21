@@ -12,7 +12,7 @@ namespace RC.Engine.MotionControl.Test
     /// <summary>
     /// Represents a test entity.
     /// </summary>
-    class TestEntity : IEntityActuator, IMapContent
+    class TestEntity : IEntityActuator, ISearchTreeContent
     {
         /// <summary>
         /// Constructs a TestEntity instance.
@@ -20,7 +20,7 @@ namespace RC.Engine.MotionControl.Test
         /// <param name="startPosition">The initial position of the test entity.</param>
         /// <param name="size">The size of the test entity.</param>
         /// <param name="entities">The map content manager that stores the entities.</param>
-        public TestEntity(RCNumVector startPosition, RCNumVector size, IMapContentManager<TestEntity> entities)
+        public TestEntity(RCNumVector startPosition, RCNumVector size, ISearchTree<TestEntity> entities)
         {
             this.currentPosition = startPosition;
             this.size = size;
@@ -67,9 +67,9 @@ namespace RC.Engine.MotionControl.Test
                     }
                 }
 
-                if (this.PositionChanging != null) { this.PositionChanging(this); }
+                if (this.BoundingBoxChanging != null) { this.BoundingBoxChanging(this); }
                 this.currentPosition += this.CurrentVelocity;
-                if (this.PositionChanged != null) { this.PositionChanged(this); }
+                if (this.BoundingBoxChanged != null) { this.BoundingBoxChanged(this); }
             }
         }
 
@@ -137,21 +137,21 @@ namespace RC.Engine.MotionControl.Test
 
         #endregion IEntityActuator methods
 
-        #region IMapContent methods
+        #region ISearchTreeContent methods
 
-        /// <see cref="IMapContent.Position"/>
-        public RCNumRectangle Position
+        /// <see cref="ISearchTreeContent.BoundingBox"/>
+        public RCNumRectangle BoundingBox
         {
             get { return new RCNumRectangle(this.currentPosition - this.size / 2, this.size); }
         }
 
-        /// <see cref="IMapContent.PositionChanging"/>
-        public event MapContentPropertyChangeHdl PositionChanging;
+        /// <see cref="ISearchTreeContent.BoundingBoxChanging"/>
+        public event ContentBoundingBoxChangeHdl BoundingBoxChanging;
 
-        /// <see cref="IMapContent.PositionChanged"/>
-        public event MapContentPropertyChangeHdl PositionChanged;
+        /// <see cref="ISearchTreeContent.BoundingBoxChanged"/>
+        public event ContentBoundingBoxChangeHdl BoundingBoxChanged;
 
-        #endregion IMapContent methods
+        #endregion ISearchTreeContent methods
 
         /// <summary>
         /// Calculates the currently admissible velocities.
@@ -237,7 +237,7 @@ namespace RC.Engine.MotionControl.Test
         /// <summary>
         /// The map content manager that stores the test entities.
         /// </summary>
-        private IMapContentManager<TestEntity> entities;
+        private ISearchTree<TestEntity> entities;
 
         /// <summary>
         /// The acceleration of the test entities.
