@@ -47,7 +47,7 @@ namespace RC.Engine.Simulator.MotionControl
         {
             /// Create the new sector.
             Sector newSector = new Sector(grid, sectorArea, maxError);
-            if (newSector.Border.VertexCount <= 2) { return; }
+            if (newSector.Nodes == null) { return; }
             sectorList.Add(newSector);
 
             /// Call this method recursively on the contained sector areas.

@@ -124,7 +124,7 @@ namespace RC.Engine.Simulator.MotionControl
         protected abstract List<PFTreeNode> CollectNodesOnPath();
 
         /// <summary>
-        /// The list of the nodes among this path.
+        /// The list of the nodes along this path.
         /// </summary>
         private List<PFTreeNode> nodesOnPath;
     }

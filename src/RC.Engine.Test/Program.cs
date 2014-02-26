@@ -24,7 +24,8 @@ namespace RC.Engine.Test
 {
     class Program
     {
-        static int CELL_SIZE = 8;
+        static int CELL_SIZE = 4;
+        static RCIntVector OFFSET = new RCIntVector(10, 10);
         static List<Pen> PENS = new List<Pen>()
         {
             Pens.Red, Pens.Green, Pens.Blue, Pens.Cyan, Pens.Magenta, Pens.Orange, Pens.LightBlue
@@ -90,7 +91,8 @@ namespace RC.Engine.Test
             NavMesh navmesh = new NavMesh(testGrid, 2);
             Console.WriteLine(watch.ElapsedMilliseconds);
 
-            Bitmap outputImg = new Bitmap(testGrid.Width * CELL_SIZE, testGrid.Height * CELL_SIZE, PixelFormat.Format24bppRgb);
+            //Bitmap outputImg = new Bitmap((testGrid.Width + OFFSET.X) * 2 * CELL_SIZE, (testGrid.Height + OFFSET.Y) * 2 * CELL_SIZE, PixelFormat.Format24bppRgb);
+            Bitmap outputImg = new Bitmap((1024 + 2 * OFFSET.X) * CELL_SIZE, (1024 + 2 * OFFSET.Y) * CELL_SIZE, PixelFormat.Format24bppRgb);
             Graphics gc = Graphics.FromImage(outputImg);
             gc.Clear(Color.White);
 
@@ -101,7 +103,7 @@ namespace RC.Engine.Test
                 {
                     if (!testGrid[new RCIntVector(col, row)])
                     {
-                        gc.FillRectangle(Brushes.Black, col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                        gc.FillRectangle(Brushes.Black, (col + OFFSET.X) * CELL_SIZE, (row + OFFSET.Y) * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                     }
                 }
             }
@@ -113,7 +115,8 @@ namespace RC.Engine.Test
                 foreach (NavMeshNode node in sector.Nodes)
                 {
                     DrawPolygon(node.Polygon, gc, PENS[i % PENS.Count]);
-                    //DrawNeighbourArrows(node, gc);
+                    //DrawPolygon(node.Polygon, gc, node.Polygon.VertexCount == 3 ? Pens.Red : Pens.Green);
+                    DrawNeighbourArrows(node, gc);
                 }
                 //if (i == 6)
                 //{
@@ -207,7 +210,7 @@ namespace RC.Engine.Test
             RCNumVector prevPoint = RCNumVector.Undefined;
             for (int i = 0; i < polygon.VertexCount; i++)
             {
-                RCNumVector currPoint = (polygon[i] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                RCNumVector currPoint = (polygon[i] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2) + OFFSET) * new RCNumVector(CELL_SIZE, CELL_SIZE);
                 if (prevPoint != RCNumVector.Undefined)
                 {
                     gc.DrawLine(pen, prevPoint.Round().X, prevPoint.Round().Y, currPoint.Round().X, currPoint.Round().Y);
@@ -215,8 +218,8 @@ namespace RC.Engine.Test
                 prevPoint = currPoint;
             }
 
-            RCNumVector lastPoint = (polygon[polygon.VertexCount - 1] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
-            RCNumVector firstPoint = (polygon[0] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
+            RCNumVector lastPoint = (polygon[polygon.VertexCount - 1] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2) + OFFSET) * new RCNumVector(CELL_SIZE, CELL_SIZE);
+            RCNumVector firstPoint = (polygon[0] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2) + OFFSET) * new RCNumVector(CELL_SIZE, CELL_SIZE);
             gc.DrawLine(pen, lastPoint.Round().X, lastPoint.Round().Y, firstPoint.Round().X, firstPoint.Round().Y);
         }
 
@@ -231,19 +234,13 @@ namespace RC.Engine.Test
 
             //arrowPen.CustomEndCap = new CustomLineCap(null, capPath);
 
-            RCNumVector nodeCenter = new RCNumVector(0, 0);
-            for (int i = 0; i < node.Polygon.VertexCount; i++) { nodeCenter += node.Polygon[i]; }
-            nodeCenter /= node.Polygon.VertexCount;
-            nodeCenter *= new RCNumVector(CELL_SIZE, CELL_SIZE);
-
+            RCNumVector nodeCenter = (node.Polygon.Center + OFFSET) * new RCNumVector(CELL_SIZE, CELL_SIZE);
             foreach (NavMeshNode neighbour in node.Neighbours)
             {
                 bool isBidirectional = false;
                 foreach (NavMeshNode neighbourOfNeighbour in neighbour.Neighbours) { if (neighbourOfNeighbour == node) { isBidirectional = true; break; } }
-                RCNumVector neighbourCenter = new RCNumVector(0, 0);
-                for (int i = 0; i < neighbour.Polygon.VertexCount; i++) { neighbourCenter += neighbour.Polygon[i]; }
-                neighbourCenter /= neighbour.Polygon.VertexCount;
-                neighbourCenter *= new RCNumVector(CELL_SIZE, CELL_SIZE);
+
+                RCNumVector neighbourCenter = (neighbour.Polygon.Center + OFFSET) * new RCNumVector(CELL_SIZE, CELL_SIZE);
                 gc.DrawLine(isBidirectional ? biDirPen : oneWayPen, nodeCenter.Round().X, nodeCenter.Round().Y, neighbourCenter.Round().X, neighbourCenter.Round().Y);
             }
             //capPath.Dispose();

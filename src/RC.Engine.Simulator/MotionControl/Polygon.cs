@@ -73,6 +73,7 @@ namespace RC.Engine.Simulator.MotionControl
             if (vertex2 == RCNumVector.Undefined) { throw new ArgumentNullException("vertex2"); }
 
             this.isAreaCalculated = false;
+            this.isCenterCalculated = false;
             this.isConvexityDetermined = false;
 
             HashSet<RCNumVector> vertexSet = new HashSet<RCNumVector>();
@@ -103,6 +104,7 @@ namespace RC.Engine.Simulator.MotionControl
             if (vertexList.Count < 3) { throw new ArgumentException("A polygon must have at least 3 vertices!", "vertexList"); }
 
             this.isAreaCalculated = false;
+            this.isCenterCalculated = false;
             this.isConvexityDetermined = false;
 
             HashSet<RCNumVector> vertexSet = new HashSet<RCNumVector>();
@@ -146,6 +148,18 @@ namespace RC.Engine.Simulator.MotionControl
             {
                 if (!this.isAreaCalculated) { this.CalculateArea(); }
                 return this.doubleOfSignedArea;
+            }
+        }
+
+        /// <summary>
+        /// Gets the center of this polygon.
+        /// </summary>
+        public RCNumVector Center
+        {
+            get
+            {
+                if (!this.isCenterCalculated) { this.CalculateCenter(); }
+                return this.center;
             }
         }
 
@@ -418,7 +432,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <summary>
         /// Internal ctor.
         /// </summary>
-        private Polygon() { this.isAreaCalculated = false; this.isConvexityDetermined = false; }
+        private Polygon() { this.isAreaCalculated = false; this.isCenterCalculated = false; this.isConvexityDetermined = false; }
 
         /// <summary>
         /// Calculates the orientation of this polygon.
@@ -432,6 +446,19 @@ namespace RC.Engine.Simulator.MotionControl
                 RCNumVector v2 = this.vertices[(i + 1) % this.vertices.Count];
                 this.doubleOfSignedArea += (v1.X - v2.X) * (v1.Y + v2.Y);
             }
+            this.isAreaCalculated = true;
+        }
+
+        /// <summary>
+        /// Calculates the center of this polygon.
+        /// </summary>
+        private void CalculateCenter()
+        {
+            this.center = new RCNumVector(0, 0);
+            for (int i = 0; i < this.vertices.Count; i++) { this.center += this.vertices[i]; }
+            this.center /= this.vertices.Count;
+
+            this.isCenterCalculated = true;
         }
 
         /// <summary>
@@ -460,6 +487,7 @@ namespace RC.Engine.Simulator.MotionControl
             }
             if (curveDirection == 0) { throw new InvalidOperationException("Unable to determine convexity!"); }
             this.isConvex = true;
+            this.isConvexityDetermined = true;
         }
 
         /// <summary>
@@ -473,6 +501,11 @@ namespace RC.Engine.Simulator.MotionControl
         private RCNumber doubleOfSignedArea;
 
         /// <summary>
+        /// The center of this polygon.
+        /// </summary>
+        private RCNumVector center;
+
+        /// <summary>
         /// True if this polygon is convex; otherwise false.
         /// </summary>
         private bool isConvex;
@@ -481,6 +514,11 @@ namespace RC.Engine.Simulator.MotionControl
         /// This flag indicates whether the area of this polygon has already been calculated or not.
         /// </summary>
         private bool isAreaCalculated;
+
+        /// <summary>
+        /// This flag indicates whether the center of this polygon has already been calculated or not.
+        /// </summary>
+        private bool isCenterCalculated;
 
         /// <summary>
         /// This flag indicates whether the convexity of this polygon has already been determined or not.
