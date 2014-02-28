@@ -54,8 +54,9 @@ namespace RC.Engine.Simulator.MotionControl
             } while (nextStep != StepDirection.None);
 
             /// Create a smooth polygon from the found vertices.
-            Polygon newPolygon = new Polygon();
-            newPolygon.vertices = Polygon.SimplifyPolyline(initialVertices, maxError, true);
+            List<RCNumVector> vertices = Polygon.SimplifyPolyline(initialVertices, maxError, true);
+            if (vertices.Count < 3) { return null; }
+            Polygon newPolygon = new Polygon(vertices);
             return newPolygon;
         }
 
@@ -428,11 +429,6 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         #endregion Polygon buildup methods
-
-        /// <summary>
-        /// Internal ctor.
-        /// </summary>
-        private Polygon() { this.isAreaCalculated = false; this.isCenterCalculated = false; this.isConvexityDetermined = false; }
 
         /// <summary>
         /// Calculates the orientation of this polygon.

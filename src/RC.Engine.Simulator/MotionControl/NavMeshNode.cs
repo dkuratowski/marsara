@@ -256,6 +256,12 @@ namespace RC.Engine.Simulator.MotionControl
                     if (firstCommonIdxInThis != -1) { throw new InvalidOperationException("The series of common edges is not continuous in the vertex list of this node!"); }
                     firstCommonIdxInThis = (idxInThis + 1) % thisPolygonCW.Count;
                 }
+                else if (idxInNeighbour != -1 && nextIdxInNeighbour != -1 && (idxInNeighbour + 1) % neighbourPolygonCCW.Count != nextIdxInNeighbour)
+                {
+                    if (firstCommonIdxInThis != -1 || lastCommonIdxInThis != -1) { throw new InvalidOperationException("The series of common edges is not continuous in the vertex list of this node!"); }
+                    firstCommonIdxInThis = (idxInThis + 1) % thisPolygonCW.Count;
+                    lastCommonIdxInThis = idxInThis; 
+                }
             }
             if (lastCommonIdxInThis == -1 || firstCommonIdxInThis == -1) { throw new InvalidOperationException("The series of common edges could not be found in the vertex list of this node!"); }
             
@@ -275,6 +281,12 @@ namespace RC.Engine.Simulator.MotionControl
                 {
                     if (firstCommonIdxInNeighbour != -1) { throw new InvalidOperationException("The series of common edges is not continuous in the vertex list of the neighbour node!"); }
                     firstCommonIdxInNeighbour = (idxInNeighbour + 1) % neighbourPolygonCCW.Count;
+                }
+                else if (idxInThis != -1 && nextIdxInThis != -1 && (idxInThis + 1) % thisPolygonCW.Count != nextIdxInThis)
+                {
+                    if (firstCommonIdxInNeighbour != -1 || lastCommonIdxInNeighbour != -1) { throw new InvalidOperationException("The series of common edges is not continuous in the vertex list of the neighbour node!"); }
+                    firstCommonIdxInNeighbour = (idxInNeighbour + 1) % neighbourPolygonCCW.Count;
+                    lastCommonIdxInNeighbour = idxInNeighbour;
                 }
             }
             if (lastCommonIdxInNeighbour == -1 || firstCommonIdxInNeighbour == -1) { throw new InvalidOperationException("The series of common edges could not be found in the vertex list of the neighbour node!"); }

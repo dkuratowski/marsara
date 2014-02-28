@@ -30,27 +30,24 @@ namespace RC.Engine.Simulator.MotionControl
             if (border == null) { throw new ArgumentNullException("border"); }
             if (holes == null) { throw new ArgumentNullException("holes"); }
 
-            this.border = border;
-            this.holes = holes;
-
             NavMeshNode superTriangle = new NavMeshNode(SUPERTRIANGLE_VERTEX0, SUPERTRIANGLE_VERTEX1, SUPERTRIANGLE_VERTEX2);
             this.vertexMap = new Dictionary<RCNumVector, HashSet<NavMeshNode>>();
             this.vertexMap.Add(SUPERTRIANGLE_VERTEX0, new HashSet<NavMeshNode>() { superTriangle });
             this.vertexMap.Add(SUPERTRIANGLE_VERTEX1, new HashSet<NavMeshNode>() { superTriangle });
             this.vertexMap.Add(SUPERTRIANGLE_VERTEX2, new HashSet<NavMeshNode>() { superTriangle });
-            this.nodeSearchTree = new BspSearchTree<NavMeshNode>(superTriangle.BoundingBox, BSP_NODE_CAPACITY, BXP_MIN_NODE_SIZE);
+            this.nodeSearchTree = new BspSearchTree<NavMeshNode>(superTriangle.BoundingBox, BSP_NODE_CAPACITY, BSP_MIN_NODE_SIZE);
             this.nodeSearchTree.AttachContent(superTriangle);
 
             /// Add the vertices into this tessellation.
-            for (int i = 0; i < this.border.VertexCount; i++) { this.AddVertex(this.border[i]); }
-            for (int holeIdx = 0; holeIdx < this.holes.Count; holeIdx++)
+            for (int i = 0; i < border.VertexCount; i++) { this.AddVertex(border[i]); }
+            for (int holeIdx = 0; holeIdx < holes.Count; holeIdx++)
             {
-                for (int i = 0; i < this.holes[holeIdx].VertexCount; i++) { this.AddVertex(this.holes[holeIdx][i]); }
+                for (int i = 0; i < holes[holeIdx].VertexCount; i++) { this.AddVertex(holes[holeIdx][i]); }
             }
 
             /// Add the constraints to this tessellation.
-            this.AddConstraint(this.border);
-            foreach (Polygon hole in this.holes) { this.AddConstraint(hole); }
+            this.AddConstraint(border);
+            foreach (Polygon hole in holes) { this.AddConstraint(hole); }
 
             /// Remove the nodes of the super-triangle.
             this.RemoveVertex(SUPERTRIANGLE_VERTEX0);
@@ -58,8 +55,8 @@ namespace RC.Engine.Simulator.MotionControl
             this.RemoveVertex(SUPERTRIANGLE_VERTEX2);
 
             /// Remove the isolated nodes that are outside of the border or inside a hole.
-            this.RemoveIsolatedNodes(this.border);
-            foreach (Polygon hole in this.holes) { this.RemoveIsolatedNodes(hole); }
+            this.RemoveIsolatedNodes(border);
+            foreach (Polygon hole in holes) { this.RemoveIsolatedNodes(hole); }
         }
 
         /// <summary>
@@ -247,20 +244,23 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="vertex">The vertex to remove.</param>
         private void RemoveVertex(RCNumVector vertex)
         {
-            foreach (NavMeshNode matchingNode in this.vertexMap[vertex])
+            if (this.vertexMap.ContainsKey(vertex))
             {
-                this.nodeSearchTree.DetachContent(matchingNode);
-                matchingNode.Delete();
-                for (int i = 0; i < matchingNode.Polygon.VertexCount; i++)
+                foreach (NavMeshNode matchingNode in this.vertexMap[vertex])
                 {
-                    if (matchingNode.Polygon[i] != vertex)
+                    this.nodeSearchTree.DetachContent(matchingNode);
+                    matchingNode.Delete();
+                    for (int i = 0; i < matchingNode.Polygon.VertexCount; i++)
                     {
-                        this.vertexMap[matchingNode.Polygon[i]].Remove(matchingNode);
-                        if (this.vertexMap[matchingNode.Polygon[i]].Count == 0) { this.vertexMap.Remove(matchingNode.Polygon[i]); }
+                        if (matchingNode.Polygon[i] != vertex)
+                        {
+                            this.vertexMap[matchingNode.Polygon[i]].Remove(matchingNode);
+                            if (this.vertexMap[matchingNode.Polygon[i]].Count == 0) { this.vertexMap.Remove(matchingNode.Polygon[i]); }
+                        }
                     }
                 }
+                this.vertexMap.Remove(vertex);
             }
-            this.vertexMap.Remove(vertex);
         }
 
         /// <summary>
@@ -399,7 +399,12 @@ namespace RC.Engine.Simulator.MotionControl
                     Polygon testPoly1 = TessellationHelper.CheckSegmentVertexIntersection(segmentBegin, segmentEnd, edgeEnd);
                     Polygon testPoly2 = TessellationHelper.CheckSegmentVertexIntersection(edgeBegin, edgeEnd, segmentBegin);
                     Polygon testPoly3 = TessellationHelper.CheckSegmentVertexIntersection(edgeBegin, edgeEnd, segmentEnd);
-                    if (testPoly0.DoubleOfSignedArea * testPoly1.DoubleOfSignedArea < 0 && testPoly2.DoubleOfSignedArea * testPoly3.DoubleOfSignedArea < 0) { return true; }
+                    if ((testPoly0.DoubleOfSignedArea < 0 && testPoly1.DoubleOfSignedArea >= 0 || testPoly0.DoubleOfSignedArea >= 0 && testPoly1.DoubleOfSignedArea < 0) &&
+                        (testPoly2.DoubleOfSignedArea < 0 && testPoly3.DoubleOfSignedArea >= 0 || testPoly2.DoubleOfSignedArea >= 0 && testPoly3.DoubleOfSignedArea < 0))
+                    {
+                        /// Signums are different -> intersection.
+                        return true;
+                    }
                 }
             }
 
@@ -444,16 +449,6 @@ namespace RC.Engine.Simulator.MotionControl
         private ISearchTree<NavMeshNode> nodeSearchTree;
 
         /// <summary>
-        /// The Polygon that defines the outer border of the area to be tessellated.
-        /// </summary>
-        private Polygon border;
-
-        /// <summary>
-        /// List of the Polygons defining the holes inside the area to be tessellated.
-        /// </summary>
-        private List<Polygon> holes;
-
-        /// <summary>
         /// The vertices of the super-triangle that is the initial triangle of the tessellation.
         /// </summary>
         private static readonly RCNumVector SUPERTRIANGLE_VERTEX0 = new RCNumVector(-10, -10);
@@ -464,6 +459,6 @@ namespace RC.Engine.Simulator.MotionControl
         /// Constants of the NavMeshNode search-tree.
         /// </summary>
         private const int BSP_NODE_CAPACITY = 16;
-        private const int BXP_MIN_NODE_SIZE = 10;
+        private const int BSP_MIN_NODE_SIZE = 10;
     }
 }

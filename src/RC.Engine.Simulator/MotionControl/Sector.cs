@@ -27,21 +27,21 @@ namespace RC.Engine.Simulator.MotionControl
             this.nodes = null;
 
             /// Create the polygons of the border and the holes.
-            Polygon border = Polygon.FromGrid(grid, sectorArea.TopLeftCell, maxError);
-            if (border.VertexCount <= 2) { return; }
-            List<Polygon> holes = new List<Polygon>();
+            this.border = Polygon.FromGrid(grid, sectorArea.TopLeftCell, maxError);
+            if (this.border == null) { return; }
+            this.holes = new List<Polygon>();
             foreach (WalkabilityGridArea holeArea in sectorArea.Children)
             {
                 if (holeArea.IsWalkable) { throw new ArgumentException("The area of the holes inside the sector area must be non-walkable!"); }
                 Polygon holePolygon = Polygon.FromGrid(grid, holeArea.TopLeftCell, maxError);
-                if (holePolygon.VertexCount > 2) { holes.Add(holePolygon); }
+                if (holePolygon != null) { this.holes.Add(holePolygon); }
             }
 
             /// Perform the tessellation of the sector area.
-            TessellationHelper tessellation = new TessellationHelper(border, holes);
+            this.tessellation = new TessellationHelper(this.border, this.holes);
 
             /// Collect the nodes of the created tessellation.
-            this.nodes = tessellation.Nodes;
+            this.nodes = this.tessellation.Nodes;
         }
 
         /// <summary>
@@ -50,8 +50,24 @@ namespace RC.Engine.Simulator.MotionControl
         public IEnumerable<NavMeshNode> Nodes { get { return this.nodes; } }
 
         /// <summary>
+        /// Reference to the created tessellation helper.
+        /// </summary>
+        /// <remarks>Used in unit testing.</remarks>
+        private TessellationHelper tessellation;
+
+        /// <summary>
         /// The list of the nodes of this Sector of the navmesh.
         /// </summary>
         private HashSet<NavMeshNode> nodes;
+
+        /// <summary>
+        /// The Polygon that defines the outer border of the sector area.
+        /// </summary>
+        private Polygon border;
+
+        /// <summary>
+        /// List of the Polygons defining the holes inside the sector area.
+        /// </summary>
+        private List<Polygon> holes;
     }
 }
