@@ -54,9 +54,9 @@ namespace RC.Engine.Simulator.MotionControl
             this.RemoveVertex(SUPERTRIANGLE_VERTEX1);
             this.RemoveVertex(SUPERTRIANGLE_VERTEX2);
 
-            /// Remove the isolated nodes that are outside of the border or inside a hole.
-            this.RemoveIsolatedNodes(border);
-            foreach (Polygon hole in holes) { this.RemoveIsolatedNodes(hole); }
+            /// Drop the non-walkable nodes that are outside of the border or inside a hole.
+            this.DropNonWalkableNodes(border);
+            foreach (Polygon hole in holes) { this.DropNonWalkableNodes(hole); }
         }
 
         /// <summary>
@@ -116,13 +116,16 @@ namespace RC.Engine.Simulator.MotionControl
         private void AddConstraint(Polygon constraint)
         {
             /// Cut the triangles along the edges of the constraint polygon if necessary.
+            List<RCNumVector> cutSequence = new List<RCNumVector>();
             for (int constraintEdgeIdx = 0; constraintEdgeIdx < constraint.VertexCount; constraintEdgeIdx++)
             {
-                /// Check if the endpoints of the current constraint edge has already added to this tessellation.
+                /// Check if the endpoints of the current constraint edge has already been added to this tessellation.
                 RCNumVector edgeBegin = constraint[constraintEdgeIdx];
                 RCNumVector edgeEnd = constraint[(constraintEdgeIdx + 1) % constraint.VertexCount];
-                if (!this.vertexMap.ContainsKey(edgeBegin)) { throw new ArgumentException(string.Format("Vertex {0} in constraint polygon has not been added to the tessellation!", edgeBegin), string.Format("border[{0}]", constraintEdgeIdx)); }
-                if (!this.vertexMap.ContainsKey(edgeEnd)) { throw new ArgumentException(string.Format("Vertex {0} in border polygon has not been added to the tessellation!", edgeEnd), string.Format("border[{0}]", (constraintEdgeIdx + 1) % constraint.VertexCount)); }
+                if (!this.vertexMap.ContainsKey(edgeBegin)) { throw new ArgumentException(string.Format("Vertex {0} in constraint polygon has not been added to the tessellation!", edgeBegin), string.Format("constraint[{0}]", constraintEdgeIdx)); }
+                if (!this.vertexMap.ContainsKey(edgeEnd)) { throw new ArgumentException(string.Format("Vertex {0} in constraint polygon has not been added to the tessellation!", edgeEnd), string.Format("constraint[{0}]", (constraintEdgeIdx + 1) % constraint.VertexCount)); }
+                if (cutSequence.Count == 0) { cutSequence.Add(edgeBegin); }
+                cutSequence.Add(edgeEnd);
                 
                 /// Collect the NavMeshNodes that has intersection with the current edge.
                 HashSet<NavMeshNode> nodesToMerge = new HashSet<NavMeshNode>();
@@ -135,73 +138,25 @@ namespace RC.Engine.Simulator.MotionControl
                     }
                 }
 
-                /// Merge the collected nodes and cut the merged node into two halves along the current constraint edge.
-                if (nodesToMerge.Count > 1)
+                /// Merge the collected nodes.
+                if (nodesToMerge.Count > 1) { this.MergeNodes(ref nodesToMerge); }
+
+                /// Cut the merged node along the current constraint edge if possible.
+                NavMeshNode mergedNode = nodesToMerge.First();
+                if (mergedNode.Polygon.IndexOf(edgeEnd) != -1)
                 {
-                    this.MergeNodes(ref nodesToMerge);
-                    NavMeshNode mergedNode = nodesToMerge.First();
                     this.nodeSearchTree.DetachContent(mergedNode);
                     for (int i = 0; i < mergedNode.Polygon.VertexCount; i++)
                     {
                         if (!this.vertexMap[mergedNode.Polygon[i]].Remove(mergedNode)) { throw new InvalidOperationException("Merged node not found!"); }
                     }
-                    foreach (NavMeshNode slice in mergedNode.Slice(edgeBegin, edgeEnd))
+                    foreach (NavMeshNode slice in mergedNode.Slice(cutSequence))
                     {
                         this.nodeSearchTree.AttachContent(slice);
                         for (int i = 0; i < slice.Polygon.VertexCount; i++) { this.vertexMap[slice.Polygon[i]].Add(slice); }
                     }
+                    cutSequence.Clear();
                 }
-            }
-
-            /// Drop the triangles outside of the constraint polygon.
-            for (int constraintEdgeIdx = 0; constraintEdgeIdx < constraint.VertexCount; constraintEdgeIdx++)
-            {
-                RCNumVector edgeBegin = constraint[constraintEdgeIdx];
-                RCNumVector edgeEnd = constraint[(constraintEdgeIdx + 1) % constraint.VertexCount];
-                HashSet<NavMeshNode> matchingNodes = new HashSet<NavMeshNode>(this.vertexMap[edgeBegin]);
-                matchingNodes.IntersectWith(this.vertexMap[edgeEnd]);
-                if (matchingNodes.Count == 1)
-                {
-                    /// Check if the matching node is on the right side.
-                    int edgeBeginIdx = matchingNodes.First().Polygon.IndexOf(edgeBegin);
-                    int edgeEndIdx = matchingNodes.First().Polygon.IndexOf(edgeEnd);
-                    if (edgeBeginIdx == -1 || edgeEndIdx == -1) { throw new InvalidOperationException("Vertices not found!"); }
-                    if ((edgeBeginIdx + 1) % matchingNodes.First().Polygon.VertexCount != edgeEndIdx) { throw new InvalidOperationException("Vertex order mismatch!"); }
-                }
-                else if (matchingNodes.Count == 2)
-                {
-                    /// Check if one of the matching nodes is on the right side and the other is on the left side.
-                    NavMeshNode rightSideNode = null;
-                    NavMeshNode leftSideNode = null;
-                    foreach (NavMeshNode matchingNode in matchingNodes)
-                    {
-                        int edgeBeginIdx = matchingNode.Polygon.IndexOf(edgeBegin);
-                        int edgeEndIdx = matchingNode.Polygon.IndexOf(edgeEnd);
-                        if (edgeBeginIdx == -1 || edgeEndIdx == -1) { throw new InvalidOperationException("Vertices not found!"); }
-                        if ((edgeBeginIdx + 1) % matchingNode.Polygon.VertexCount == edgeEndIdx)
-                        {
-                            if (rightSideNode != null) { throw new InvalidOperationException("Right-side node already found!"); }
-                            rightSideNode = matchingNode;
-                        }
-                        else if ((edgeEndIdx + 1) % matchingNode.Polygon.VertexCount == edgeBeginIdx)
-                        {
-                            if (leftSideNode != null) { throw new InvalidOperationException("Left-side node already found!"); }
-                            leftSideNode = matchingNode;
-                        }
-                        else { throw new InvalidOperationException("Vertex order mismatch!"); }
-                    }
-                    if (rightSideNode == null || leftSideNode == null) { throw new InvalidOperationException("Unexpected case!"); }
-
-                    /// Remove the left-side node from the tessellation.
-                    this.nodeSearchTree.DetachContent(leftSideNode);
-                    for (int i = 0; i < leftSideNode.Polygon.VertexCount; i++)
-                    {
-                        this.vertexMap[leftSideNode.Polygon[i]].Remove(leftSideNode);
-                        if (this.vertexMap[leftSideNode.Polygon[i]].Count == 0) { this.vertexMap.Remove(leftSideNode.Polygon[i]); }
-                    }
-                    leftSideNode.Delete();
-                }
-                else { throw new InvalidOperationException("Edge matching error!"); }
             }
         }
 
@@ -264,11 +219,35 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         /// <summary>
-        /// Remove the isolated nodes that are outside/inside of the given border/hole.
+        /// Drops the non-walkable nodes that are outside/inside of the given border/hole.
         /// </summary>
         /// <param name="borderOrHole">The given border/hole.</param>
-        private void RemoveIsolatedNodes(Polygon borderOrHole)
+        private void DropNonWalkableNodes(Polygon borderOrHole)
         {
+            for (int vertexIdx = 0; vertexIdx < borderOrHole.VertexCount; vertexIdx++)
+            {
+                HashSet<NavMeshNode> matchingNodesCopy = new HashSet<NavMeshNode>(this.vertexMap[borderOrHole[vertexIdx]]);
+                matchingNodesCopy.IntersectWith(this.vertexMap[borderOrHole[(vertexIdx + 1) % borderOrHole.VertexCount]]);
+                if (matchingNodesCopy.Count == 2)
+                {
+                    List<NavMeshNode> matchingNodesList = new List<NavMeshNode>(matchingNodesCopy);
+                    int edgeBeginIdxIn0 = matchingNodesList[0].Polygon.IndexOf(borderOrHole[vertexIdx]);
+                    int edgeEndIdxIn0 = matchingNodesList[0].Polygon.IndexOf(borderOrHole[(vertexIdx + 1) % borderOrHole.VertexCount]);
+                    int edgeBeginIdxIn1 = matchingNodesList[1].Polygon.IndexOf(borderOrHole[vertexIdx]);
+                    int edgeEndIdxIn1 = matchingNodesList[1].Polygon.IndexOf(borderOrHole[(vertexIdx + 1) % borderOrHole.VertexCount]);
+                    if ((edgeBeginIdxIn0 + 1) % matchingNodesList[0].Polygon.VertexCount != edgeEndIdxIn0)
+                    {
+                        /// Drop node0.
+                        this.DropNode(matchingNodesList[0]);
+                    }
+                    else if ((edgeBeginIdxIn1 + 1) % matchingNodesList[1].Polygon.VertexCount != edgeEndIdxIn1)
+                    {
+                        /// Drop node1.
+                        this.DropNode(matchingNodesList[1]);
+                    }
+                }
+            }
+
             bool isBorder = borderOrHole.DoubleOfSignedArea > 0;
             for (int vertexIdx = 0; vertexIdx < borderOrHole.VertexCount; vertexIdx++)
             {
@@ -277,16 +256,25 @@ namespace RC.Engine.Simulator.MotionControl
                 {
                     if (isBorder && !borderOrHole.Contains(matchingNode.Polygon.Center) || !isBorder && borderOrHole.Contains(matchingNode.Polygon.Center))
                     {
-                        /// Outside/inside of the border/hole -> delete the node.
-                        this.nodeSearchTree.DetachContent(matchingNode);
-                        matchingNode.Delete();
-                        for (int i = 0; i < matchingNode.Polygon.VertexCount; i++)
-                        {
-                            this.vertexMap[matchingNode.Polygon[i]].Remove(matchingNode);
-                            if (this.vertexMap[matchingNode.Polygon[i]].Count == 0) { this.vertexMap.Remove(matchingNode.Polygon[i]); }
-                        }
+                        /// Outside/inside of the border/hole -> drop the node.
+                        this.DropNode(matchingNode);
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Drops the given node.
+        /// </summary>
+        /// <param name="node">The node to be dropped</param>
+        private void DropNode(NavMeshNode node)
+        {
+            this.nodeSearchTree.DetachContent(node);
+            node.Delete();
+            for (int i = 0; i < node.Polygon.VertexCount; i++)
+            {
+                this.vertexMap[node.Polygon[i]].Remove(node);
+                if (this.vertexMap[node.Polygon[i]].Count == 0) { this.vertexMap.Remove(node.Polygon[i]); }
             }
         }
 
@@ -382,12 +370,26 @@ namespace RC.Engine.Simulator.MotionControl
         /// </remarks>
         private static bool CheckSegmentPolygonIntersection(RCNumVector segmentBegin, RCNumVector segmentEnd, Polygon checkedPolygon)
         {
-            /// If the checked polygon contains the beginning and the end of the segment -> trivial intersection as we have convex polygons.
+            /// Check if the beginning or the end of the segment equals with a vertex of the polygon.
             int segmentBeginIdx = checkedPolygon.IndexOf(segmentBegin);
             int segmentEndIdx = checkedPolygon.IndexOf(segmentEnd);
-            if (segmentBeginIdx != -1 && segmentEndIdx != -1) { return true; }
+            bool isDiagonal = false;
+            if (segmentBeginIdx != -1 && segmentEndIdx != -1)
+            {
+                /// If the beginning and the end of the segment are adjacent then  segment equals with an edge -> trivial interection.
+                if ((segmentBeginIdx + 1) % checkedPolygon.VertexCount == segmentEndIdx || (segmentEndIdx + 1) % checkedPolygon.VertexCount == segmentBeginIdx) { return true; }
 
-            /// Otherwise check all edges of the checked polygon.
+                /// Otherwise its a diagonal and we might need further checks later.
+                isDiagonal = true;
+            }
+            else if (segmentBeginIdx == -1 && segmentEndIdx != -1 && checkedPolygon.Contains(segmentBegin) ||
+                     segmentBeginIdx != -1 && segmentEndIdx == -1 && checkedPolygon.Contains(segmentEnd))
+            {
+                /// The polygon contains the beginning or the end of the segment -> trivial intersection.
+                return true;
+            }
+
+            /// Check intersections with the edges.
             for (int i = 0; i < checkedPolygon.VertexCount; i++)
             {
                 RCNumVector edgeBegin = checkedPolygon[i];
@@ -406,6 +408,24 @@ namespace RC.Engine.Simulator.MotionControl
                         return true;
                     }
                 }
+            }
+
+            if (isDiagonal)
+            {
+                /// If the segment is a diagonal then we have to check the vertex order of the two halves it creates
+                /// from the polygon.
+                List<RCNumVector> endToBeginHalfVertices = new List<RCNumVector>();
+                for (int i = segmentEndIdx; i != segmentBeginIdx; i = (i + 1) % checkedPolygon.VertexCount) { endToBeginHalfVertices.Add(checkedPolygon[i]); }
+                endToBeginHalfVertices.Add(checkedPolygon[segmentBeginIdx]);
+                Polygon endToBeginHalf = new Polygon(endToBeginHalfVertices);
+                List<RCNumVector> beginToEndHalfVertices = new List<RCNumVector>();
+                for (int i = segmentBeginIdx; i != segmentEndIdx; i = (i + 1) % checkedPolygon.VertexCount) { beginToEndHalfVertices.Add(checkedPolygon[i]); }
+                beginToEndHalfVertices.Add(checkedPolygon[segmentEndIdx]);
+                Polygon beginToEndHalf = new Polygon(beginToEndHalfVertices);
+
+                /// The diagonal is inside if and only if the two halves have the same vertex order.
+                return endToBeginHalf.DoubleOfSignedArea >= 0 && beginToEndHalf.DoubleOfSignedArea >= 0 ||
+                       endToBeginHalf.DoubleOfSignedArea < 0 && beginToEndHalf.DoubleOfSignedArea < 0;
             }
 
             /// No intersection.

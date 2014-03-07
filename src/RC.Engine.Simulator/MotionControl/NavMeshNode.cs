@@ -87,22 +87,23 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         /// <summary>
-        /// Slices this node along its given diameter.
+        /// Slices this node along a given series of segments.
         /// </summary>
-        /// <param name="diameterBegin">The beginning of the diameter.</param>
-        /// <param name="diameterEnd">The end of the diameter.</param>
+        /// <param name="cut">The series of the cut segments.</param>
         /// <returns>The list of the slices.</returns>
-        /// <exception cref="ArgumentException">
-        /// If the given vectors are not the endpoints of a diameter of the given node.
-        /// </exception>
-        public IEnumerable<NavMeshNode> Slice(RCNumVector diameterBegin, RCNumVector diameterEnd)
+        public IEnumerable<NavMeshNode> Slice(List<RCNumVector> cut)
         {
-            int diameterBeginIdx = this.polygon.IndexOf(diameterBegin);
-            int diameterEndIdx = this.polygon.IndexOf(diameterEnd);
-            if (diameterBeginIdx == -1) { throw new ArgumentException("The beginning of the diameter shall be a vertex of the given node!", "diameterBegin"); }
-            if (diameterEndIdx == -1) { throw new ArgumentException("The end of the diameter shall be a vertex of the given node!", "diameterEnd"); }
-            if ((diameterBeginIdx + 1) % this.polygon.VertexCount == diameterEndIdx ||
-                (diameterEndIdx + 1) % this.polygon.VertexCount == diameterBeginIdx) { throw new ArgumentException("The given segment is not a diameter but an edge!"); }
+            if (cut == null) { throw new ArgumentNullException("cut"); }
+            if (cut.Count < 2) { throw new ArgumentException("Cut shall contain at least 2 vertices!", "cut"); }
+
+            int cutBeginIdx = this.polygon.IndexOf(cut[0]);
+            int cutEndIdx = this.polygon.IndexOf(cut[cut.Count - 1]);
+            if (cutBeginIdx == -1) { throw new ArgumentException("The beginning of the cut shall be a vertex of this node!", "cut"); }
+            if (cutEndIdx == -1) { throw new ArgumentException("The end of the cut shall be a vertex of this node!", "cut"); }
+            for (int i = 1; i < cut.Count - 1; i++) { if (!this.polygon.Contains(cut[i])) { throw new ArgumentException("Every vertex of the cut shall be inside this node!", "cut"); } }
+            if (cut.Count == 2 &&
+                ((cutBeginIdx + 1) % this.polygon.VertexCount == cutEndIdx ||
+                (cutEndIdx + 1) % this.polygon.VertexCount == cutBeginIdx)) { throw new ArgumentException("The given cut equals with an edge!"); }
 
             /// Collect the original neighbours of this node in the order of the vertices of this node.
             NavMeshNode[] originalNeighbours = this.GetNeighboursByEdges();
@@ -117,7 +118,7 @@ namespace RC.Engine.Simulator.MotionControl
             /// Create the new polygon of this node and set back the neighbour relationship between this node and its remaining
             /// neighbours after cut.
             List<RCNumVector> thisPolygonCW = new List<RCNumVector>();
-            for (int i = diameterEndIdx; i != diameterBeginIdx; i = (i + 1) % this.polygon.VertexCount)
+            for (int i = cutEndIdx; i != cutBeginIdx; i = (i + 1) % this.polygon.VertexCount)
             {
                 thisPolygonCW.Add(this.polygon[i]);
                 if (originalNeighbours[i] != null)
@@ -126,12 +127,12 @@ namespace RC.Engine.Simulator.MotionControl
                     this.neighbours.Add(originalNeighbours[i]);
                 }
             }
-            thisPolygonCW.Add(this.polygon[diameterBeginIdx]);
+            for (int i = 0; i < cut.Count - 1; i++) { thisPolygonCW.Add(cut[i]); }
 
             /// Create the new node and set its neighbour relationships.
             List<RCNumVector> newNodePolygonCW = new List<RCNumVector>();
             NavMeshNode newNode = new NavMeshNode();
-            for (int i = diameterBeginIdx; i != diameterEndIdx; i = (i + 1) % this.polygon.VertexCount)
+            for (int i = cutBeginIdx; i != cutEndIdx; i = (i + 1) % this.polygon.VertexCount)
             {
                 newNodePolygonCW.Add(this.polygon[i]);
                 if (originalNeighbours[i] != null)
@@ -140,7 +141,7 @@ namespace RC.Engine.Simulator.MotionControl
                     newNode.neighbours.Add(originalNeighbours[i]);
                 }
             }
-            newNodePolygonCW.Add(this.polygon[diameterEndIdx]);
+            for (int i = cut.Count - 1; i > 0; i--) { newNodePolygonCW.Add(cut[i]); }
 
             /// Create the new polygons and update the bounding boxes.
             this.polygon = new Polygon(thisPolygonCW);

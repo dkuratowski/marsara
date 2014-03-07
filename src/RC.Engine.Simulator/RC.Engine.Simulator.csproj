@@ -46,6 +46,8 @@
     <Compile Include="ComponentInterfaces\IHeapManagerPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IPlayerInitializer.cs" />
+    <Compile Include="MotionControl\PolygonSimplificationHelper.cs" />
+    <Compile Include="MotionControl\PolylineSegment.cs" />
     <Compile Include="MotionControl\TessellationHelper.cs" />
     <Compile Include="MotionControl\DerivedPath.cs" />
     <Compile Include="MotionControl\DirectPath.cs" />

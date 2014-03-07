@@ -42,6 +42,10 @@ namespace RC.UnitTests
         public void NavMeshGenerationTest_Grid3() { this.NavMeshGenerationTestImpl("grid3.png", "grid3_navmesh.png"); }
         [TestMethod]
         public void NavMeshGenerationTest_Grid4() { this.NavMeshGenerationTestImpl("grid4.png", "grid4_navmesh.png"); }
+        [TestMethod]
+        public void NavMeshGenerationTest_Grid5() { this.NavMeshGenerationTestImpl("grid5.png", "grid5_navmesh.png"); }
+        [TestMethod]
+        public void NavMeshGenerationTest_Grid6() { this.NavMeshGenerationTestImpl("grid6.png", "grid6_navmesh.png"); }
 
         /// <summary>
         /// Contains test context informations.
@@ -92,7 +96,7 @@ namespace RC.UnitTests
             //    Polygon border = (Polygon)sectorObj.GetField("border");
             //    List<Polygon> holes = (List<Polygon>)sectorObj.GetField("holes");
             //    DrawPolygon(border, gc);
-            //    foreach (Polygon hole in holes) { if (hole.Contains(new RCNumVector(862, 488))) { DrawPolygon(hole, gc); } }
+            //    foreach (Polygon hole in holes) { DrawPolygon(hole, gc); }
             //}
             // TODO: SETBACK ***********************************************
 
@@ -123,7 +127,8 @@ namespace RC.UnitTests
             {
                 CheckTessellationHelper(sector);
                 CheckSectorInterconnection(sector);
-                foreach (NavMeshNode node in sector.Nodes) { CheckVertexMatching(node); }
+                CheckNeighbourhood(sector);
+                foreach (NavMeshNode node in sector.Nodes) { CheckNeighbourEdgeMatching(node); }
 
                 HashSet<NavMeshNode> commonNodesWithPreviousSectors = new HashSet<NavMeshNode>(sector.Nodes);
                 commonNodesWithPreviousSectors.IntersectWith(allNodes);
@@ -174,7 +179,7 @@ namespace RC.UnitTests
                 }
             }
 
-            Assert.IsTrue((float)incorrectCells / (float)(correctCells + incorrectCells) < 0.02f);
+            Assert.IsTrue((float)incorrectCells / (float)(correctCells + incorrectCells) < 0.05f);
         }
 
         /// <summary>
@@ -217,10 +222,38 @@ namespace RC.UnitTests
         }
 
         /// <summary>
-        /// Checks the vertex matching of the neighbours of the given node.
+        /// Checks that if two nodes in the given sector share at least one common edge then they are neighbours.
+        /// </summary>
+        /// <param name="sector">The sector to check.</param>
+        private void CheckNeighbourhood(Sector sector)
+        {
+            PrivateObject sectorObj = new PrivateObject(sector);
+            TessellationHelper helper = (TessellationHelper)sectorObj.GetField("tessellation");
+            Dictionary<RCNumVector, HashSet<NavMeshNode>> vertexMap = GetCopyOfVertexMap(helper);
+
+            foreach (NavMeshNode node in sector.Nodes)
+            {
+                for (int i = 0; i < node.Polygon.VertexCount; i++)
+                {
+                    RCNumVector edgeBegin = node.Polygon[i];
+                    RCNumVector edgeEnd = node.Polygon[(i + 1) % node.Polygon.VertexCount];
+                    HashSet<NavMeshNode> matchingNodesCopy = vertexMap[edgeBegin];
+                    matchingNodesCopy.IntersectWith(vertexMap[edgeEnd]);
+                    if (matchingNodesCopy.Count == 2)
+                    {
+                        List<NavMeshNode> matchingNodesList = new List<NavMeshNode>(matchingNodesCopy);
+                        Assert.IsTrue(matchingNodesList[0].Neighbours.Contains(matchingNodesList[1]));
+                        Assert.IsTrue(matchingNodesList[1].Neighbours.Contains(matchingNodesList[0]));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks whether the neighbours of the given have at least one common edge with the given node.
         /// </summary>
         /// <param name="node">The node to be checked.</param>
-        private void CheckVertexMatching(NavMeshNode node)
+        private void CheckNeighbourEdgeMatching(NavMeshNode node)
         {
             /// Collect the edges of the current node.
             HashSet<Tuple<RCNumVector, RCNumVector>> nodeEdges = new HashSet<Tuple<RCNumVector, RCNumVector>>();

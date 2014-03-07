@@ -72,6 +72,12 @@
     <Content Include="NavMeshTestInputs\grid4.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="NavMeshTestInputs\grid5.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NavMeshTestInputs\grid6.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj">

@@ -14,28 +14,16 @@ namespace RC.Engine.Simulator.MotionControl
         /// <summary>
         /// Constructs a new Sector instance.
         /// </summary>
-        /// <param name="grid">The grid that contains the walkability informations.</param>
-        /// <param name="sectorArea">The area of the sector on the grid.</param>
-        /// <param name="maxError">The maximum error between the edges of the created sector and the walkability informations.</param>
-        public Sector(IWalkabilityGrid grid, WalkabilityGridArea sectorArea, RCNumber maxError)
+        /// <param name="border">The border of the sector.</param>
+        /// <param name="holes">The holes inside the sector.</param>
+        public Sector(Polygon border, List<Polygon> holes)
         {
-            if (grid == null) { throw new ArgumentNullException("grid"); }
-            if (sectorArea == null) { throw new ArgumentNullException("sectorArea"); }
-            if (!sectorArea.IsWalkable) { throw new ArgumentException("The area of the sector must be walkable!"); }
-            if (maxError < 0) { throw new ArgumentOutOfRangeException("maxError", "The maximum error shall not be negative!"); }
+            if (border == null) { throw new ArgumentNullException("border"); }
+            if (holes == null) { throw new ArgumentNullException("holes"); }
 
-            this.nodes = null;
-
-            /// Create the polygons of the border and the holes.
-            this.border = Polygon.FromGrid(grid, sectorArea.TopLeftCell, maxError);
-            if (this.border == null) { return; }
-            this.holes = new List<Polygon>();
-            foreach (WalkabilityGridArea holeArea in sectorArea.Children)
-            {
-                if (holeArea.IsWalkable) { throw new ArgumentException("The area of the holes inside the sector area must be non-walkable!"); }
-                Polygon holePolygon = Polygon.FromGrid(grid, holeArea.TopLeftCell, maxError);
-                if (holePolygon != null) { this.holes.Add(holePolygon); }
-            }
+            /// Retrieve the polygons along the border and the holes.
+            this.border = border;
+            this.holes = new List<Polygon>(holes);
 
             /// Perform the tessellation of the sector area.
             this.tessellation = new TessellationHelper(this.border, this.holes);
