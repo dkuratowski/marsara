@@ -45,7 +45,7 @@ namespace RC.UnitTests
         [TestMethod]
         public void NavMeshGenerationTest_Grid5() { this.NavMeshGenerationTestImpl("grid5.png", "grid5_navmesh.png"); }
         [TestMethod]
-        public void NavMeshGenerationTest_Grid6() { this.NavMeshGenerationTestImpl("grid6.png", "grid6_navmesh.png"); }
+        public void NavMeshGenerationTest_Grid6() { this.NavMeshGenerationTestImpl("grid6.png", "grid6_navmesh.png", false); }
 
         /// <summary>
         /// Contains test context informations.
@@ -58,6 +58,19 @@ namespace RC.UnitTests
         /// <param name="inputFile">The path to the input file.</param>
         /// <param name="outputFile">The path to the output file.</param>
         private void NavMeshGenerationTestImpl(string inputFile, string outputFile)
+        {
+            this.NavMeshGenerationTestImpl(inputFile, outputFile, true);
+        }
+
+        /// <summary>
+        /// The implementation of the NavMeshGenerationTest_XXX test cases.
+        /// </summary>
+        /// <param name="inputFile">The path to the input file.</param>
+        /// <param name="outputFile">The path to the output file.</param>
+        /// <param name="checkCoverage">
+        /// This flag indicates if navmesh coverage shall be checked at the end of the test or not.
+        /// </param>
+        private void NavMeshGenerationTestImpl(string inputFile, string outputFile, bool checkCoverage)
         {
             string inputPath = System.IO.Path.Combine(INPUT_DIR, inputFile);
             string outputPath = System.IO.Path.Combine(OUTPUT_DIR, outputFile);
@@ -112,7 +125,7 @@ namespace RC.UnitTests
 
             TestContext.WriteLine("Checking navmesh...");
             CheckNavmesh(navmesh);
-            CheckNavmeshCoverage(navmesh, grid);
+            if (checkCoverage) { CheckNavmeshCoverage(navmesh, grid); }
             TestContext.WriteLine("OK");
         }
 
@@ -192,14 +205,8 @@ namespace RC.UnitTests
             TessellationHelper helper = (TessellationHelper)sectorObj.GetField("tessellation");
 
             Dictionary<RCNumVector, HashSet<NavMeshNode>> vertexMap = GetCopyOfVertexMap(helper);
-            Polygon border = GetBorder(sector);
-            List<Polygon> holes = GetHoles(sector);
-
             foreach (NavMeshNode node in helper.Nodes)
             {
-                Assert.IsTrue(border.Contains(node.Polygon.Center));
-                foreach (Polygon hole in holes) { Assert.IsFalse(hole.Contains(node.Polygon.Center)); }
-
                 for (int i = 0; i < node.Polygon.VertexCount; ++i)
                 {
                     RCNumVector vertex = node.Polygon[i];
@@ -318,28 +325,6 @@ namespace RC.UnitTests
                 mapCopy.Add(item.Key, new HashSet<NavMeshNode>(item.Value));
             }
             return mapCopy;
-        }
-
-        /// <summary>
-        /// Gets a reference to the border polygon of the given sector.
-        /// </summary>
-        /// <param name="sector">The sector.</param>
-        /// <returns>A reference to the border polygon of the given sector.</returns>
-        private Polygon GetBorder(Sector sector)
-        {
-            PrivateObject sectorObj = new PrivateObject(sector);
-            return (Polygon)sectorObj.GetField("border");
-        }
-
-        /// <summary>
-        /// Gets a reference to the list of holes of the given sector.
-        /// </summary>
-        /// <param name="sector">The sector.</param>
-        /// <returns>A reference to the list of holes of the given sector.</returns>
-        private List<Polygon> GetHoles(Sector sector)
-        {
-            PrivateObject sectorObj = new PrivateObject(sector);
-            return (List<Polygon>)sectorObj.GetField("holes");
         }
 
         /// <summary>

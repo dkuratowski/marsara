@@ -93,15 +93,11 @@ namespace RC.Engine.Simulator.MotionControl
             /// Slice the merged node and update the vertex map and the search-tree.
             NavMeshNode mergedNode = nodesToMerge.First();
             this.nodeSearchTree.DetachContent(mergedNode);
-            for (int i = 0; i < mergedNode.Polygon.VertexCount; i++)
-            {
-                if (!this.vertexMap[mergedNode.Polygon[i]].Remove(mergedNode)) { throw new InvalidOperationException("Merged node not found!"); }
-            }
-            this.vertexMap.Add(vertex, new HashSet<NavMeshNode>());
+            this.RemoveNodeFromVertexMap(mergedNode);
             foreach (NavMeshNode slice in mergedNode.Slice(vertex))
             {
                 this.nodeSearchTree.AttachContent(slice);
-                for (int i = 0; i < slice.Polygon.VertexCount; i++) { this.vertexMap[slice.Polygon[i]].Add(slice); }
+                this.AddNodeToVertexMap(slice);
             }
         }
 
@@ -116,16 +112,18 @@ namespace RC.Engine.Simulator.MotionControl
         private void AddConstraint(Polygon constraint)
         {
             /// Cut the triangles along the edges of the constraint polygon if necessary.
-            List<RCNumVector> cutSequence = new List<RCNumVector>();
             for (int constraintEdgeIdx = 0; constraintEdgeIdx < constraint.VertexCount; constraintEdgeIdx++)
             {
-                /// Check if the endpoints of the current constraint edge has already been added to this tessellation.
+                /// Check if the current constraint edge is already the part of this tessellation.
                 RCNumVector edgeBegin = constraint[constraintEdgeIdx];
                 RCNumVector edgeEnd = constraint[(constraintEdgeIdx + 1) % constraint.VertexCount];
+                HashSet<NavMeshNode> matchingNodesCopy = new HashSet<NavMeshNode>(this.vertexMap[edgeBegin]);
+                matchingNodesCopy.IntersectWith(this.vertexMap[edgeEnd]);
+                if (matchingNodesCopy.Count == 2) { continue; }
+                else if (matchingNodesCopy.Count != 0) { new InvalidOperationException("Constraint edge matches to only 1 node!"); }
+
                 if (!this.vertexMap.ContainsKey(edgeBegin)) { throw new ArgumentException(string.Format("Vertex {0} in constraint polygon has not been added to the tessellation!", edgeBegin), string.Format("constraint[{0}]", constraintEdgeIdx)); }
                 if (!this.vertexMap.ContainsKey(edgeEnd)) { throw new ArgumentException(string.Format("Vertex {0} in constraint polygon has not been added to the tessellation!", edgeEnd), string.Format("constraint[{0}]", (constraintEdgeIdx + 1) % constraint.VertexCount)); }
-                if (cutSequence.Count == 0) { cutSequence.Add(edgeBegin); }
-                cutSequence.Add(edgeEnd);
                 
                 /// Collect the NavMeshNodes that has intersection with the current edge.
                 HashSet<NavMeshNode> nodesToMerge = new HashSet<NavMeshNode>();
@@ -143,19 +141,12 @@ namespace RC.Engine.Simulator.MotionControl
 
                 /// Cut the merged node along the current constraint edge if possible.
                 NavMeshNode mergedNode = nodesToMerge.First();
-                if (mergedNode.Polygon.IndexOf(edgeEnd) != -1)
+                this.nodeSearchTree.DetachContent(mergedNode);
+                this.RemoveNodeFromVertexMap(mergedNode);
+                foreach (NavMeshNode slice in mergedNode.Slice(edgeBegin, edgeEnd))
                 {
-                    this.nodeSearchTree.DetachContent(mergedNode);
-                    for (int i = 0; i < mergedNode.Polygon.VertexCount; i++)
-                    {
-                        if (!this.vertexMap[mergedNode.Polygon[i]].Remove(mergedNode)) { throw new InvalidOperationException("Merged node not found!"); }
-                    }
-                    foreach (NavMeshNode slice in mergedNode.Slice(cutSequence))
-                    {
-                        this.nodeSearchTree.AttachContent(slice);
-                        for (int i = 0; i < slice.Polygon.VertexCount; i++) { this.vertexMap[slice.Polygon[i]].Add(slice); }
-                    }
-                    cutSequence.Clear();
+                    this.nodeSearchTree.AttachContent(slice);
+                    this.AddNodeToVertexMap(slice);
                 }
             }
         }
@@ -180,14 +171,19 @@ namespace RC.Engine.Simulator.MotionControl
             }
             if (neighbourToMergeWith == null) { throw new InvalidOperationException("Unable to find a NavMeshNode to merge with!"); }
 
+            /// Remove the nodes from the vertex map and the search-tree.
+            this.RemoveNodeFromVertexMap(nodeToMerge);
+            this.RemoveNodeFromVertexMap(neighbourToMergeWith);
+            this.nodeSearchTree.DetachContent(nodeToMerge);
+            this.nodeSearchTree.DetachContent(neighbourToMergeWith);
+
             /// Merge the nodes.
             nodeToMerge.MergeWith(neighbourToMergeWith);
             nodesToMerge.Remove(neighbourToMergeWith);
 
             /// Update the vertex map and the search-tree.
-            for (int i = 0; i < neighbourToMergeWith.Polygon.VertexCount; i++) { this.vertexMap[neighbourToMergeWith.Polygon[i]].Remove(neighbourToMergeWith); }
-            for (int i = 0; i < nodeToMerge.Polygon.VertexCount; i++) { this.vertexMap[nodeToMerge.Polygon[i]].Add(nodeToMerge); }
-            this.nodeSearchTree.DetachContent(neighbourToMergeWith);
+            this.AddNodeToVertexMap(nodeToMerge);
+            this.nodeSearchTree.AttachContent(nodeToMerge);
 
             /// Call this method recursively.
             this.MergeNodes(ref nodesToMerge);
@@ -204,7 +200,7 @@ namespace RC.Engine.Simulator.MotionControl
                 foreach (NavMeshNode matchingNode in this.vertexMap[vertex])
                 {
                     this.nodeSearchTree.DetachContent(matchingNode);
-                    matchingNode.Delete();
+                    matchingNode.RemoveNeighbours();
                     for (int i = 0; i < matchingNode.Polygon.VertexCount; i++)
                     {
                         if (matchingNode.Polygon[i] != vertex)
@@ -224,6 +220,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="borderOrHole">The given border/hole.</param>
         private void DropNonWalkableNodes(Polygon borderOrHole)
         {
+            HashSet<NavMeshNode> collectPathStartNodes = new HashSet<NavMeshNode>();
             for (int vertexIdx = 0; vertexIdx < borderOrHole.VertexCount; vertexIdx++)
             {
                 HashSet<NavMeshNode> matchingNodesCopy = new HashSet<NavMeshNode>(this.vertexMap[borderOrHole[vertexIdx]]);
@@ -231,6 +228,8 @@ namespace RC.Engine.Simulator.MotionControl
                 if (matchingNodesCopy.Count == 2)
                 {
                     List<NavMeshNode> matchingNodesList = new List<NavMeshNode>(matchingNodesCopy);
+                    matchingNodesList[0].RemoveNeighbour(matchingNodesList[1]);
+
                     int edgeBeginIdxIn0 = matchingNodesList[0].Polygon.IndexOf(borderOrHole[vertexIdx]);
                     int edgeEndIdxIn0 = matchingNodesList[0].Polygon.IndexOf(borderOrHole[(vertexIdx + 1) % borderOrHole.VertexCount]);
                     int edgeBeginIdxIn1 = matchingNodesList[1].Polygon.IndexOf(borderOrHole[vertexIdx]);
@@ -238,29 +237,25 @@ namespace RC.Engine.Simulator.MotionControl
                     if ((edgeBeginIdxIn0 + 1) % matchingNodesList[0].Polygon.VertexCount != edgeEndIdxIn0)
                     {
                         /// Drop node0.
-                        this.DropNode(matchingNodesList[0]);
+                        collectPathStartNodes.Add(matchingNodesList[0]);
                     }
                     else if ((edgeBeginIdxIn1 + 1) % matchingNodesList[1].Polygon.VertexCount != edgeEndIdxIn1)
                     {
                         /// Drop node1.
-                        this.DropNode(matchingNodesList[1]);
+                        collectPathStartNodes.Add(matchingNodesList[1]);
                     }
                 }
             }
 
-            bool isBorder = borderOrHole.DoubleOfSignedArea > 0;
-            for (int vertexIdx = 0; vertexIdx < borderOrHole.VertexCount; vertexIdx++)
+            HashSet<NavMeshNode> nodesToDrop = new HashSet<NavMeshNode>();
+            while (collectPathStartNodes.Count != 0)
             {
-                HashSet<NavMeshNode> matchingNodesCopy = new HashSet<NavMeshNode>(this.vertexMap[borderOrHole[vertexIdx]]);
-                foreach (NavMeshNode matchingNode in matchingNodesCopy)
-                {
-                    if (isBorder && !borderOrHole.Contains(matchingNode.Polygon.Center) || !isBorder && borderOrHole.Contains(matchingNode.Polygon.Center))
-                    {
-                        /// Outside/inside of the border/hole -> drop the node.
-                        this.DropNode(matchingNode);
-                    }
-                }
+                HashSet<NavMeshNode> collectedNodes = new HashSet<NavMeshNode>();
+                collectPathStartNodes.First().CollectReachableNodes(ref collectedNodes);
+                collectPathStartNodes.ExceptWith(collectedNodes);
+                nodesToDrop.UnionWith(collectedNodes);
             }
+            foreach (NavMeshNode nodeToDrop in nodesToDrop) { this.DropNode(nodeToDrop); }
         }
 
         /// <summary>
@@ -270,11 +265,33 @@ namespace RC.Engine.Simulator.MotionControl
         private void DropNode(NavMeshNode node)
         {
             this.nodeSearchTree.DetachContent(node);
-            node.Delete();
+            node.RemoveNeighbours();
+            this.RemoveNodeFromVertexMap(node);
+        }
+
+        /// <summary>
+        /// Removes the given node from the vertex map.
+        /// </summary>
+        /// <param name="node">The node to remove.</param>
+        private void RemoveNodeFromVertexMap(NavMeshNode node)
+        {
             for (int i = 0; i < node.Polygon.VertexCount; i++)
             {
-                this.vertexMap[node.Polygon[i]].Remove(node);
+                if (!this.vertexMap[node.Polygon[i]].Remove(node)) { throw new InvalidOperationException("Node not found in the vertex map!"); }
                 if (this.vertexMap[node.Polygon[i]].Count == 0) { this.vertexMap.Remove(node.Polygon[i]); }
+            }
+        }
+
+        /// <summary>
+        /// Adds the given node to the vertex map.
+        /// </summary>
+        /// <param name="node">The node to add.</param>
+        private void AddNodeToVertexMap(NavMeshNode node)
+        {
+            for (int i = 0; i < node.Polygon.VertexCount; i++)
+            {
+                if (!this.vertexMap.ContainsKey(node.Polygon[i])) { this.vertexMap.Add(node.Polygon[i], new HashSet<NavMeshNode>()); }
+                this.vertexMap[node.Polygon[i]].Add(node);
             }
         }
 

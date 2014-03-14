@@ -29,6 +29,7 @@ namespace RC.Engine.Simulator.MotionControl
             List<List<RCNumVector>> borders = new List<List<RCNumVector>>();
             NavMesh.CollectBorders(rootArea, ref borders);
             PolygonSimplificationHelper simplificationHelper = new PolygonSimplificationHelper(borders, maxError);
+            simplificationHelper.Simplify();
 
             foreach (WalkabilityGridArea sectorArea in rootArea.Children) { NavMesh.CreateSectors(sectorArea, ref this.sectors); }
         }

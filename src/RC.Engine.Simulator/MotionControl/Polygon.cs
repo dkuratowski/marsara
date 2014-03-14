@@ -27,7 +27,7 @@ namespace RC.Engine.Simulator.MotionControl
             this.doubleOfSignedAreaCache = new CachedValue<RCNumber>(this.CalculateDoubleOfSignedArea);
             this.centerCache = new CachedValue<RCNumVector>(this.CalculateCenter);
             this.isConvexCache = new CachedValue<bool>(this.CalculateConvexity);
-            this.isSelfIntersectingCache = new CachedValue<bool>(this.CalculateSelfIntersection);
+            this.boundingBoxCache = new CachedValue<RCNumRectangle>(this.CalculateBoundingBox);
 
             HashSet<RCNumVector> vertexSet = new HashSet<RCNumVector>();
             this.vertices = new List<RCNumVector>() { vertex0, vertex1, vertex2 };
@@ -59,7 +59,7 @@ namespace RC.Engine.Simulator.MotionControl
             this.doubleOfSignedAreaCache = new CachedValue<RCNumber>(this.CalculateDoubleOfSignedArea);
             this.centerCache = new CachedValue<RCNumVector>(this.CalculateCenter);
             this.isConvexCache = new CachedValue<bool>(this.CalculateConvexity);
-            this.isSelfIntersectingCache = new CachedValue<bool>(this.CalculateSelfIntersection);
+            this.boundingBoxCache = new CachedValue<RCNumRectangle>(this.CalculateBoundingBox);
 
             HashSet<RCNumVector> vertexSet = new HashSet<RCNumVector>();
             this.vertices = new List<RCNumVector>();
@@ -104,14 +104,14 @@ namespace RC.Engine.Simulator.MotionControl
         public RCNumVector Center { get { return this.centerCache.Value; } }
 
         /// <summary>
+        /// Gets the bounding box of this polygon.
+        /// </summary>
+        public RCNumRectangle BoundingBox { get { return this.boundingBoxCache.Value; } }
+
+        /// <summary>
         /// Gets whether this polygon is convex or not.
         /// </summary>
         public bool IsConvex { get { return this.isConvexCache.Value; } }
-
-        /// <summary>
-        /// Gets whether this polygon is self-intersecting or not.
-        /// </summary>
-        public bool IsSelfIntersecting { get { return this.isSelfIntersectingCache.Value; } }
         
         /// <summary>
         /// Determines if the specified point is contained within this polygon.
@@ -218,12 +218,29 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         /// <summary>
-        /// Calculates whether this polygon is self-intersecting or not.
+        /// Calculate the bounding box of this polygon.
         /// </summary>
-        /// <returns>True if this polygon is self-intersecting; otherwise false.</returns>
-        private bool CalculateSelfIntersection()
+        /// <returns>The bounding box of this polygon.</returns>
+        private RCNumRectangle CalculateBoundingBox()
         {
-            throw new NotImplementedException();
+            RCNumber minX = 0, maxX = 0, minY = 0, maxY = 0;
+            for (int i = 0; i < this.vertices.Count; i++)
+            {
+                if (i == 0)
+                {
+                    minX = maxX = this.vertices[i].X;
+                    minY = maxY = this.vertices[i].Y;
+                    continue;
+                }
+
+                if (this.vertices[i].X < minX) { minX = this.vertices[i].X; }
+                if (this.vertices[i].X > maxX) { maxX = this.vertices[i].X; }
+                if (this.vertices[i].Y < minY) { minY = this.vertices[i].Y; }
+                if (this.vertices[i].Y > maxY) { maxY = this.vertices[i].Y; }
+            }
+
+            if (maxX - minX != 0 && maxY - minY != 0) { return new RCNumRectangle(minX, minY, maxX - minX + new RCNumber(1), maxY - minY + new RCNumber(1)); }
+            else { return RCNumRectangle.Undefined; }
         }
 
         #endregion Calculation methods for the cached properties of this polygon
@@ -244,13 +261,13 @@ namespace RC.Engine.Simulator.MotionControl
         private CachedValue<RCNumVector> centerCache;
 
         /// <summary>
+        /// The cache of the bounding box of this polygon.
+        /// </summary>
+        private CachedValue<RCNumRectangle> boundingBoxCache;
+
+        /// <summary>
         /// The cache of the convexity of this polygon.
         /// </summary>
         private CachedValue<bool> isConvexCache;
-
-        /// <summary>
-        /// The cache of the self-intersecting property of this polygon.
-        /// </summary>
-        private CachedValue<bool> isSelfIntersectingCache;
     }
 }
