@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Engine.Maps.PublicInterfaces;
 
-namespace RC.Engine.Simulator.MotionControl
+namespace RC.Engine.Maps.Core
 {
     /// <summary>
     /// Represents a connected area on the walkability grid. Each cell inside this area has the same walkability.

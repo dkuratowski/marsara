@@ -51,26 +51,23 @@ namespace RC.Common
         /// Registers the given package format.
         /// </summary>
         /// <param name="format">The package format you want to register.</param>
-        /// <returns>The ID of the registered format.</returns>
+        /// <param name="id">The ID of the package format.</param>
         /// <remarks>
         /// This ID is used in packages to define the format of every package.
         /// Warning! If peers want to communicate over a network environment, then all of them should define exactly
         /// the same package formats with the same IDs otherwise the communication is not possible.
         /// </remarks>
         /// <exception cref="RCPackageException">If you want to register a package format with no fields.</exception>
-        public static int RegisterFormat(RCPackageFormat format)
+        public static void RegisterFormat(RCPackageFormat format, int id)
         {
-            if (format.fieldDefinitions.Count != 0)
-            {
-                registeredFormats.Add(format);
-                format.formatID = registeredFormats.Count - 1;
-                format.definitionFinished = true;
-                return registeredFormats.Count - 1;
-            }
-            else
-            {
-                throw new RCPackageException("Registering RCPackageFormat with no fields is not possible!");
-            }
+            if (format == null) { throw new ArgumentNullException("format"); }
+            if (id < 0 || id > ushort.MaxValue) { throw new ArgumentOutOfRangeException("id"); }
+            if (format.fieldDefinitions.Count == 0) { throw new RCPackageException("Registering RCPackageFormat with no fields is not possible!"); }
+            if (formatRegister[id] != null) { throw new RCPackageException(string.Format("An RCPackageFormat with ID '{0}' has already been registered!", id)); }
+
+            formatRegister[id] = format;
+            format.formatID = id;
+            format.definitionFinished = true;
         }
 
         /// <summary>
@@ -80,14 +77,8 @@ namespace RC.Common
         /// <returns>The package format with the given ID or null if no such package format exists.</returns>
         public static RCPackageFormat GetPackageFormat(int formatID)
         {
-            if (0 <= formatID && registeredFormats.Count - 1 >= formatID)
-            {
-                return registeredFormats[formatID];
-            }
-            else
-            {
-                return null;
-            }
+            if (formatID < 0 || formatID > ushort.MaxValue) { return null; }
+            return formatRegister[formatID];
         }
 
         /// <summary>
@@ -95,13 +86,13 @@ namespace RC.Common
         /// </summary>
         static RCPackageFormat()
         {
-            registeredFormats = new List<RCPackageFormat>();
+            formatRegister = new RCPackageFormat[(int)ushort.MaxValue + 1];
         }
 
         /// <summary>
-        /// List of the registered package formats.
+        /// List of the registered package formats mapped by their IDs.
         /// </summary>
-        private static List<RCPackageFormat> registeredFormats;
+        private static RCPackageFormat[] formatRegister;
 
         /// <summary>
         /// Constructs a new package format object.

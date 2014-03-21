@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 
-namespace RC.Engine.Simulator.MotionControl
+namespace RC.Engine.Maps.Core
 {
     /// <summary>
     /// Helper class for creating the tessellation of a polygon with holes.
@@ -25,10 +25,14 @@ namespace RC.Engine.Simulator.MotionControl
         ///     - The hole polygons shall not intersect each other and the border polygon.
         /// WARNING!!! These requirements are not checked automatically!
         /// </remarks>
-        public TessellationHelper(Polygon border, List<Polygon> holes)
+        public TessellationHelper(RCPolygon border, List<RCPolygon> holes)
         {
             if (border == null) { throw new ArgumentNullException("border"); }
             if (holes == null) { throw new ArgumentNullException("holes"); }
+
+            /// Retrieve the polygons along the border and the holes.
+            this.border = border;
+            this.holes = new List<RCPolygon>(holes);
 
             NavMeshNode superTriangle = new NavMeshNode(SUPERTRIANGLE_VERTEX0, SUPERTRIANGLE_VERTEX1, SUPERTRIANGLE_VERTEX2);
             this.vertexMap = new Dictionary<RCNumVector, HashSet<NavMeshNode>>();
@@ -39,15 +43,15 @@ namespace RC.Engine.Simulator.MotionControl
             this.nodeSearchTree.AttachContent(superTriangle);
 
             /// Add the vertices into this tessellation.
-            for (int i = 0; i < border.VertexCount; i++) { this.AddVertex(border[i]); }
-            for (int holeIdx = 0; holeIdx < holes.Count; holeIdx++)
+            for (int i = 0; i < this.border.VertexCount; i++) { this.AddVertex(this.border[i]); }
+            for (int holeIdx = 0; holeIdx < this.holes.Count; holeIdx++)
             {
-                for (int i = 0; i < holes[holeIdx].VertexCount; i++) { this.AddVertex(holes[holeIdx][i]); }
+                for (int i = 0; i < this.holes[holeIdx].VertexCount; i++) { this.AddVertex(this.holes[holeIdx][i]); }
             }
 
             /// Add the constraints to this tessellation.
-            this.AddConstraint(border);
-            foreach (Polygon hole in holes) { this.AddConstraint(hole); }
+            this.AddConstraint(this.border);
+            foreach (RCPolygon hole in this.holes) { this.AddConstraint(hole); }
 
             /// Remove the nodes of the super-triangle.
             this.RemoveVertex(SUPERTRIANGLE_VERTEX0);
@@ -55,8 +59,8 @@ namespace RC.Engine.Simulator.MotionControl
             this.RemoveVertex(SUPERTRIANGLE_VERTEX2);
 
             /// Drop the non-walkable nodes that are outside of the border or inside a hole.
-            this.DropNonWalkableNodes(border);
-            foreach (Polygon hole in holes) { this.DropNonWalkableNodes(hole); }
+            this.DropNonWalkableNodes(this.border);
+            foreach (RCPolygon hole in this.holes) { this.DropNonWalkableNodes(hole); }
         }
 
         /// <summary>
@@ -103,13 +107,13 @@ namespace RC.Engine.Simulator.MotionControl
 
         /// <summary>Adds a constraint to this tessellation.</summary>
         /// <param name="constraint">
-        /// The Polygon that describes the constraint to be added. Each vertex of this Polygon must have already been
+        /// The polygon that describes the constraint to be added. Each vertex of this polygon must have already been
         /// added to the vertex set of this tessellation.
         /// </param>
         /// <exception cref="ArgumentException">
         /// If the given constraint contains a vertex that is not in the vertex set of this tessellation.
         /// </exception>
-        private void AddConstraint(Polygon constraint)
+        private void AddConstraint(RCPolygon constraint)
         {
             /// Cut the triangles along the edges of the constraint polygon if necessary.
             for (int constraintEdgeIdx = 0; constraintEdgeIdx < constraint.VertexCount; constraintEdgeIdx++)
@@ -218,7 +222,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// Drops the non-walkable nodes that are outside/inside of the given border/hole.
         /// </summary>
         /// <param name="borderOrHole">The given border/hole.</param>
-        private void DropNonWalkableNodes(Polygon borderOrHole)
+        private void DropNonWalkableNodes(RCPolygon borderOrHole)
         {
             HashSet<NavMeshNode> collectPathStartNodes = new HashSet<NavMeshNode>();
             for (int vertexIdx = 0; vertexIdx < borderOrHole.VertexCount; vertexIdx++)
@@ -385,7 +389,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <remarks>
         /// TODO: This only works for polygons handled by the TessellationHelper! Make this algorithm more general if necessary!
         /// </remarks>
-        private static bool CheckSegmentPolygonIntersection(RCNumVector segmentBegin, RCNumVector segmentEnd, Polygon checkedPolygon)
+        private static bool CheckSegmentPolygonIntersection(RCNumVector segmentBegin, RCNumVector segmentEnd, RCPolygon checkedPolygon)
         {
             /// Check if the beginning or the end of the segment equals with a vertex of the polygon.
             int segmentBeginIdx = checkedPolygon.IndexOf(segmentBegin);
@@ -414,10 +418,10 @@ namespace RC.Engine.Simulator.MotionControl
                 if (edgeBegin != segmentBegin && edgeEnd != segmentBegin && edgeBegin != segmentEnd && edgeEnd != segmentEnd)
                 {
                     /// Check the signums of the signed areas of these polygons.
-                    Polygon testPoly0 = TessellationHelper.CheckSegmentVertexIntersection(segmentBegin, segmentEnd, edgeBegin);
-                    Polygon testPoly1 = TessellationHelper.CheckSegmentVertexIntersection(segmentBegin, segmentEnd, edgeEnd);
-                    Polygon testPoly2 = TessellationHelper.CheckSegmentVertexIntersection(edgeBegin, edgeEnd, segmentBegin);
-                    Polygon testPoly3 = TessellationHelper.CheckSegmentVertexIntersection(edgeBegin, edgeEnd, segmentEnd);
+                    RCPolygon testPoly0 = TessellationHelper.CheckSegmentVertexIntersection(segmentBegin, segmentEnd, edgeBegin);
+                    RCPolygon testPoly1 = TessellationHelper.CheckSegmentVertexIntersection(segmentBegin, segmentEnd, edgeEnd);
+                    RCPolygon testPoly2 = TessellationHelper.CheckSegmentVertexIntersection(edgeBegin, edgeEnd, segmentBegin);
+                    RCPolygon testPoly3 = TessellationHelper.CheckSegmentVertexIntersection(edgeBegin, edgeEnd, segmentEnd);
                     if ((testPoly0.DoubleOfSignedArea < 0 && testPoly1.DoubleOfSignedArea >= 0 || testPoly0.DoubleOfSignedArea >= 0 && testPoly1.DoubleOfSignedArea < 0) &&
                         (testPoly2.DoubleOfSignedArea < 0 && testPoly3.DoubleOfSignedArea >= 0 || testPoly2.DoubleOfSignedArea >= 0 && testPoly3.DoubleOfSignedArea < 0))
                     {
@@ -434,11 +438,11 @@ namespace RC.Engine.Simulator.MotionControl
                 List<RCNumVector> endToBeginHalfVertices = new List<RCNumVector>();
                 for (int i = segmentEndIdx; i != segmentBeginIdx; i = (i + 1) % checkedPolygon.VertexCount) { endToBeginHalfVertices.Add(checkedPolygon[i]); }
                 endToBeginHalfVertices.Add(checkedPolygon[segmentBeginIdx]);
-                Polygon endToBeginHalf = new Polygon(endToBeginHalfVertices);
+                RCPolygon endToBeginHalf = new RCPolygon(endToBeginHalfVertices);
                 List<RCNumVector> beginToEndHalfVertices = new List<RCNumVector>();
                 for (int i = segmentBeginIdx; i != segmentEndIdx; i = (i + 1) % checkedPolygon.VertexCount) { beginToEndHalfVertices.Add(checkedPolygon[i]); }
                 beginToEndHalfVertices.Add(checkedPolygon[segmentEndIdx]);
-                Polygon beginToEndHalf = new Polygon(beginToEndHalfVertices);
+                RCPolygon beginToEndHalf = new RCPolygon(beginToEndHalfVertices);
 
                 /// The diagonal is inside if and only if the two halves have the same vertex order.
                 return endToBeginHalf.DoubleOfSignedArea >= 0 && beginToEndHalf.DoubleOfSignedArea >= 0 ||
@@ -457,9 +461,9 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="vertex">The vertex to test.</param>
         /// <exception cref="InvalidOperationException">If the vertex is on the given segment.</exception>
         /// <returns>The polygon created from the segmentBegin, segmentEnd, vertex series.</returns>
-        private static Polygon CheckSegmentVertexIntersection(RCNumVector segmentBegin, RCNumVector segmentEnd, RCNumVector vertex)
+        private static RCPolygon CheckSegmentVertexIntersection(RCNumVector segmentBegin, RCNumVector segmentEnd, RCNumVector vertex)
         {
-            Polygon testPoly = new Polygon(segmentBegin, segmentEnd, vertex);
+            RCPolygon testPoly = new RCPolygon(segmentBegin, segmentEnd, vertex);
             if (testPoly.DoubleOfSignedArea == 0 && vertex != segmentBegin && vertex != segmentEnd)
             {
                 if (vertex.X >= (segmentBegin.X <= segmentEnd.X ? segmentBegin.X : segmentEnd.X) &&
@@ -484,6 +488,16 @@ namespace RC.Engine.Simulator.MotionControl
         /// Search-tree for searching NavMeshNodes.
         /// </summary>
         private ISearchTree<NavMeshNode> nodeSearchTree;
+
+        /// <summary>
+        /// The polygon that defines the outer border of the area that this TessellationHelper is working on.
+        /// </summary>
+        private RCPolygon border;
+
+        /// <summary>
+        /// List of the polygons defining the holes inside the area that this TessellationHelper is working on.
+        /// </summary>
+        private List<RCPolygon> holes;
 
         /// <summary>
         /// The vertices of the super-triangle that is the initial triangle of the tessellation.

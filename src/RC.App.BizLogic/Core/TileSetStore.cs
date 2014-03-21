@@ -26,34 +26,10 @@ namespace RC.App.BizLogic.Core
 
         #region ITileSetStore methods
 
-        /// <see cref="ITileSetStore.HasTileSet"/>
-        public bool HasTileSet(string tilesetName)
-        {
-            return this.loadedTilesets.ContainsKey(tilesetName);
-        }
-
-        /// <see cref="ITileSetStore.TileSets"/>
-        public IEnumerable<string> TileSets
-        {
-            get { return this.loadedTilesets.Keys; }
-        }
-
-        /// <see cref="ITileSetStore.GetTerrainTypes"/>
-        public IEnumerable<string> GetTerrainTypes(string tilesetName)
-        {
-            ITileSet tileset = this.loadedTilesets[tilesetName];
-            List<string> retList = new List<string>();
-            foreach (ITerrainType terrainType in tileset.TerrainTypes)
-            {
-                retList.Add(terrainType.Name);
-            }
-            return retList;
-        }
-
-        /// TODO: this is hack for MapControl.
+        /// <see cref="ITileSetStore.GetTileSet"/>
         public ITileSet GetTileSet(string tilesetName)
         {
-            return this.loadedTilesets[tilesetName];
+            return this.loadedTilesets.ContainsKey(tilesetName) ? this.loadedTilesets[tilesetName] : null;
         }
 
         #endregion ITileSetStore methods

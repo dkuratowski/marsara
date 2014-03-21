@@ -5,6 +5,7 @@ using System.Text;
 using RC.Engine.Simulator.InternalInterfaces;
 using System.IO;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Common;
 
 namespace RC.Engine.Simulator.Core
 {
@@ -151,20 +152,7 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <see cref="IHeap.ComputeHash"/>
-        public byte[] ComputeHash()
-        {
-            uint crc = 0xffffffff;
-            for (int pageIdx = 0; pageIdx < this.pages.Count; ++pageIdx)
-            {
-                byte[] page = this.pages[pageIdx];
-                for (int i = 0; i < this.pageSize; ++i)
-                {
-                    byte index = (byte)(((crc) & 0xff) ^ page[i]);
-                    crc = (uint)((crc >> 8) ^ CRC32_TABLE[index]);
-                }
-            }
-            return BitConverter.GetBytes(~crc);
-        }
+        public byte[] ComputeHash() { return CRC32.ComputeHash(this.GetByteSquence()); }
 
         /// <see cref="IHeap.Dump"/>
         public byte[] Dump()
@@ -188,31 +176,6 @@ namespace RC.Engine.Simulator.Core
         }
 
         #endregion IHeap methods
-        
-        /// <summary>
-        /// Static class-level constructor for computing the helper CRC32-table.
-        /// </summary>
-        static Heap()
-        {
-            CRC32_TABLE = new uint[256];
-            uint temp = 0;
-            for (uint i = 0; i < CRC32_TABLE.Length; ++i)
-            {
-                temp = i;
-                for (int j = 8; j > 0; --j)
-                {
-                    if ((temp & 1) == 1)
-                    {
-                        temp = (uint)((temp >> 1) ^ CRC32_POLYNOM);
-                    }
-                    else
-                    {
-                        temp >>= 1;
-                    }
-                }
-                CRC32_TABLE[i] = temp;
-            }
-        }
 
         /// <summary>
         /// Extends the heap with a new page.
@@ -222,6 +185,22 @@ namespace RC.Engine.Simulator.Core
             this.pages.Add(new byte[this.pageSize]);
             this.maxAddress += this.pageSize;
             if (this.maxAddress >= this.capacity) { throw new HeapException("Simulation heap overflow!"); }
+        }
+
+        /// <summary>
+        /// Gets the byte sequence of the heap as an enumerable collection.
+        /// </summary>
+        /// <returns>The enumerable collection that contains the bytes of this heap.</returns>
+        private IEnumerable<byte> GetByteSquence()
+        {
+            for (int pageIdx = 0; pageIdx < this.pages.Count; ++pageIdx)
+            {
+                byte[] page = this.pages[pageIdx];
+                for (int i = 0; i < this.pageSize; ++i)
+                {
+                    yield return page[i];
+                }
+            }
         }
 
         /// <summary>
@@ -253,15 +232,5 @@ namespace RC.Engine.Simulator.Core
         /// The maximum page size.
         /// </summary>
         private const int MAX_PAGESIZE = 65536;
-
-        /// <summary>
-        /// Helper table for computing the CRC32 hash.
-        /// </summary>
-        private static readonly uint[] CRC32_TABLE;
-
-        /// <summary>
-        /// The generator polynom that is used to compute the CRC32 hash.
-        /// </summary>
-        private const uint CRC32_POLYNOM = 0xedb88320;
     }
 }

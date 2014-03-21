@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RC.Engine.Simulator.MotionControl
+namespace RC.Engine.Maps.PublicInterfaces
 {
     /// <summary>
     /// The interface of the grid that contains the walkability information.
     /// </summary>
-    interface IWalkabilityGrid
+    public interface IWalkabilityGrid
     {
         /// <summary>
         /// Gets the walkability information from the given cell of the grid.

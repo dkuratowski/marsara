@@ -46,15 +46,9 @@
     <Compile Include="ComponentInterfaces\IHeapManagerPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IPlayerInitializer.cs" />
-    <Compile Include="MotionControl\PolygonSimplificationHelper.cs" />
-    <Compile Include="MotionControl\PolylineSegment.cs" />
-    <Compile Include="MotionControl\TessellationHelper.cs" />
     <Compile Include="MotionControl\DerivedPath.cs" />
     <Compile Include="MotionControl\DirectPath.cs" />
     <Compile Include="MotionControl\EndpointConnectionAlgorithm.cs" />
-    <Compile Include="MotionControl\IWalkabilityGrid.cs" />
-    <Compile Include="MotionControl\NavMesh.cs" />
-    <Compile Include="MotionControl\NavMeshNode.cs" />
     <Compile Include="MotionControl\PathCache.cs" />
     <Compile Include="MotionControl\PathCacheItem.cs" />
     <Compile Include="MotionControl\PathNode.cs" />
@@ -62,10 +56,6 @@
     <Compile Include="MotionControl\Region.cs" />
     <Compile Include="MotionControl\RegionFindAlgorithm.cs" />
     <Compile Include="MotionControl\DirectPathFindingAlgorithm.cs" />
-    <Compile Include="MotionControl\Polygon.cs" />
-    <Compile Include="MotionControl\Sector.cs" />
-    <Compile Include="MotionControl\WalkabilityGridArea.cs" />
-    <Compile Include="MotionControl\WalkabilityQuadTreeNode.cs" />
     <Compile Include="Scenarios\Addon.cs" />
     <Compile Include="Scenarios\AddonType.cs" />
     <Compile Include="Core\BinaryHeap.cs" />

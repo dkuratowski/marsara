@@ -4,21 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RC.Engine.Simulator.MotionControl
+namespace RC.Common
 {
     /// <summary>
-    /// Represents a Polygon.
+    /// Represents a polygon.
     /// </summary>
-    class Polygon
+    public class RCPolygon
     {
         /// <summary>
-        /// Constructs a Polygon by giving its vertices.
+        /// Constructs a polygon by giving its vertices.
         /// </summary>
-        /// <param name="vertex0">The first vertex of this Polygon.</param>
-        /// <param name="vertex1">The second vertex of this Polygon.</param>
-        /// <param name="vertex2">The third vertex of this Polygon.</param>
-        /// <param name="otherVertices">List of the fourth and other vertices of this Polygon (optional).</param>
-        public Polygon(RCNumVector vertex0, RCNumVector vertex1, RCNumVector vertex2, params RCNumVector[] otherVertices)
+        /// <param name="vertex0">The first vertex of this polygon.</param>
+        /// <param name="vertex1">The second vertex of this polygon.</param>
+        /// <param name="vertex2">The third vertex of this polygon.</param>
+        /// <param name="otherVertices">List of the fourth and other vertices of this polygon (optional).</param>
+        public RCPolygon(RCNumVector vertex0, RCNumVector vertex1, RCNumVector vertex2, params RCNumVector[] otherVertices)
         {
             if (vertex0 == RCNumVector.Undefined) { throw new ArgumentNullException("vertex0"); }
             if (vertex1 == RCNumVector.Undefined) { throw new ArgumentNullException("vertex1"); }
@@ -43,15 +43,15 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         /// <summary>
-        /// Constructs a Polygon by giving its vertices.
+        /// Constructs a polygon by giving its vertices.
         /// </summary>
-        /// <param name="vertexList">List of the vertices of this Polygon.</param>
+        /// <param name="vertexList">List of the vertices of this polygon.</param>
         /// <exception cref="ArgumentException">
         /// If the given vertex list contains less than 3 vertices.
         /// If the given vertex list contains RCNumVector.Undefined.
         /// If the given vertex list contains duplicated vertices.
         /// </exception>
-        public Polygon(List<RCNumVector> vertexList)
+        public RCPolygon(List<RCNumVector> vertexList)
         {
             if (vertexList == null) { throw new ArgumentNullException("vertexList"); }
             if (vertexList.Count < 3) { throw new ArgumentException("A polygon must have at least 3 vertices!", "vertexList"); }
@@ -72,15 +72,15 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         /// <summary>
-        /// Gets the number of vertices of this Polygon.
+        /// Gets the number of vertices of this polygon.
         /// </summary>
         public int VertexCount { get { return this.vertices.Count; } }
 
         /// <summary>
-        /// Gets the vertex of this Polygon with the given index.
+        /// Gets the vertex of this polygon with the given index.
         /// </summary>
         /// <param name="index">The index of the vertex to get.</param>
-        /// <returns>The vertex of this Polygon with the given index.</returns>
+        /// <returns>The vertex of this polygon with the given index.</returns>
         public RCNumVector this[int index] { get { return this.vertices[index]; } }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace RC.Engine.Simulator.MotionControl
                 }
 
                 /// Check the non-trivial case.
-                Polygon testTriangle = edgeBegin.Y < edgeEnd.Y ? new Polygon(point, edgeBegin, edgeEnd) : new Polygon(point, edgeEnd, edgeBegin);
+                RCPolygon testTriangle = edgeBegin.Y < edgeEnd.Y ? new RCPolygon(point, edgeBegin, edgeEnd) : new RCPolygon(point, edgeEnd, edgeBegin);
                 if (testTriangle.DoubleOfSignedArea == 0) { return true; } /// Point exactly on the edge -> containment.
                 if (testTriangle.DoubleOfSignedArea > 0) { intersections++; }
             }
@@ -201,7 +201,7 @@ namespace RC.Engine.Simulator.MotionControl
                 RCNumVector vCurr = this.vertices[i];
                 RCNumVector vNext = this.vertices[(i + 1) % this.vertices.Count];
 
-                Polygon testTriangle = new Polygon(vCurr, vNext, vPrev);
+                RCPolygon testTriangle = new RCPolygon(vCurr, vNext, vPrev);
                 if (testTriangle.DoubleOfSignedArea > 0)
                 {
                     if (curveDirection == -1) { return false; }

@@ -1,6 +1,6 @@
 <packageFormatConfig>
   
-  <packageFormat namespace="RC.NetworkingSystem" name="LobbyInfo">
+  <packageFormat namespace="RC.NetworkingSystem" name="LobbyInfo" id="100">
     <description>Format for encoding LobbyInfo structures.</description>
     <field type="STRING">The ID of the lobby.</field>
     <field type="STRING">IP address of the lobby server.</field>
@@ -8,30 +8,30 @@
     <field type="BYTE_ARRAY">Custom informations about the lobby provided by the lobby server.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.NetworkingSystem" name="LobbyInfoVanished">
+  <packageFormat namespace="RC.NetworkingSystem" name="LobbyInfoVanished" id="101">
     <description>Broadcast format to indicate when a lobby has vanished.</description>
     <field type="STRING">The ID of the vanished lobby.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.NetworkingSystem" name="LobbyLineStateReport">
+  <packageFormat namespace="RC.NetworkingSystem" name="LobbyLineStateReport" id="102">
     <description>Contains the actual state of the lines in the lobby.</description>
     <field type="SHORT">Index of the client that receives the report.</field>
     <field type="BYTE_ARRAY">Line states on the server.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.NetworkingSystem" name="DisconnectIndicator">
+  <packageFormat namespace="RC.NetworkingSystem" name="DisconnectIndicator" id="103">
     <description>Disconnection indicator package format.</description>
     <field type="STRING">Reason of the disconnection (empty, not used).</field>
     <field type="BYTE_ARRAY">Custom data (empty, not used).</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.NetworkingSystem" name="DisconnectAcknowledge">
+  <packageFormat namespace="RC.NetworkingSystem" name="DisconnectAcknowledge" id="104">
     <description>Disconnection acknowledgement package format.</description>
     <field type="STRING">Answer (empty, not used).</field>
     <field type="BYTE_ARRAY">Custom data (empty, not used).</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.NetworkingSystem" name="DedicatedMessage">
+  <packageFormat namespace="RC.NetworkingSystem" name="DedicatedMessage" id="105">
     <description>Dedicated message format.</description>
     <field type="BYTE_ARRAY">Target peers of the dedicated message.</field>
     <field type="BYTE_ARRAY">The message itself.</field>

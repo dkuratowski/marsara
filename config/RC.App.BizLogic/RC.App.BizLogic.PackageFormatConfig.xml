@@ -1,5 +1,5 @@
 <packageFormatConfig>
-  <packageFormat namespace="RC.App.BizLogic" name="Command">
+  <packageFormat namespace="RC.App.BizLogic" name="Command" id="400">
     <field type="STRING">The mnemonic of the command.</field>
     <field type="INT_ARRAY">The list of the IDs of the command recipients.</field>
     <field type="INT">Target position (X coordinate, RCNumber).</field>

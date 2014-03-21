@@ -91,10 +91,12 @@
     <Compile Include="Configuration\RCPackageFormatMap.cs" />
     <Compile Include="Configuration\TraceConfigLoader.cs" />
     <Compile Include="Configuration\XmlHelper.cs" />
+    <Compile Include="CRC32.cs" />
     <Compile Include="Diagnostics\ConsoleTrace.cs" />
     <Compile Include="EnumMapping.cs" />
     <Compile Include="Fifo.cs" />
     <Compile Include="FifoException.cs" />
+    <Compile Include="Math\RCPolygon.cs" />
     <Compile Include="SearchTree\BspSearchTree.cs" />
     <Compile Include="SearchTree\BspSearchTreeNode.cs" />
     <Compile Include="SearchTree\ISearchTreeContent.cs" />

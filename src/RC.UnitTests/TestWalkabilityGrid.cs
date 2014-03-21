@@ -1,12 +1,8 @@
 ﻿using RC.Common;
-using RC.Engine.Simulator.Core;
-using RC.Engine.Simulator.MotionControl;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.UnitTests
 {

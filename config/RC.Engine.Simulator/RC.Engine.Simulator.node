@@ -2,6 +2,7 @@
   <configNodeReferences>
     <configNodeReference>../RC.Common/RC.Common.node</configNodeReference>
     <configNodeReference>../RC.UI/RC.UI.node</configNodeReference>
+    <configNodeReference>../RC.Engine.Maps/RC.Engine.Maps.node</configNodeReference>
   </configNodeReferences>
 
   <configObjects>

@@ -9,6 +9,7 @@ using System.IO;
 using RC.Engine.Simulator.Scenarios;
 using RC.Engine.Simulator.ComponentInterfaces;
 using System.Collections.Generic;
+using RC.Common.Diagnostics;
 
 namespace RC.App.BizLogic.Core
 {
@@ -35,6 +36,7 @@ namespace RC.App.BizLogic.Core
         {
             this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
             this.scenarioLoader = ComponentManager.GetInterface<IScenarioLoader>();
+            this.navmeshLoader = ComponentManager.GetInterface<INavMeshLoader>();
             this.mapEditor = ComponentManager.GetInterface<IMapEditor>();
             this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
         }
@@ -80,13 +82,22 @@ namespace RC.App.BizLogic.Core
             if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
             if (filename == null) { throw new ArgumentNullException("fileName"); }
 
+            /// Try to create a navmesh from the map but do not crash.
+            INavMesh navmesh = null;
+            try { navmesh = this.navmeshLoader.NewNavMesh(new MapWalkabilityReader(this.activeMap)); }
+            catch (Exception ex) { TraceManager.WriteExceptionAllTrace(ex, false); }
+
+            /// Serialize the map, the scenario and the navmesh if it has been successfully created.
             byte[] mapBytes = this.mapLoader.SaveMap(this.activeMap);
             byte[] scenarioBytes = this.scenarioLoader.SaveScenario(this.activeScenario);
+            byte[] navmeshBytes = navmesh != null ? this.navmeshLoader.SaveNavMesh(navmesh) : new byte[0];
 
+            /// Write the serialized data into the output file.
             int outIdx = 0;
-            byte[] outputBytes = new byte[mapBytes.Length + scenarioBytes.Length];
+            byte[] outputBytes = new byte[mapBytes.Length + scenarioBytes.Length + navmeshBytes.Length];
             for (int i = 0; i < mapBytes.Length; i++, outIdx++) { outputBytes[outIdx] = mapBytes[i]; }
             for (int i = 0; i < scenarioBytes.Length; i++, outIdx++) { outputBytes[outIdx] = scenarioBytes[i]; }
+            for (int i = 0; i < navmeshBytes.Length; i++, outIdx++) { outputBytes[outIdx] = navmeshBytes[i]; }
             File.WriteAllBytes(filename, outputBytes);
         }
 
@@ -391,6 +402,11 @@ namespace RC.App.BizLogic.Core
         /// Reference to the RC.Engine.Scenarios.ScenarioLoader component.
         /// </summary>
         private IScenarioLoader scenarioLoader;
+
+        /// <summary>
+        /// Reference to the RC.Engine.Maps.NavMeshLoader component.
+        /// </summary>
+        private INavMeshLoader navmeshLoader;
 
         /// <summary>
         /// Reference to the currently active map.

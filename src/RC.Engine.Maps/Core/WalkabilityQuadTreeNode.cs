@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common;
+using RC.Engine.Maps.PublicInterfaces;
 
-namespace RC.Engine.Simulator.MotionControl
+namespace RC.Engine.Maps.Core
 {
     /// <summary>
     /// Represents one node in the quad-tree over the walkability grid.

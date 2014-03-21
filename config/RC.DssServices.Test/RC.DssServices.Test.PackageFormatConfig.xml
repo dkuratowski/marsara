@@ -1,24 +1,24 @@
 <packageFormatConfig>
 
-  <packageFormat namespace="RC.DssServices.Test" name="Reset">
+  <packageFormat namespace="RC.DssServices.Test" name="Reset" id="65000">
     <description>Resets the test simulator.</description>
     <field type="BYTE_ARRAY">List of the currently selected colors.</field>
     <field type="INT_ARRAY">The X coordinates of the players.</field>
     <field type="INT_ARRAY">The Y coordinates of the players.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices.Test" name="ColorChangeRequest">
+  <packageFormat namespace="RC.DssServices.Test" name="ColorChangeRequest" id="65001">
     <description>Player color change request from the guests to the host.</description>
     <field type="BYTE">The color selected by the sender.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices.Test" name="ColorChangeNotification">
+  <packageFormat namespace="RC.DssServices.Test" name="ColorChangeNotification" id="65002">
     <description>Player color change notification from the host to the guests.</description>
     <field type="INT">The index of the operator that changed the color.</field>
     <field type="BYTE">The new color selected by the operator.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices.Test" name="Command">
+  <packageFormat namespace="RC.DssServices.Test" name="Command" id="65003">
     <description>A test simulation command.</description>
     <field type="BYTE">1: Up, 2: Down, 3: Left, 4: Right</field>
   </packageFormat>

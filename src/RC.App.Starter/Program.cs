@@ -212,11 +212,12 @@ namespace RC.App.Starter
         private static void StartComponents()
         {
             ComponentManager.RegisterComponents("RC.Engine.Maps, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[3]
+                                                new string[4]
                                                 {
                                                     "RC.Engine.Maps.TileSetLoader",
                                                     "RC.Engine.Maps.MapLoader",
-                                                    "RC.Engine.Maps.MapEditor"
+                                                    "RC.Engine.Maps.MapEditor",
+                                                    "RC.Engine.Maps.NavMeshLoader"
                                                 });
 
             ComponentManager.RegisterComponents("RC.Engine.Simulator, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",

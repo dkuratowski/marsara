@@ -1,6 +1,6 @@
 <packageFormatConfig>
   
-  <packageFormat namespace="RC.Common" name="RclEvent">
+  <packageFormat namespace="RC.Common" name="RclEvent" id="300">
     <description>Format of an event in an RCL file.</description>
     <field type="INT">The thread ID.</field>
     <field type="STRING">The thread name.</field>
@@ -8,7 +8,7 @@
     <field type="STRING">The event.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.Common" name="RclFork">
+  <packageFormat namespace="RC.Common" name="RclFork" id="301">
     <description>Format of a thread fork in an RCL file.</description>
     <field type="INT">The ID of the new thread.</field>
     <field type="STRING">The name of the new thread.</field>
@@ -17,7 +17,7 @@
     <field type="LONG">The timestamp (ms).</field>
   </packageFormat>
   
-  <packageFormat namespace="RC.Common" name="RclJoin">
+  <packageFormat namespace="RC.Common" name="RclJoin" id="302">
     <description>Format of a thread join in an RCL file.</description>
     <field type="INT">The ID of the running thread.</field>
     <field type="STRING">The name of the running thread.</field>
@@ -26,7 +26,7 @@
     <field type="LONG">The timestamp (ms).</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.Common" name="RclException">
+  <packageFormat namespace="RC.Common" name="RclException" id="303">
     <description>Format of an exception in an RCL file.</description>
     <field type="INT">The thread ID.</field>
     <field type="STRING">The thread name.</field>

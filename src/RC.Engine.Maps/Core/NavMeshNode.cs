@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common;
+using RC.Engine.Maps.PublicInterfaces;
 
-namespace RC.Engine.Simulator.MotionControl
+namespace RC.Engine.Maps.Core
 {
     /// <summary>
     /// Represents a node in a navmesh graph.
     /// </summary>
-    class NavMeshNode : ISearchTreeContent
+    class NavMeshNode : ISearchTreeContent, INavMeshNode
     {
         /// <summary>
         /// Constructs a triangular NavMeshNode.
@@ -19,12 +20,23 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="vertex2">The third vertex of the triangle.</param>
         internal NavMeshNode(RCNumVector vertex0, RCNumVector vertex1, RCNumVector vertex2) : this()
         {
-            this.polygon = new Polygon(vertex0, vertex1, vertex2);
+            this.polygon = new RCPolygon(vertex0, vertex1, vertex2);
             if (this.polygon.DoubleOfSignedArea == 0) { throw new ArgumentException("The vertices of the triangle are colinear!"); }
-            this.neighbours = new HashSet<NavMeshNode>();
 
             /// If the vertices are in counter-clockwise order put them into clockwise order.
-            if (this.polygon.DoubleOfSignedArea < 0) { this.polygon = new Polygon(vertex2, vertex1, vertex0); }
+            if (this.polygon.DoubleOfSignedArea < 0) { this.polygon = new RCPolygon(vertex2, vertex1, vertex0); }
+        }
+
+        /// <summary>
+        /// Constructs a NavMeshNode with custom area.
+        /// </summary>
+        /// <param name="nodePolygon">The polygon that represents the area of the node.</param>
+        internal NavMeshNode(RCPolygon nodePolygon) : this()
+        {
+            if (nodePolygon == null) { throw new ArgumentNullException("nodePolygon"); }
+            if (nodePolygon.DoubleOfSignedArea <= 0) { throw new ArgumentException("The polygon must be in clockwise order!", "nodePolygon"); }
+
+            this.polygon = nodePolygon;
         }
 
         #region ISearchTreeNode members
@@ -40,10 +52,15 @@ namespace RC.Engine.Simulator.MotionControl
 
         #endregion ISearchTreeNode members
 
-        /// <summary>
-        /// Gets the neighbours of this node.
-        /// </summary>
-        public IEnumerable<NavMeshNode> Neighbours { get { return this.neighbours; } }
+        #region INavMeshNode members
+
+        /// <see cref="INavMeshNode.Polygon"/>
+        public RCPolygon Polygon { get { return this.polygon; } }
+
+        /// <see cref="INavMeshNode.Neighbours"/>
+        public IEnumerable<INavMeshNode> Neighbours { get { return this.neighbours; } }
+
+        #endregion INavMeshNode members
 
         /// <summary>
         /// Collects the nodes that are reachable from this node.
@@ -106,6 +123,18 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         /// <summary>
+        /// Sets the neighbourhood relationship between this node and the given node.
+        /// </summary>
+        /// <param name="otherNode">The given node.</param>
+        public void AddNeighbour(NavMeshNode otherNode)
+        {
+            if (otherNode == null) { throw new ArgumentNullException("otherNode"); }
+
+            otherNode.neighbours.Add(this);
+            this.neighbours.Add(otherNode);
+        }
+
+        /// <summary>
         /// Slices this node along the given cut diagonal.
         /// </summary>
         /// <param name="cutBegin">The beginning of the cut diagonal.</param>
@@ -162,8 +191,8 @@ namespace RC.Engine.Simulator.MotionControl
             newNodePolygonCW.Add(this.polygon[cutEndIdx]);
 
             /// Create the new polygons...
-            Polygon thisNewPolygon = new Polygon(thisPolygonCW);
-            Polygon newNodePolygon = new Polygon(newNodePolygonCW);
+            RCPolygon thisNewPolygon = new RCPolygon(thisPolygonCW);
+            RCPolygon newNodePolygon = new RCPolygon(newNodePolygonCW);
             if (thisNewPolygon.DoubleOfSignedArea <= 0) { throw new InvalidOperationException("Vertices of the new polygon are in CCW order!"); }
             if (newNodePolygon.DoubleOfSignedArea <= 0) { throw new InvalidOperationException("Vertices of the new polygon are in CCW order!"); }
             this.neighbours.Add(newNode);
@@ -219,7 +248,7 @@ namespace RC.Engine.Simulator.MotionControl
             }
 
             /// Finally modify the polygon of this node, add it to the slice list, set its neighbours and return with the created slice list.
-            Polygon thisNewPolygon = new Polygon(this.polygon[this.polygon.VertexCount - 1], this.polygon[0], vertex);
+            RCPolygon thisNewPolygon = new RCPolygon(this.polygon[this.polygon.VertexCount - 1], this.polygon[0], vertex);
             if (this.BoundingBoxChanging != null) { this.BoundingBoxChanging(this); }
             this.polygon = thisNewPolygon;
             if (this.BoundingBoxChanged != null) { this.BoundingBoxChanged(this); }
@@ -239,11 +268,6 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         /// <summary>
-        /// Gets the polygon that represents the area of this node on the 2D plane.
-        /// </summary>
-        public Polygon Polygon { get { return this.polygon; } }
-
-        /// <summary>
         /// Internal ctor.
         /// </summary>
         private NavMeshNode()
@@ -259,7 +283,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// Merges the polygon of this node with the given polygon.
         /// </summary>
         /// <param name="neighbour">The polygon to merge with.</param>
-        private void MergePolygons(Polygon neighbour)
+        private void MergePolygons(RCPolygon neighbour)
         {
             /// Collect the vertices of this polygon in CW order and the vertices of the neighbour polygon in CCW order.
             List<RCNumVector> thisPolygonCW = new List<RCNumVector>();
@@ -339,7 +363,7 @@ namespace RC.Engine.Simulator.MotionControl
             }
 
             /// Create the new polygon and update the bounding box.
-            Polygon thisNewPolygon = new Polygon(newPolygonCW);
+            RCPolygon thisNewPolygon = new RCPolygon(newPolygonCW);
             if (thisNewPolygon.DoubleOfSignedArea <= 0) { throw new InvalidOperationException("Vertices of the new polygon are in CCW order!"); }
             if (this.BoundingBoxChanging != null) { this.BoundingBoxChanging(this); }
             this.polygon = thisNewPolygon;
@@ -387,6 +411,6 @@ namespace RC.Engine.Simulator.MotionControl
         /// <summary>
         /// The polygon that represents the area of this node on the 2D plane.
         /// </summary>
-        private Polygon polygon;
+        private RCPolygon polygon;
     }
 }

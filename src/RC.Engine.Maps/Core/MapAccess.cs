@@ -31,76 +31,40 @@ namespace RC.Engine.Maps.Core
         #region IMapAccess methods
 
         /// <see cref="IMapAccess.MapName"/>
-        public string MapName
-        {
-            get { return this.mapName; }
-        }
+        public string MapName { get { return this.mapName; } }
 
         /// <see cref="IMapAccess.Size"/>
-        public RCIntVector Size
-        {
-            get { return this.mapStructure.Size; }
-        }
+        public RCIntVector Size { get { return this.mapStructure.Size; } }
 
         /// <see cref="IMapAccess.CellSize"/>
-        public RCIntVector CellSize
-        {
-            get { return this.mapStructure.CellSize; }
-        }
+        public RCIntVector CellSize { get { return this.mapStructure.CellSize; } }
 
         /// <see cref="IMapAccess.Tileset"/>
-        public ITileSet Tileset
-        {
-            get { return this.mapStructure.Tileset; }
-        }
+        public ITileSet Tileset { get { return this.mapStructure.Tileset; } }
 
         /// <see cref="IMapAccess.GetQuadTile"/>
-        public IQuadTile GetQuadTile(RCIntVector coords)
-        {
-            return this.mapStructure.GetQuadTile(coords);
-        }
+        public IQuadTile GetQuadTile(RCIntVector coords) { return this.mapStructure.GetQuadTile(coords); }
 
         /// <see cref="IMapAccess.GetIsoTile"/>
-        public IIsoTile GetIsoTile(RCIntVector coords)
-        {
-            return this.mapStructure.GetIsoTile(coords);
-        }
+        public IIsoTile GetIsoTile(RCIntVector coords) { return this.mapStructure.GetIsoTile(coords); }
 
         /// <see cref="IMapAccess.GetCell"/>
-        public ICell GetCell(RCIntVector index)
-        {
-            return this.mapStructure.GetCell(index);
-        }
+        public ICell GetCell(RCIntVector index) { return this.mapStructure.GetCell(index); }
 
         /// <see cref="IMapAccess.QuadToCellRect"/>
-        public RCIntRectangle QuadToCellRect(RCIntRectangle quadRect)
-        {
-            return this.mapStructure.QuadToCellRect(quadRect);
-        }
+        public RCIntRectangle QuadToCellRect(RCIntRectangle quadRect) { return this.mapStructure.QuadToCellRect(quadRect); }
 
         /// <see cref="IMapAccess.CellToQuadSize"/>
-        public RCIntVector CellToQuadSize(RCNumVector cellSize)
-        {
-            return this.mapStructure.CellToQuadSize(cellSize);
-        }
+        public RCIntVector CellToQuadSize(RCNumVector cellSize) { return this.mapStructure.CellToQuadSize(cellSize); }
 
         /// <see cref="IMapAccess.BeginExchangingTiles"/>
-        public void BeginExchangingTiles()
-        {
-            this.mapStructure.BeginExchangingTiles();
-        }
+        public void BeginExchangingTiles() { this.mapStructure.BeginExchangingTiles(); }
 
         /// <see cref="IMapAccess.EndExchangingTiles"/>
-        public IEnumerable<IIsoTile> EndExchangingTiles()
-        {
-            return this.mapStructure.EndExchangingTiles();
-        }
+        public IEnumerable<IIsoTile> EndExchangingTiles() { return this.mapStructure.EndExchangingTiles(); }
 
         /// <see cref="IMapAccess.Close"/>
-        public void Close()
-        {
-            this.mapStructure.Close();
-        }
+        public void Close() { this.mapStructure.Close(); }
 
         /// TODO: only for debugging!
         public IEnumerable<IIsoTile> IsometricTiles { get { return this.mapStructure.IsometricTiles; } }

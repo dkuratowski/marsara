@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 
-namespace RC.Engine.Simulator.MotionControl
+namespace RC.Engine.Maps.Core
 {
     /// <summary>
     /// Helper class for simplifying a list of polygons by keeping their topological relationships.

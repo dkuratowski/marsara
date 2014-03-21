@@ -19,7 +19,8 @@ namespace RC.Common.Configuration
             {
                 XAttribute formatNamespace = fmtElem.Attribute(NAMESPACE_ATTR);
                 XAttribute formatName = fmtElem.Attribute(NAME_ATTR);
-                if (formatNamespace != null && formatName != null)
+                XAttribute formatID = fmtElem.Attribute(ID_ATTR);
+                if (formatNamespace != null && formatName != null && formatID != null)
                 {
                     string newFormatName = string.Format("{0}.{1}", formatNamespace.Value, formatName.Value);
                     if (RCPackageFormatMap.Contains(newFormatName))
@@ -57,7 +58,8 @@ namespace RC.Common.Configuration
 
                     if (hasFields)
                     {
-                        int newFormatID = RCPackageFormat.RegisterFormat(newFormat);
+                        int newFormatID = XmlHelper.LoadInt(formatID.Value);
+                        RCPackageFormat.RegisterFormat(newFormat, newFormatID);
                         RCPackageFormatMap.Add(newFormatName, newFormatID);
                     }
                     else
@@ -68,8 +70,8 @@ namespace RC.Common.Configuration
                 }
                 else
                 {
-                    /// Error: no namespace or name defined
-                    throw new ConfigurationException("No namespace or name defined for package format!");
+                    /// Error: no namespace, name or ID defined
+                    throw new ConfigurationException("No namespace, name or ID defined for package format!");
                 }
             }
 
@@ -84,6 +86,7 @@ namespace RC.Common.Configuration
         private const string PACKAGE_FORMAT_ELEM = "packageFormat";
         private const string NAMESPACE_ATTR = "namespace";
         private const string NAME_ATTR = "name";
+        private const string ID_ATTR = "id";
         private const string FIELD_ELEM = "field";
         private const string FIELD_TYPE_ATTR = "type";
     }

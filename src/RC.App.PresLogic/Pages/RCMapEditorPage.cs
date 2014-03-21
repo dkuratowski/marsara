@@ -256,12 +256,53 @@ namespace RC.App.PresLogic.Pages
         }
 
         /// <summary>
+        /// Used during save map task.
+        /// </summary>
+        /// TODO: display a "Please wait..." dialog instead!!!
+        private UISensitiveObject workspaceTmp = null;
+
+        /// <summary>
         /// This method is called when the "Save" button has been pressed.
         /// </summary>
         /// <param name="sender">Reference to the button.</param>
         private void OnSaveMapPressed(UISensitiveObject sender)
         {
-            this.mapEditorBE.SaveMap(this.fileName);
+            // TODO: display a "Please wait..." dialog instead!!!
+            this.workspaceTmp = this.SensitiveParent;
+            this.workspaceTmp.DetachSensitive(this);
+
+            this.saveMapTask = UITaskManager.StartParallelTask(this.SaveMapTask, "SaveMapTask");
+            this.saveMapTask.Finished += this.OnSaveMapFinished;
+            this.saveMapTask.Failed += this.OnSaveMapFailed;
+        }
+
+        /// <summary>
+        /// This method is called if saving the map has been finished successfully.
+        /// </summary>
+        private void OnSaveMapFinished(IUIBackgroundTask sender, object message)
+        {
+            /// Unsubscribe from the events of the background task.
+            this.saveMapTask.Finished -= this.OnSaveMapFinished;
+            this.saveMapTask.Failed -= this.OnSaveMapFailed;
+
+            // TODO: display a "Please wait..." dialog instead!!!
+            this.workspaceTmp.AttachSensitive(this);
+            this.workspaceTmp = null;
+        }
+
+        /// <summary>
+        /// This method is called if saving the map has been failed.
+        /// </summary>
+        private void OnSaveMapFailed(IUIBackgroundTask sender, object message)
+        {
+            this.saveMapTask.Finished -= this.OnSaveMapFinished;
+            this.saveMapTask.Failed -= this.OnSaveMapFailed;
+
+            // TODO: display a "Please wait..." dialog instead!!!
+            this.workspaceTmp.AttachSensitive(this);
+            this.workspaceTmp = null;
+
+            throw (Exception)message;
         }
 
         /// <summary>
@@ -407,7 +448,7 @@ namespace RC.App.PresLogic.Pages
         #endregion Mouse event handlers
 
         /// <summary>
-        /// Background task for initialize the loading of the map.
+        /// Background task for initialize or load the map.
         /// </summary>
         private void LoadMapTask(object parameter)
         {
@@ -421,6 +462,14 @@ namespace RC.App.PresLogic.Pages
                 /// Load an existing map.
                 this.mapEditorBE.LoadMap(this.fileName);
             }
+        }
+
+        /// <summary>
+        /// Background task for save the map.
+        /// </summary>
+        private void SaveMapTask(object parameter)
+        {
+            this.mapEditorBE.SaveMap(this.fileName);
         }
 
         /// <summary>
@@ -497,6 +546,11 @@ namespace RC.App.PresLogic.Pages
         /// Reference to the background task that loads the map.
         /// </summary>
         private IUIBackgroundTask loadMapTask;
+
+        /// <summary>
+        /// Reference to the background task that saves the map.
+        /// </summary>
+        private IUIBackgroundTask saveMapTask;
 
         /// <summary>
         /// The UIMouseButton that activated the mouse sensor of the map display.

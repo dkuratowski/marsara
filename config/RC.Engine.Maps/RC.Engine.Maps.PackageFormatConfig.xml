@@ -1,12 +1,34 @@
 <packageFormatConfig>
+
+  <!-- TODO: Package format ID 0 is free for use! -->
   
-  <packageFormat namespace="RC.Engine.Maps" name="TileSetFormat">
+  <packageFormat namespace="RC.Engine.Maps" name="NavMesh" id="1">
+    <description>Contains the navigation mesh of the map.</description>
+    <field type="INT">The CRC-32 checksum of the walkability grid that this navmesh is based on.</field>
+    <field type="BYTE_ARRAY">Contains an RC.Engine.Maps.NavMeshVertexList package.</field>
+    <field type="BYTE_ARRAY">Contains an RC.Engine.Maps.NavMeshNodeList package.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Engine.Maps" name="NavMeshVertexList" id="2">
+    <description>Describes the coordinates of the vertices of a navmesh. These integers shall be interpreted as the bits of RCNumbers.</description>
+    <field type="INT_ARRAY">The list of integers that describes the bits of the X-coordinates of the vertices.</field>
+    <field type="INT_ARRAY">The list of integers that describes the bits of the Y-coordinates of the vertices.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Engine.Maps" name="NavMeshNodeList" id="3">
+    <description>Describes the nodes of a navmesh.</description>
+    <field type="INT_ARRAY">
+      The integers in this list address the vertices of the appropriate node from the vertex list. The nodes are delimited by -1 numbers.
+    </field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.Engine.Maps" name="TileSetFormat" id="4">
     <description>Format of packages containing tilesets.</description>
     <field type="STRING">The XML that describes the tileset.</field>
     <field type="STRING">The directory of the referenced images (TODO: this is a hack).</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.Engine.Maps" name="MapHeader">
+  <packageFormat namespace="RC.Engine.Maps" name="MapHeader" id="5">
     <description>Contains header informations about a map.</description>
     <field type="INT">Major version of the RC application that created the map.</field>
     <field type="INT">Minor version of the RC application that created the map.</field>
@@ -20,19 +42,19 @@
     <field type="INT_ARRAY">Checksum values of the map.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.Engine.Maps" name="IsometricTileList">
+  <packageFormat namespace="RC.Engine.Maps" name="IsometricTileList" id="6">
     <description>Contains the list of the isometric tiles of the map.</description>
     <field type="STRING_ARRAY">Terrain type index table.</field>
     <field type="BYTE_ARRAY">Contains a series of RC.Engine.Maps.IsometricTile packages.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.Engine.Maps" name="TerrainObjectList">
+  <packageFormat namespace="RC.Engine.Maps" name="TerrainObjectList" id="7">
     <description>Contains the list of the terrain objects of the map.</description>
     <field type="STRING_ARRAY">Terrain object type index table.</field>
     <field type="BYTE_ARRAY">Contains a series of RC.Engine.Maps.TerrainObject packages.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.Engine.Maps" name="IsometricTile">
+  <packageFormat namespace="RC.Engine.Maps" name="IsometricTile" id="8">
     <description>Contains informations about an isometric tile of the map.</description>
     <field type="SHORT">Quadratic coordinate of the isometric tile (X component).</field>
     <field type="SHORT">Quadratic coordinate of the isometric tile (Y component).</field>
@@ -42,7 +64,7 @@
     <field type="BYTE">Index of the isometric tile variant.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.Engine.Maps" name="TerrainObject">
+  <packageFormat namespace="RC.Engine.Maps" name="TerrainObject" id="9">
     <description>Contains informations about a terrain object of the map.</description>
     <field type="SHORT">Quadratic coordinate of the terrain object (X component).</field>
     <field type="SHORT">Quadratic coordinate of the terrain object (Y component).</field>

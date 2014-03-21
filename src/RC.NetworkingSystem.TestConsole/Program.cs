@@ -50,9 +50,9 @@ namespace RC.NetworkingSystem
             f2.DefineField(RCPackageFieldType.INT);
             f2.DefineField(RCPackageFieldType.STRING_ARRAY);
 
-            RCPackageFormat.RegisterFormat(f0);
-            RCPackageFormat.RegisterFormat(f1);
-            RCPackageFormat.RegisterFormat(f2);
+            RCPackageFormat.RegisterFormat(f0, 65000);
+            RCPackageFormat.RegisterFormat(f1, 65001);
+            RCPackageFormat.RegisterFormat(f2, 65002);
 
             /// WRITING
             TextWriter writer = new StreamWriter("write.txt");

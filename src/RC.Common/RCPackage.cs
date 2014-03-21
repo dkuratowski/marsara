@@ -645,7 +645,7 @@ namespace RC.Common
                                 {
                                     /// Eat the format indicator and the sender byte if this is a NETWORK_CUSTOM_PACKAGE
                                     byte[] formatAndSenderBytes = this.parseHelper.GetBytesFromMarker((this.type == RCPackageType.NETWORK_CUSTOM_PACKAGE) ? (3) : (2));
-                                    int formatID = BitConverter.ToInt16(formatAndSenderBytes, 0);
+                                    int formatID = BitConverter.ToUInt16(formatAndSenderBytes, 0);
                                     if (this.type == RCPackageType.NETWORK_CUSTOM_PACKAGE) { this.senderTmp = formatAndSenderBytes[2]; }
                                     this.format = RCPackageFormat.GetPackageFormat(formatID);
                                     if (this.format != null)
@@ -1984,7 +1984,7 @@ namespace RC.Common
                 this.packageBuffer[0] = MAGIC_NUMBER[0];
                 this.packageBuffer[1] = MAGIC_NUMBER[1];
                 this.packageBuffer[2] = (byte)this.type;
-                byte[] formatIDBytes = BitConverter.GetBytes((short)this.format.ID);
+                byte[] formatIDBytes = BitConverter.GetBytes((ushort)this.format.ID);
                 this.packageBuffer[3] = formatIDBytes[0];
                 this.packageBuffer[4] = formatIDBytes[1];
                 /// There is an additional sender byte at position 5 in case of NETWORK_CUSTOM_PACKAGEs

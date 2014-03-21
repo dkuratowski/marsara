@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 
-namespace RC.Engine.Simulator.MotionControl
+namespace RC.Engine.Maps.Core
 {
     /// <summary>
     /// Represents a segment of a polyline.
@@ -27,7 +27,7 @@ namespace RC.Engine.Simulator.MotionControl
             List<RCNumVector> segmentVertices = new List<RCNumVector>();
             for (int i = this.beginIndex; i != this.endIndex; i = (i + 1) % this.vertexList.Count) { segmentVertices.Add(this.vertexList[i]); }
             segmentVertices.Add(this.vertexList[this.endIndex]);
-            this.segmentPolygon = segmentVertices.Count >= 3 ? new Polygon(segmentVertices) : null;
+            this.segmentPolygon = segmentVertices.Count >= 3 ? new RCPolygon(segmentVertices) : null;
 
             this.boundingBoxCache = new CachedValue<RCNumRectangle>(this.CalculateBoundingBox);
 
@@ -197,7 +197,7 @@ namespace RC.Engine.Simulator.MotionControl
             for (int i = (this.beginIndex + 1) % this.vertexList.Count; i != this.endIndex; i = (i + 1) % this.vertexList.Count)
             {
                 RCNumber doubleOfTriangleArea =
-                    (new Polygon(this.vertexList[this.beginIndex], this.vertexList[i], this.vertexList[this.endIndex])).DoubleOfSignedArea.Abs();
+                    (new RCPolygon(this.vertexList[this.beginIndex], this.vertexList[i], this.vertexList[this.endIndex])).DoubleOfSignedArea.Abs();
                 if (doubleOfTriangleArea > maxDoubleOfTriangleArea)
                 {
                     furthestVertexIdx = i;
@@ -268,7 +268,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// The polygon that contains the vertices of the original polyline that belongs to this segment, or null
         /// if this segment has only 2 vertices.
         /// </summary>
-        private Polygon segmentPolygon;
+        private RCPolygon segmentPolygon;
 
         /// <summary>
         /// The index of the vertex at the beginning of this segment.

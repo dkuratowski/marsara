@@ -1,6 +1,6 @@
 <packageFormatConfig>
 
-  <packageFormat namespace="RC.DssServices" name="DssCtrlConnectionRequest">
+  <packageFormat namespace="RC.DssServices" name="DssCtrlConnectionRequest" id="200">
     <description>Connection request sent from a guest to the host.</description>
     <field type="INT">Major version.</field>
     <field type="INT">Minor version.</field>
@@ -8,7 +8,7 @@
     <field type="INT">Revision.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssCtrlConnectionAcknowledge">
+  <packageFormat namespace="RC.DssServices" name="DssCtrlConnectionAcknowledge" id="201">
     <description>Connection acknowledge sent from the host to a connecting guest.</description>
     <field type="INT">Major version.</field>
     <field type="INT">Minor version.</field>
@@ -16,13 +16,13 @@
     <field type="INT">Revision.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssCtrlConnectionReject">
+  <packageFormat namespace="RC.DssServices" name="DssCtrlConnectionReject" id="202">
     <description>Connection reject message sent from the host to a connecting guest.</description>
     <field type="STRING">Reason of the connection reject.</field>
     <field type="BYTE_ARRAY">Custom data (not used in the current version).</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssCtrlSetupStepRqBegin">
+  <packageFormat namespace="RC.DssServices" name="DssCtrlSetupStepRqBegin" id="203">
     <description>Indicates the start of a setup step request sequence.</description>
     <field type="INT">Step ID.</field>
     <field type="INT_ARRAY">List of the guests that left the DSS since the last setup step request.</field>
@@ -30,36 +30,36 @@
     <field type="BYTE_ARRAY">List of the current state of the DSS-channels.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssCtrlSetupStepAwBegin">
+  <packageFormat namespace="RC.DssServices" name="DssCtrlSetupStepAwBegin" id="204">
     <description>Indicates the start of a setup step answer sequence.</description>
     <field type="INT">Step ID.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssCtrlSetupStepMsgEnd">
+  <packageFormat namespace="RC.DssServices" name="DssCtrlSetupStepMsgEnd" id="205">
     <description>Indicates the end of a setup step request/answer sequence.</description>
     <field type="INT">Step ID.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssCtrlStartSimulation">
+  <packageFormat namespace="RC.DssServices" name="DssCtrlStartSimulation" id="206">
     <description>Indicates the start of the simulation stage.</description>
     <field type="INT_ARRAY">List of the guests that left the DSS since the last setup step request.</field>
     <field type="INT_ARRAY">List of the guests that the host lost connection with since the last setup step request.</field>
     <field type="BYTE_ARRAY">List of the current state of the DSS-channels.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssCtrlDropGuest">
+  <packageFormat namespace="RC.DssServices" name="DssCtrlDropGuest" id="207">
     <description>Indicates dropping a guest out of the DSS during setup stage.</description>
     <field type="STRING">Reason of the drop.</field>
     <field type="BYTE_ARRAY">Custom data (not used in the current version).</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssSimulationError">
+  <packageFormat namespace="RC.DssServices" name="DssSimulationError" id="208">
     <description>Indicates an error during the simulation stage.</description>
     <field type="STRING">Error description.</field>
     <field type="BYTE_ARRAY">Custom data (not used in the current version).</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssCommit">
+  <packageFormat namespace="RC.DssServices" name="DssCommit" id="209">
     <description>Simulation round commit message.</description>
     <field type="SHORT">Local AFT measured by the sender (in ms).</field>
     <field type="SHORT">The highest APT measured by the sender (in ms).</field>
@@ -68,18 +68,18 @@
     <field type="BYTE_ARRAY">State hash.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssCommitAnswer">
+  <packageFormat namespace="RC.DssServices" name="DssCommitAnswer" id="210">
     <description>Answer to a simulation round commit message.</description>
     <field type="INT">Commit answer ticket.</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssLeave">
+  <packageFormat namespace="RC.DssServices" name="DssLeave" id="211">
     <description>Indicates leaving the DSS.</description>
     <field type="STRING">Reason of leaving the DSS.</field>
     <field type="BYTE_ARRAY">Custom data (not used in the current version).</field>
   </packageFormat>
 
-  <packageFormat namespace="RC.DssServices" name="DssCommand">
+  <packageFormat namespace="RC.DssServices" name="DssCommand" id="212">
     <description>Command package during simulation stage.</description>
     <field type="INT">Round index of the command.</field>
     <field type="INT">Frame index of the command.</field>
