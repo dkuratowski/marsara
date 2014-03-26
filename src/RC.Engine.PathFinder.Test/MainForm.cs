@@ -17,6 +17,7 @@ using System.IO;
 using RC.Common.Configuration;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.MotionControl;
+using RC.Engine.Maps.Core;
 
 namespace RC.Engine.PathFinder.Test
 {
@@ -30,7 +31,7 @@ namespace RC.Engine.PathFinder.Test
             this.blockedNodeIndex = 0;
             this.pathfinder = null;
 
-            this.originalMapImg = null;
+            this.originalOutputImg = null;
             this.searchResultImg = null;
             this.detourSearchResultImg = null;
             this.blockedNodeSelectionImg = null;
@@ -44,103 +45,43 @@ namespace RC.Engine.PathFinder.Test
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            ComponentManager.RegisterComponents("RC.Engine.Maps, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[2] { "RC.Engine.Maps.MapLoader", "RC.Engine.Maps.TileSetLoader" });
-            ComponentManager.StartComponents();
+            /// Create and initialize the pathfinder.
             this.pathfinder = new Simulator.MotionControl.PathFinder();
+            this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\maps\\testmap5.rcm"), 5000);
+            //this.pathfinder.Initialize(this.ReadTestMapFromImg("pathfinder_testmap2.png"), 5000);
 
-            //this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\tilesets\\bandlands\\bandlands.xml", "..\\..\\..\\..\\maps\\testmap4.rcm"), 5000);
-            this.pathfinder.Initialize(this.ReadTestMapFromImg("pathfinder_testmap2.png"), 5000);
-
-            this.originalMapImg = new Bitmap(this.pathfinder.PathfinderTreeRoot.AreaOnMap.Width * CELL_SIZE, this.pathfinder.PathfinderTreeRoot.AreaOnMap.Height * CELL_SIZE);
-            Graphics outputGC = Graphics.FromImage(this.originalMapImg);
-
-            for (int i = 0; i < this.pathfinder.PathfinderTreeRoot.AreaOnMap.Width / 4; i++)
+            /// Draw the navmesh nodes.
+            this.originalOutputImg = new Bitmap(this.pathfinder.Navmesh.GridSize.X * CELL_SIZE, this.pathfinder.Navmesh.GridSize.Y * CELL_SIZE, PixelFormat.Format24bppRgb);
+            Graphics outputGC = Graphics.FromImage(this.originalOutputImg);
+            outputGC.Clear(Color.FromArgb(0, 0, 0));
+            foreach (NavMeshNode node in this.pathfinder.Navmesh.Nodes)
             {
-                outputGC.DrawLine(Pens.Cyan, i * 4 * CELL_SIZE, 0, i * 4 * CELL_SIZE, this.pathfinder.PathfinderTreeRoot.AreaOnMap.Height * CELL_SIZE);
+                this.FillPolygon(node.Polygon, outputGC, Brushes.White, Pens.Black);
             }
-            for (int i = 0; i < this.pathfinder.PathfinderTreeRoot.AreaOnMap.Height / 4; i++)
-            {
-                outputGC.DrawLine(Pens.Cyan, 0, i * 4 * CELL_SIZE, this.pathfinder.PathfinderTreeRoot.AreaOnMap.Width * CELL_SIZE, i * 4 * CELL_SIZE);
-            }
-
-            HashSet<PFTreeNode> leafNodes = this.pathfinder.PathfinderTreeRoot.GetAllLeafNodes();
-            foreach (PFTreeNode leafNode in leafNodes)
-            {
-                RCIntRectangle nodeRect = leafNode.AreaOnMap * new RCIntVector(CELL_SIZE, CELL_SIZE);
-                if (!leafNode.IsWalkable)
-                {
-                    outputGC.FillRectangle(Brushes.Black, nodeRect.X, nodeRect.Y, nodeRect.Width, nodeRect.Height);
-                }
-                outputGC.DrawRectangle(leafNode.IsWalkable ? Pens.Black : Pens.Yellow, nodeRect.X, nodeRect.Y, nodeRect.Width, nodeRect.Height);
-            }
-
             outputGC.Dispose();
 
-            this.ClientSize = new Size(this.originalMapImg.Width, this.originalMapImg.Height);
+            this.ClientSize = new Size(this.originalOutputImg.Width, this.originalOutputImg.Height);
         }
 
-        private PFTreeNode ReadTestMapFromImg(string fileName)
+        private INavMesh ReadTestMapFromImg(string fileName)
         {
-            /// Load the test map.
+            /// Load the test map and create its navmesh.
             Bitmap testMapBmp = (Bitmap)Bitmap.FromFile(fileName);
-            if (testMapBmp.PixelFormat != PixelFormat.Format24bppRgb)
-            {
-                throw new Exception("Pixel format of the test Bitmap must be PixelFormat.Format24bppRgb");
-            }
-
-            /// Find the number of subdivision levels.
-            int boundingBoxSize = Math.Max(testMapBmp.Width, testMapBmp.Height);
-            int subdivisionLevels = 1;
-            while (boundingBoxSize > (int)Math.Pow(2, subdivisionLevels)) { subdivisionLevels++; }
-
-            /// Create the root of the pathfinder tree.
-            PFTreeNode pfTreeRoot = new PFTreeNode(subdivisionLevels);
-
-            /// Add obstacles to the pathfinder tree
-            for (int row = 0; row < pfTreeRoot.AreaOnMap.Height; row++)
-            {
-                for (int column = 0; column < pfTreeRoot.AreaOnMap.Width; column++)
-                {
-                    if (row >= testMapBmp.Height || column >= testMapBmp.Width)
-                    {
-                        /// Everything out of the map range is considered to be obstacle.
-                        pfTreeRoot.AddObstacle(new RCIntVector(column, row));
-                    }
-                    else
-                    {
-                        /// Add obstacle depending on the color of the pixel in the test map image.
-                        if (testMapBmp.GetPixel(column, row) == Color.FromArgb(0, 0, 0))
-                        {
-                            pfTreeRoot.AddObstacle(new RCIntVector(column, row));
-                        }
-                    }
-                }
-            }
-
+            TestWalkabilityGrid testMapGrid = new TestWalkabilityGrid(testMapBmp);
             testMapBmp.Dispose();
-            return pfTreeRoot;
+            return new NavMesh(testMapGrid, 2);
         }
 
-        private IMapAccess ReadTestMap(string tilesetFileName, string mapFileName)
+        private INavMesh ReadTestMap(string mapFileName)
         {
-            FileInfo tilesetFile = new FileInfo(tilesetFileName);
-            string xmlStr = File.ReadAllText(tilesetFile.FullName);
-            string imageDir = tilesetFile.DirectoryName;
-
-            RCPackage tilesetPackage = RCPackage.CreateCustomDataPackage(PackageFormats.TILESET_FORMAT);
-            tilesetPackage.WriteString(0, xmlStr);
-            tilesetPackage.WriteString(1, imageDir);
-
-            byte[] buffer = new byte[tilesetPackage.PackageLength];
-            tilesetPackage.WritePackageToBuffer(buffer, 0);
-            ITileSet tileset = ComponentManager.GetInterface<ITileSetLoader>().LoadTileSet(buffer);
-            return ComponentManager.GetInterface<IMapLoader>().LoadMap(tileset, File.ReadAllBytes(mapFileName));
+            /// Load the navmesh from the mapfile.
+            NavMeshLoader navmeshLoader = new NavMeshLoader();
+            return navmeshLoader.LoadNavMesh(File.ReadAllBytes(mapFileName));
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            e.Graphics.DrawImage(this.originalMapImg, 0, 0);
+            e.Graphics.DrawImage(this.originalOutputImg, 0, 0);
             if (this.searchResultImg != null) { e.Graphics.DrawImage(this.searchResultImg, 0, 0); }
             if (this.detourSearchResultImg != null) { e.Graphics.DrawImage(this.detourSearchResultImg, 0, 0); }
             if (this.blockedNodeSelectionImg != null) { e.Graphics.DrawImage(this.blockedNodeSelectionImg, 0, 0); }
@@ -191,33 +132,29 @@ namespace RC.Engine.PathFinder.Test
                     this.lastSearchIterations += path.CompletedNodes.Count();
                 }
 
-                this.searchResultImg = new Bitmap(this.pathfinder.PathfinderTreeRoot.AreaOnMap.Width * CELL_SIZE, this.pathfinder.PathfinderTreeRoot.AreaOnMap.Height * CELL_SIZE, PixelFormat.Format24bppRgb);
+                this.searchResultImg = new Bitmap(this.pathfinder.Navmesh.GridSize.X * CELL_SIZE, this.pathfinder.Navmesh.GridSize.Y * CELL_SIZE, PixelFormat.Format24bppRgb);
                 Graphics outputGC = Graphics.FromImage(this.searchResultImg);
                 outputGC.Clear(Color.FromArgb(255, 0, 255));
-                HashSet<RCIntRectangle> sectionsOnPath = new HashSet<RCIntRectangle>();
+                HashSet<RCPolygon> nodesOnPath = new HashSet<RCPolygon>();
                 foreach (RC.Engine.Simulator.MotionControl.Path path in this.computedPaths)
                 {
                     for (int i = 0; i < path.Length; ++i)
                     {
-                        RCIntRectangle sectionRect = path[i] * new RCIntVector(CELL_SIZE, CELL_SIZE);
-                        outputGC.FillRectangle(path.IsTargetFound ? Brushes.LightGreen : Brushes.Orange, sectionRect.X, sectionRect.Y, sectionRect.Width, sectionRect.Height);
-                        outputGC.DrawRectangle(Pens.Black, sectionRect.X, sectionRect.Y, sectionRect.Width, sectionRect.Height);
-                        sectionsOnPath.Add(sectionRect);
+                        this.FillPolygon(path[i], outputGC, path.IsTargetFound ? Brushes.LightGreen : Brushes.Orange, Pens.Black);
+                        nodesOnPath.Add(path[i]);
                     }
-                    foreach (PFTreeNode completedNode in path.CompletedNodes)
+                    foreach (INavMeshNode completedNode in path.CompletedNodes)
                     {
-                        RCIntRectangle sectionRect = completedNode.AreaOnMap * new RCIntVector(CELL_SIZE, CELL_SIZE);
-                        if (!sectionsOnPath.Contains(sectionRect))
+                        if (!nodesOnPath.Contains(completedNode.Polygon))
                         {
-                            outputGC.FillRectangle(Brushes.Red, sectionRect.X, sectionRect.Y, sectionRect.Width, sectionRect.Height);
-                            outputGC.DrawRectangle(Pens.Black, sectionRect.X, sectionRect.Y, sectionRect.Width, sectionRect.Height);
+                            this.FillPolygon(completedNode.Polygon, outputGC, Brushes.Red, Pens.Black);
                         }
                     }
                     for (int i = 1; i < path.Length; ++i)
                     {
-                        RCIntRectangle prevSectionRect = path[i - 1] * new RCIntVector(CELL_SIZE, CELL_SIZE);
-                        RCIntRectangle currSectionRect = path[i] * new RCIntVector(CELL_SIZE, CELL_SIZE);
-                        outputGC.DrawLine(Pens.Blue, (prevSectionRect.Left + prevSectionRect.Right) / 2, (prevSectionRect.Top + prevSectionRect.Bottom) / 2, (currSectionRect.Left + currSectionRect.Right) / 2, (currSectionRect.Top + currSectionRect.Bottom) / 2);
+                        RCNumVector prevNodeCenter = path[i - 1].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                        RCNumVector currNodeCenter = path[i].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                        outputGC.DrawLine(Pens.Blue, prevNodeCenter.X.Round(), prevNodeCenter.Y.Round(), currNodeCenter.X.Round(), currNodeCenter.Y.Round());
                     }
                 }
                 outputGC.Dispose();
@@ -254,28 +191,26 @@ namespace RC.Engine.PathFinder.Test
                     this.lastSearchIterations += path.CompletedNodes.Count();
                 }
 
-                this.detourSearchResultImg = new Bitmap(this.pathfinder.PathfinderTreeRoot.AreaOnMap.Width * CELL_SIZE, this.pathfinder.PathfinderTreeRoot.AreaOnMap.Height * CELL_SIZE, PixelFormat.Format24bppRgb);
+                this.detourSearchResultImg = new Bitmap(this.pathfinder.Navmesh.GridSize.X * CELL_SIZE, this.pathfinder.Navmesh.GridSize.Y * CELL_SIZE, PixelFormat.Format24bppRgb);
                 Graphics outputGC = Graphics.FromImage(this.detourSearchResultImg);
                 outputGC.Clear(Color.FromArgb(255, 0, 255));
 
                 /// Draw the blocked edges.
-                HashSet<Tuple<int, int>> blockedEdgeIDs = new HashSet<Tuple<int, int>>();
-                this.computedPaths[0].CopyBlockedEdges(ref blockedEdgeIDs);
-                foreach (Tuple<int, int> blockedEdgeID in blockedEdgeIDs)
+                HashSet<Tuple<INavMeshNode, INavMeshNode>> blockedEdges = new HashSet<Tuple<INavMeshNode, INavMeshNode>>();
+                this.computedPaths[0].CopyBlockedEdges(ref blockedEdges);
+                foreach (Tuple<INavMeshNode, INavMeshNode> blockedEdge in blockedEdges)
                 {
-                    RCIntRectangle edgeBeginSectionRect = this.pathfinder.GetLeafNodeByID(blockedEdgeID.Item1).AreaOnMap * new RCIntVector(CELL_SIZE, CELL_SIZE);
-                    RCIntRectangle edgeEndSectionRect = this.pathfinder.GetLeafNodeByID(blockedEdgeID.Item2).AreaOnMap * new RCIntVector(CELL_SIZE, CELL_SIZE);
-                    RCIntVector edgeBegin = new RCIntVector((edgeBeginSectionRect.Left + edgeBeginSectionRect.Right) / 2, (edgeBeginSectionRect.Top + edgeBeginSectionRect.Bottom) / 2);
-                    RCIntVector edgeEnd = new RCIntVector((edgeEndSectionRect.Left + edgeEndSectionRect.Right) / 2, (edgeEndSectionRect.Top + edgeEndSectionRect.Bottom) / 2);
-                    outputGC.DrawLine(Pens.Red, edgeBegin.X, edgeBegin.Y, edgeEnd.X, edgeEnd.Y);
+                    RCNumVector edgeBegin = blockedEdge.Item1.Polygon.Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                    RCNumVector edgeEnd = blockedEdge.Item2.Polygon.Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                    outputGC.DrawLine(Pens.Red, edgeBegin.X.Round(), edgeBegin.Y.Round(), edgeEnd.X.Round(), edgeEnd.Y.Round());
                 }
 
                 /// Draw the detour.
                 for (int i = 1; i < this.computedPaths[0].Length; ++i)
                 {
-                    RCIntRectangle prevSectionRect = this.computedPaths[0][i - 1] * new RCIntVector(CELL_SIZE, CELL_SIZE);
-                    RCIntRectangle currSectionRect = this.computedPaths[0][i] * new RCIntVector(CELL_SIZE, CELL_SIZE);
-                    outputGC.DrawLine(Pens.Green, (prevSectionRect.Left + prevSectionRect.Right) / 2, (prevSectionRect.Top + prevSectionRect.Bottom) / 2, (currSectionRect.Left + currSectionRect.Right) / 2, (currSectionRect.Top + currSectionRect.Bottom) / 2);
+                    RCNumVector prevNodeCenter = this.computedPaths[0][i - 1].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                    RCNumVector currNodeCenter = this.computedPaths[0][i].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                    outputGC.DrawLine(Pens.Green, prevNodeCenter.X.Round(), prevNodeCenter.Y.Round(), currNodeCenter.X.Round(), currNodeCenter.Y.Round());
                 }
 
                 outputGC.Dispose();
@@ -322,13 +257,12 @@ namespace RC.Engine.PathFinder.Test
 
             if (this.blockedNodeSelectionImg != null) { this.blockedNodeSelectionImg.Dispose(); this.blockedNodeSelectionImg = null; }
 
-            this.blockedNodeSelectionImg = new Bitmap(this.pathfinder.PathfinderTreeRoot.AreaOnMap.Width * CELL_SIZE, this.pathfinder.PathfinderTreeRoot.AreaOnMap.Height * CELL_SIZE, PixelFormat.Format24bppRgb);
+            this.blockedNodeSelectionImg = new Bitmap(this.pathfinder.Navmesh.GridSize.X * CELL_SIZE, this.pathfinder.Navmesh.GridSize.Y * CELL_SIZE, PixelFormat.Format24bppRgb);
             Graphics outputGC = Graphics.FromImage(this.blockedNodeSelectionImg);
             outputGC.Clear(Color.FromArgb(255, 0, 255));
 
-            RCIntRectangle blockedNodeRect = this.computedPaths[0].GetPathNode(this.blockedNodeIndex).AreaOnMap * new RCIntVector(CELL_SIZE, CELL_SIZE);
-            RCIntVector blockedNodeCenter = new RCIntVector((blockedNodeRect.Left + blockedNodeRect.Right) / 2, (blockedNodeRect.Top + blockedNodeRect.Bottom) / 2);
-            outputGC.DrawEllipse(Pens.Blue, blockedNodeCenter.X - 3, blockedNodeCenter.Y - 3, 6, 6);
+            RCNumVector blockedNodeCenter = this.computedPaths[0][this.blockedNodeIndex].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+            outputGC.DrawEllipse(Pens.Blue, blockedNodeCenter.X.Round() - 3, blockedNodeCenter.Y.Round() - 3, 6, 6);
             outputGC.Dispose();
             this.blockedNodeSelectionImg.MakeTransparent(Color.FromArgb(255, 0, 255));
 
@@ -342,14 +276,34 @@ namespace RC.Engine.PathFinder.Test
         }
 
         /// <summary>
-        /// The size of a cell on the result images.
+        /// Draws and fills the given polygon to the given graphic context.
         /// </summary>
-        private const int CELL_SIZE = 4;
+        /// <param name="polygon">The polygon to be drawn.</param>
+        private void FillPolygon(RCPolygon polygon, Graphics gc, Brush brush, Pen pen)
+        {
+            Point[] polygonVertices = new Point[polygon.VertexCount];
+            for (int i = 0; i < polygon.VertexCount; i++)
+            {
+                RCNumVector currPoint = (polygon[i] + new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2)) * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                polygonVertices[i] = new Point(currPoint.X.Round(), currPoint.Y.Round());
+            }
+            gc.FillPolygon(brush, polygonVertices);
+            gc.DrawPolygon(pen, polygonVertices);
+        }
 
         /// <summary>
-        /// The image that contains the original map
+        /// The size of a cell on the result images.
         /// </summary>
-        private Bitmap originalMapImg;
+        private const int CELL_SIZE = 1;
+
+        /// <summary>
+        /// The object that creates the image of the navmesh.
+        /// </summary>
+        //private NavmeshPainter navmeshPainter;
+        /// <summary>
+        /// The original image of the navmesh.
+        /// </summary>
+        private Bitmap originalOutputImg;
 
         /// <summary>
         /// The image that contains the currently computed path.

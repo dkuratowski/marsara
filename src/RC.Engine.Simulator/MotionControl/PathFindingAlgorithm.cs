@@ -4,46 +4,62 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.MotionControl
 {
     /// <summary>
-    /// Abstract base class of the pathfinding algorithms.
+    /// Implements the pathfinding algorithm.
     /// </summary>
-    abstract class PathFindingAlgorithm
+    class PathFindingAlgorithm
     {
-        /// <summary>
-        /// Computes the distance between 2 points on the map for the pathfinding algorithms.
-        /// </summary>
-        /// <param name="fromCoords">The first point on the map.</param>
-        /// <param name="toCoords">The second point on the map.</param>
-        /// <returns>The computed distance between the given points.</returns>
-        public static int ComputeDistance(RCIntVector fromCoords, RCIntVector toCoords)
-        {
-            int horz = Math.Abs(toCoords.X - fromCoords.X);
-            int vert = Math.Abs(toCoords.Y - fromCoords.Y);
-            int diff = Math.Abs(horz - vert);
-            return (horz < vert ? horz : vert) * 3 + diff * 2;
-        }
-
         /// <summary>
         /// Constructs an instance of a pathfinding algorithm.
         /// </summary>
-        /// <param name="fromNode">The starting node of the pathfinding.</param>
-        /// <param name="fromNodeEstimation">The estimated length of the path from the source node to the target.</param>
+        /// <param name="fromNode">The starting navmesh node of the pathfinding.</param>
+        /// <param name="toCoords">The target coordinates of the pathfinding.</param>
         /// <param name="iterationLimit">The maximum number of iterations to execute when searching this path.</param>
-        public PathFindingAlgorithm(PFTreeNode fromNode, int fromNodeEstimation, int iterationLimit)
+        public PathFindingAlgorithm(INavMeshNode fromNode, RCNumVector toCoords, int iterationLimit)
         {
             this.bestNode = null;
+            this.toCoords = toCoords;
             this.iterationLimit = iterationLimit;
             this.iterationsExecuted = 0;
             this.isFinished = false;
             this.queuedNodes = new BinaryHeap<PathNode>(BinaryHeap<PathNode>.HeapType.MinHeap);
-            this.queuedNodesMap = new Dictionary<int, PathNode>();
-            this.completedNodesMap = new Dictionary<int, PathNode>();
-            this.fromNode = PathNode.CreateSourceNode(fromNode, fromNodeEstimation);
+            this.queuedNodesMap = new Dictionary<INavMeshNode, PathNode>();
+            this.completedNodesMap = new Dictionary<INavMeshNode, PathNode>();
+            this.fromNode = PathNode.CreateSourceNode(fromNode, this.GetEstimation(fromNode));
             this.queuedNodes.Insert(this.fromNode);
-            this.queuedNodesMap.Add(this.fromNode.Node.Index, this.fromNode);
+            this.queuedNodesMap.Add(this.fromNode.Node, this.fromNode);
+            this.blockedEdges = new HashSet<Tuple<INavMeshNode, INavMeshNode>>();
+        }
+                
+        /// <summary>
+        /// Constructs a DirectPathFindingAlgorithm based on a previously computed path.
+        /// </summary>
+        /// <param name="detouredPath">The original path.</param>
+        /// <param name="abortedSectionIdx">The index of the aborted section of the original path.</param>
+        /// <param name="iterationLimit">The maximum number of iterations to execute when searching this path.</param>
+        public PathFindingAlgorithm(Path detouredPath, int abortedSectionIdx, int iterationLimit)
+        {
+            this.bestNode = null;
+            this.toCoords = detouredPath.ToCoords;
+            this.iterationLimit = iterationLimit;
+            this.iterationsExecuted = 0;
+            this.isFinished = false;
+            this.queuedNodes = new BinaryHeap<PathNode>(BinaryHeap<PathNode>.HeapType.MinHeap);
+            this.queuedNodesMap = new Dictionary<INavMeshNode, PathNode>();
+            this.completedNodesMap = new Dictionary<INavMeshNode, PathNode>();
+            this.fromNode = PathNode.CreateSourceNode(detouredPath.GetPathNode(abortedSectionIdx),
+                                                      this.GetEstimation(detouredPath.GetPathNode(abortedSectionIdx)));
+            this.queuedNodes.Insert(this.fromNode);
+            this.queuedNodesMap.Add(this.fromNode.Node, this.fromNode);
+
+            this.blockedEdges = new HashSet<Tuple<INavMeshNode, INavMeshNode>>();
+            detouredPath.CopyBlockedEdges(ref this.blockedEdges);
+            this.blockedEdges.Add(new Tuple<INavMeshNode, INavMeshNode>(detouredPath.GetPathNode(abortedSectionIdx),
+                                                                        detouredPath.GetPathNode(abortedSectionIdx + 1)));
         }
 
         #region Public members
@@ -57,6 +73,11 @@ namespace RC.Engine.Simulator.MotionControl
         /// Gets the starting node of the pathfinding.
         /// </summary>
         public PathNode FromNode { get { return this.fromNode; } }
+
+        /// <summary>
+        /// Gets the target coordinates of the pathfinding.
+        /// </summary>
+        public RCNumVector ToCoords { get { return this.toCoords; } }
 
         /// <summary>
         /// Gets the best node found by the algorithm.
@@ -101,17 +122,6 @@ namespace RC.Engine.Simulator.MotionControl
             if (this.isFinished) { throw new InvalidOperationException("Pathfinding has already finished!"); }
             if (maxIterations != -1 && maxIterations <= 0) { throw new ArgumentOutOfRangeException("maxIterations", "Number of iterations must be greater than 0 or must be -1!"); }
 
-            /// Notify the derived class if this is the first time this algorithm is running.
-            if (this.iterationsExecuted == 0)
-            {
-                if (!this.OnStarting())
-                {
-                    this.isFinished = true;
-                    this.OnFinished();
-                    return 0;
-                }
-            }
-
             /// Here begins the pathfinding algorithm. It runs while the priority queue is not empty and we haven't reached the maximum number of iterations
             /// and the iteration limit.
             int iterationsInCurrCall = 0;
@@ -120,8 +130,8 @@ namespace RC.Engine.Simulator.MotionControl
                 /// Get the current node from the priority queue and add it to the completed set.
                 PathNode currentPathNode = this.queuedNodes.MaxMinItem;
                 this.queuedNodes.DeleteMaxMin();
-                this.queuedNodesMap.Remove(currentPathNode.Node.Index);
-                this.completedNodesMap.Add(currentPathNode.Node.Index, currentPathNode);
+                this.queuedNodesMap.Remove(currentPathNode.Node);
+                this.completedNodesMap.Add(currentPathNode.Node, currentPathNode);
 
                 /// Check if the current node is better than the currently best node.
                 if (this.bestNode == null || this.GetEstimation(currentPathNode.Node) < this.GetEstimation(this.bestNode.Node))
@@ -130,21 +140,21 @@ namespace RC.Engine.Simulator.MotionControl
                 }
 
                 /// Process the neighbours of the current node.
-                foreach (PFTreeNode neighbour in currentPathNode.Node.Neighbours)
+                foreach (INavMeshNode neighbour in currentPathNode.Node.Neighbours)
                 {
                     /// Process the current neighbour only if it is walkable, is not yet in the completed set, and the edge from the current node
                     /// to that neighbour is not blocked.
-                    if (!this.completedNodesMap.ContainsKey(neighbour.Index) && this.CheckNeighbour(currentPathNode.Node, neighbour))
+                    if (!this.completedNodesMap.ContainsKey(neighbour) && this.CheckNeighbour(currentPathNode.Node, neighbour))
                     {
                         /// Compute an estimated distance from the current neighbour to the target.
-                        int neighbourEstimation = this.GetEstimation(neighbour);
+                        RCNumber neighbourEstimation = this.GetEstimation(neighbour);
                         PathNode neighbourPathNode = null;
                         bool newNode = false;
 
-                        if (this.queuedNodesMap.ContainsKey(neighbour.Index))
+                        if (this.queuedNodesMap.ContainsKey(neighbour))
                         {
                             /// If the current neighbour is already queued just take it from there.
-                            neighbourPathNode = this.queuedNodesMap[neighbour.Index];
+                            neighbourPathNode = this.queuedNodesMap[neighbour];
                         }
                         else
                         {
@@ -160,7 +170,7 @@ namespace RC.Engine.Simulator.MotionControl
                         if (newNode)
                         {
                             this.queuedNodes.Insert(neighbourPathNode);
-                            this.queuedNodesMap.Add(neighbour.Index, neighbourPathNode);
+                            this.queuedNodesMap.Add(neighbour, neighbourPathNode);
                         }
                     }
                 } /// End of neighbour processing.
@@ -179,62 +189,66 @@ namespace RC.Engine.Simulator.MotionControl
 
             /// Finish the algorithm if necessary.
             this.isFinished |= this.queuedNodes.Count == 0 || this.iterationsExecuted >= this.iterationLimit;
-            if (this.isFinished) { this.OnFinished(); }
             return iterationsInCurrCall;
+        }
+        
+        /// <summary>
+        /// Copies the blocked edges of this search algorithm to the target set.
+        /// </summary>
+        /// <param name="targetSet">The target set to copy.</param>
+        public void CopyBlockedEdges(ref HashSet<Tuple<INavMeshNode, INavMeshNode>> targetSet)
+        {
+            foreach (Tuple<INavMeshNode, INavMeshNode> blockedEdge in this.blockedEdges) { targetSet.Add(blockedEdge); }
         }
 
         #endregion Public members
 
-        #region Overridables
+        #region Internal methods
 
         /// <summary>
-        /// Checks whether the given neighbour of the given current node has to be processed or not.
+        /// Checks whether the given neighbour of the given current navmesh node has to be processed or not.
         /// </summary>
-        /// <param name="current">The current node.</param>
-        /// <param name="neighbour">The neighbour node.</param>
+        /// <param name="current">The current navmesh node.</param>
+        /// <param name="neighbour">The neighbour navmesh node.</param>
         /// <returns>True if the given neighbour has to be processed; otherwise false.</returns>
-        /// <remarks>Can be overriden in the derived classes.</remarks>
-        protected virtual bool CheckNeighbour(PFTreeNode current, PFTreeNode neighbour)
+        private bool CheckNeighbour(INavMeshNode current, INavMeshNode neighbour)
         {
-            return neighbour.IsWalkable;
+            return !this.IsEdgeBlocked(current, neighbour);
         }
 
         /// <summary>
-        /// Gets the estimated distance from the given node to the target of the pathfinding.
+        /// Gets the estimated distance from the given navmesh node to the target of the pathfinding.
         /// </summary>
-        /// <param name="node">The node to estimate.</param>
-        /// <returns>The estimated distance from the given node to the target of the pathfinding.</returns>
-        /// <remarks>Can be overriden in the derived classes.</remarks>
-        protected virtual int GetEstimation(PFTreeNode node)
+        /// <param name="node">The navmesh node to estimate.</param>
+        /// <returns>The estimated distance from the given navmesh node to the target of the pathfinding.</returns>
+        private RCNumber GetEstimation(INavMeshNode node)
         {
-            return 0;
+            return MapUtils.ComputeDistance(node.Polygon.Center, this.toCoords);
         }
 
         /// <summary>
         /// Checks whether the target of this pathfinding has been reached or not.
         /// </summary>
-        /// <param name="currentNode">The current node.</param>
+        /// <param name="currentNode">The current navmesh node.</param>
         /// <returns>True if the pathfinding has to be finished; otherwise false.</returns>
-        /// <remarks>Must be overriden in the derived classes.</remarks>
-        protected abstract bool CheckExitCriteria(PFTreeNode currentNode);
+        private bool CheckExitCriteria(INavMeshNode currentNode)
+        {
+            return currentNode.Polygon.Contains(this.toCoords);
+        }
 
         /// <summary>
-        /// This method is called when this algorithm has been finished.
+        /// Checks whether the edge between the two given navmesh nodes is blocked or not.
         /// </summary>
-        /// <remarks>Can be overriden in the derived classes.</remarks>
-        protected virtual void OnFinished() { }
+        /// <param name="nodeA">The first navmesh node of the edge.</param>
+        /// <param name="nodeB">The second navmesh node of the edge.</param>
+        /// <returns>True if the edge is blocked, false otherwise.</returns>
+        private bool IsEdgeBlocked(INavMeshNode nodeA, INavMeshNode nodeB)
+        {
+            return this.blockedEdges.Contains(new Tuple<INavMeshNode, INavMeshNode>(nodeA, nodeB)) ||
+                   this.blockedEdges.Contains(new Tuple<INavMeshNode, INavMeshNode>(nodeB, nodeA));
+        }
 
-        /// <summary>
-        /// This method is called when this algorithm is being started.
-        /// </summary>
-        /// <returns>True if the algorithm can start; false otherwise.</returns>
-        /// <remarks>
-        /// If this method returns false then the algorithm will finish immediately without executing any iteration (the PathFindingAlgorithm.IsFinished
-        /// flag will be true). This method can be overriden in the derived classes, the default implementation does nothing.
-        /// </remarks>
-        protected virtual bool OnStarting() { return true; }
-
-        #endregion Overridables
+        #endregion Internal methods
 
         /// <summary>
         /// The priority queue of the nodes for the A* algorithm.
@@ -242,14 +256,14 @@ namespace RC.Engine.Simulator.MotionControl
         private BinaryHeap<PathNode> queuedNodes;
 
         /// <summary>
-        /// The list of the nodes in the priority queue mapped by the IDs of their corresponding tree nodes.
+        /// The list of the nodes in the priority queue mapped by their corresponding navmesh nodes.
         /// </summary>
-        private Dictionary<int, PathNode> queuedNodesMap;
+        private Dictionary<INavMeshNode, PathNode> queuedNodesMap;
 
         /// <summary>
-        /// The list of the completed nodes mapped by the IDs of their corresponding tree nodes.
+        /// The list of the completed nodes mapped by their corresponding navmesh nodes.
         /// </summary>
-        private Dictionary<int, PathNode> completedNodesMap;
+        private Dictionary<INavMeshNode, PathNode> completedNodesMap;
 
         /// <summary>
         /// The starting node of the pathfinding.
@@ -257,9 +271,19 @@ namespace RC.Engine.Simulator.MotionControl
         private PathNode fromNode;
 
         /// <summary>
+        /// The target coordinates of the pathfinding.
+        /// </summary>
+        private RCNumVector toCoords;
+
+        /// <summary>
         /// Reference to the best node found by the algorithm.
         /// </summary>
         private PathNode bestNode;
+
+        /// <summary>
+        /// Contains the blocked edges that have to be bypassed by this search algorithm.
+        /// </summary>
+        private HashSet<Tuple<INavMeshNode, INavMeshNode>> blockedEdges;
 
         /// <summary>
         /// This flag indicates whether this pathfinding algorithm has been finished or not.

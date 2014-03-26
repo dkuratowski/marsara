@@ -38,4 +38,3 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("RC.Engine.Test")]
 [assembly: InternalsVisibleTo("RC.Engine.PathFinder.Test")]
 [assembly: InternalsVisibleTo("RC.Engine.MotionControl.Test")]
-[assembly: InternalsVisibleTo("RC.UnitTests")]

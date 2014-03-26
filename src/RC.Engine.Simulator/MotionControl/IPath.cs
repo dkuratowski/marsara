@@ -23,15 +23,15 @@ namespace RC.Engine.Simulator.MotionControl
         bool IsTargetFound { get; }
 
         /// <summary>
-        /// Gets a section of the path.
+        /// Gets a node of the path.
         /// </summary>
-        /// <param name="index">The index of the section to get.</param>
-        /// <returns>The area of the section.</returns>
+        /// <param name="index">The index of the node to get.</param>
+        /// <returns>The area of the node.</returns>
         /// <exception cref="InvalidOperationException">If the path is not ready for use or has already been aborted.</exception>
-        RCIntRectangle this[int index] { get; }
+        RCPolygon this[int index] { get; }
 
         /// <summary>
-        /// Gets the total number of sections on this path.
+        /// Gets the total number of nodes on this path.
         /// </summary>
         /// <exception cref="InvalidOperationException">If the path is not ready for use or has already been aborted.</exception>
         int Length { get; }

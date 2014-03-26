@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.MotionControl
 {
@@ -44,7 +45,7 @@ namespace RC.Engine.Simulator.MotionControl
                 if (timeToCollisionMin != 0)
                 {
                     RCNumber penalty = (timeToCollisionMin > 0 ? (RCNumber)1 / timeToCollisionMin : 0)
-                                     + MotionController.ComputeLength(this.actuator.PreferredVelocity - admissibleVelocities[currIdx]);
+                                     + MapUtils.ComputeDistance(this.actuator.PreferredVelocity, admissibleVelocities[currIdx]);
                     if (bestVelocityIndex == -1 || penalty < leastPenalty)
                     {
                         leastPenalty = penalty;
@@ -134,26 +135,8 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         /// <summary>
-        /// Computes the length of the given vector.
-        /// </summary>
-        /// <param name="vector">The vector.</param>
-        /// <returns>The length of the given vector in Chebyshev metric.</returns>
-        internal static RCNumber ComputeLength(RCNumVector vector)
-        {
-            RCNumber horz = vector.X.Abs();
-            RCNumber vert = vector.Y.Abs();
-            RCNumber diff = (horz - vert).Abs();
-            return (horz < vert ? horz : vert) * ROOT_OF_TWO + diff;
-        }
-
-        /// <summary>
         /// Reference to the actuator of the entity that belongs to this controller.
         /// </summary>
         private IEntityActuator actuator;
-
-        /// <summary>
-        /// The square root of 2 that is used in Chebyshev metric calculations.
-        /// </summary>
-        private static readonly RCNumber ROOT_OF_TWO = (RCNumber)1414 / (RCNumber)1000;
     }
 }

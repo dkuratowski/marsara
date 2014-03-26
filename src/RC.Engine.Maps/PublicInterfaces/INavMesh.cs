@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 
 namespace RC.Engine.Maps.PublicInterfaces
 {
@@ -14,6 +15,11 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// Gets the hash value of the walkability grid that this navmesh is based on.
         /// </summary>
         int WalkabilityHash { get; }
+
+        /// <summary>
+        /// Gets the size of the walkability grid that this navmesh is based on.
+        /// </summary>
+        RCIntVector GridSize { get; }
 
         /// <summary>
         /// Gets the list of the nodes of this navmesh.

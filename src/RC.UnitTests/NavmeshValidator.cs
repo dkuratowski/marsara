@@ -186,7 +186,7 @@ namespace RC.UnitTests
         }
 
         /// <summary>
-        /// Checks whether the neighbours of the given have at least one common edge with the given node.
+        /// Checks whether the neighbours of the given node have exactly one common edge with the given node.
         /// </summary>
         /// <param name="node">The node to be checked.</param>
         private static void CheckNeighbourEdgeMatching(NavMeshNode node)
@@ -208,9 +208,9 @@ namespace RC.UnitTests
                     neighbourEdges.Add(new Tuple<RCNumVector, RCNumVector>(neighbour.Polygon[(i + 1) % neighbour.Polygon.VertexCount], neighbour.Polygon[i]));
                 }
 
-                /// Check if the neighbour has common edges with the current node.
+                /// Check if the neighbour has exactly one common edge with the current node.
                 neighbourEdges.IntersectWith(nodeEdges);
-                Assert.IsTrue(neighbourEdges.Count > 0);
+                Assert.IsTrue(neighbourEdges.Count == 1);
 
                 /// Remove the common edges from the current node.
                 nodeEdges.ExceptWith(neighbourEdges);

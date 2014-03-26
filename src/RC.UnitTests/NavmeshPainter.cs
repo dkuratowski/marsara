@@ -16,21 +16,32 @@ namespace RC.UnitTests
     class NavmeshPainter : IDisposable
     {
         /// <summary>
-        /// Constructs a NavmeshPainter instance.
+        /// Constructs a NavmeshPainter instance without walkability grid informations.
         /// </summary>
-        /// <param name="grid"></param>
         /// <param name="cellSize"></param>
         /// <param name="offset"></param>
-        public NavmeshPainter(IWalkabilityGrid grid, int cellSize, RCIntVector offset)
+        public NavmeshPainter(RCIntVector gridSize, int cellSize, RCIntVector offset)
         {
             if (cellSize <= 0) { throw new ArgumentOutOfRangeException("cellSize"); }
             if (offset == RCNumVector.Undefined) { throw new ArgumentNullException("offset"); }
 
             this.cellSize = cellSize;
             this.offset = offset;
-            this.outputImage = new Bitmap((grid.Width + 2 * offset.X) * cellSize, (grid.Height + 2 * offset.Y) * cellSize, PixelFormat.Format24bppRgb);
+            this.outputImage = new Bitmap((gridSize.X + 2 * offset.X) * cellSize, (gridSize.Y + 2 * offset.Y) * cellSize, PixelFormat.Format24bppRgb);
             this.graphicContext = Graphics.FromImage(this.outputImage);
             this.graphicContext.Clear(Color.White);
+        }
+
+        /// <summary>
+        /// Constructs a NavmeshPainter instance.
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <param name="cellSize"></param>
+        /// <param name="offset"></param>
+        public NavmeshPainter(IWalkabilityGrid grid, int cellSize, RCIntVector offset)
+            : this(new RCIntVector(grid.Width, grid.Height), cellSize, offset)
+        {
+            if (grid == null) { throw new ArgumentNullException("grid"); }
 
             /// Draw the original grid enlarged.
             for (int row = 0; row < grid.Height; row++)

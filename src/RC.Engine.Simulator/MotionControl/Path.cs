@@ -11,20 +11,24 @@ namespace RC.Engine.Simulator.MotionControl
     /// <summary>
     /// Represents a path computed by the pathfinder.
     /// </summary>
-    abstract class Path : IPath
+    class Path : IPath
     {
         /// <summary>
         /// Constructs a new Path instance.
         /// </summary>
-        public Path()
+        /// <param name="searchAlgorithm">The algorithm that computes the path.</param>
+        public Path(PathFindingAlgorithm searchAlgorithm)
         {
             this.nodesOnPath = null;
+            this.searchAlgorithm = searchAlgorithm;
+            this.blockedEdges = new HashSet<Tuple<INavMeshNode, INavMeshNode>>();
+            searchAlgorithm.CopyBlockedEdges(ref this.blockedEdges);
         }
 
         #region IPath methods
 
         /// <see cref="IPath.IsReadyForUse"/>
-        public abstract bool IsReadyForUse { get; }
+        public bool IsReadyForUse { get { return this.searchAlgorithm.IsFinished; } }
 
         /// <see cref="IPath.IsTargetFound"/>
         public bool IsTargetFound
@@ -33,18 +37,18 @@ namespace RC.Engine.Simulator.MotionControl
             {
                 if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
                 if (this.nodesOnPath == null) { this.nodesOnPath = this.CollectNodesOnPath(); }
-                return this.nodesOnPath[this.Length - 1] == this.ToNode;
+                return this.nodesOnPath[this.Length - 1].Polygon.Contains(this.ToCoords);
             }
         }
         
         /// <see cref="IPath.this[]"/>
-        public RCIntRectangle this[int index]
+        public RCPolygon this[int index]
         {
             get
             {
                 if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
                 if (this.nodesOnPath == null) { this.nodesOnPath = this.CollectNodesOnPath(); }
-                return this.nodesOnPath[index].AreaOnMap;
+                return this.nodesOnPath[index].Polygon;
             }
         }
 
@@ -63,7 +67,7 @@ namespace RC.Engine.Simulator.MotionControl
         public void ForgetBlockedEdges()
         {
             if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
-            this.ForgetBlockedEdgesImpl();
+            this.blockedEdges.Clear();
         }
 
         #endregion IPath methods
@@ -74,7 +78,15 @@ namespace RC.Engine.Simulator.MotionControl
         /// Gets the list of nodes in the completed list.
         /// </summary>
         /// <remarks>TODO: this is only for debugging!</remarks>
-        protected internal abstract IEnumerable<PFTreeNode> CompletedNodes { get; }
+        internal IEnumerable<INavMeshNode> CompletedNodes
+        {
+            get
+            {
+                List<INavMeshNode> retList = new List<INavMeshNode>();
+                foreach (PathNode completedNode in this.searchAlgorithm.CompletedNodes) { retList.Add(completedNode.Node); }
+                return retList;
+            }
+        }
 
         #endregion Methods for debugging
 
@@ -86,7 +98,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="index">The index of the node to get.</param>
         /// <returns>The node at the given index.</returns>
         /// <exception cref="InvalidOperationException">If the path is not ready for use.</exception>
-        public PFTreeNode GetPathNode(int index)
+        public INavMeshNode GetPathNode(int index)
         {
             if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
             if (this.nodesOnPath == null) { this.nodesOnPath = this.CollectNodesOnPath(); }
@@ -97,35 +109,53 @@ namespace RC.Engine.Simulator.MotionControl
         /// Copies the blocked edges of this path to the target set.
         /// </summary>
         /// <param name="targetSet">The target set to copy.</param>
-        /// <remarks>Can be overriden in the derived classes. The default implementation does nothing.</remarks>
-        public virtual void CopyBlockedEdges(ref HashSet<Tuple<int, int>> targetSet) { }
-
-        /// <summary>
-        /// Forgets every blocked edges that was used when the path was computed.
-        /// </summary>
-        /// <remarks>Can be overriden in the derived classes. The default implementation does nothing.</remarks>
-        protected virtual void ForgetBlockedEdgesImpl() { }
+        public void CopyBlockedEdges(ref HashSet<Tuple<INavMeshNode, INavMeshNode>> targetSet)
+        {
+            foreach (Tuple<INavMeshNode, INavMeshNode> blockedEdge in this.blockedEdges) { targetSet.Add(blockedEdge); }
+        }
 
         /// <summary>
         /// Gets the source node of this path.
         /// </summary>
-        public abstract PFTreeNode FromNode { get; }
+        public INavMeshNode FromNode { get { return this.searchAlgorithm.FromNode.Node; } }
 
         /// <summary>
-        /// Gets the target node of this path.
+        /// Gets the target coordinates of this path.
         /// </summary>
-        public abstract PFTreeNode ToNode { get; }
+        public RCNumVector ToCoords { get { return this.searchAlgorithm.ToCoords; } }
 
         #endregion Internal methods
 
         /// <summary>
         /// Collects the nodes along the computed path.
         /// </summary>
-        protected abstract List<PFTreeNode> CollectNodesOnPath();
+        private List<INavMeshNode> CollectNodesOnPath()
+        {
+            List<INavMeshNode> retList = new List<INavMeshNode>();
+            PathNode currNode = this.searchAlgorithm.BestNode;
+            retList.Add(currNode.Node);
+            while (currNode != this.searchAlgorithm.FromNode)
+            {
+                currNode = currNode.PreviousNode;
+                retList.Add(currNode.Node);
+            }
+            retList.Reverse();
+            return retList;
+        }
 
         /// <summary>
         /// The list of the nodes along this path.
         /// </summary>
-        private List<PFTreeNode> nodesOnPath;
+        private List<INavMeshNode> nodesOnPath;
+
+        /// <summary>
+        /// Reference to the algorithm that computes this path.
+        /// </summary>
+        private PathFindingAlgorithm searchAlgorithm;
+
+        /// <summary>
+        /// List of the blocked edges.
+        /// </summary>
+        private HashSet<Tuple<INavMeshNode, INavMeshNode>> blockedEdges;
     }
 }

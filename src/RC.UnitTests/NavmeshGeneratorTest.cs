@@ -67,7 +67,9 @@ namespace RC.UnitTests
             string outputPath = System.IO.Path.Combine(OUTPUT_DIR, outputFile);
 
             TestContext.WriteLine("Reading walkability grid: {0}", inputPath);
-            TestWalkabilityGrid grid = new TestWalkabilityGrid((Bitmap)Bitmap.FromFile(inputPath));
+            Bitmap testMapBmp = (Bitmap)Bitmap.FromFile(inputPath);
+            TestWalkabilityGrid grid = new TestWalkabilityGrid(testMapBmp);
+            testMapBmp.Dispose();
 
             TestContext.WriteLine("Generating navmesh...");
             Stopwatch watch = Stopwatch.StartNew();

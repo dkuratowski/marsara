@@ -113,6 +113,7 @@ namespace RC.UnitTests
 
                 TestContext.WriteLine("Check the equality of the loaded and the generated navmesh...");
                 this.CompareNavmeshes(loadedNavmesh, generatedNavmesh);
+                Assert.AreEqual<RCIntVector>(map.CellSize, generatedNavmesh.GridSize);
                 TestContext.WriteLine("OK");
 
                 TestContext.WriteLine("Serializing the generated navmesh...");
@@ -186,6 +187,7 @@ namespace RC.UnitTests
         private void CompareNavmeshes(INavMesh navmeshA, INavMesh navmeshB)
         {
             Assert.AreEqual<int>(navmeshA.WalkabilityHash, navmeshB.WalkabilityHash);
+            Assert.AreEqual<RCIntVector>(navmeshA.GridSize, navmeshB.GridSize);
 
             List<INavMeshNode> nodesA = new List<INavMeshNode>(navmeshA.Nodes);
             List<INavMeshNode> nodesB = new List<INavMeshNode>(navmeshB.Nodes);

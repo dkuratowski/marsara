@@ -21,63 +21,41 @@ namespace RC.Engine.Simulator.MotionControl
         /// </summary>
         public PathFinder()
         {
-            this.pathfinderTreeRoot = null;
             this.algorithmQueue = null;
             this.pathCache = null;
+            this.navmesh = null;
+            this.navmeshNodes = null;
             this.maxIterationsPerFrame = 0;
         }
 
         /// <see cref="IPathFinder.Initialize"/>
-        public void Initialize(IMapAccess map, int maxIterationsPerFrame)
+        public void Initialize(INavMesh navmesh, int maxIterationsPerFrame)
         {
-            if (map == null) { throw new ArgumentNullException("map"); }
+            if (navmesh == null) { throw new ArgumentNullException("navmesh"); }
             if (maxIterationsPerFrame <= 0) { throw new ArgumentOutOfRangeException("maxIterationsPerFrame", "Maximum number of iterations per frame must be greater than 0!"); }
             this.maxIterationsPerFrame = maxIterationsPerFrame;
 
-            /// Find the number of subdivision levels.
-            int boundingBoxSize = Math.Max(map.CellSize.X, map.CellSize.Y);
-            int subdivisionLevels = 1;
-            while (boundingBoxSize > (int)Math.Pow(2, subdivisionLevels)) { subdivisionLevels++; }
+            /// Construct the search tree for the navmesh nodes.
+            this.navmeshNodes = new BspSearchTree<INavMeshNode>(
+                new RCNumRectangle(-(RCNumber)1 / (RCNumber)2,
+                                   -(RCNumber)1 / (RCNumber)2,
+                                   navmesh.GridSize.X,
+                                   navmesh.GridSize.Y),
+                BSP_NODE_CAPACITY, BSP_MIN_NODE_SIZE);
 
-            /// Create the root node of the pathfinder tree.
-            this.pathfinderTreeRoot = new PFTreeNode(subdivisionLevels);
+            /// Attach the navmesh nodes into the search tree.
+            foreach (INavMeshNode navmeshNode in navmesh.Nodes) { this.navmeshNodes.AttachContent(navmeshNode); }
 
-            /// Add the obstacles to the pathfinder tree.
-            for (int row = 0; row < this.pathfinderTreeRoot.AreaOnMap.Height; row++)
-            {
-                for (int column = 0; column < this.pathfinderTreeRoot.AreaOnMap.Width; column++)
-                {
-                    if (row >= map.CellSize.Y || column >= map.CellSize.X)
-                    {
-                        /// Everything out of the map range is considered to be obstacle.
-                        this.pathfinderTreeRoot.AddObstacle(new RCIntVector(column, row));
-                    }
-                    else
-                    {
-                        /// Add obstacle depending on the "IsWalkable" flag of the cell.
-                        if (!map.GetCell(new RCIntVector(column, row)).IsWalkable)
-                        {
-                            this.pathfinderTreeRoot.AddObstacle(new RCIntVector(column, row));
-                        }
-                    }
-                }
-            }
-
-            /// Search the neighbours of the leaf nodes.
-            foreach (PFTreeNode leafNode in this.pathfinderTreeRoot.GetAllLeafNodes())
-            {
-                leafNode.SearchNeighbours();
-            }
-
-            this.pathfinderTreeRoot.SetLeafNodeIndices();
+            /// Construct the algorithm-queue and the path-cache.
             this.algorithmQueue = new Queue<PathFindingAlgorithm>();
             this.pathCache = new PathCache(PATH_CACHE_CAPACITY);
+            this.navmesh = navmesh;
         }
 
         /// <see cref="IPathFinder.ContinueSearching"/>
         public void ContinueSearching()
         {
-            if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
+            if (this.navmeshNodes == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
             if (this.algorithmQueue.Count == 0) { return; }
 
             int remainingIterations = this.maxIterationsPerFrame;
@@ -90,36 +68,31 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         /// <see cref="IPathFinder.StartPathSearching"/>
-        public IPath StartPathSearching(RCIntVector fromCoords, RCIntVector toCoords, int iterationLimit)
+        public IPath StartPathSearching(RCNumVector fromCoords, RCNumVector toCoords, int iterationLimit)
         {
-            if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
-            if (fromCoords == RCIntVector.Undefined) { throw new ArgumentNullException("fromCoords"); }
-            if (toCoords == RCIntVector.Undefined) { throw new ArgumentNullException("toCoords"); }
+            if (this.navmeshNodes == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
+            if (fromCoords == RCNumVector.Undefined) { throw new ArgumentNullException("fromCoords"); }
+            if (toCoords == RCNumVector.Undefined) { throw new ArgumentNullException("toCoords"); }
             if (iterationLimit <= 0) { throw new ArgumentOutOfRangeException("iterationLimit", "Iteration limit must be greater than 0!"); }
 
-            /// Determine the source and the target nodes in the pathfinding tree.
-            PFTreeNode fromNode = this.pathfinderTreeRoot.GetLeafNode(fromCoords);
-            if (!fromNode.IsWalkable) { throw new ArgumentException("The starting cell of the path must be walkable!"); }
-            PFTreeNode toNode = this.pathfinderTreeRoot.GetLeafNode(toCoords);
+            /// Determine the source and the target nodes in the navmesh.
+            INavMeshNode fromNode = this.navmeshNodes.GetContents(fromCoords).FirstOrDefault();
+            if (fromNode == null) { throw new ArgumentException("The beginning of the path must be walkable!"); }
+            INavMeshNode toNode = this.navmeshNodes.GetContents(toCoords).FirstOrDefault();
 
             /// Try to find a cached path between the regions of the source and the target node.
-            PathCacheItem cachedAlgorithm = this.pathCache.FindCachedPathFinding(fromNode, toNode);
+            PathCacheItem cachedAlgorithm = toNode != null ? this.pathCache.FindCachedPathFinding(fromNode, toNode) : null;
             if (cachedAlgorithm != null)
             {
                 /// Cached path was found -> Create a new Path instance based on the cached path.
-                EndpointConnectionAlgorithm srcConnectionAlgorithm = new EndpointConnectionAlgorithm(fromNode, cachedAlgorithm.SourceRegion, cachedAlgorithm.Algorithm, iterationLimit);
-                EndpointConnectionAlgorithm tgtConnectionAlgorithm = new EndpointConnectionAlgorithm(toNode, cachedAlgorithm.TargetRegion, cachedAlgorithm.Algorithm, iterationLimit);
-                Path retPath = new DerivedPath(srcConnectionAlgorithm, tgtConnectionAlgorithm);
-                this.algorithmQueue.Enqueue(srcConnectionAlgorithm);
-                this.algorithmQueue.Enqueue(tgtConnectionAlgorithm);
-                return retPath;
+                return new Path(cachedAlgorithm.Algorithm);
             }
             else
             {
                 /// No cached path was found -> Create a totally new Path instance and save it to the cache.
-                DirectPathFindingAlgorithm searchAlgorithm = new DirectPathFindingAlgorithm(fromNode, toNode, iterationLimit);
-                Path newPath = new DirectPath(searchAlgorithm);
-                this.pathCache.SavePathFinding(searchAlgorithm);
+                PathFindingAlgorithm searchAlgorithm = new PathFindingAlgorithm(fromNode, toCoords, iterationLimit);
+                Path newPath = new Path(searchAlgorithm);
+                if (toNode != null) { this.pathCache.SavePathFinding(searchAlgorithm, toNode); }
                 this.algorithmQueue.Enqueue(searchAlgorithm);
                 return newPath;
             }
@@ -128,99 +101,22 @@ namespace RC.Engine.Simulator.MotionControl
         /// <see cref="IPathFinder.StartDetourSearching"/>
         public IPath StartDetourSearching(IPath originalPath, int abortedSectionIdx, int iterationLimit)
         {
-            if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
+            if (this.navmeshNodes == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
             if (originalPath == null) { throw new ArgumentNullException("originalPath"); }
             if (abortedSectionIdx < 0 || abortedSectionIdx >= originalPath.Length - 1) { throw new ArgumentOutOfRangeException("abortedSectionIdx"); }
             if (iterationLimit <= 0) { throw new ArgumentOutOfRangeException("iterationLimit", "Iteration limit must be greater than 0!"); }
 
-            DirectPathFindingAlgorithm searchAlgorithm = new DirectPathFindingAlgorithm((Path)originalPath, abortedSectionIdx, iterationLimit);
-            Path newPath = new DirectPath(searchAlgorithm);
+            PathFindingAlgorithm searchAlgorithm = new PathFindingAlgorithm((Path)originalPath, abortedSectionIdx, iterationLimit);
+            Path newPath = new Path(searchAlgorithm);
             this.algorithmQueue.Enqueue(searchAlgorithm);
             return newPath;
         }
 
-        /// <see cref="IPathFinder.CheckObstacleIntersection"/>
-        public bool CheckObstacleIntersection(RCNumRectangle area)
-        {
-            if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
-            if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
-
-            int left = area.Left.Round();
-            int top = area.Top.Round();
-            int right = area.Right.Round();
-            int bottom = area.Bottom.Round();
-            RCIntRectangle areaCells = new RCIntRectangle(left, top, right - left + 1, bottom - top + 1);
-            return this.pathfinderTreeRoot.CheckObstacleIntersection(areaCells);
-        }
-
-        /// <see cref="IPathFinder.GetTreeNodes"/>
-        public List<RCIntRectangle> GetTreeNodes(RCIntRectangle area)
-        {
-            if (this.pathfinderTreeRoot == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
-            if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
-
-            List<RCIntRectangle> retList = new List<RCIntRectangle>();
-            foreach (PFTreeNode treeNode in this.pathfinderTreeRoot.GetAllLeafNodes(area))
-            {
-                retList.Add(treeNode.AreaOnMap);
-            }
-            return retList;
-        }
-
         /// <summary>
-        /// Initializes the pathfinder component with the given pathfinder tree root.
+        /// Gets the navmesh that this pathfinder is initialized with.
         /// </summary>
-        /// <param name="pfTreeRoot">The tree root to initialize with.</param>
-        /// <param name="maxIterationsPerFrame">The maximum number of search iterations per frame.</param>
-        /// <remarks>TODO: this is only for debugging!</remarks>
-        internal void Initialize(PFTreeNode pfTreeRoot, int maxIterationsPerFrame)
-        {
-            if (pfTreeRoot == null) { throw new ArgumentNullException("pfTreeRoot"); }
-            if (maxIterationsPerFrame <= 0) { throw new ArgumentOutOfRangeException("maxIterationsPerFrame", "Maximum number of iterations per frame must be greater than 0!"); }
-            this.pathfinderTreeRoot = pfTreeRoot;
-            this.maxIterationsPerFrame = maxIterationsPerFrame;
-
-            /// Search the neighbours of the leaf nodes.
-            foreach (PFTreeNode leafNode in this.pathfinderTreeRoot.GetAllLeafNodes())
-            {
-                leafNode.SearchNeighbours();
-            }
-
-            this.pathfinderTreeRoot.SetLeafNodeIndices();
-            this.algorithmQueue = new Queue<PathFindingAlgorithm>();
-            this.pathCache = new PathCache(PATH_CACHE_CAPACITY);
-        }
-
-        /// <summary>
-        /// Gets the leaf node with the given ID.
-        /// </summary>
-        /// <param name="id">The ID of the leaf node to get.</param>
-        /// <returns>The leaf node with the given ID.</returns>
-        /// <remarks>TODO: this is only for debugging!</remarks>
-        internal PFTreeNode GetLeafNodeByID(int id)
-        {
-            if (this.leafNodeMap == null)
-            {
-                this.leafNodeMap = new PFTreeNode[this.pathfinderTreeRoot.LeafCount];
-                foreach (PFTreeNode leafNode in this.pathfinderTreeRoot.GetAllLeafNodes())
-                {
-                    this.leafNodeMap[leafNode.Index] = leafNode;
-                }
-            }
-
-            return this.leafNodeMap[id];
-        }
-
-        /// <summary>
-        /// Gets the root node of the pathfinder tree.
-        /// </summary>
-        /// <remarks>TODO: this is only for debugging!</remarks>
-        internal PFTreeNode PathfinderTreeRoot { get { return this.pathfinderTreeRoot; } }
-
-        /// <summary>
-        /// Reference to the root of the pathfinder tree.
-        /// </summary>
-        private PFTreeNode pathfinderTreeRoot;
+        /// <remarks>TODO: only for debugging!</remarks>
+        internal INavMesh Navmesh { get { return this.navmesh; } }
 
         /// <summary>
         /// The FIFO list of the pathfinding algorithm that are currently being executed.
@@ -233,19 +129,29 @@ namespace RC.Engine.Simulator.MotionControl
         private PathCache pathCache;
 
         /// <summary>
+        /// The search tree of the navmesh nodes.
+        /// </summary>
+        private ISearchTree<INavMeshNode> navmeshNodes;
+
+        /// <summary>
+        /// Reference to the navmesh that this PathFinder is currently initialized with.
+        /// </summary>
+        private INavMesh navmesh;
+
+        /// <summary>
         /// The maximum number of search iterations per frame.
         /// </summary>
         private int maxIterationsPerFrame;
 
         /// <summary>
-        /// The list of the leaf nodes mapped by their IDs.
-        /// </summary>
-        /// <remarks>TODO: this is only for debugging!</remarks>
-        private PFTreeNode[] leafNodeMap;
-
-        /// <summary>
         /// The capacity of the path cache.
         /// </summary>
         private const int PATH_CACHE_CAPACITY = 20;
+
+        /// <summary>
+        /// Constants of the INavMeshNode search-tree.
+        /// </summary>
+        private const int BSP_NODE_CAPACITY = 16;
+        private const int BSP_MIN_NODE_SIZE = 10;
     }
 }

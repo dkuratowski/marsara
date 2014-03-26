@@ -48,8 +48,9 @@ namespace RC.Engine.Maps.Core
             /// Validate the package.
             if (navmeshPackage == null) { return null; }
             int navmeshWalkabilityHash = navmeshPackage.ReadInt(0);
-            byte[] vertexListPackageBytes = navmeshPackage.ReadByteArray(1);
-            byte[] nodeListPackageBytes = navmeshPackage.ReadByteArray(2);
+            RCIntVector gridSize = new RCIntVector(navmeshPackage.ReadInt(1), navmeshPackage.ReadInt(2));
+            byte[] vertexListPackageBytes = navmeshPackage.ReadByteArray(3);
+            byte[] nodeListPackageBytes = navmeshPackage.ReadByteArray(4);
 
             /// Load the vertex and the node list packages.
             int bytesParsed;
@@ -60,7 +61,7 @@ namespace RC.Engine.Maps.Core
 
             /// Load the node list and create the NavMesh object.
             List<RCPolygon> nodePolygons = this.LoadNodeList(vertexListPackage, nodeListPackage);
-            NavMesh loadedNavmesh = new NavMesh(nodePolygons);
+            NavMesh loadedNavmesh = new NavMesh(nodePolygons, gridSize);
             loadedNavmesh.SetWalkabilityHash(navmeshWalkabilityHash);
             return loadedNavmesh;
         }
@@ -102,8 +103,10 @@ namespace RC.Engine.Maps.Core
             /// Create the navmesh package.
             RCPackage navmeshPackage = RCPackage.CreateCustomDataPackage(MapFileFormat.NAVMESH);
             navmeshPackage.WriteInt(0, navmesh.WalkabilityHash);
-            navmeshPackage.WriteByteArray(1, vertexListPackageBytes);
-            navmeshPackage.WriteByteArray(2, nodeListPackageBytes);
+            navmeshPackage.WriteInt(1, navmesh.GridSize.X);
+            navmeshPackage.WriteInt(2, navmesh.GridSize.Y);
+            navmeshPackage.WriteByteArray(3, vertexListPackageBytes);
+            navmeshPackage.WriteByteArray(4, nodeListPackageBytes);
 
             /// Return the bytes of the navmesh package.
             byte[] retArray = new byte[navmeshPackage.PackageLength];
@@ -117,7 +120,9 @@ namespace RC.Engine.Maps.Core
             if (gridToCheck == null) { throw new ArgumentNullException("gridToCheck"); }
             if (navmeshToCheck == null) { throw new ArgumentNullException("navmeshToCheck"); }
 
-            return navmeshToCheck.WalkabilityHash == BitConverter.ToInt32(CRC32.ComputeHash(this.WalkabilityGridToBytes(gridToCheck)), 0);
+            return navmeshToCheck.WalkabilityHash == BitConverter.ToInt32(CRC32.ComputeHash(this.WalkabilityGridToBytes(gridToCheck)), 0) &&
+                   navmeshToCheck.GridSize.X == gridToCheck.Width &&
+                   navmeshToCheck.GridSize.Y == gridToCheck.Height;
         }
 
         #endregion INavMeshLoader methods

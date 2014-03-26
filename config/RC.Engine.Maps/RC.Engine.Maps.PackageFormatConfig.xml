@@ -5,6 +5,8 @@
   <packageFormat namespace="RC.Engine.Maps" name="NavMesh" id="1">
     <description>Contains the navigation mesh of the map.</description>
     <field type="INT">The CRC-32 checksum of the walkability grid that this navmesh is based on.</field>
+    <field type="INT">The width of the walkability grid that this navmesh is based on.</field>
+    <field type="INT">The height of the walkability grid that this navmesh is based on.</field>
     <field type="BYTE_ARRAY">Contains an RC.Engine.Maps.NavMeshVertexList package.</field>
     <field type="BYTE_ARRAY">Contains an RC.Engine.Maps.NavMeshNodeList package.</field>
   </packageFormat>

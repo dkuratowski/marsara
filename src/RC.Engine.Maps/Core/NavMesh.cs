@@ -26,6 +26,7 @@ namespace RC.Engine.Maps.Core
             this.walkabilityHash = 0;
             this.walkabilityHashSet = false;
             this.nodes = new HashSet<NavMeshNode>();
+            this.gridSize = new RCIntVector(grid.Width, grid.Height);
 
             this.helpers = new List<TessellationHelper>();
             WalkabilityQuadTreeNode quadTreeRoot = WalkabilityQuadTreeNode.CreateQuadTree(grid);
@@ -44,14 +45,18 @@ namespace RC.Engine.Maps.Core
         /// Constructs a navigation mesh from the given node list.
         /// </summary>
         /// <param name="nodePolygons">The list that contains the areas of the nodes.</param>
-        public NavMesh(List<RCPolygon> nodePolygons)
+        /// <param name="gridSize">The size of the walkability grid that this navmesh is based on.</param>
+        public NavMesh(List<RCPolygon> nodePolygons, RCIntVector gridSize)
         {
-            if (nodePolygons == null) { throw new ArgumentNullException(); }
+            if (nodePolygons == null) { throw new ArgumentNullException("nodePolygons"); }
+            if (gridSize == RCIntVector.Undefined) { throw new ArgumentNullException("gridSize"); }
+            if (gridSize.X <= 0 || gridSize.Y <= 0) { throw new ArgumentOutOfRangeException("gridSize", "Size of the walkability grid must be greater than 0 in both dimensions!"); }
 
             this.walkabilityHash = 0;
             this.walkabilityHashSet = false;
             this.nodes = new HashSet<NavMeshNode>();
             this.helpers = null;
+            this.gridSize = gridSize;
 
             /// Create a temporary vertex map that is used for setting the neighbourhood relationships between the nodes.
             Dictionary<RCNumVector, HashSet<NavMeshNode>> vertexMap = new Dictionary<RCNumVector, HashSet<NavMeshNode>>();
@@ -100,6 +105,9 @@ namespace RC.Engine.Maps.Core
                 return this.walkabilityHash;
             }
         }
+
+        /// <see cref="INavMesh.GridSize"/>
+        public RCIntVector GridSize { get { return this.gridSize; } }
 
         /// <see cref="INavMesh.Nodes"/>
         public IEnumerable<INavMeshNode> Nodes { get { return this.nodes; } }
@@ -164,6 +172,11 @@ namespace RC.Engine.Maps.Core
         /// The list of the nodes of this navigation mesh.
         /// </summary>
         private HashSet<NavMeshNode> nodes;
+
+        /// <summary>
+        /// The size of the walkability grid that this navmesh is based on.
+        /// </summary>
+        private RCIntVector gridSize;
 
         /// <summary>
         /// The hash value of the walkability grid that this navmesh is based on.

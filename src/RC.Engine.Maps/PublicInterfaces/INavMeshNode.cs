@@ -9,7 +9,7 @@ namespace RC.Engine.Maps.PublicInterfaces
     /// <summary>
     /// The interface of the nodes in a navigation mesh.
     /// </summary>
-    public interface INavMeshNode
+    public interface INavMeshNode : ISearchTreeContent
     {
         /// <summary>
         /// Gets the polygon that represents the area of this node on the 2D plane.

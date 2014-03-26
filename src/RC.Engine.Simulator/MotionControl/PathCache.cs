@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.MotionControl
 {
@@ -21,32 +22,25 @@ namespace RC.Engine.Simulator.MotionControl
             
             this.capacity = capacity;
             this.pathCacheHeap = new BinaryHeap<PathCacheItem>(BinaryHeap<PathCacheItem>.HeapType.MinHeap);
-            this.pathCache = new Dictionary<Tuple<Region, Region>, PathCacheItem>();
+            this.pathCache = new Dictionary<Tuple<INavMeshNode, INavMeshNode>, PathCacheItem>();
         }
 
         /// <summary>
-        /// Finds a cached pathfinding algorithm between the regions of the given nodes.
+        /// Finds a cached pathfinding algorithm between the given navmesh nodes.
         /// </summary>
-        /// <param name="fromNode">The source node.</param>
-        /// <param name="toNode">The target node.</param>
+        /// <param name="fromNode">The source navmesh node.</param>
+        /// <param name="toNode">The target navmesh node.</param>
         /// <returns>
-        /// The PathCacheItem that contains the requested pathfinding algorithm or null if there is no cached pathfinding algorithm between the
-        /// regions of the given nodes.
+        /// The PathCacheItem that contains the requested pathfinding algorithm or null if there is no cached pathfinding algorithm between
+        /// the given navmesh nodes.
         /// </returns>
-        public PathCacheItem FindCachedPathFinding(PFTreeNode fromNode, PFTreeNode toNode)
+        public PathCacheItem FindCachedPathFinding(INavMeshNode fromNode, INavMeshNode toNode)
         {
             /// Try to find a cached pathfinding algorithms between the given nodes.
             PathCacheItem returnedItem = null;
-            foreach (Region fromRegion in fromNode.Regions)
+            if (this.pathCache.ContainsKey(new Tuple<INavMeshNode, INavMeshNode>(fromNode, toNode)))
             {
-                foreach (Region toRegion in toNode.Regions)
-                {
-                    if (this.pathCache.ContainsKey(new Tuple<Region,Region>(fromRegion, toRegion)))
-                    {
-                        returnedItem = this.pathCache[new Tuple<Region, Region>(fromRegion, toRegion)];
-                        break;
-                    }
-                }
+                returnedItem = this.pathCache[new Tuple<INavMeshNode, INavMeshNode>(fromNode, toNode)];
             }
 
             /// Update the values of the PathCacheItems if a cached pathfinding algorithm was found.
@@ -65,49 +59,30 @@ namespace RC.Engine.Simulator.MotionControl
         /// Saves the given pathfinding algorithm for future use if another similar pathfinding algorithm has not yet been saved.
         /// </summary>
         /// <param name="algorithmToSave">The pathfinding algorithm to be saved.</param>
-        public void SavePathFinding(DirectPathFindingAlgorithm algorithmToSave)
+        /// <param name="toNode">The target node of the pathfinding algorithm.</param>
+        public void SavePathFinding(PathFindingAlgorithm algorithmToSave, INavMeshNode toNode)
         {
             PathCacheItem similarPath = null;
-            foreach (Region fromRegion in algorithmToSave.FromNode.Node.Regions)
+            if (this.pathCache.ContainsKey(new Tuple<INavMeshNode, INavMeshNode>(algorithmToSave.FromNode.Node, toNode)))
             {
-                foreach (Region toRegion in algorithmToSave.ToNode.Regions)
-                {
-                    if (this.pathCache.ContainsKey(new Tuple<Region, Region>(fromRegion, toRegion)))
-                    {
-                        similarPath = this.pathCache[new Tuple<Region, Region>(fromRegion, toRegion)];
-                        break;
-                    }
-                }
+                similarPath = this.pathCache[new Tuple<INavMeshNode, INavMeshNode>(algorithmToSave.FromNode.Node, toNode)];
             }
 
             /// Save the pathfinding algorithm if a similar pathfinding algorithm was not found in the cache.
             if (similarPath == null)
             {
-                Region fromRegion = new Region(algorithmToSave.FromNode.Node, REGION_RADIUS);
-                if (fromRegion.HasNode(algorithmToSave.ToNode))
+                if (this.pathCacheHeap.Count == this.capacity)
                 {
-                    return;
+                    /// We have reached the capacity of the cache -> remove the least valueable item from the cache.
+                    PathCacheItem itemToRemove = this.pathCacheHeap.MaxMinItem;
+                    this.pathCacheHeap.DeleteMaxMin();
+                    this.pathCache.Remove(new Tuple<INavMeshNode, INavMeshNode>(itemToRemove.SourceNode, itemToRemove.TargetNode));
                 }
-                else
-                {
-                    Region toRegion = new Region(algorithmToSave.ToNode, REGION_RADIUS);
-                    if (this.pathCacheHeap.Count == this.capacity)
-                    {
-                        /// We have reached the capacity of the cache -> remove the least valueable item from the cache.
-                        PathCacheItem itemToRemove = this.pathCacheHeap.MaxMinItem;
-                        this.pathCacheHeap.DeleteMaxMin();
-                        this.pathCache.Remove(new Tuple<Region, Region>(itemToRemove.SourceRegion, itemToRemove.TargetRegion));
-                        itemToRemove.SourceRegion.Release();
-                        itemToRemove.TargetRegion.Release();
-                    }
 
-                    /// Add the new item to the cache.
-                    PathCacheItem itemToAdd = new PathCacheItem(fromRegion, toRegion, algorithmToSave);
-                    this.pathCache.Add(new Tuple<Region, Region>(fromRegion, toRegion), itemToAdd);
-                    this.pathCacheHeap.Insert(itemToAdd);
-                    itemToAdd.SourceRegion.AddRef();
-                    itemToAdd.TargetRegion.AddRef();
-                }
+                /// Add the new item to the cache.
+                PathCacheItem itemToAdd = new PathCacheItem(algorithmToSave.FromNode.Node, toNode, algorithmToSave);
+                this.pathCache.Add(new Tuple<INavMeshNode, INavMeshNode>(algorithmToSave.FromNode.Node, toNode), itemToAdd);
+                this.pathCacheHeap.Insert(itemToAdd);
             }
         }
 
@@ -119,16 +94,11 @@ namespace RC.Engine.Simulator.MotionControl
         /// <summary>
         /// The list of the cached paths mapped by their source and target regions.
         /// </summary>
-        private Dictionary<Tuple<Region, Region>, PathCacheItem> pathCache;
+        private Dictionary<Tuple<INavMeshNode, INavMeshNode>, PathCacheItem> pathCache;
 
         /// <summary>
         /// The maximum number of paths stored by this PathCache.
         /// </summary>
         private int capacity;
-
-        /// <summary>
-        /// The radius of the regions created by this PathCache.
-        /// </summary>
-        private const int REGION_RADIUS = 40;
     }
 }

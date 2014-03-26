@@ -10,7 +10,7 @@ namespace RC.Engine.Maps.Core
     /// <summary>
     /// Represents a node in a navmesh graph.
     /// </summary>
-    class NavMeshNode : ISearchTreeContent, INavMeshNode
+    class NavMeshNode : INavMeshNode
     {
         /// <summary>
         /// Constructs a triangular NavMeshNode.
