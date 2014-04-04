@@ -269,6 +269,11 @@ namespace RC.Common
         /// </summary>
         public int Bits { get { return (int)this.rawValue; } }
 
+        /// <summary>
+        /// The square root of 2.
+        /// </summary>
+        public static readonly RCNumber ROOT_OF_TWO = (new RCNumVector(1, 1)).Length;
+
         #endregion Public fields
 
         #region Private fields

@@ -24,6 +24,7 @@ namespace RC.Engine.Simulator.Scenarios
             if (elementTypeName == null) { throw new ArgumentNullException("elementTypeName"); }
 
             this.position = this.ConstructField<RCNumVector>("position");
+            this.velocity = this.ConstructField<RCNumVector>("velocity");
             this.id = this.ConstructField<int>("id");
             this.typeID = this.ConstructField<int>("typeID");
 
@@ -32,6 +33,7 @@ namespace RC.Engine.Simulator.Scenarios
             this.currentAnimations = new List<AnimationPlayer>();
 
             this.position.Write(RCNumVector.Undefined);
+            this.velocity.Write(new RCNumVector(0, 0));
             this.id.Write(-1);
             this.typeID.Write(this.elementType.ID);
         }
@@ -199,6 +201,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// The position of this entity.
         /// </summary>
         private HeapedValue<RCNumVector> position;
+
+        /// <summary>
+        /// The velocity of this entity.
+        /// </summary>
+        private HeapedValue<RCNumVector> velocity;
 
         /// <summary>
         /// The ID of this entity.

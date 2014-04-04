@@ -10,52 +10,46 @@ namespace RC.Engine.Simulator.MotionControl
     /// <summary>
     /// This class implements the motion controlling algorithm of the moving entities.
     /// </summary>
-    class MotionController
+    class MotionController : IMotionController
     {
-        /// <summary>
-        /// Constructs a MotionController instance.
-        /// </summary>
-        /// <param name="actuator">The actuator of this entity that belongs to this controller.</param>
-        public MotionController(IEntityActuator actuator)
-        {
-            if (actuator == null) { throw new ArgumentNullException("actuator"); }
-            this.actuator = actuator;
-        }
+        #region IMotionController methods
 
-        /// <summary>
-        /// Call this method to update the velocity of the controlled entity.
-        /// </summary>
-        public void UpdateVelocity()
+        /// <see cref="IMotionController.UpdateVelocity"/>
+        public void UpdateVelocity(IMotionControlTarget target, IMotionControlActuator actuator, IMotionControlEnvironment environment)
         {
-            List<RCNumVector> admissibleVelocities = this.actuator.GetAdmissibleVelocities();
-            List<DynamicObstacleInfo> obstacles = this.actuator.GetDynamicObstacles();
+            int currVelocityIndex = 0;
             int bestVelocityIndex = -1;
-            RCNumber leastPenalty = 0;
+            RCNumber minPenalty = 0;
 
-            for (int currIdx = 0; currIdx < admissibleVelocities.Count; currIdx++)
+            foreach (RCNumVector admissibleVelocity in actuator.AdmissibleVelocities)
             {
-                RCNumVector checkedVelocity = admissibleVelocities[currIdx] * 2 - this.actuator.CurrentVelocity; /// We calculate with RVOs instead of VOs.
+                RCNumVector checkedVelocity = admissibleVelocity * 2 - target.Velocity; /// We calculate with RVOs instead of VOs.
                 RCNumber timeToCollisionMin = -1;
-                foreach (DynamicObstacleInfo obstacle in obstacles)
+                foreach (DynamicObstacleInfo obstacle in environment.DynamicObstacles)
                 {
-                    RCNumber timeToCollision = MotionController.CalculateTimeToCollision(this.actuator.CurrentPosition, checkedVelocity, obstacle.Position, obstacle.Velocity);
+                    RCNumber timeToCollision = MotionController.CalculateTimeToCollision(target.Position, checkedVelocity, obstacle.Position, obstacle.Velocity);
                     if (timeToCollision >= 0 && (timeToCollisionMin < 0 || timeToCollision < timeToCollisionMin)) { timeToCollisionMin = timeToCollision; }
                 }
 
                 if (timeToCollisionMin != 0)
                 {
                     RCNumber penalty = (timeToCollisionMin > 0 ? (RCNumber)1 / timeToCollisionMin : 0)
-                                     + MapUtils.ComputeDistance(this.actuator.PreferredVelocity, admissibleVelocities[currIdx]);
-                    if (bestVelocityIndex == -1 || penalty < leastPenalty)
+                                     + MapUtils.ComputeDistance(environment.PreferredVelocity, admissibleVelocity);
+                    if (bestVelocityIndex == -1 || penalty < minPenalty)
                     {
-                        leastPenalty = penalty;
-                        bestVelocityIndex = currIdx;
+                        minPenalty = penalty;
+                        bestVelocityIndex = currVelocityIndex;
                     }
                 }
+                currVelocityIndex++;
             }
 
-            if (bestVelocityIndex != -1) { this.actuator.SetVelocity(bestVelocityIndex); }
+            if (bestVelocityIndex != -1) { actuator.SelectNewVelocity(bestVelocityIndex); }
         }
+
+        #endregion IMotionController methods
+
+        #region Internal helper methods
 
         /// <summary>
         /// Calculates the time to collision between two moving rectangular objects.
@@ -134,9 +128,6 @@ namespace RC.Engine.Simulator.MotionControl
             }
         }
 
-        /// <summary>
-        /// Reference to the actuator of the entity that belongs to this controller.
-        /// </summary>
-        private IEntityActuator actuator;
+        #endregion Internal helper methods
     }
 }

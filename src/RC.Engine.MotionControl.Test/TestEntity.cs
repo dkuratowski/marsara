@@ -12,7 +12,7 @@ namespace RC.Engine.MotionControl.Test
     /// <summary>
     /// Represents a test entity.
     /// </summary>
-    class TestEntity : IEntityActuator, ISearchTreeContent
+    class TestEntity : IMotionControlTarget, IMotionControlActuator, IMotionControlEnvironment, ISearchTreeContent
     {
         /// <summary>
         /// Constructs a TestEntity instance.
@@ -27,21 +27,21 @@ namespace RC.Engine.MotionControl.Test
             this.currentSpeed = 0;
             this.goal = this.currentPosition;
             this.currentDirection = MapDirection.North;
-            this.controller = new MotionController(this);
             this.admissableVelocities = new List<Tuple<RCNumber, MapDirection>>();
             this.selectedVelocity = null;
             this.entities = entities;
         }
 
         /// <summary>
-        /// Updates the velocity of this entity.
+        /// Updates the velocity of this entity using the given controller.
         /// </summary>
-        public void UpdateVelocity()
+        /// <param name="controller">The controller to use.</param>
+        public void UpdateVelocity(IMotionController controller)
         {
-            if (this.currentSpeed != 0 || !this.CurrentPosition.Contains(this.goal))
+            if (this.currentSpeed != 0 || !this.Position.Contains(this.goal))
             {
                 this.CalculateAdmissibleVelocities();
-                this.controller.UpdateVelocity();
+                controller.UpdateVelocity(this, this, this);
             }
         }
 
@@ -56,7 +56,7 @@ namespace RC.Engine.MotionControl.Test
                 this.currentDirection = this.selectedVelocity.Item2;
                 this.selectedVelocity = null;
                 
-                RCNumRectangle newPosition = new RCNumRectangle(this.currentPosition + this.CurrentVelocity - this.size / 2, this.size);
+                RCNumRectangle newPosition = new RCNumRectangle(this.currentPosition + this.Velocity - this.size / 2, this.size);
                 foreach (TestEntity collideWith in this.entities.GetContents(newPosition))
                 {
                     if (collideWith != this)
@@ -68,7 +68,7 @@ namespace RC.Engine.MotionControl.Test
                 }
 
                 if (this.BoundingBoxChanging != null) { this.BoundingBoxChanging(this); }
-                this.currentPosition += this.CurrentVelocity;
+                this.currentPosition += this.Velocity;
                 if (this.BoundingBoxChanged != null) { this.BoundingBoxChanged(this); }
             }
         }
@@ -82,60 +82,74 @@ namespace RC.Engine.MotionControl.Test
             this.goal = newGoal;
         }
 
-        #region IEntityActuator methods
+        #region IMotionControlTarget methods
 
-        /// <see cref="IEntityActuator.CurrentPosition"/>
-        public RCNumRectangle CurrentPosition
+        /// <see cref="IMotionControlTarget.Position"/>
+        public RCNumRectangle Position
         {
             get { return new RCNumRectangle(this.currentPosition - this.size / 2, this.size); }
         }
 
-        /// <see cref="IEntityActuator.CurrentVelocity"/>
-        public RCNumVector CurrentVelocity
+        /// <see cref="IMotionControlTarget.Velocity"/>
+        public RCNumVector Velocity
         {
             get { return UNIT_VECTORS[(int)this.currentDirection] * this.currentSpeed; }
         }
 
-        /// <see cref="IEntityActuator.PreferredVelocity"/>
-        public RCNumVector PreferredVelocity
+        #endregion IMotionControlTarget methods
+
+        #region IMotionControlActuator methods
+
+        /// <see cref="IMotionControlActuator.AdmissibleVelocities"/>
+        public IEnumerable<RCNumVector> AdmissibleVelocities
         {
-            get { return this.goal - this.currentPosition; }
+            get
+            {
+                List<RCNumVector> retList = new List<RCNumVector>();
+                foreach (Tuple<RCNumber, MapDirection> item in this.admissableVelocities)
+                {
+                    retList.Add(UNIT_VECTORS[(int)item.Item2] * item.Item1);
+                }
+                return retList;
+            }
         }
 
-        /// <see cref="IEntityActuator.SetVelocity"/>
-        public void SetVelocity(int selectedVelocityIndex)
+        /// <see cref="IMotionControlActuator.SelectNewVelocity"/>
+        public void SelectNewVelocity(int selectedVelocityIndex)
         {
             this.selectedVelocity = this.admissableVelocities[selectedVelocityIndex];
             this.admissableVelocities.Clear();
         }
 
-        /// <see cref="IEntityActuator.GetAdmissibleVelocities"/>
-        public List<RCNumVector> GetAdmissibleVelocities()
+        #endregion IMotionControlActuator methods
+
+        #region IMotionControlEnvironment methods
+
+        /// <see cref="IMotionControlEnvironment.PreferredVelocity"/>
+        public RCNumVector PreferredVelocity
         {
-            List<RCNumVector> retList = new List<RCNumVector>();
-            foreach (Tuple<RCNumber, MapDirection> item in this.admissableVelocities)
-            {
-                retList.Add(UNIT_VECTORS[(int)item.Item2] * item.Item1);
-            }
-            return retList;
+            get { return this.goal - this.currentPosition; }
         }
 
-        /// <see cref="IEntityActuator.GetDynamicObstacles"/>
-        public List<DynamicObstacleInfo> GetDynamicObstacles()
+        /// <see cref="IMotionControlEnvironment.DynamicObstacles"/>
+        public IEnumerable<DynamicObstacleInfo> DynamicObstacles
         {
-            List<DynamicObstacleInfo> retList = new List<DynamicObstacleInfo>();
-            foreach (TestEntity entityInRange in this.entities.GetContents(new RCNumRectangle(this.currentPosition - new RCNumVector(SIGHT_RANGE, SIGHT_RANGE),
-                                                                                              new RCNumVector(SIGHT_RANGE, SIGHT_RANGE) * 2)))
+            get
             {
-                if (entityInRange != this)
+                List<DynamicObstacleInfo> retList = new List<DynamicObstacleInfo>();
+                foreach (TestEntity entityInRange in this.entities.GetContents(new RCNumRectangle(this.currentPosition - new RCNumVector(SIGHT_RANGE, SIGHT_RANGE),
+                                                                                                  new RCNumVector(SIGHT_RANGE, SIGHT_RANGE) * 2)))
                 {
-                    retList.Add(new DynamicObstacleInfo() { Position = entityInRange.CurrentPosition, Velocity = entityInRange.CurrentVelocity });
+                    if (entityInRange != this)
+                    {
+                        retList.Add(new DynamicObstacleInfo() { Position = entityInRange.Position, Velocity = entityInRange.Velocity });
+                    }
                 }
+                return retList;
             }
-            return retList;
         }
 
-        #endregion IEntityActuator methods
+        #endregion IMotionControlEnvironment methods
 
         #region ISearchTreeContent methods
 
@@ -218,11 +232,6 @@ namespace RC.Engine.MotionControl.Test
         /// The size of this entity.
         /// </summary>
         private RCNumVector size;
-
-        /// <summary>
-        /// Reference to the controller of this entity.
-        /// </summary>
-        private MotionController controller;
 
         /// <summary>
         /// Ordered list of the admissable velocities in the next velocity update.

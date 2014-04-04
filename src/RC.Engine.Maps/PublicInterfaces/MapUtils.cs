@@ -22,12 +22,7 @@ namespace RC.Engine.Maps.PublicInterfaces
             RCNumber horz = (toCoords.X - fromCoords.X).Abs();
             RCNumber vert = (toCoords.Y - fromCoords.Y).Abs();
             RCNumber diff = (horz - vert).Abs();
-            return (horz < vert ? horz : vert) * ROOT_OF_TWO + diff;
+            return (horz < vert ? horz : vert) * RCNumber.ROOT_OF_TWO + diff;
         }
-
-        /// <summary>
-        /// The square root of 2 used in distance calculations.
-        /// </summary>
-        private static readonly RCNumber ROOT_OF_TWO = (RCNumber)14142 / (RCNumber)10000;
     }
 }

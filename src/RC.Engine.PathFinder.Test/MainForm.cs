@@ -47,7 +47,7 @@ namespace RC.Engine.PathFinder.Test
         {
             /// Create and initialize the pathfinder.
             this.pathfinder = new Simulator.MotionControl.PathFinder();
-            this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\maps\\testmap5.rcm"), 5000);
+            this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\maps\\testmap4.rcm"), 5000);
             //this.pathfinder.Initialize(this.ReadTestMapFromImg("pathfinder_testmap2.png"), 5000);
 
             /// Draw the navmesh nodes.
@@ -150,6 +150,10 @@ namespace RC.Engine.PathFinder.Test
                             this.FillPolygon(completedNode.Polygon, outputGC, Brushes.Red, Pens.Black);
                         }
                     }
+                    //if (this.computedPaths.Count == 1)
+                    //{
+                    //    this.DrawPreferredVelocities(path, outputGC);
+                    //}
                     for (int i = 1; i < path.Length; ++i)
                     {
                         RCNumVector prevNodeCenter = path[i - 1].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
@@ -292,9 +296,46 @@ namespace RC.Engine.PathFinder.Test
         }
 
         /// <summary>
+        /// Draw the preferred velocities onto the path.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="gc">The graphic context.</param>
+        private void DrawPreferredVelocities(RC.Engine.Simulator.MotionControl.Path path, Graphics gc)
+        {
+            for (int nodeIdx = 0; nodeIdx < path.Length; nodeIdx++)
+            {
+                RCPolygon pathNode = path[nodeIdx];
+                RCNumRectangle boundingBox = pathNode.BoundingBox;
+                for (int y = boundingBox.Top.Round(); y < boundingBox.Bottom.Round(); y += 4)
+                {
+                    for (int x = boundingBox.Left.Round(); x < boundingBox.Right.Round(); x += 4)
+                    {
+                        RCNumVector position = new RCNumVector(x, y);
+                        RCNumVector vector = RCNumVector.Undefined;
+                        if (!pathNode.Contains(position)) { continue; }
+                        if (nodeIdx < path.Length - 2)
+                        {
+                            vector = path[nodeIdx + 2].Center - position;
+                        }
+                        else
+                        {
+                            vector = path.ToCoords - position;
+                        }
+
+                        if (vector == RCNumVector.Undefined) { continue; }
+                        if (vector.Length != 0) { vector /= vector.Length; }
+                        RCNumVector lineBegin = position * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                        RCNumVector lineEnd = (position + vector) * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                        gc.DrawLine(Pens.Blue, lineBegin.X.Round(), lineBegin.Y.Round(), lineEnd.X.Round(), lineEnd.Y.Round());
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// The size of a cell on the result images.
         /// </summary>
-        private const int CELL_SIZE = 1;
+        private const int CELL_SIZE = 4;
 
         /// <summary>
         /// The object that creates the image of the navmesh.

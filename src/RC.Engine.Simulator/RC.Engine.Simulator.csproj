@@ -46,6 +46,8 @@
     <Compile Include="ComponentInterfaces\IHeapManagerPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IPlayerInitializer.cs" />
+    <Compile Include="MotionControl\EntityActuatorBase.cs" />
+    <Compile Include="MotionControl\GroundUnitActuator.cs" />
     <Compile Include="MotionControl\PathCache.cs" />
     <Compile Include="MotionControl\PathCacheItem.cs" />
     <Compile Include="MotionControl\PathNode.cs" />
@@ -70,7 +72,7 @@
     <Compile Include="Scenarios\Entity.cs" />
     <Compile Include="Scenarios\IAnimationPalette.cs" />
     <Compile Include="Scenarios\EntityConstraint.cs" />
-    <Compile Include="MotionControl\IEntityActuator.cs" />
+    <Compile Include="MotionControl\IMotionControlIfaces.cs" />
     <Compile Include="Scenarios\IScenarioElementType.cs" />
     <Compile Include="Scenarios\ISpritePalette.cs" />
     <Compile Include="Scenarios\IWeaponData.cs" />
