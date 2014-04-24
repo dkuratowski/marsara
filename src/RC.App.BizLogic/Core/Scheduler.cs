@@ -26,7 +26,7 @@ namespace RC.App.BizLogic.Core
             if (minMsBetweenCalls < 0) { throw new ArgumentOutOfRangeException("minMsBetweenCalls"); }
             this.minMsBetweenCalls = minMsBetweenCalls;
             this.timeSinceLastCall = 0;
-            this.registeredFunctions = new HashSet<ScheduledFunction>();
+            this.registeredFunctions = new List<ScheduledFunction>();
             this.taskManager = ComponentManager.GetInterface<ITaskManager>();
             this.taskManager.SubscribeToSystemUpdate(this.OnSystemUpdate);
         }
@@ -42,7 +42,13 @@ namespace RC.App.BizLogic.Core
         /// </remarks>
         public void AddScheduledFunction(ScheduledFunction function)
         {
-            lock (this.registeredFunctions) { this.registeredFunctions.Add(function); }
+            lock (this.registeredFunctions)
+            {
+                if (!this.registeredFunctions.Contains(function))
+                {
+                    this.registeredFunctions.Add(function);
+                }
+            }
         }
 
         /// <summary>
@@ -131,7 +137,7 @@ namespace RC.App.BizLogic.Core
         /// <summary>
         /// The list of the registered functions.
         /// </summary>
-        private HashSet<ScheduledFunction> registeredFunctions;
+        private List<ScheduledFunction> registeredFunctions;
 
         /// <summary>
         /// The minimum elapsed time between calls in milliseconds.

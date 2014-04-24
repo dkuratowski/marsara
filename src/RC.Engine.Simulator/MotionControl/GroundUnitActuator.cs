@@ -11,7 +11,7 @@ namespace RC.Engine.Simulator.MotionControl
     /// <summary>
     /// The actuator implementation for ground units.
     /// </summary>
-    class GroundUnitActuator : EntityActuatorBase
+    public class GroundUnitActuator : EntityActuatorBase
     {
         /// <summary>
         /// Constructs a GroundUnitActuator instance with the given maximum speed.

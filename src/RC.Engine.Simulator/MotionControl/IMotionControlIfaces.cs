@@ -73,19 +73,4 @@ namespace RC.Engine.Simulator.MotionControl
         /// <returns>A list that contains the dynamic obstacles in the environment of the controlled target.</returns>
         IEnumerable<DynamicObstacleInfo> DynamicObstacles { get; }
     }
-
-    /// <summary>
-    /// Interface of the motion controller.
-    /// </summary>
-    public interface IMotionController
-    {
-        /// <summary>
-        /// Updates the velocity of the given motion controlled target using the given actuator based on the given environmental
-        /// informations.
-        /// </summary>
-        /// <param name="target">Reference to the motion controlled target.</param>
-        /// <param name="actuator">Reference to the actuator.</param>
-        /// <param name="environment">Reference to the environmental informations.</param>
-        void UpdateVelocity(IMotionControlTarget target, IMotionControlActuator actuator, IMotionControlEnvironment environment);
-    }
 }

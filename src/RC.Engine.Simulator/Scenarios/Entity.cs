@@ -7,13 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Engine.Simulator.MotionControl;
 
 namespace RC.Engine.Simulator.Scenarios
 {
     /// <summary>
     /// Scenario elements that have activities on the map.
     /// </summary>
-    public abstract class Entity : HeapedObject, ISearchTreeContent
+    public abstract class Entity : HeapedObject, ISearchTreeContent, IMotionControlTarget
     {
         /// <summary>
         /// Constructs an entity instance.
@@ -27,16 +28,22 @@ namespace RC.Engine.Simulator.Scenarios
             this.velocity = this.ConstructField<RCNumVector>("velocity");
             this.id = this.ConstructField<int>("id");
             this.typeID = this.ConstructField<int>("typeID");
+            this.pathTracker = this.ConstructField<PathTrackerBase>("pathTracker");
 
             this.elementType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetElementType(elementTypeName);
             this.scenario = null;
             this.currentAnimations = new List<AnimationPlayer>();
+            this.entityActuator = null;
+            this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
 
             this.position.Write(RCNumVector.Undefined);
             this.velocity.Write(new RCNumVector(0, 0));
             this.id.Write(-1);
             this.typeID.Write(this.elementType.ID);
+            this.pathTracker.Write(null);
         }
+
+        #region Public interface
 
         /// <summary>
         /// Gets the ID of the entity.
@@ -62,6 +69,10 @@ namespace RC.Engine.Simulator.Scenarios
         /// Gets the scenario that this entity belongs to.
         /// </summary>
         public Scenario Scenario { get { return this.scenario; } }
+
+        #endregion Public interface
+
+        #region Protected methods for the derived classes
 
         /// <summary>
         /// Sets the position of this entity.
@@ -121,6 +132,39 @@ namespace RC.Engine.Simulator.Scenarios
             }
         }
 
+        /// <summary>
+        /// Sets a new actuator for this entity.
+        /// </summary>
+        /// <param name="actuator">The actuator to be set or null to dispose the current actuator.</param>
+        /// <exception cref="InvalidOperationException">If this entity has already an actuator and the parameter is not null.</exception>
+        protected void SetActuator(EntityActuatorBase actuator)
+        {
+            if (this.entityActuator != null && actuator != null) { throw new InvalidOperationException("The entity already has an actuator!"); }
+            
+            if (this.entityActuator != null) { this.entityActuator.Dispose(); }
+            this.entityActuator = actuator;
+        }
+
+        /// <summary>
+        /// Sets a new path-tracker for this entity.
+        /// </summary>
+        /// <param name="pathTracker">The path-tracker to be set or null to dispose the current path-tracker.</param>
+        /// <exception cref="InvalidOperationException">If this entity has already a path-tracker and the parameter is not null.</exception>
+        protected void SetPathTracker(PathTrackerBase pathTracker)
+        {
+            if (this.pathTracker.Read() != null && pathTracker != null) { throw new InvalidOperationException("The entity already has a path-tracker!"); }
+
+            if (this.pathTracker.Read() != null) { this.pathTracker.Read().Dispose(); }
+            this.pathTracker.Write(pathTracker);
+        }
+
+        /// <summary>
+        /// Gets the velocity of this entity.
+        /// </summary>
+        protected IValue<RCNumVector> VelocityValue { get { return this.velocity; } }
+
+        #endregion Protected methods for the derived classes
+
         #region ISearchTreeContent members
 
         /// <see cref="ISearchTreeContent.BoundingBox"/>
@@ -136,6 +180,16 @@ namespace RC.Engine.Simulator.Scenarios
         public event ContentBoundingBoxChangeHdl BoundingBoxChanged;
 
         #endregion ISearchTreeContent members
+
+        #region IMotionControlTarget members
+
+        /// <see cref="IMotionControlTarget.Position"/>
+        public RCNumRectangle Position { get { return this.BoundingBox; } }
+
+        /// <see cref="IMotionControlTarget.Velocity"/>
+        public RCNumVector Velocity { get { return this.velocity.Read(); } }
+
+        #endregion IMotionControlTarget members
 
         #region Internal members
 
@@ -184,6 +238,49 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <summary>
+        /// This method is called on every simulation frame updates.
+        /// </summary>
+        /// <param name="frameIndex">The index of the current frame.</param>
+        internal void OnUpdateFrame(int frameIndex)
+        {
+            /// Update the velocity and position of this entity only if it's visible on the map, has
+            /// an actuator and a path-tracker and the path-tracker's target position is defined.
+            if (this.scenario.VisibleEntities.HasContent(this) &&
+                this.entityActuator != null &&
+                this.pathTracker.Read() != null &&
+                this.pathTracker.Read().TargetPosition != RCNumVector.Undefined)
+            {
+                MotionController.UpdateVelocity(this, this.entityActuator, this.pathTracker.Read());
+                if (this.velocity.Read() != new RCNumVector(0, 0))
+                {
+                    /// Check if the new position would remain inside the walkable area of the map.
+                    /// TODO: put this check into a virtual method to be able to override in case of flying entities!
+                    RCNumVector newPosition = this.position.Read() + this.velocity.Read();
+                    if (!this.pathFinder.IsWalkable(newPosition))
+                    {
+                        throw new InvalidOperationException("Entity wants to go to a non-walkable position on the map!");
+                    }
+
+                    /// Check if the entity wouldn't collide with other entities at the new position.
+                    /// TODO: put this check into a virtual method to be able to override in the derived classes.
+                    RCNumRectangle newEntityArea =
+                        new RCNumRectangle(newPosition - this.ElementType.Area.Read() / 2, this.elementType.Area.Read());
+                    bool collision = false;
+                    foreach (Entity collidingEntity in this.scenario.GetVisibleEntities<Entity>(newEntityArea))
+                    {
+                        if (collidingEntity != this) { collision = true; break; }
+                    }
+
+                    /// In case of collision reduce the velocity to (0,0); otherwise set the new position of the entity
+                    /// based on the velocity.
+                    if (!collision) { this.SetPosition(newPosition); }
+                    else { this.velocity.Write(new RCNumVector(0, 0)); }
+                }
+            }
+            this.OnUpdateFrameImpl(frameIndex);
+        }
+
+        /// <summary>
         /// This method is called when this entity has been added to a scenario. Can be overriden in the derived classes.
         /// </summary>
         protected virtual void OnAddedToScenarioImpl() { }
@@ -192,6 +289,12 @@ namespace RC.Engine.Simulator.Scenarios
         /// This method is called when this entity has been removed from it's scenario. Can be overriden in the derived classes.
         /// </summary>
         protected virtual void OnRemovedFromScenarioImpl() { }
+
+        /// <summary>
+        /// This method is called on every simulation frame updates. Can be overriden in the derived classes.
+        /// </summary>
+        /// <param name="frameIndex">The index of the current frame.</param>
+        protected virtual void OnUpdateFrameImpl(int frameIndex) { }
 
         #endregion Internal members
 
@@ -217,6 +320,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         private HeapedValue<int> typeID;
 
+        /// <summary>
+        /// Reference to the path-tracker of this entity.
+        /// </summary>
+        private HeapedValue<PathTrackerBase> pathTracker;
+
         #endregion Heaped members
 
         /// <summary>
@@ -239,5 +347,15 @@ namespace RC.Engine.Simulator.Scenarios
         /// to a scenario.
         /// </summary>
         private Scenario scenario;
+
+        /// <summary>
+        /// Reference to the actuator of this entity.
+        /// </summary>
+        private EntityActuatorBase entityActuator;
+
+        /// <summary>
+        /// Reference to the RC.Engine.Simulator.PathFinder component.
+        /// </summary>
+        private IPathFinder pathFinder;
     }
 }

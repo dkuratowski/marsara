@@ -39,6 +39,9 @@ namespace RC.Engine.Maps.Core
 
             foreach (WalkabilityGridArea sectorArea in rootArea.Children) { NavMesh.CreateSectors(sectorArea, ref this.helpers); }
             foreach (TessellationHelper sector in this.helpers) { this.nodes.UnionWith(sector.Nodes); }
+
+            /// Calculate the edge informations.
+            foreach (NavMeshNode node in this.nodes) { node.CalculateEdgeData(); }
         }
 
         /// <summary>
@@ -92,6 +95,9 @@ namespace RC.Engine.Maps.Core
                     else { throw new InvalidOperationException("Invalid edge matching!"); }
                 }
             }
+
+            /// Calculate the edge informations.
+            foreach (NavMeshNode node in this.nodes) { node.CalculateEdgeData(); }
         }
 
         #region INavMesh methods

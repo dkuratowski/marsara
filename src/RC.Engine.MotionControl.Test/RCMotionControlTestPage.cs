@@ -20,7 +20,6 @@ namespace RC.Engine.MotionControl.Test
         /// </summary>
         public RCMotionControlTestPage()
         {
-            this.motionController = new MotionController();
             this.timeSinceLastUpdate = 0;
             this.brush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.brush.Upload();
@@ -81,15 +80,9 @@ namespace RC.Engine.MotionControl.Test
             if (timeSinceLastUpdate >= TIME_BETWEEN_UPDATES)
             {
                 timeSinceLastUpdate = 0;
-                foreach (TestEntity entity in this.entities.GetContents()) { entity.UpdateVelocity(this.motionController); }
-                foreach (TestEntity entity in this.entities.GetContents()) { entity.UpdatePosition(); }
+                foreach (TestEntity entity in this.entities.GetContents()) { entity.Update(); }
             }
         }
-
-        /// <summary>
-        /// Reference to the motion controller.
-        /// </summary>
-        private IMotionController motionController;
 
         /// <summary>
         /// The map content manager that stores the test entities.

@@ -37,6 +37,7 @@ namespace RC.Engine.Simulator.Scenarios
                                            ConstantsTable.Get<int>("RC.Engine.Maps.BspMinNodeSize"));
             this.entitySet = new Dictionary<int, Entity>();
             this.nextID = 0;
+            this.currentFrameIndex = 0;
             this.players = new Player[Player.MAX_PLAYERS];
             this.playersFinalized = false;
         }
@@ -210,12 +211,26 @@ namespace RC.Engine.Simulator.Scenarios
             }
         }
 
+        /// <summary>
+        /// Updates this scenario to the next simulation frame.
+        /// </summary>
+        public void UpdateFrame()
+        {
+            foreach (Entity entity in this.entitySet.Values) { entity.OnUpdateFrame(this.currentFrameIndex); }
+            this.currentFrameIndex++;
+        }
+
         #endregion Public members
 
         /// <summary>
         /// The ID of the next entity.
         /// </summary>
         private int nextID;
+
+        /// <summary>
+        /// The index of the current frame.
+        /// </summary>
+        private int currentFrameIndex;
 
         /// <summary>
         /// Reference to the map of the scenario.

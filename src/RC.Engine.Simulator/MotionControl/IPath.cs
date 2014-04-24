@@ -26,9 +26,9 @@ namespace RC.Engine.Simulator.MotionControl
         /// Gets a node of the path.
         /// </summary>
         /// <param name="index">The index of the node to get.</param>
-        /// <returns>The area of the node.</returns>
+        /// <returns>The node on the path at the given index.</returns>
         /// <exception cref="InvalidOperationException">If the path is not ready for use or has already been aborted.</exception>
-        RCPolygon this[int index] { get; }
+        INavMeshNode this[int index] { get; }
 
         /// <summary>
         /// Gets the total number of nodes on this path.

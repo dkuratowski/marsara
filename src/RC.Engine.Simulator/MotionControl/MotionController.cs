@@ -10,12 +10,16 @@ namespace RC.Engine.Simulator.MotionControl
     /// <summary>
     /// This class implements the motion controlling algorithm of the moving entities.
     /// </summary>
-    class MotionController : IMotionController
+    static class MotionController
     {
-        #region IMotionController methods
-
-        /// <see cref="IMotionController.UpdateVelocity"/>
-        public void UpdateVelocity(IMotionControlTarget target, IMotionControlActuator actuator, IMotionControlEnvironment environment)
+        /// <summary>
+        /// Updates the velocity of the given motion controlled target using the given actuator based on the given environmental
+        /// informations.
+        /// </summary>
+        /// <param name="target">Reference to the motion controlled target.</param>
+        /// <param name="actuator">Reference to the actuator.</param>
+        /// <param name="environment">Reference to the environmental informations.</param>
+        internal static void UpdateVelocity(IMotionControlTarget target, IMotionControlActuator actuator, IMotionControlEnvironment environment)
         {
             int currVelocityIndex = 0;
             int bestVelocityIndex = -1;
@@ -47,10 +51,6 @@ namespace RC.Engine.Simulator.MotionControl
             if (bestVelocityIndex != -1) { actuator.SelectNewVelocity(bestVelocityIndex); }
         }
 
-        #endregion IMotionController methods
-
-        #region Internal helper methods
-
         /// <summary>
         /// Calculates the time to collision between two moving rectangular objects.
         /// </summary>
@@ -59,7 +59,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="rectangleB">The rectangular area of the second object.</param>
         /// <param name="velocityB">The velocity of the second object.</param>
         /// <returns>The time to the collision between the two objects or a negative number if the two objects won't collide in the future.</returns>
-        internal static RCNumber CalculateTimeToCollision(RCNumRectangle rectangleA, RCNumVector velocityA, RCNumRectangle rectangleB, RCNumVector velocityB)
+        private static RCNumber CalculateTimeToCollision(RCNumRectangle rectangleA, RCNumVector velocityA, RCNumRectangle rectangleB, RCNumVector velocityB)
         {
             /// Calculate the relative velocity of A with respect to B.
             RCNumVector relativeVelocityOfA = velocityA - velocityB;
@@ -127,7 +127,5 @@ namespace RC.Engine.Simulator.MotionControl
                 return -1;
             }
         }
-
-        #endregion Internal helper methods
     }
 }

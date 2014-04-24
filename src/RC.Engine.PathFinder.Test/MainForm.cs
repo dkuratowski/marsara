@@ -34,7 +34,6 @@ namespace RC.Engine.PathFinder.Test
             this.originalOutputImg = null;
             this.searchResultImg = null;
             this.detourSearchResultImg = null;
-            this.blockedNodeSelectionImg = null;
             this.lastSearchTime = 0;
             this.lastSearchIterations = 0;
             this.lastSearchFrames = 0;
@@ -47,7 +46,7 @@ namespace RC.Engine.PathFinder.Test
         {
             /// Create and initialize the pathfinder.
             this.pathfinder = new Simulator.MotionControl.PathFinder();
-            this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\maps\\testmap4.rcm"), 5000);
+            this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\maps\\testmap2.rcm"), 5000);
             //this.pathfinder.Initialize(this.ReadTestMapFromImg("pathfinder_testmap2.png"), 5000);
 
             /// Draw the navmesh nodes.
@@ -84,10 +83,15 @@ namespace RC.Engine.PathFinder.Test
             e.Graphics.DrawImage(this.originalOutputImg, 0, 0);
             if (this.searchResultImg != null) { e.Graphics.DrawImage(this.searchResultImg, 0, 0); }
             if (this.detourSearchResultImg != null) { e.Graphics.DrawImage(this.detourSearchResultImg, 0, 0); }
-            if (this.blockedNodeSelectionImg != null) { e.Graphics.DrawImage(this.blockedNodeSelectionImg, 0, 0); }
             e.Graphics.DrawString(string.Format("Time: {0}", this.lastSearchTime), SystemFonts.CaptionFont, Brushes.Blue, 0.0f, 0.0f);
             e.Graphics.DrawString(string.Format("Iterations: {0}", this.lastSearchIterations), SystemFonts.CaptionFont, Brushes.Blue, 0.0f, 10.0f);
             e.Graphics.DrawString(string.Format("Frames: {0}", this.lastSearchFrames), SystemFonts.CaptionFont, Brushes.Blue, 0.0f, 20.0f);
+
+            if (this.computedPaths.Count == 1)
+            {
+                RCNumVector blockedNodeCenter = this.computedPaths[0][this.blockedNodeIndex].Polygon.Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                e.Graphics.DrawEllipse(Pens.Blue, blockedNodeCenter.X.Round() - 3, blockedNodeCenter.Y.Round() - 3, 6, 6);
+            }
         }
 
         private void MainForm_MouseClick(object sender, MouseEventArgs e)
@@ -111,16 +115,16 @@ namespace RC.Engine.PathFinder.Test
                 this.toCoord = mapCoords;
                 if (this.searchResultImg != null) { this.searchResultImg.Dispose(); this.searchResultImg = null; }
                 if (this.detourSearchResultImg != null) { this.detourSearchResultImg.Dispose(); this.detourSearchResultImg = null; }
-                if (this.blockedNodeSelectionImg != null) { this.blockedNodeSelectionImg.Dispose(); this.blockedNodeSelectionImg = null; }
 
                 Stopwatch watch = new Stopwatch();
                 this.computedPaths = new List<RC.Engine.Simulator.MotionControl.Path>();
                 foreach (RCIntVector fromCoord in this.fromCoords) { this.computedPaths.Add((RC.Engine.Simulator.MotionControl.Path)this.pathfinder.StartPathSearching(fromCoord, toCoord, 5000)); }
-                this.lastSearchFrames = 0;
+                this.pathfinder.Flush();
+                this.lastSearchFrames = 1;
                 watch.Start();
                 while (!CheckPathCompleteness(this.computedPaths))
                 {
-                    this.pathfinder.ContinueSearching();
+                    this.pathfinder.Flush();
                     this.lastSearchFrames++;
                 }
                 watch.Stop();
@@ -140,8 +144,8 @@ namespace RC.Engine.PathFinder.Test
                 {
                     for (int i = 0; i < path.Length; ++i)
                     {
-                        this.FillPolygon(path[i], outputGC, path.IsTargetFound ? Brushes.LightGreen : Brushes.Orange, Pens.Black);
-                        nodesOnPath.Add(path[i]);
+                        this.FillPolygon(path[i].Polygon, outputGC, path.IsTargetFound ? Brushes.LightGreen : Brushes.Orange, Pens.Black);
+                        nodesOnPath.Add(path[i].Polygon);
                     }
                     foreach (INavMeshNode completedNode in path.CompletedNodes)
                     {
@@ -150,16 +154,17 @@ namespace RC.Engine.PathFinder.Test
                             this.FillPolygon(completedNode.Polygon, outputGC, Brushes.Red, Pens.Black);
                         }
                     }
-                    //if (this.computedPaths.Count == 1)
-                    //{
-                    //    this.DrawPreferredVelocities(path, outputGC);
-                    //}
-                    for (int i = 1; i < path.Length; ++i)
+                    if (this.computedPaths.Count == 1)
                     {
-                        RCNumVector prevNodeCenter = path[i - 1].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
-                        RCNumVector currNodeCenter = path[i].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
-                        outputGC.DrawLine(Pens.Blue, prevNodeCenter.X.Round(), prevNodeCenter.Y.Round(), currNodeCenter.X.Round(), currNodeCenter.Y.Round());
+                        //this.DrawPreferredVelocities(path, outputGC);
+                        this.DrawDistancesToTarget(path, outputGC);
                     }
+                    //for (int i = 1; i < path.Length; ++i)
+                    //{
+                    //    RCNumVector prevNodeCenter = path[i - 1].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                    //    RCNumVector currNodeCenter = path[i].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                    //    outputGC.DrawLine(Pens.Blue, prevNodeCenter.X.Round(), prevNodeCenter.Y.Round(), currNodeCenter.X.Round(), currNodeCenter.Y.Round());
+                    //}
                 }
                 outputGC.Dispose();
                 this.searchResultImg.MakeTransparent(Color.FromArgb(255, 0, 255));
@@ -173,17 +178,17 @@ namespace RC.Engine.PathFinder.Test
                 if (this.blockedNodeIndex == this.computedPaths[0].Length - 1) { return; }
 
                 if (this.detourSearchResultImg != null) { this.detourSearchResultImg.Dispose(); this.detourSearchResultImg = null; }
-                if (this.blockedNodeSelectionImg != null) { this.blockedNodeSelectionImg.Dispose(); this.blockedNodeSelectionImg = null; }
 
                 Stopwatch watch = new Stopwatch();
                 RC.Engine.Simulator.MotionControl.Path originalPath = this.computedPaths[0];
                 this.computedPaths = new List<RC.Engine.Simulator.MotionControl.Path>();
                 this.computedPaths.Add((RC.Engine.Simulator.MotionControl.Path)this.pathfinder.StartDetourSearching(originalPath, this.blockedNodeIndex, 5000));
-                this.lastSearchFrames = 0;
+                this.pathfinder.Flush();
+                this.lastSearchFrames = 1;
                 watch.Start();
                 while (!CheckPathCompleteness(this.computedPaths))
                 {
-                    this.pathfinder.ContinueSearching();
+                    this.pathfinder.Flush();
                     this.lastSearchFrames++;
                 }
                 watch.Stop();
@@ -212,8 +217,8 @@ namespace RC.Engine.PathFinder.Test
                 /// Draw the detour.
                 for (int i = 1; i < this.computedPaths[0].Length; ++i)
                 {
-                    RCNumVector prevNodeCenter = this.computedPaths[0][i - 1].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
-                    RCNumVector currNodeCenter = this.computedPaths[0][i].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                    RCNumVector prevNodeCenter = this.computedPaths[0][i - 1].Polygon.Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                    RCNumVector currNodeCenter = this.computedPaths[0][i].Polygon.Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
                     outputGC.DrawLine(Pens.Green, prevNodeCenter.X.Round(), prevNodeCenter.Y.Round(), currNodeCenter.X.Round(), currNodeCenter.Y.Round());
                 }
 
@@ -259,17 +264,6 @@ namespace RC.Engine.PathFinder.Test
             if (e.Delta < 0) { this.blockedNodeIndex = Math.Max(0, this.blockedNodeIndex - 1); }
             else if (e.Delta > 0) { this.blockedNodeIndex = Math.Min(this.computedPaths[0].Length - 1, this.blockedNodeIndex + 1); }
 
-            if (this.blockedNodeSelectionImg != null) { this.blockedNodeSelectionImg.Dispose(); this.blockedNodeSelectionImg = null; }
-
-            this.blockedNodeSelectionImg = new Bitmap(this.pathfinder.Navmesh.GridSize.X * CELL_SIZE, this.pathfinder.Navmesh.GridSize.Y * CELL_SIZE, PixelFormat.Format24bppRgb);
-            Graphics outputGC = Graphics.FromImage(this.blockedNodeSelectionImg);
-            outputGC.Clear(Color.FromArgb(255, 0, 255));
-
-            RCNumVector blockedNodeCenter = this.computedPaths[0][this.blockedNodeIndex].Center * new RCNumVector(CELL_SIZE, CELL_SIZE);
-            outputGC.DrawEllipse(Pens.Blue, blockedNodeCenter.X.Round() - 3, blockedNodeCenter.Y.Round() - 3, 6, 6);
-            outputGC.Dispose();
-            this.blockedNodeSelectionImg.MakeTransparent(Color.FromArgb(255, 0, 255));
-
             this.Invalidate();
         }
 
@@ -304,29 +298,98 @@ namespace RC.Engine.PathFinder.Test
         {
             for (int nodeIdx = 0; nodeIdx < path.Length; nodeIdx++)
             {
-                RCPolygon pathNode = path[nodeIdx];
+                INavMeshNode pathNode = path[nodeIdx];
                 RCNumRectangle boundingBox = pathNode.BoundingBox;
                 for (int y = boundingBox.Top.Round(); y < boundingBox.Bottom.Round(); y += 4)
                 {
                     for (int x = boundingBox.Left.Round(); x < boundingBox.Right.Round(); x += 4)
                     {
                         RCNumVector position = new RCNumVector(x, y);
+                        if (!pathNode.Polygon.Contains(position)) { continue; }
+
                         RCNumVector vector = RCNumVector.Undefined;
-                        if (!pathNode.Contains(position)) { continue; }
-                        if (nodeIdx < path.Length - 2)
-                        {
-                            vector = path[nodeIdx + 2].Center - position;
-                        }
-                        else
+                        if (nodeIdx == path.Length - 1)
                         {
                             vector = path.ToCoords - position;
                         }
+                        else
+                        {
+                            INavMeshNode nextPathNode = path[nodeIdx + 1];
+                            INavMeshEdge edgeToNextNode = pathNode.GetEdge(nextPathNode);
+                            vector = (edgeToNextNode.TransitionVector + edgeToNextNode.Midpoint - position) / 2;
+                        }
 
                         if (vector == RCNumVector.Undefined) { continue; }
-                        if (vector.Length != 0) { vector /= vector.Length; }
+                        if (vector.Length != 0) { vector /= vector.Length; vector *= 3; }
                         RCNumVector lineBegin = position * new RCNumVector(CELL_SIZE, CELL_SIZE);
                         RCNumVector lineEnd = (position + vector) * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                        gc.DrawEllipse(Pens.Blue, lineBegin.X.Round() - 2, lineBegin.Y.Round() - 2, 4, 4);
                         gc.DrawLine(Pens.Blue, lineBegin.X.Round(), lineBegin.Y.Round(), lineEnd.X.Round(), lineEnd.Y.Round());
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draw the distances to the target position onto the path.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="gc">The graphic context.</param>
+        private void DrawDistancesToTarget(RC.Engine.Simulator.MotionControl.Path path, Graphics gc)
+        {
+            for (int nodeIdx = 0; nodeIdx < path.Length; nodeIdx++)
+            {
+                RCNumber pathMiddleLength = 0;
+                for (int i = nodeIdx + 2; i < path.Length - 1; i++)
+                {
+                    pathMiddleLength += MapUtils.ComputeDistance(path[i - 1].Polygon.Center, path[i].Polygon.Center);
+                }
+
+                INavMeshNode pathNode = path[nodeIdx];
+                RCNumRectangle boundingBox = pathNode.BoundingBox;
+                for (int y = boundingBox.Top.Round(); y < boundingBox.Bottom.Round(); y += 1)
+                {
+                    for (int x = boundingBox.Left.Round(); x < boundingBox.Right.Round(); x += 1)
+                    {
+                        RCNumber distanceToTarget = pathMiddleLength;
+                        RCNumVector position = new RCNumVector(x, y);
+                        if (!pathNode.Polygon.Contains(position)) { continue; }
+
+                        if (nodeIdx + 1 == path.Length - 1)
+                        {
+                            distanceToTarget += MapUtils.ComputeDistance(position, path.ToCoords);
+                        }
+                        else
+                        {
+                            if (nodeIdx + 1 < path.Length - 1)
+                            {
+                                distanceToTarget += MapUtils.ComputeDistance(position, path[nodeIdx + 1].Polygon.Center);
+                            }
+                            if (path.Length - 2 > nodeIdx)
+                            {
+                                distanceToTarget += MapUtils.ComputeDistance(path[path.Length - 2].Polygon.Center, path.ToCoords);
+                            }
+                        }
+
+                        Color brushColor;
+                        if (distanceToTarget >= 768) { continue; }
+                        else if (distanceToTarget < 768 && distanceToTarget >= 512)
+                        {
+                            brushColor = Color.FromArgb(255 - ((int)distanceToTarget - 512), 0, 0);
+                        }
+                        else if (distanceToTarget < 512 && distanceToTarget >= 256)
+                        {
+                            brushColor = Color.FromArgb(255, 255 - ((int)distanceToTarget - 256), 0);
+                        }
+                        else
+                        {
+                            brushColor = Color.FromArgb(255, 255, 255 - (int)distanceToTarget);
+                        }
+
+                        RCNumVector circlePos = position * new RCNumVector(CELL_SIZE, CELL_SIZE);
+                        Brush brush = new SolidBrush(brushColor);
+                        gc.FillEllipse(brush, circlePos.X.Round() - 2, circlePos.Y.Round() - 2, 4, 4);
+                        brush.Dispose();
                     }
                 }
             }
@@ -355,11 +418,6 @@ namespace RC.Engine.PathFinder.Test
         /// The image that contains the currently computed detour.
         /// </summary>
         private Bitmap detourSearchResultImg;
-
-        /// <summary>
-        /// The image that contains the currently selected blocked node.
-        /// </summary>
-        private Bitmap blockedNodeSelectionImg;
 
         /// <summary>
         /// The total time of the last search operation in milliseconds.

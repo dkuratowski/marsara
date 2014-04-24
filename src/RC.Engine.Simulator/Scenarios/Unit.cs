@@ -5,6 +5,7 @@ using System.Text;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Simulator.ComponentInterfaces;
+using RC.Engine.Simulator.MotionControl;
 
 namespace RC.Engine.Simulator.Scenarios
 {
@@ -17,6 +18,8 @@ namespace RC.Engine.Simulator.Scenarios
         /// Constructs a Unit instance.
         /// </summary>
         /// <param name="unitTypeName">The name of the type of this unit.</param>
+        /// <param name="actuator">The actuator of the unit.</param>
+        /// <param name="pathTracker">The path-tracker of the unit.</param>
         public Unit(string unitTypeName)
             : base(unitTypeName)
         {
@@ -40,6 +43,11 @@ namespace RC.Engine.Simulator.Scenarios
         {
             this.Scenario.VisibleEntities.DetachContent(this);
         }
+
+        /// <summary>
+        /// Gets the metadata type definition of the unit.
+        /// </summary>
+        public IUnitType UnitType { get { return this.unitType; } }
 
         /// <summary>
         /// The type of this unit.

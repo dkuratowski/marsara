@@ -23,9 +23,13 @@ namespace RC.Engine.Simulator.MotionControl
         void Initialize(INavMesh navmesh, int maxIterationsPerFrame);
 
         /// <summary>
-        /// Continues searching the requested paths.
+        /// Continues searching the enqueued paths until the search iteration limit in the current frame is not reached.
         /// </summary>
-        void ContinueSearching();
+        /// <remarks>
+        /// The maximum number of executed search iterations in a frame can be controlled by calling this method in every
+        /// frames exactly once.
+        /// </remarks>
+        void Flush();
 
         /// <summary>
         /// Starts searching a path from one cell to another on the map.
@@ -34,6 +38,9 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="toCoords">The target coordinates of the path.</param>
         /// <param name="iterationLimit">The maximum number of iterations to execute when searching the path.</param>
         /// <return>The interface of the path.</return>
+        /// <remarks>
+        /// Use the IPath.IsReadyForUse property of the returned path to check if the pathfinding has already been finished or not.
+        /// </remarks>
         IPath StartPathSearching(RCNumVector fromCoords, RCNumVector toCoords, int iterationLimit);
 
         /// <summary>
@@ -43,6 +50,16 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="abortedSectionIdx">The index of the aborted section on the original path.</param>
         /// <param name="iterationLimit">The maximum number of iterations to execute when searching the detour.</param>
         /// <returns>The interface of the detour.</returns>
+        /// <remarks>
+        /// Use the IPath.IsReadyForUse property of the returned path to check if the pathfinding has already been finished or not.
+        /// </remarks>
         IPath StartDetourSearching(IPath originalPath, int abortedSectionIdx, int iterationLimit);
+
+        /// <summary>
+        /// Checks whether the given position is on the walkable area of the loaded navmesh.
+        /// </summary>
+        /// <param name="position">The position to check.</param>
+        /// <returns>True if the given position is on the walkable area of the loaded navmesh.</returns>
+        bool IsWalkable(RCNumVector position);
     }
 }

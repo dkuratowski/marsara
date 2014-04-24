@@ -42,13 +42,13 @@ namespace RC.Engine.Simulator.MotionControl
         }
         
         /// <see cref="IPath.this[]"/>
-        public RCPolygon this[int index]
+        public INavMeshNode this[int index]
         {
             get
             {
                 if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
                 if (this.nodesOnPath == null) { this.nodesOnPath = this.CollectNodesOnPath(); }
-                return this.nodesOnPath[index].Polygon;
+                return this.nodesOnPath[index];
             }
         }
 

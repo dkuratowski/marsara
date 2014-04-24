@@ -63,6 +63,7 @@ namespace RC.App.BizLogic.Core
             this.commandDispatcher = new CommandDispatcher();
             this.triggeredScheduler = new TriggeredScheduler(1000 / (int)gameSpeed);
             this.triggeredScheduler.AddScheduledFunction(this.ExecuteFrame);
+            this.triggeredScheduler.AddScheduledFunction(this.gameScenario.UpdateFrame);
             this.triggeredScheduler.AddScheduledFunction(this.gameScenario.StepAnimations);
             this.testDssTaskCanFinishEvt = new ManualResetEvent(false);
             this.dssTask = this.taskManager.StartTask(this.TestDssTaskMethod, "DssThread");

@@ -20,5 +20,12 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// Gets the neighbours of this node.
         /// </summary>
         IEnumerable<INavMeshNode> Neighbours { get; }
+
+        /// <summary>
+        /// Gets the edge from this node to the given node.
+        /// </summary>
+        /// <param name="toNode">The target node of the edge.</param>
+        /// <returns>The edge from this node to the given node.</returns>
+        INavMeshEdge GetEdge(INavMeshNode toNode);
     }
 }

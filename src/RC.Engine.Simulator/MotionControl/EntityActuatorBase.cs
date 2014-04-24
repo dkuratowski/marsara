@@ -12,7 +12,7 @@ namespace RC.Engine.Simulator.MotionControl
     /// The common base class of entity actuator implementations.
     /// </summary>
     /// TODO: call Dispose from the corresponding Entity instance when necessary!
-    abstract class EntityActuatorBase : IMotionControlActuator, IDisposable
+    public abstract class EntityActuatorBase : IMotionControlActuator, IDisposable
     {
         /// <summary>
         /// Constructs an EntityActuatorBase instance.

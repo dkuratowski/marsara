@@ -58,18 +58,29 @@ namespace RC.Engine.Maps.Core
         public RCPolygon Polygon { get { return this.polygon; } }
 
         /// <see cref="INavMeshNode.Neighbours"/>
-        public IEnumerable<INavMeshNode> Neighbours { get { return this.neighbours; } }
+        public IEnumerable<INavMeshNode> Neighbours { get { return this.neighbours.Keys; } }
+
+        /// <see cref="INavMeshNode.Neighbours"/>
+        public INavMeshEdge GetEdge(INavMeshNode toNode)
+        {
+            if (toNode == null) { throw new ArgumentNullException("toNode"); }
+            NavMeshNode toNodeCasted = toNode as NavMeshNode;
+            if (toNodeCasted == null || !this.neighbours.ContainsKey(toNodeCasted)) { throw new ArgumentException("The given node is not the neighbour of this node!"); }
+            return this.neighbours[toNodeCasted];
+        }
 
         #endregion INavMeshNode members
+
+        #region Internal methods
 
         /// <summary>
         /// Collects the nodes that are reachable from this node.
         /// </summary>
         /// <param name="collectedNodes">The list of the collected nodes.</param>
-        public void CollectReachableNodes(ref HashSet<NavMeshNode> collectedNodes)
+        internal void CollectReachableNodes(ref HashSet<NavMeshNode> collectedNodes)
         {
             if (!collectedNodes.Add(this)) { return; }
-            foreach (NavMeshNode neighbour in this.neighbours) { neighbour.CollectReachableNodes(ref collectedNodes); }
+            foreach (NavMeshNode neighbour in this.neighbours.Keys) { neighbour.CollectReachableNodes(ref collectedNodes); }
         }
 
         /// <summary>
@@ -77,22 +88,22 @@ namespace RC.Engine.Maps.Core
         /// NavMeshNode given in the parameter will be detached from its parents and will become obsolate.
         /// </summary>
         /// <param name="neighbour">The neighbour to merge with.</param>
-        public void MergeWith(NavMeshNode neighbour)
+        internal void MergeWith(NavMeshNode neighbour)
         {
             if (neighbour == null) { throw new ArgumentNullException("neighbour"); }
-            if (!this.neighbours.Contains(neighbour)) { throw new ArgumentException("The given node is not the neighbour of this node!", "neighbour"); }
+            if (!this.neighbours.ContainsKey(neighbour)) { throw new ArgumentException("The given node is not the neighbour of this node!", "neighbour"); }
 
             /// Remove the reference between the given neighbour and this node in both directions.
             this.neighbours.Remove(neighbour);
             neighbour.neighbours.Remove(this);
 
             /// Process all the remaining neighbours of the given neighbour to point only to this node.
-            foreach (NavMeshNode neighbourOfNeighbour in neighbour.neighbours)
+            foreach (NavMeshNode neighbourOfNeighbour in neighbour.neighbours.Keys)
             {
                 if (neighbourOfNeighbour.neighbours.Remove(neighbour))
                 {
-                    neighbourOfNeighbour.neighbours.Add(this);
-                    this.neighbours.Add(neighbourOfNeighbour);
+                    neighbourOfNeighbour.neighbours[this] = null;
+                    this.neighbours[neighbourOfNeighbour] = null;
                 }
             }
             neighbour.neighbours.Clear();
@@ -104,9 +115,9 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// Removes all the neighbourhood relationships between this node and its neighbours.
         /// </summary>
-        public void RemoveNeighbours()
+        internal void RemoveNeighbours()
         {
-            foreach (NavMeshNode neighbour in this.neighbours) { neighbour.neighbours.Remove(this); }
+            foreach (NavMeshNode neighbour in this.neighbours.Keys) { neighbour.neighbours.Remove(this); }
             this.neighbours.Clear();
         }
 
@@ -114,7 +125,7 @@ namespace RC.Engine.Maps.Core
         /// Removes the neighbourhood relationship between this node and its given neighbour.
         /// </summary>
         /// <param name="neighbour">The given neighbour.</param>
-        public void RemoveNeighbour(NavMeshNode neighbour)
+        internal void RemoveNeighbour(NavMeshNode neighbour)
         {
             if (neighbour == null) { throw new ArgumentNullException("neighbour"); }
 
@@ -126,12 +137,12 @@ namespace RC.Engine.Maps.Core
         /// Sets the neighbourhood relationship between this node and the given node.
         /// </summary>
         /// <param name="otherNode">The given node.</param>
-        public void AddNeighbour(NavMeshNode otherNode)
+        internal void AddNeighbour(NavMeshNode otherNode)
         {
             if (otherNode == null) { throw new ArgumentNullException("otherNode"); }
 
-            otherNode.neighbours.Add(this);
-            this.neighbours.Add(otherNode);
+            otherNode.neighbours[this] = null;
+            this.neighbours[otherNode] = null;
         }
 
         /// <summary>
@@ -140,7 +151,7 @@ namespace RC.Engine.Maps.Core
         /// <param name="cutBegin">The beginning of the cut diagonal.</param>
         /// <param name="cutEnd">The end of the cut diagonal.</param>
         /// <returns>The list of the slices.</returns>
-        public IEnumerable<NavMeshNode> Slice(RCNumVector cutBegin, RCNumVector cutEnd)
+        internal IEnumerable<NavMeshNode> Slice(RCNumVector cutBegin, RCNumVector cutEnd)
         {
             if (cutBegin == RCNumVector.Undefined) { throw new ArgumentNullException("cutBegin"); }
             if (cutEnd == RCNumVector.Undefined) { throw new ArgumentNullException("cutEnd"); }
@@ -170,8 +181,8 @@ namespace RC.Engine.Maps.Core
                 thisPolygonCW.Add(this.polygon[i]);
                 if (originalNeighbours[i] != null)
                 {
-                    originalNeighbours[i].neighbours.Add(this);
-                    this.neighbours.Add(originalNeighbours[i]);
+                    originalNeighbours[i].neighbours[this] = null;
+                    this.neighbours[originalNeighbours[i]] = null;
                 }
             }
             thisPolygonCW.Add(this.polygon[cutBeginIdx]);
@@ -184,8 +195,8 @@ namespace RC.Engine.Maps.Core
                 newNodePolygonCW.Add(this.polygon[i]);
                 if (originalNeighbours[i] != null)
                 {
-                    originalNeighbours[i].neighbours.Add(newNode);
-                    newNode.neighbours.Add(originalNeighbours[i]);
+                    originalNeighbours[i].neighbours[newNode] = null;
+                    newNode.neighbours[originalNeighbours[i]] = null;
                 }
             }
             newNodePolygonCW.Add(this.polygon[cutEndIdx]);
@@ -195,8 +206,8 @@ namespace RC.Engine.Maps.Core
             RCPolygon newNodePolygon = new RCPolygon(newNodePolygonCW);
             if (thisNewPolygon.DoubleOfSignedArea <= 0) { throw new InvalidOperationException("Vertices of the new polygon are in CCW order!"); }
             if (newNodePolygon.DoubleOfSignedArea <= 0) { throw new InvalidOperationException("Vertices of the new polygon are in CCW order!"); }
-            this.neighbours.Add(newNode);
-            newNode.neighbours.Add(this);
+            this.neighbours[newNode] = null;
+            newNode.neighbours[this] = null;
 
             /// ...and update the bounding boxes.
             if (this.BoundingBoxChanging != null) { this.BoundingBoxChanging(this); }
@@ -216,7 +227,7 @@ namespace RC.Engine.Maps.Core
         /// <returns>The list of the slices.</returns>
         /// <exception cref="ArgumentException">If the given vertex is not inside the polygon of this node.</exception>
         /// <exception cref="InvalidOperationException">If the polygon of this node is not convex.</exception>
-        public IEnumerable<NavMeshNode> Slice(RCNumVector vertex)
+        internal IEnumerable<NavMeshNode> Slice(RCNumVector vertex)
         {
             if (!this.polygon.Contains(vertex)) { throw new ArgumentException("The vertex shall be inside the polygon of this node!", "vertex"); }
 
@@ -235,14 +246,14 @@ namespace RC.Engine.Maps.Core
                 if (i == 0) { firstSlice = newSlice; } else if (i == this.polygon.VertexCount - 2) { lastSlice = newSlice; }
                 if (prevSlice != null)
                 {
-                    prevSlice.neighbours.Add(newSlice);
-                    newSlice.neighbours.Add(prevSlice);
+                    prevSlice.neighbours[newSlice] = null;
+                    newSlice.neighbours[prevSlice] = null;
                 }
                 if (originalNeighbours[i] != null)
                 {
                     originalNeighbours[i].neighbours.Remove(this);
-                    originalNeighbours[i].neighbours.Add(newSlice);
-                    newSlice.neighbours.Add(originalNeighbours[i]);
+                    originalNeighbours[i].neighbours[newSlice] = null;
+                    newSlice.neighbours[originalNeighbours[i]] = null;
                 }
                 prevSlice = newSlice;
             }
@@ -254,18 +265,29 @@ namespace RC.Engine.Maps.Core
             if (this.BoundingBoxChanged != null) { this.BoundingBoxChanged(this); }
 
             this.neighbours.Clear();
-            this.neighbours.Add(firstSlice);
-            firstSlice.neighbours.Add(this);
-            this.neighbours.Add(lastSlice);
-            lastSlice.neighbours.Add(this);
+            this.neighbours[firstSlice] = null;
+            firstSlice.neighbours[this] = null;
+            this.neighbours[lastSlice] = null;
+            lastSlice.neighbours[this] = null;
             if (originalNeighbours[originalNeighbours.Length - 1] != null)
             {
-                this.neighbours.Add(originalNeighbours[originalNeighbours.Length - 1]);
-                originalNeighbours[originalNeighbours.Length - 1].neighbours.Add(this);
+                this.neighbours[originalNeighbours[originalNeighbours.Length - 1]] = null;
+                originalNeighbours[originalNeighbours.Length - 1].neighbours[this] = null;
             }
             slices.Add(this);
             return slices;
         }
+
+        /// <summary>
+        /// Calculates the informations of the edges of this navmesh node.
+        /// </summary>
+        internal void CalculateEdgeData()
+        {
+            List<NavMeshNode> neighboursCopy = new List<NavMeshNode>(this.neighbours.Keys);
+            foreach (NavMeshNode neighbour in neighboursCopy) { this.neighbours[neighbour] = new NavMeshEdge(this, neighbour); }
+        }
+
+        #endregion Internal methods
 
         /// <summary>
         /// Internal ctor.
@@ -273,7 +295,7 @@ namespace RC.Engine.Maps.Core
         private NavMeshNode()
         {
             this.id = nextID++;
-            this.neighbours = new HashSet<NavMeshNode>();
+            this.neighbours = new Dictionary<NavMeshNode, NavMeshEdge>();
         }
         internal int ID { get { return this.id; } }
         private int id;
@@ -381,11 +403,11 @@ namespace RC.Engine.Maps.Core
         private NavMeshNode[] GetNeighboursByEdges()
         {
             NavMeshNode[] neighbourList = new NavMeshNode[this.polygon.VertexCount];
-            HashSet<NavMeshNode> neighboursCopy = new HashSet<NavMeshNode>(this.neighbours);
+            HashSet<NavMeshNode> neighboursCopy = new HashSet<NavMeshNode>(this.neighbours.Keys);
             for (int edgeIdx = 0; edgeIdx < this.polygon.VertexCount; edgeIdx++)
             {
                 NavMeshNode neighbourAtEdge = null;
-                foreach (NavMeshNode neighbour in this.neighbours)
+                foreach (NavMeshNode neighbour in this.neighbours.Keys)
                 {
                     int edgeBeginIdxInNeighbour = neighbour.polygon.IndexOf(this.polygon[edgeIdx]);
                     int edgeEndIdxInNeighbour = neighbour.polygon.IndexOf(this.polygon[(edgeIdx + 1) % this.polygon.VertexCount]);
@@ -404,9 +426,9 @@ namespace RC.Engine.Maps.Core
         }
 
         /// <summary>
-        /// The list of neighbours of this node.
+        /// The list of neighbours of this node and the informations about the corresponding edges.
         /// </summary>
-        private HashSet<NavMeshNode> neighbours;
+        private Dictionary<NavMeshNode, NavMeshEdge> neighbours;
 
         /// <summary>
         /// The polygon that represents the area of this node on the 2D plane.

@@ -33,29 +33,22 @@ namespace RC.Engine.MotionControl.Test
         }
 
         /// <summary>
-        /// Updates the velocity of this entity using the given controller.
+        /// Updates the velocity and position of this entity.
         /// </summary>
-        /// <param name="controller">The controller to use.</param>
-        public void UpdateVelocity(IMotionController controller)
+        public void Update()
         {
             if (this.currentSpeed != 0 || !this.Position.Contains(this.goal))
             {
                 this.CalculateAdmissibleVelocities();
-                controller.UpdateVelocity(this, this, this);
+                MotionController.UpdateVelocity(this, this, this);
             }
-        }
 
-        /// <summary>
-        /// Updates the velocity of this entity.
-        /// </summary>
-        public void UpdatePosition()
-        {
             if (this.selectedVelocity != null)
             {
                 this.currentSpeed = this.selectedVelocity.Item1;
                 this.currentDirection = this.selectedVelocity.Item2;
                 this.selectedVelocity = null;
-                
+
                 RCNumRectangle newPosition = new RCNumRectangle(this.currentPosition + this.Velocity - this.size / 2, this.size);
                 foreach (TestEntity collideWith in this.entities.GetContents(newPosition))
                 {

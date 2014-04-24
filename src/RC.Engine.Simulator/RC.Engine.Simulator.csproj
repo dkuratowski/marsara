@@ -48,10 +48,12 @@
     <Compile Include="ComponentInterfaces\IPlayerInitializer.cs" />
     <Compile Include="MotionControl\EntityActuatorBase.cs" />
     <Compile Include="MotionControl\GroundUnitActuator.cs" />
+    <Compile Include="MotionControl\GroundUnitPathTracker.cs" />
     <Compile Include="MotionControl\PathCache.cs" />
     <Compile Include="MotionControl\PathCacheItem.cs" />
     <Compile Include="MotionControl\PathNode.cs" />
     <Compile Include="MotionControl\PathFindingAlgorithm.cs" />
+    <Compile Include="MotionControl\PathTrackerBase.cs" />
     <Compile Include="Scenarios\Addon.cs" />
     <Compile Include="Scenarios\AddonType.cs" />
     <Compile Include="Core\BinaryHeap.cs" />

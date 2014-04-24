@@ -26,6 +26,7 @@ namespace RC.Engine.Simulator.MotionControl
             this.navmesh = null;
             this.navmeshNodes = null;
             this.maxIterationsPerFrame = 0;
+            this.remainingIterationsInCurrFrame = 0;
         }
 
         /// <see cref="IPathFinder.Initialize"/>
@@ -34,6 +35,7 @@ namespace RC.Engine.Simulator.MotionControl
             if (navmesh == null) { throw new ArgumentNullException("navmesh"); }
             if (maxIterationsPerFrame <= 0) { throw new ArgumentOutOfRangeException("maxIterationsPerFrame", "Maximum number of iterations per frame must be greater than 0!"); }
             this.maxIterationsPerFrame = maxIterationsPerFrame;
+            this.remainingIterationsInCurrFrame = maxIterationsPerFrame;
 
             /// Construct the search tree for the navmesh nodes.
             this.navmeshNodes = new BspSearchTree<INavMeshNode>(
@@ -52,19 +54,19 @@ namespace RC.Engine.Simulator.MotionControl
             this.navmesh = navmesh;
         }
 
-        /// <see cref="IPathFinder.ContinueSearching"/>
-        public void ContinueSearching()
+        /// <see cref="IPathFinder.Flush"/>
+        public void Flush()
         {
             if (this.navmeshNodes == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
-            if (this.algorithmQueue.Count == 0) { return; }
 
-            int remainingIterations = this.maxIterationsPerFrame;
-            do
+            while (this.remainingIterationsInCurrFrame > 0 && this.algorithmQueue.Count > 0)
             {
                 PathFindingAlgorithm currentAlgorithm = this.algorithmQueue.Peek();
-                remainingIterations -= currentAlgorithm.Continue(remainingIterations);
+                this.remainingIterationsInCurrFrame -= currentAlgorithm.Continue(this.remainingIterationsInCurrFrame);
                 if (currentAlgorithm.IsFinished) { this.algorithmQueue.Dequeue(); }
-            } while (remainingIterations > 0 && this.algorithmQueue.Count > 0);
+            }
+
+            this.remainingIterationsInCurrFrame = this.maxIterationsPerFrame;
         }
 
         /// <see cref="IPathFinder.StartPathSearching"/>
@@ -93,7 +95,7 @@ namespace RC.Engine.Simulator.MotionControl
                 PathFindingAlgorithm searchAlgorithm = new PathFindingAlgorithm(fromNode, toCoords, iterationLimit);
                 Path newPath = new Path(searchAlgorithm);
                 if (toNode != null) { this.pathCache.SavePathFinding(searchAlgorithm, toNode); }
-                this.algorithmQueue.Enqueue(searchAlgorithm);
+                this.ExecuteAndOrEnqueue(searchAlgorithm);
                 return newPath;
             }
         }
@@ -108,8 +110,22 @@ namespace RC.Engine.Simulator.MotionControl
 
             PathFindingAlgorithm searchAlgorithm = new PathFindingAlgorithm((Path)originalPath, abortedSectionIdx, iterationLimit);
             Path newPath = new Path(searchAlgorithm);
-            this.algorithmQueue.Enqueue(searchAlgorithm);
+            this.ExecuteAndOrEnqueue(searchAlgorithm);
             return newPath;
+        }
+
+        /// <see cref="IPathFinder.IsWalkable"/>
+        public bool IsWalkable(RCNumVector position)
+        {
+            if (this.navmeshNodes == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
+            if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            foreach (INavMeshNode node in this.navmeshNodes.GetContents(position))
+            {
+                if (node.Polygon.Contains(position)) { return true; }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -117,6 +133,35 @@ namespace RC.Engine.Simulator.MotionControl
         /// </summary>
         /// <remarks>TODO: only for debugging!</remarks>
         internal INavMesh Navmesh { get { return this.navmesh; } }
+
+        /// <summary>
+        /// Enqueues the given search algorithm if the algorithm-queue is not empty.
+        /// If the queue is empty then starts executing the search algorithm.
+        /// If the remaining number of iterations reached 0 in the current frame but the algorithm has not yet been finished,
+        /// then enqueues the algorithm into the queue to continue later.
+        /// </summary>
+        /// <param name="searchAlgorithm">The search algorithm to be executed or enqueued.</param>
+        private void ExecuteAndOrEnqueue(PathFindingAlgorithm searchAlgorithm)
+        {
+            if (this.algorithmQueue.Count > 0)
+            {
+                /// Queue is not empty -> enqueue for later execution.
+                this.algorithmQueue.Enqueue(searchAlgorithm);
+                return;
+            }
+
+            if (this.remainingIterationsInCurrFrame > 0)
+            {
+                /// Queue is empty -> start the execution.
+                this.remainingIterationsInCurrFrame -= searchAlgorithm.Continue(this.remainingIterationsInCurrFrame);
+            }
+
+            if (this.remainingIterationsInCurrFrame == 0 && !searchAlgorithm.IsFinished)
+            {
+                /// Remaining iterations reached 0 but algorithm has not yet been finished -> enqueue to continue later.
+                this.algorithmQueue.Enqueue(searchAlgorithm);
+            }
+        }
 
         /// <summary>
         /// The FIFO list of the pathfinding algorithm that are currently being executed.
@@ -142,6 +187,11 @@ namespace RC.Engine.Simulator.MotionControl
         /// The maximum number of search iterations per frame.
         /// </summary>
         private int maxIterationsPerFrame;
+
+        /// <summary>
+        /// The remaining number of search iterations in the current frame.
+        /// </summary>
+        private int remainingIterationsInCurrFrame;
 
         /// <summary>
         /// The capacity of the path cache.
