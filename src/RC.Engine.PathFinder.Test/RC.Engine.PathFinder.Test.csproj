@@ -98,6 +98,10 @@
       <Project>{e3b50bcb-7eaf-4fd5-a5f4-c78e5c0eebc3}</Project>
       <Name>RC.UI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RC.UnitTests\RC.UnitTests.csproj">
+      <Project>{57919eae-83b8-4b20-ae1b-7ae71aa35a78}</Project>
+      <Name>RC.UnitTests</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="pathfinder_testmap.png">

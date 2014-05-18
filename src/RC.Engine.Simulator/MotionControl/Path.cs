@@ -17,12 +17,12 @@ namespace RC.Engine.Simulator.MotionControl
         /// Constructs a new Path instance.
         /// </summary>
         /// <param name="searchAlgorithm">The algorithm that computes the path.</param>
-        public Path(PathFindingAlgorithm searchAlgorithm)
+        /// <param name="toCoords">The target coordinates of the path.</param>
+        public Path(PathFindingAlgorithm searchAlgorithm, RCNumVector toCoords)
         {
             this.nodesOnPath = null;
             this.searchAlgorithm = searchAlgorithm;
-            this.blockedEdges = new HashSet<Tuple<INavMeshNode, INavMeshNode>>();
-            searchAlgorithm.CopyBlockedEdges(ref this.blockedEdges);
+            this.toCoords = toCoords;
         }
 
         #region IPath methods
@@ -52,6 +52,14 @@ namespace RC.Engine.Simulator.MotionControl
             }
         }
 
+        /// <see cref="IPath.IndexOf"/>
+        public int IndexOf(INavMeshNode node)
+        {
+            if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
+            if (this.nodesOnPath == null) { this.nodesOnPath = this.CollectNodesOnPath(); }
+            return this.nodesOnPath.IndexOf(node);
+        }
+
         /// <see cref="IPath.Length"/>
         public int Length
         {
@@ -63,12 +71,8 @@ namespace RC.Engine.Simulator.MotionControl
             }
         }
 
-        /// <see cref="IPath.ForgetBlockedEdges"/>
-        public void ForgetBlockedEdges()
-        {
-            if (!this.IsReadyForUse) { throw new InvalidOperationException("Path is not ready for use!"); }
-            this.blockedEdges.Clear();
-        }
+        /// <see cref="IPath.ToCoords"/>
+        public RCNumVector ToCoords { get { return this.toCoords; } }
 
         #endregion IPath methods
 
@@ -106,23 +110,9 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         /// <summary>
-        /// Copies the blocked edges of this path to the target set.
-        /// </summary>
-        /// <param name="targetSet">The target set to copy.</param>
-        public void CopyBlockedEdges(ref HashSet<Tuple<INavMeshNode, INavMeshNode>> targetSet)
-        {
-            foreach (Tuple<INavMeshNode, INavMeshNode> blockedEdge in this.blockedEdges) { targetSet.Add(blockedEdge); }
-        }
-
-        /// <summary>
         /// Gets the source node of this path.
         /// </summary>
         public INavMeshNode FromNode { get { return this.searchAlgorithm.FromNode.Node; } }
-
-        /// <summary>
-        /// Gets the target coordinates of this path.
-        /// </summary>
-        public RCNumVector ToCoords { get { return this.searchAlgorithm.ToCoords; } }
 
         #endregion Internal methods
 
@@ -154,8 +144,8 @@ namespace RC.Engine.Simulator.MotionControl
         private PathFindingAlgorithm searchAlgorithm;
 
         /// <summary>
-        /// List of the blocked edges.
+        /// The target coordinates of this path.
         /// </summary>
-        private HashSet<Tuple<INavMeshNode, INavMeshNode>> blockedEdges;
+        private RCNumVector toCoords;
     }
 }

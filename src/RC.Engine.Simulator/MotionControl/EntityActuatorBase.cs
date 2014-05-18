@@ -35,6 +35,7 @@ namespace RC.Engine.Simulator.MotionControl
         public void SelectNewVelocity(int selectedVelocityIndex)
         {
             if (!this.velocityGraph.ContainsKey(this.velocityValue.Read())) { throw new InvalidOperationException("Current velocity is non-admissible!"); }
+            if (selectedVelocityIndex == -1) { this.velocityValue.Write(new RCNumVector(0, 0)); return; }
 
             List<RCNumVector> reachableVelocities = this.velocityGraph[this.velocityValue.Read()];
             if (selectedVelocityIndex < 0 || selectedVelocityIndex >= reachableVelocities.Count) { throw new ArgumentOutOfRangeException("selectedVelocityIndex"); }

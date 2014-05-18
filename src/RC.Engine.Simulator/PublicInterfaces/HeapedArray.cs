@@ -24,6 +24,11 @@ namespace RC.Engine.Simulator.PublicInterfaces
         public abstract IValue<T> this[int index] { get; }
 
         /// <summary>
+        /// Gets the length of this array.
+        /// </summary>
+        public abstract int Length { get; }
+
+        /// <summary>
         /// Deletes the current array and creates a new one with the given length.
         /// </summary>
         /// <param name="length">The length of the new array.</param>

@@ -46,7 +46,10 @@ namespace RC.Engine.Simulator.MotionControl
         /// <summary>
         /// Changes the velocity of the controlled target.
         /// </summary>
-        /// <param name="selectedVelocityIndex">The index of the selected new velocity in the admissible velocity list.</param>
+        /// <param name="selectedVelocityIndex">
+        /// The index of the selected new velocity in the admissible velocity list or -1 to indicate that the
+        /// controlled target has to stop immediately.
+        /// </param>
         void SelectNewVelocity(int selectedVelocityIndex);
 
         /// <summary>
@@ -72,5 +75,12 @@ namespace RC.Engine.Simulator.MotionControl
         /// </summary>
         /// <returns>A list that contains the dynamic obstacles in the environment of the controlled target.</returns>
         IEnumerable<DynamicObstacleInfo> DynamicObstacles { get; }
+
+        /// <summary>
+        /// Gets whether the given velocity is valid.
+        /// </summary>
+        /// <param name="velocity">The velocity to be validated.</param>
+        /// <returns>True if the given velocity is valid; otherwise false.</returns>
+        bool ValidateVelocity(RCNumVector velocity);
     }
 }

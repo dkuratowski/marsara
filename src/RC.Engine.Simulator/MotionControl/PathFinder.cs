@@ -72,60 +72,59 @@ namespace RC.Engine.Simulator.MotionControl
         /// <see cref="IPathFinder.StartPathSearching"/>
         public IPath StartPathSearching(RCNumVector fromCoords, RCNumVector toCoords, int iterationLimit)
         {
+            return this.StartPathSearching(fromCoords, toCoords, iterationLimit, new List<INavMeshEdge>());
+        }
+
+        /// <see cref="IPathFinder.StartPathSearching"/>
+        public IPath StartPathSearching(RCNumVector fromCoords, RCNumVector toCoords, int iterationLimit, List<INavMeshEdge> blockedEdges)
+        {
             if (this.navmeshNodes == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
             if (fromCoords == RCNumVector.Undefined) { throw new ArgumentNullException("fromCoords"); }
             if (toCoords == RCNumVector.Undefined) { throw new ArgumentNullException("toCoords"); }
             if (iterationLimit <= 0) { throw new ArgumentOutOfRangeException("iterationLimit", "Iteration limit must be greater than 0!"); }
+            if (blockedEdges == null) { throw new ArgumentNullException("blockedEdges"); }
 
             /// Determine the source and the target nodes in the navmesh.
-            INavMeshNode fromNode = this.navmeshNodes.GetContents(fromCoords).FirstOrDefault();
+            INavMeshNode fromNode = this.GetNavMeshNode(fromCoords);
             if (fromNode == null) { throw new ArgumentException("The beginning of the path must be walkable!"); }
-            INavMeshNode toNode = this.navmeshNodes.GetContents(toCoords).FirstOrDefault();
+            INavMeshNode toNode = this.GetNavMeshNode(toCoords);
 
-            /// Try to find a cached path between the regions of the source and the target node.
-            PathCacheItem cachedAlgorithm = toNode != null ? this.pathCache.FindCachedPathFinding(fromNode, toNode) : null;
+            /// Find a cached path between the regions of the source and the target node if there are no blocked edges.
+            PathCacheItem cachedAlgorithm = (toNode != null && blockedEdges.Count == 0)
+                                          ? this.pathCache.FindCachedPathFinding(fromNode, toNode)
+                                          : null;
             if (cachedAlgorithm != null)
             {
                 /// Cached path was found -> Create a new Path instance based on the cached path.
-                return new Path(cachedAlgorithm.Algorithm);
+                return new Path(cachedAlgorithm.Algorithm, toCoords);
             }
             else
             {
                 /// No cached path was found -> Create a totally new Path instance and save it to the cache.
-                PathFindingAlgorithm searchAlgorithm = new PathFindingAlgorithm(fromNode, toCoords, iterationLimit);
-                Path newPath = new Path(searchAlgorithm);
-                if (toNode != null) { this.pathCache.SavePathFinding(searchAlgorithm, toNode); }
+                PathFindingAlgorithm searchAlgorithm =
+                    new PathFindingAlgorithm(fromNode,
+                                             toNode != null ? toNode.Polygon.Center : toCoords,
+                                             iterationLimit,
+                                             blockedEdges);
+                Path newPath = new Path(searchAlgorithm, toCoords);
+                if (toNode != null && blockedEdges.Count == 0) { this.pathCache.SavePathFinding(searchAlgorithm, toNode); }
                 this.ExecuteAndOrEnqueue(searchAlgorithm);
                 return newPath;
             }
         }
 
-        /// <see cref="IPathFinder.StartDetourSearching"/>
-        public IPath StartDetourSearching(IPath originalPath, int abortedSectionIdx, int iterationLimit)
-        {
-            if (this.navmeshNodes == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
-            if (originalPath == null) { throw new ArgumentNullException("originalPath"); }
-            if (abortedSectionIdx < 0 || abortedSectionIdx >= originalPath.Length - 1) { throw new ArgumentOutOfRangeException("abortedSectionIdx"); }
-            if (iterationLimit <= 0) { throw new ArgumentOutOfRangeException("iterationLimit", "Iteration limit must be greater than 0!"); }
-
-            PathFindingAlgorithm searchAlgorithm = new PathFindingAlgorithm((Path)originalPath, abortedSectionIdx, iterationLimit);
-            Path newPath = new Path(searchAlgorithm);
-            this.ExecuteAndOrEnqueue(searchAlgorithm);
-            return newPath;
-        }
-
-        /// <see cref="IPathFinder.IsWalkable"/>
-        public bool IsWalkable(RCNumVector position)
+        /// <see cref="IPathFinder.GetNavMeshNode"/>
+        public INavMeshNode GetNavMeshNode(RCNumVector position)
         {
             if (this.navmeshNodes == null) { throw new InvalidOperationException("Pathfinder not initialized!"); }
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
 
             foreach (INavMeshNode node in this.navmeshNodes.GetContents(position))
             {
-                if (node.Polygon.Contains(position)) { return true; }
+                if (node.Polygon.Contains(position)) { return node; }
             }
 
-            return false;
+            return null;
         }
 
         /// <summary>

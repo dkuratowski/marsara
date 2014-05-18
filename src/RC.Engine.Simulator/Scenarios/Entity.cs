@@ -29,6 +29,7 @@ namespace RC.Engine.Simulator.Scenarios
             this.id = this.ConstructField<int>("id");
             this.typeID = this.ConstructField<int>("typeID");
             this.pathTracker = this.ConstructField<PathTrackerBase>("pathTracker");
+            this.owner = this.ConstructField<Player>("owner");
 
             this.elementType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetElementType(elementTypeName);
             this.scenario = null;
@@ -41,6 +42,15 @@ namespace RC.Engine.Simulator.Scenarios
             this.id.Write(-1);
             this.typeID.Write(this.elementType.ID);
             this.pathTracker.Write(null);
+            this.owner.Write(null);
+        }
+
+        /// <summary>
+        /// TODO: this is only a temporary solution for testing motion control.
+        /// </summary>
+        public void Move(RCNumVector toCoords)
+        {
+            if (this.pathTracker.Read() != null) { this.pathTracker.Read().TargetPosition = toCoords; }
         }
 
         #region Public interface
@@ -49,6 +59,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// Gets the ID of the entity.
         /// </summary>
         public IValueRead<int> ID { get { return this.id; } }
+
+        /// <summary>
+        /// Gets the position value of this entity.
+        /// </summary>
+        public IValueRead<RCNumVector> PositionValue { get { return this.position; } }
 
         /// <summary>
         /// Gets the metadata type definition of the entity.
@@ -63,7 +78,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// Gets the owner of this entity or null if this entity is neutral or is a start location.
         /// </summary>
-        public Player Owner { get { return this.owner; } }
+        public Player Owner { get { return this.owner.Read(); } }
 
         /// <summary>
         /// Gets the scenario that this entity belongs to.
@@ -159,7 +174,7 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <summary>
-        /// Gets the velocity of this entity.
+        /// Gets the velocity value of this entity.
         /// </summary>
         protected IValue<RCNumVector> VelocityValue { get { return this.velocity; } }
 
@@ -224,8 +239,8 @@ namespace RC.Engine.Simulator.Scenarios
         /// <param name="owner">The player that owns this entity.</param>
         internal void OnAddedToPlayer(Player owner)
         {
-            if (this.owner != null) { throw new InvalidOperationException("The entity is already added to a player!"); }
-            this.owner = owner;
+            if (this.owner.Read() != null) { throw new InvalidOperationException("The entity is already added to a player!"); }
+            this.owner.Write(owner);
         }
 
         /// <summary>
@@ -233,30 +248,44 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         internal void OnRemovedFromPlayer()
         {
-            if (this.owner == null) { throw new InvalidOperationException("The entity doesn't not belong to a player!"); }
-            this.owner = null;
+            if (this.owner.Read() == null) { throw new InvalidOperationException("The entity doesn't not belong to a player!"); }
+            this.owner.Write(null);
         }
 
         /// <summary>
-        /// This method is called on every simulation frame updates.
+        /// Updates the state of this entity.
         /// </summary>
-        /// <param name="frameIndex">The index of the current frame.</param>
-        internal void OnUpdateFrame(int frameIndex)
+        internal void UpdateState()
         {
             /// Update the velocity and position of this entity only if it's visible on the map, has
-            /// an actuator and a path-tracker and the path-tracker's target position is defined.
+            /// an actuator and a path-tracker and the path-tracker is active.
             if (this.scenario.VisibleEntities.HasContent(this) &&
                 this.entityActuator != null &&
                 this.pathTracker.Read() != null &&
-                this.pathTracker.Read().TargetPosition != RCNumVector.Undefined)
+                this.pathTracker.Read().IsActive)
             {
-                MotionController.UpdateVelocity(this, this.entityActuator, this.pathTracker.Read());
+                /// Update the state of the path-tracker of this entity.
+                this.pathTracker.Read().Update();
+
+                if (this.pathTracker.Read().IsActive)
+                {
+                    /// Update the velocity of this entity if the path-tracker is still active.
+                    MotionController.UpdateVelocity(this, this.entityActuator, this.pathTracker.Read());
+                }
+                else
+                {
+                    /// Stop the entity if the path-tracker became inactive.
+                    this.velocity.Write(new RCNumVector(0, 0));
+                }
+
+                /// If the velocity is not (0,0) we handle the collisions and update the position of this entity
+                /// if there was no collision.
                 if (this.velocity.Read() != new RCNumVector(0, 0))
                 {
                     /// Check if the new position would remain inside the walkable area of the map.
                     /// TODO: put this check into a virtual method to be able to override in case of flying entities!
                     RCNumVector newPosition = this.position.Read() + this.velocity.Read();
-                    if (!this.pathFinder.IsWalkable(newPosition))
+                    if (this.pathFinder.GetNavMeshNode(newPosition) == null)
                     {
                         throw new InvalidOperationException("Entity wants to go to a non-walkable position on the map!");
                     }
@@ -277,7 +306,9 @@ namespace RC.Engine.Simulator.Scenarios
                     else { this.velocity.Write(new RCNumVector(0, 0)); }
                 }
             }
-            this.OnUpdateFrameImpl(frameIndex);
+
+            /// Execute additional update procedures of the derived classes.
+            this.UpdateStateImpl();
         }
 
         /// <summary>
@@ -291,10 +322,17 @@ namespace RC.Engine.Simulator.Scenarios
         protected virtual void OnRemovedFromScenarioImpl() { }
 
         /// <summary>
-        /// This method is called on every simulation frame updates. Can be overriden in the derived classes.
+        /// Derived classes can execute additional update procedures by overriding this method.
+        /// The default implementation does nothing.
         /// </summary>
-        /// <param name="frameIndex">The index of the current frame.</param>
-        protected virtual void OnUpdateFrameImpl(int frameIndex) { }
+        protected virtual void UpdateStateImpl() { }
+
+        /// <see cref="HeapedObject.DisposeImpl"/>
+        protected override void DisposeImpl()
+        {
+            if (this.pathTracker.Read() != null) { this.pathTracker.Read().Dispose(); this.pathTracker.Write(null); }
+            if (this.entityActuator != null) { this.entityActuator.Dispose(); this.entityActuator = null; }
+        }
 
         #endregion Internal members
 
@@ -325,17 +363,17 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         private HeapedValue<PathTrackerBase> pathTracker;
 
+        /// <summary>
+        /// Reference to the player who owns this entity or null if this entity is neutral or is a start location.
+        /// </summary>
+        private HeapedValue<Player> owner;
+
         #endregion Heaped members
 
         /// <summary>
         /// The player of the currently active animations of this entity.
         /// </summary>
         private List<AnimationPlayer> currentAnimations;
-
-        /// <summary>
-        /// Reference to the player who owns this entity or null if this entity is neutral or is a start location.
-        /// </summary>
-        private Player owner;
 
         /// <summary>
         /// Reference to the element type of this entity.

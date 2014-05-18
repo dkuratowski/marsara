@@ -6,10 +6,10 @@ using System.Text;
 namespace RC.Common
 {
     /// <summary>
-    /// Using this structure you can automatically cache a value of a reference type.
+    /// Using this structure you can automatically cache a value of any type.
     /// </summary>
     /// <typeparam name="T">The type of the data you want to cache.</typeparam>
-    public struct CachedValue<T> where T : struct
+    public struct CachedValue<T>
     {
         /// <summary>
         /// The prototype of the method that will be automatically called when the cached
@@ -24,7 +24,7 @@ namespace RC.Common
         /// <param name="source">The source of the cached value.</param>
         public CachedValue(ValueSource source)
         {
-            this.chachedValue = default(T);
+            this.cachedValue = default(T);
             this.isValid = false;
             this.source = source;
         }
@@ -38,11 +38,11 @@ namespace RC.Common
             {
                 if (!this.isValid)
                 {
-                    this.chachedValue = this.source != null ? this.source() : default(T);
+                    this.cachedValue = this.source != null ? this.source() : default(T);
                     this.isValid = true;
                 }
 
-                return this.chachedValue;
+                return this.cachedValue;
             }
         }
 
@@ -57,7 +57,7 @@ namespace RC.Common
         /// <summary>
         /// The cached value.
         /// </summary>
-        private T chachedValue;
+        private T cachedValue;
 
         /// <summary>
         /// This flag indicates whether the cached value is valid or has to be recomputed.

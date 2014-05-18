@@ -18,7 +18,9 @@ namespace RC.Engine.Maps.Core
         /// <param name="vertex0">The first vertex of the triangle.</param>
         /// <param name="vertex1">The second vertex of the triangle.</param>
         /// <param name="vertex2">The third vertex of the triangle.</param>
-        internal NavMeshNode(RCNumVector vertex0, RCNumVector vertex1, RCNumVector vertex2) : this()
+        /// <param name="idSource">The enumerator that provides the IDs for the NavMeshNodes.</param>
+        internal NavMeshNode(RCNumVector vertex0, RCNumVector vertex1, RCNumVector vertex2, IEnumerator<int> idSource)
+            : this(idSource)
         {
             this.polygon = new RCPolygon(vertex0, vertex1, vertex2);
             if (this.polygon.DoubleOfSignedArea == 0) { throw new ArgumentException("The vertices of the triangle are colinear!"); }
@@ -31,7 +33,9 @@ namespace RC.Engine.Maps.Core
         /// Constructs a NavMeshNode with custom area.
         /// </summary>
         /// <param name="nodePolygon">The polygon that represents the area of the node.</param>
-        internal NavMeshNode(RCPolygon nodePolygon) : this()
+        /// <param name="idSource">The enumerator that provides the IDs for the NavMeshNodes.</param>
+        internal NavMeshNode(RCPolygon nodePolygon, IEnumerator<int> idSource)
+            : this(idSource)
         {
             if (nodePolygon == null) { throw new ArgumentNullException("nodePolygon"); }
             if (nodePolygon.DoubleOfSignedArea <= 0) { throw new ArgumentException("The polygon must be in clockwise order!", "nodePolygon"); }
@@ -56,6 +60,9 @@ namespace RC.Engine.Maps.Core
 
         /// <see cref="INavMeshNode.Polygon"/>
         public RCPolygon Polygon { get { return this.polygon; } }
+
+        /// <see cref="INavMeshNode.ID"/>
+        public int ID { get { return this.id; } }
 
         /// <see cref="INavMeshNode.Neighbours"/>
         public IEnumerable<INavMeshNode> Neighbours { get { return this.neighbours.Keys; } }
@@ -189,7 +196,7 @@ namespace RC.Engine.Maps.Core
 
             /// Create the new node and set its neighbour relationships.
             List<RCNumVector> newNodePolygonCW = new List<RCNumVector>();
-            NavMeshNode newNode = new NavMeshNode();
+            NavMeshNode newNode = new NavMeshNode(this.idSource);
             for (int i = cutBeginIdx; i != cutEndIdx; i = (i + 1) % this.polygon.VertexCount)
             {
                 newNodePolygonCW.Add(this.polygon[i]);
@@ -241,7 +248,7 @@ namespace RC.Engine.Maps.Core
             NavMeshNode lastSlice = null;
             for (int i = 0; i < this.polygon.VertexCount - 1; i++)
             {
-                NavMeshNode newSlice = new NavMeshNode(this.polygon[i], this.polygon[i + 1], vertex);
+                NavMeshNode newSlice = new NavMeshNode(this.polygon[i], this.polygon[i + 1], vertex, this.idSource);
                 slices.Add(newSlice);
                 if (i == 0) { firstSlice = newSlice; } else if (i == this.polygon.VertexCount - 2) { lastSlice = newSlice; }
                 if (prevSlice != null)
@@ -289,17 +296,21 @@ namespace RC.Engine.Maps.Core
 
         #endregion Internal methods
 
+        #region Private methods
+
         /// <summary>
         /// Internal ctor.
         /// </summary>
-        private NavMeshNode()
+        /// <param name="idSource">The enumerator that provides the IDs for the NavMeshNodes.</param>
+        private NavMeshNode(IEnumerator<int> idSource)
         {
-            this.id = nextID++;
+            if (idSource == null) { throw new ArgumentNullException("idSource"); }
+            if (!idSource.MoveNext()) { throw new InvalidOperationException("No ID for this NavMeshNode could be retrieved!"); }
+
+            this.idSource = idSource;
+            this.id = this.idSource.Current;
             this.neighbours = new Dictionary<NavMeshNode, NavMeshEdge>();
         }
-        internal int ID { get { return this.id; } }
-        private int id;
-        private static int nextID = 0;
 
         /// <summary>
         /// Merges the polygon of this node with the given polygon.
@@ -425,6 +436,8 @@ namespace RC.Engine.Maps.Core
             return neighbourList;
         }
 
+        #endregion Private methods
+
         /// <summary>
         /// The list of neighbours of this node and the informations about the corresponding edges.
         /// </summary>
@@ -434,5 +447,15 @@ namespace RC.Engine.Maps.Core
         /// The polygon that represents the area of this node on the 2D plane.
         /// </summary>
         private RCPolygon polygon;
+
+        /// <summary>
+        /// The ID of this node.
+        /// </summary>
+        private int id;
+
+        /// <summary>
+        /// The enumerator that provides the IDs for the NavMeshNodes.
+        /// </summary>
+        private IEnumerator<int> idSource;
     }
 }

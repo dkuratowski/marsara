@@ -16,6 +16,7 @@ namespace RC.Engine.Maps.Core
         /// </summary>
         /// <param name="border">The outer border of the area.</param>
         /// <param name="holes">The holes inside the area.</param>
+        /// <param name="idSource">The enumerator that provides the IDs for the NavMeshNodes.</param>
         /// <remarks>
         /// To prevent undefined behavior the following requirements shall be fulfilled:
         ///     - The vertex order of the border polygon shall be clockwise.
@@ -25,16 +26,17 @@ namespace RC.Engine.Maps.Core
         ///     - The hole polygons shall not intersect each other and the border polygon.
         /// WARNING!!! These requirements are not checked automatically!
         /// </remarks>
-        public TessellationHelper(RCPolygon border, List<RCPolygon> holes)
+        public TessellationHelper(RCPolygon border, List<RCPolygon> holes, IEnumerator<int> idSource)
         {
             if (border == null) { throw new ArgumentNullException("border"); }
             if (holes == null) { throw new ArgumentNullException("holes"); }
+            if (idSource == null) { throw new ArgumentNullException("idSource"); }
 
             /// Retrieve the polygons along the border and the holes.
             this.border = border;
             this.holes = new List<RCPolygon>(holes);
 
-            NavMeshNode superTriangle = new NavMeshNode(SUPERTRIANGLE_VERTEX0, SUPERTRIANGLE_VERTEX1, SUPERTRIANGLE_VERTEX2);
+            NavMeshNode superTriangle = new NavMeshNode(SUPERTRIANGLE_VERTEX0, SUPERTRIANGLE_VERTEX1, SUPERTRIANGLE_VERTEX2, idSource);
             this.vertexMap = new Dictionary<RCNumVector, HashSet<NavMeshNode>>();
             this.vertexMap.Add(SUPERTRIANGLE_VERTEX0, new HashSet<NavMeshNode>() { superTriangle });
             this.vertexMap.Add(SUPERTRIANGLE_VERTEX1, new HashSet<NavMeshNode>() { superTriangle });

@@ -37,7 +37,8 @@ namespace RC.Engine.Maps.Core
             PolygonSimplificationHelper simplificationHelper = new PolygonSimplificationHelper(borders, maxError);
             simplificationHelper.Simplify();
 
-            foreach (WalkabilityGridArea sectorArea in rootArea.Children) { NavMesh.CreateSectors(sectorArea, ref this.helpers); }
+            IEnumerator<int> idSource = this.IDSourceMethod();
+            foreach (WalkabilityGridArea sectorArea in rootArea.Children) { NavMesh.CreateSectors(sectorArea, ref this.helpers, idSource); }
             foreach (TessellationHelper sector in this.helpers) { this.nodes.UnionWith(sector.Nodes); }
 
             /// Calculate the edge informations.
@@ -63,9 +64,10 @@ namespace RC.Engine.Maps.Core
 
             /// Create a temporary vertex map that is used for setting the neighbourhood relationships between the nodes.
             Dictionary<RCNumVector, HashSet<NavMeshNode>> vertexMap = new Dictionary<RCNumVector, HashSet<NavMeshNode>>();
+            IEnumerator<int> idSource = this.IDSourceMethod();
             foreach (RCPolygon nodePolygon in nodePolygons)
             {
-                NavMeshNode node = new NavMeshNode(nodePolygon);
+                NavMeshNode node = new NavMeshNode(nodePolygon, idSource);
                 for (int vertexIdx = 0; vertexIdx < nodePolygon.VertexCount; vertexIdx++)
                 {
                     if (!vertexMap.ContainsKey(nodePolygon[vertexIdx])) { vertexMap.Add(nodePolygon[vertexIdx], new HashSet<NavMeshNode>()); }
@@ -147,7 +149,8 @@ namespace RC.Engine.Maps.Core
         /// </summary>
         /// <param name="sectorArea">The area of the sector.</param>
         /// <param name="helperList">The list where we collect the created tessellation helpers.</param>
-        private static void CreateSectors(WalkabilityGridArea sectorArea, ref List<TessellationHelper> helperList)
+        /// <param name="idSource">The enumerator that provides the IDs for the NavMeshNodes.</param>
+        private static void CreateSectors(WalkabilityGridArea sectorArea, ref List<TessellationHelper> helperList, IEnumerator<int> idSource)
         {
             /// Collect the holes of the current sector.
             List<RCPolygon> holes = new List<RCPolygon>();
@@ -157,16 +160,26 @@ namespace RC.Engine.Maps.Core
             }
 
             /// Create the tessellation helper.
-            if (sectorArea.Border.Count >= 3) { helperList.Add(new TessellationHelper(new RCPolygon(sectorArea.Border), holes)); }
+            if (sectorArea.Border.Count >= 3) { helperList.Add(new TessellationHelper(new RCPolygon(sectorArea.Border), holes, idSource)); }
 
             /// Call this method recursively on the contained sector areas.
             foreach (WalkabilityGridArea wallArea in sectorArea.Children)
             {
                 foreach (WalkabilityGridArea containedSectorArea in wallArea.Children)
                 {
-                    NavMesh.CreateSectors(containedSectorArea, ref helperList);
+                    NavMesh.CreateSectors(containedSectorArea, ref helperList, idSource);
                 }
             }
+        }
+
+        /// <summary>
+        /// Method for providing IDs for the NavMeshNodes inside this NavMesh.
+        /// </summary>
+        /// <returns>An enumerator that provides the IDs for the NavMeshNodes inside this NavMesh.</returns>
+        private IEnumerator<int> IDSourceMethod()
+        {
+            int i = 0;
+            while (true) { yield return i++; }
         }
 
         /// <summary>

@@ -17,6 +17,11 @@ namespace RC.Engine.Maps.PublicInterfaces
         RCPolygon Polygon { get; }
 
         /// <summary>
+        /// Gets the ID of this node.
+        /// </summary>
+        int ID { get; }
+
+        /// <summary>
         /// Gets the neighbours of this node.
         /// </summary>
         IEnumerable<INavMeshNode> Neighbours { get; }

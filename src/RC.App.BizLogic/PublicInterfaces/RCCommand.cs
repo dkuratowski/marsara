@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Engine.Simulator.Scenarios;
 
 namespace RC.App.BizLogic.PublicInterfaces
 {
@@ -17,7 +18,8 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// <summary>
         /// Executes this command. Must be overriden in the derived classes.
         /// </summary>
-        public abstract void Execute();
+        /// <param name="scenario">Reference to the game scenario.</param>
+        public abstract void Execute(Scenario scenario);
 
         /// <summary>
         /// Creates an RCPackage from this command.
@@ -176,7 +178,7 @@ namespace RC.App.BizLogic.PublicInterfaces
         #region RCCommand overrides
 
         /// <see cref="RCCommand.Execute"/>
-        public override void Execute()
+        public override void Execute(Scenario scenario)
         {
             TraceManager.WriteAllTrace(string.Format("MOV {0}", this.TargetPosition), BizLogicTraceFilters.INFO);
         }
@@ -202,9 +204,19 @@ namespace RC.App.BizLogic.PublicInterfaces
         #region RCCommand overrides
 
         /// <see cref="RCCommand.Execute"/>
-        public override void Execute()
+        public override void Execute(Scenario scenario)
         {
             TraceManager.WriteAllTrace(string.Format("FAST {0}", this.TargetPosition), BizLogicTraceFilters.INFO);
+
+            /// TODO: this is only a temprary solution for testing motion control.
+            foreach (int entityId in this.RecipientEntities)
+            {
+                Entity entity = scenario.GetEntity<Entity>(entityId);
+                if (entity != null)
+                {
+                    entity.Move(this.TargetPosition);
+                }
+            }
         }
 
         #endregion RCCommand overrides

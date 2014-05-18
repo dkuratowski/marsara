@@ -142,6 +142,9 @@ namespace RC.Engine.MotionControl.Test
             }
         }
 
+        /// <see cref="IMotionControlEnvironment.ValidateVelocity"/>
+        public bool ValidateVelocity(RCNumVector velocity) { return true; }
+
         #endregion IMotionControlEnvironment methods
 
         #region ISearchTreeContent methods

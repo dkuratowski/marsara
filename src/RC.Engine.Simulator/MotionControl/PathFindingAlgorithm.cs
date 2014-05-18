@@ -19,7 +19,8 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="fromNode">The starting navmesh node of the pathfinding.</param>
         /// <param name="toCoords">The target coordinates of the pathfinding.</param>
         /// <param name="iterationLimit">The maximum number of iterations to execute when searching this path.</param>
-        public PathFindingAlgorithm(INavMeshNode fromNode, RCNumVector toCoords, int iterationLimit)
+        /// <param name="blockedEdges">The list of blocked edges to avoid.</param>
+        public PathFindingAlgorithm(INavMeshNode fromNode, RCNumVector toCoords, int iterationLimit, List<INavMeshEdge> blockedEdges)
         {
             this.bestNode = null;
             this.toCoords = toCoords;
@@ -32,34 +33,7 @@ namespace RC.Engine.Simulator.MotionControl
             this.fromNode = PathNode.CreateSourceNode(fromNode, this.GetEstimation(fromNode));
             this.queuedNodes.Insert(this.fromNode);
             this.queuedNodesMap.Add(this.fromNode.Node, this.fromNode);
-            this.blockedEdges = new HashSet<Tuple<INavMeshNode, INavMeshNode>>();
-        }
-                
-        /// <summary>
-        /// Constructs a DirectPathFindingAlgorithm based on a previously computed path.
-        /// </summary>
-        /// <param name="detouredPath">The original path.</param>
-        /// <param name="abortedSectionIdx">The index of the aborted section of the original path.</param>
-        /// <param name="iterationLimit">The maximum number of iterations to execute when searching this path.</param>
-        public PathFindingAlgorithm(Path detouredPath, int abortedSectionIdx, int iterationLimit)
-        {
-            this.bestNode = null;
-            this.toCoords = detouredPath.ToCoords;
-            this.iterationLimit = iterationLimit;
-            this.iterationsExecuted = 0;
-            this.isFinished = false;
-            this.queuedNodes = new BinaryHeap<PathNode>(BinaryHeap<PathNode>.HeapType.MinHeap);
-            this.queuedNodesMap = new Dictionary<INavMeshNode, PathNode>();
-            this.completedNodesMap = new Dictionary<INavMeshNode, PathNode>();
-            this.fromNode = PathNode.CreateSourceNode(detouredPath.GetPathNode(abortedSectionIdx),
-                                                      this.GetEstimation(detouredPath.GetPathNode(abortedSectionIdx)));
-            this.queuedNodes.Insert(this.fromNode);
-            this.queuedNodesMap.Add(this.fromNode.Node, this.fromNode);
-
-            this.blockedEdges = new HashSet<Tuple<INavMeshNode, INavMeshNode>>();
-            detouredPath.CopyBlockedEdges(ref this.blockedEdges);
-            this.blockedEdges.Add(new Tuple<INavMeshNode, INavMeshNode>(detouredPath.GetPathNode(abortedSectionIdx),
-                                                                        detouredPath.GetPathNode(abortedSectionIdx + 1)));
+            this.blockedEdges = new HashSet<INavMeshEdge>(blockedEdges);
         }
 
         #region Public members
@@ -191,15 +165,6 @@ namespace RC.Engine.Simulator.MotionControl
             this.isFinished |= this.queuedNodes.Count == 0 || this.iterationsExecuted >= this.iterationLimit;
             return iterationsInCurrCall;
         }
-        
-        /// <summary>
-        /// Copies the blocked edges of this search algorithm to the target set.
-        /// </summary>
-        /// <param name="targetSet">The target set to copy.</param>
-        public void CopyBlockedEdges(ref HashSet<Tuple<INavMeshNode, INavMeshNode>> targetSet)
-        {
-            foreach (Tuple<INavMeshNode, INavMeshNode> blockedEdge in this.blockedEdges) { targetSet.Add(blockedEdge); }
-        }
 
         #endregion Public members
 
@@ -242,10 +207,10 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="nodeA">The first navmesh node of the edge.</param>
         /// <param name="nodeB">The second navmesh node of the edge.</param>
         /// <returns>True if the edge is blocked, false otherwise.</returns>
+        /// <remarks>Edges are considered to be 1-directional.</remarks>
         private bool IsEdgeBlocked(INavMeshNode nodeA, INavMeshNode nodeB)
         {
-            return this.blockedEdges.Contains(new Tuple<INavMeshNode, INavMeshNode>(nodeA, nodeB)) ||
-                   this.blockedEdges.Contains(new Tuple<INavMeshNode, INavMeshNode>(nodeB, nodeA));
+            return this.blockedEdges.Contains(nodeA.GetEdge(nodeB));
         }
 
         #endregion Internal methods
@@ -283,7 +248,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <summary>
         /// Contains the blocked edges that have to be bypassed by this search algorithm.
         /// </summary>
-        private HashSet<Tuple<INavMeshNode, INavMeshNode>> blockedEdges;
+        private HashSet<INavMeshEdge> blockedEdges;
 
         /// <summary>
         /// This flag indicates whether this pathfinding algorithm has been finished or not.

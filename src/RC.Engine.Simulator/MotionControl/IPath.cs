@@ -31,15 +31,21 @@ namespace RC.Engine.Simulator.MotionControl
         INavMeshNode this[int index] { get; }
 
         /// <summary>
+        /// Gets the index of the given node on this path.
+        /// </summary>
+        /// <param name="node">The node to be searched.</param>
+        /// <returns>The index of the given node on this path or -1 if this path doesn't contain the given node.</returns>
+        int IndexOf(INavMeshNode node);
+
+        /// <summary>
         /// Gets the total number of nodes on this path.
         /// </summary>
         /// <exception cref="InvalidOperationException">If the path is not ready for use or has already been aborted.</exception>
         int Length { get; }
 
         /// <summary>
-        /// Forgets every blocked edges that was used when the path was computed.
+        /// Gets the target coordinates of this path.
         /// </summary>
-        /// <exception cref="InvalidOperationException">If the path is not ready for use or has already been aborted.</exception>
-        void ForgetBlockedEdges();
+        RCNumVector ToCoords { get; }
     }
 }

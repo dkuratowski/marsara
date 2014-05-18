@@ -13,7 +13,7 @@ namespace RC.UnitTests
     /// <summary>
     /// Internal class used for painting navmeshes.
     /// </summary>
-    class NavmeshPainter : IDisposable
+    public class NavmeshPainter : IDisposable
     {
         /// <summary>
         /// Constructs a NavmeshPainter instance without walkability grid informations.
@@ -76,7 +76,7 @@ namespace RC.UnitTests
         /// Draws the given navmesh node.
         /// </summary>
         /// <param name="node">The navmesh node to be drawn.</param>
-        public void DrawNode(NavMeshNode node)
+        public void DrawNode(INavMeshNode node)
         {
             this.DrawPolygon(node.Polygon);
 
@@ -92,7 +92,7 @@ namespace RC.UnitTests
         /// Bi-directional neighbour relationships will be drawn with blue, one-way neighbour relationships will be
         /// drawn with yellow.
         /// </remarks>
-        public void DrawNeighbourLines(NavMeshNode node)
+        public void DrawNeighbourLines(INavMeshNode node)
         {
             RCNumVector nodeCenter = (node.Polygon.Center + this.offset) * new RCNumVector(this.cellSize, this.cellSize);
             this.graphicContext.DrawEllipse(Pens.Blue, nodeCenter.Round().X - 3, nodeCenter.Round().Y - 3, 6, 6);

@@ -259,12 +259,20 @@ namespace RC.Engine.Simulator.Core
             List<KeyValuePair<string, string>> fields = new List<KeyValuePair<string, string>>();
             foreach (FieldInfo field in type.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
             {
-                /// Check if the current field is a heaped field or not.
+                /// Check if the type of the current field is a generic type.
                 if (!field.FieldType.IsGenericType ||
                     field.FieldType.IsGenericTypeDefinition ||
                     field.FieldType.ContainsGenericParameters)
                 {
-                    /// Not a heaped field -> don't care
+                    /// Not a generic type -> don't care
+                    continue;
+                }
+
+                /// Chcek if the field is a heaped field or not.
+                if (field.FieldType.GetGenericTypeDefinition() != typeof(HeapedValue<>) &&
+                    field.FieldType.GetGenericTypeDefinition() != typeof(HeapedArray<>))
+                {
+                    /// Not a heaped field -> don't care.
                     continue;
                 }
 

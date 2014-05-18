@@ -9,7 +9,7 @@ namespace RC.Engine.Simulator.Scenarios
     /// <summary>
     /// Represents a player of a scenario.
     /// </summary>
-    public class Player : IDisposable // TODO: derive from HeapedObject
+    public class Player : HeapedObject
     {
         /// <summary>
         /// Represents a method that creates some initial entitites for a player at its start location.
@@ -29,8 +29,12 @@ namespace RC.Engine.Simulator.Scenarios
             if (startLocation.Scenario == null) { throw new SimulatorException("The given start location doesn't belong to a scenario!"); }
             if (!startLocation.Scenario.VisibleEntities.HasContent(startLocation)) { throw new SimulatorException("The given start location has already been initialized!"); }
 
-            this.playerIndex = playerIndex;
-            this.startLocation = startLocation;
+            this.playerIndex = this.ConstructField<int>("playerIndex");
+            this.startLocation = this.ConstructField<StartLocation>("startLocation");
+
+            this.playerIndex.Write(playerIndex);
+            this.startLocation.Write(startLocation);
+
             this.buildings = new HashSet<Building>();
             this.units = new HashSet<Unit>();
         }
@@ -82,21 +86,21 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// Gets the index of this player.
         /// </summary>
-        public int PlayerIndex { get { return this.playerIndex; } }
+        public int PlayerIndex { get { return this.playerIndex.Read(); } }
 
         /// <summary>
         /// Gets the start location of this player.
         /// </summary>
-        public StartLocation StartLocation { get { return this.startLocation; } }
+        public StartLocation StartLocation { get { return this.startLocation.Read(); } }
 
         #region IDisposable methods
 
         /// <see cref="IDisposable.Dispose"/>
-        public void Dispose()
+        protected override void DisposeImpl()
         {
             foreach (Building building in this.buildings)
             {
-                this.startLocation.Scenario.RemoveEntity(building);
+                this.startLocation.Read().Scenario.RemoveEntity(building);
             }
         }
 
@@ -105,21 +109,23 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// The index of the player.
         /// </summary>
-        private int playerIndex;
+        private HeapedValue<int> playerIndex;
 
         /// <summary>
         /// The start location of the player.
         /// </summary>
-        private StartLocation startLocation;
+        private HeapedValue<StartLocation> startLocation;
 
         /// <summary>
         /// The buildings of the player.
         /// </summary>
+        /// TODO: store the buildings also in a HeapedArray!
         private HashSet<Building> buildings;
 
         /// <summary>
         /// The units of the player.
         /// </summary>
+        /// TODO: store the units also in a HeapedArray!
         private HashSet<Unit> units;
 
         /// <summary>

@@ -36,6 +36,9 @@ namespace RC.Engine.Simulator.Core
             }
         }
 
+        /// <see cref="HeapedArray<T>.Length"/>
+        public override int Length { get { return this.items.Length; } }
+
         /// <see cref="HeapedArray<T>.New"/>
         public override void New(int length)
         {

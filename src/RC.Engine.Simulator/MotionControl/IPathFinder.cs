@@ -32,7 +32,7 @@ namespace RC.Engine.Simulator.MotionControl
         void Flush();
 
         /// <summary>
-        /// Starts searching a path from one cell to another on the map.
+        /// Starts searching a path from one position to another on the map.
         /// </summary>
         /// <param name="fromCoords">The starting coordinates of the path.</param>
         /// <param name="toCoords">The target coordinates of the path.</param>
@@ -44,22 +44,25 @@ namespace RC.Engine.Simulator.MotionControl
         IPath StartPathSearching(RCNumVector fromCoords, RCNumVector toCoords, int iterationLimit);
 
         /// <summary>
-        /// Starts searching a detour to the target from the given section on the given original path.
+        /// Starts searching a path from one position to another on the map avoiding the given list of blocked edges.
         /// </summary>
-        /// <param name="originalPath">The original path.</param>
-        /// <param name="abortedSectionIdx">The index of the aborted section on the original path.</param>
-        /// <param name="iterationLimit">The maximum number of iterations to execute when searching the detour.</param>
-        /// <returns>The interface of the detour.</returns>
+        /// <param name="fromCoords">The starting coordinates of the path.</param>
+        /// <param name="toCoords">The target coordinates of the path.</param>
+        /// <param name="iterationLimit">The maximum number of iterations to execute when searching the path.</param>
+        /// <param name="blockedEdges">The list of blocked edges to avoid.</param>
+        /// <return>The interface of the path.</return>
         /// <remarks>
         /// Use the IPath.IsReadyForUse property of the returned path to check if the pathfinding has already been finished or not.
         /// </remarks>
-        IPath StartDetourSearching(IPath originalPath, int abortedSectionIdx, int iterationLimit);
+        IPath StartPathSearching(RCNumVector fromCoords, RCNumVector toCoords, int iterationLimit, List<INavMeshEdge> blockedEdges);
 
         /// <summary>
-        /// Checks whether the given position is on the walkable area of the loaded navmesh.
+        /// Gets the navmesh node at the given position or null if the given position is not on the walkable area of the loaded navmesh.
         /// </summary>
         /// <param name="position">The position to check.</param>
-        /// <returns>True if the given position is on the walkable area of the loaded navmesh.</returns>
-        bool IsWalkable(RCNumVector position);
+        /// <returns>
+        /// the navmesh node at the given position or null if the given position is not on the walkable area of the loaded navmesh.
+        /// </returns>
+        INavMeshNode GetNavMeshNode(RCNumVector position);
     }
 }

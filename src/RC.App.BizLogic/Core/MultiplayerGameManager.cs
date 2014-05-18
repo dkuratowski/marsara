@@ -35,6 +35,7 @@ namespace RC.App.BizLogic.Core
             this.scenarioLoader = ComponentManager.GetInterface<IScenarioLoader>();
             this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
             this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
+            this.navmeshLoader = ComponentManager.GetInterface<INavMeshLoader>();
             this.taskManager = ComponentManager.GetInterface<ITaskManager>();
             this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
         }
@@ -54,7 +55,7 @@ namespace RC.App.BizLogic.Core
             byte[] mapBytes = File.ReadAllBytes(mapFile);
             MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
             IMapAccess map = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
-            //this.pathFinder.Initialize(map, 5000); /// TODO: call this from a background task!
+            this.pathFinder.Initialize(this.navmeshLoader.LoadNavMesh(mapBytes), MAX_PATHFINDING_ITERATIONS_PER_FRAMES);
             this.gameScenario = this.scenarioLoader.LoadScenario(map, mapBytes);
             StartLocation startLocation = this.gameScenario.GetVisibleEntities<StartLocation>()[0];
             this.gameScenario.CreatePlayer(0, startLocation, RaceEnum.Terran);
@@ -62,9 +63,10 @@ namespace RC.App.BizLogic.Core
             this.entitySelector = new EntitySelector(this.gameScenario, 0);
             this.commandDispatcher = new CommandDispatcher();
             this.triggeredScheduler = new TriggeredScheduler(1000 / (int)gameSpeed);
-            this.triggeredScheduler.AddScheduledFunction(this.ExecuteFrame);
-            this.triggeredScheduler.AddScheduledFunction(this.gameScenario.UpdateFrame);
-            this.triggeredScheduler.AddScheduledFunction(this.gameScenario.StepAnimations);
+            this.triggeredScheduler.AddScheduledFunction(this.pathFinder.Flush);
+            this.triggeredScheduler.AddScheduledFunction(this.ExecuteCommands);
+            this.triggeredScheduler.AddScheduledFunction(this.gameScenario.UpdateState);
+            this.triggeredScheduler.AddScheduledFunction(this.gameScenario.UpdateAnimations);
             this.testDssTaskCanFinishEvt = new ManualResetEvent(false);
             this.dssTask = this.taskManager.StartTask(this.TestDssTaskMethod, "DssThread");
             return null; /// TODO: this is only a PROTOTYPE implementation!
@@ -120,15 +122,15 @@ namespace RC.App.BizLogic.Core
         #endregion IMultiplayerGameManager methods
 
         /// <summary>
-        /// Internal function that actually executes the next simulation frame.
+        /// Internal function that executes the incoming commands in the current simulation frame.
         /// </summary>
-        private void ExecuteFrame()
+        private void ExecuteCommands()
         {
             this.commandDispatcher.DispatchOutgoingCommands();
             List<RCCommand> incomingCommands = this.commandDispatcher.GetIncomingCommands();
             foreach (RCCommand command in incomingCommands)
             {
-                command.Execute();
+                command.Execute(this.gameScenario);
             }
         }
 
@@ -195,6 +197,11 @@ namespace RC.App.BizLogic.Core
         private IMapLoader mapLoader;
 
         /// <summary>
+        /// Reference to the RC.Engine.Maps.NavMeshLoader component.
+        /// </summary>
+        private INavMeshLoader navmeshLoader;
+
+        /// <summary>
         /// Reference to the RC.App.PresLogic.TaskManagerAdapter component.
         /// </summary>
         private ITaskManager taskManager;
@@ -203,5 +210,10 @@ namespace RC.App.BizLogic.Core
         /// Reference to the RC.Engine.Simulator.PathFinder component.
         /// </summary>
         private IPathFinder pathFinder;
+
+        /// <summary>
+        /// The maximum number of pathfinding iterations per frames.
+        /// </summary>
+        private const int MAX_PATHFINDING_ITERATIONS_PER_FRAMES = 2500;
     }
 }

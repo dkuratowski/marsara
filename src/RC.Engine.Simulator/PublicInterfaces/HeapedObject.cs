@@ -195,6 +195,9 @@ namespace RC.Engine.Simulator.PublicInterfaces
             if (this.ctorIndex != this.inheritenceHierarchy.Length) { throw new InvalidOperationException("Last constructor not yet finished!"); }
             if (!this.isDisposed)
             {
+                /// Execute custom disposal procedures of the derived classes.
+                this.DisposeImpl();
+
                 /// Detach from the heap if necessary.
                 if (this.heapManager.IsHeapAttached) { this.DetachFromHeap(); }
 
@@ -211,6 +214,12 @@ namespace RC.Engine.Simulator.PublicInterfaces
                 this.isDisposed = true;
             }
         }
+
+        /// <summary>
+        /// The derived classes can implement custom disposal procedures by overriding this method.
+        /// The default implementation does nothing.
+        /// </summary>
+        protected virtual void DisposeImpl() { }
 
         #endregion IDisposable methods
 

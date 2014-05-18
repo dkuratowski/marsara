@@ -27,28 +27,32 @@ namespace RC.Engine.Simulator.MotionControl
 
             foreach (RCNumVector admissibleVelocity in actuator.AdmissibleVelocities)
             {
-                RCNumVector checkedVelocity = admissibleVelocity * 2 - target.Velocity; /// We calculate with RVOs instead of VOs.
-                RCNumber timeToCollisionMin = -1;
-                foreach (DynamicObstacleInfo obstacle in environment.DynamicObstacles)
+                if (environment.ValidateVelocity(admissibleVelocity))
                 {
-                    RCNumber timeToCollision = MotionController.CalculateTimeToCollision(target.Position, checkedVelocity, obstacle.Position, obstacle.Velocity);
-                    if (timeToCollision >= 0 && (timeToCollisionMin < 0 || timeToCollision < timeToCollisionMin)) { timeToCollisionMin = timeToCollision; }
-                }
-
-                if (timeToCollisionMin != 0)
-                {
-                    RCNumber penalty = (timeToCollisionMin > 0 ? (RCNumber)1 / timeToCollisionMin : 0)
-                                     + MapUtils.ComputeDistance(environment.PreferredVelocity, admissibleVelocity);
-                    if (bestVelocityIndex == -1 || penalty < minPenalty)
+                    RCNumVector checkedVelocity = admissibleVelocity * 2 - target.Velocity; /// We calculate with RVOs instead of VOs.
+                    RCNumber timeToCollisionMin = -1;
+                    foreach (DynamicObstacleInfo obstacle in environment.DynamicObstacles)
                     {
-                        minPenalty = penalty;
-                        bestVelocityIndex = currVelocityIndex;
+                        RCNumber timeToCollision = MotionController.CalculateTimeToCollision(target.Position, checkedVelocity, obstacle.Position, obstacle.Velocity);
+                        if (timeToCollision >= 0 && (timeToCollisionMin < 0 || timeToCollision < timeToCollisionMin)) { timeToCollisionMin = timeToCollision; }
+                    }
+
+                    if (timeToCollisionMin != 0)
+                    {
+                        RCNumber penalty = (timeToCollisionMin > 0 ? (RCNumber)1 / timeToCollisionMin : 0)
+                                         + MapUtils.ComputeDistance(environment.PreferredVelocity, admissibleVelocity);
+                        if (bestVelocityIndex == -1 || penalty < minPenalty)
+                        {
+                            minPenalty = penalty;
+                            bestVelocityIndex = currVelocityIndex;
+                        }
                     }
                 }
                 currVelocityIndex++;
             }
 
-            if (bestVelocityIndex != -1) { actuator.SelectNewVelocity(bestVelocityIndex); }
+            /// This will stop the controlled target if bestVelocityIndex == -1.
+            actuator.SelectNewVelocity(bestVelocityIndex);
         }
 
         /// <summary>

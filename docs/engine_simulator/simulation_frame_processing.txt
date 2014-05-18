@@ -1,0 +1,10 @@
+Simulation frame:
+	- Flush pathfinding remained from previous frame
+	- Execution of incoming commands
+	- Update simulation state
+		- Update Entity state
+			- Update path-tracker state
+			- Update velocity
+			- Update position
+			- Custom Entity update
+	- Update animations

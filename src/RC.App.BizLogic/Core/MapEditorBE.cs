@@ -59,7 +59,7 @@ namespace RC.App.BizLogic.Core
             this.activeMap = this.mapLoader.NewMap(mapName, this.tilesetStore.GetTileSet(tilesetName), defaultTerrain, mapSize);
             this.activeScenario = this.scenarioLoader.NewScenario(this.activeMap);
             this.timeScheduler = new Scheduler(MAPEDITOR_MS_PER_FRAMES);
-            this.timeScheduler.AddScheduledFunction(this.activeScenario.StepAnimations);
+            this.timeScheduler.AddScheduledFunction(this.activeScenario.UpdateAnimations);
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
@@ -73,7 +73,7 @@ namespace RC.App.BizLogic.Core
             this.activeMap = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
             this.activeScenario = this.scenarioLoader.LoadScenario(this.activeMap, mapBytes);
             this.timeScheduler = new Scheduler(MAPEDITOR_MS_PER_FRAMES);
-            this.timeScheduler.AddScheduledFunction(this.activeScenario.StepAnimations);
+            this.timeScheduler.AddScheduledFunction(this.activeScenario.UpdateAnimations);
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
