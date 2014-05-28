@@ -30,9 +30,10 @@ namespace RC.Engine.Simulator.Scenarios
             this.typeID = this.ConstructField<int>("typeID");
             this.pathTracker = this.ConstructField<PathTrackerBase>("pathTracker");
             this.owner = this.ConstructField<Player>("owner");
+            this.scenario = this.ConstructField<Scenario>("scenario");
 
             this.elementType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetElementType(elementTypeName);
-            this.scenario = null;
+            this.scenario.Write(null);
             this.currentAnimations = new List<AnimationPlayer>();
             this.entityActuator = null;
             this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
@@ -83,7 +84,40 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// Gets the scenario that this entity belongs to.
         /// </summary>
-        public Scenario Scenario { get { return this.scenario; } }
+        public Scenario Scenario { get { return this.scenario.Read(); } }
+
+        /// <summary>
+        /// Adds this entity to the map into the given position.
+        /// </summary>
+        /// <param name="position">The position of this entity on the map.</param>
+        /// <returns>True if the entity was successfully added to the map; otherwise false.</returns>
+        public bool AddToMap(RCNumVector position)
+        {
+            if (this.scenario.Read() == null) { throw new InvalidOperationException("The entity has not yet been added to a scenario!"); }
+            if (this.position.Read() != RCNumVector.Undefined) { throw new InvalidOperationException("The entity has already been added to the map!"); }
+
+            bool isValidPosition = this.ValidatePosition(position);
+            if (isValidPosition)
+            {
+                this.SetPosition(position);
+                this.Scenario.VisibleEntities.AttachContent(this);
+            }
+            return isValidPosition;
+        }
+
+        /// <summary>
+        /// Removes this unit from the map.
+        /// </summary>
+        public RCNumVector RemoveFromMap()
+        {
+            if (this.scenario.Read() == null) { throw new InvalidOperationException("The entity has not yet been added to a scenario!"); }
+            if (this.position.Read() == RCNumVector.Undefined) { throw new InvalidOperationException("The entity has already been removed from the map!"); }
+
+            RCNumVector currentPosition = this.position.Read();
+            this.Scenario.VisibleEntities.DetachContent(this);
+            this.position.Write(RCNumVector.Undefined);
+            return currentPosition;
+        }
 
         #endregion Public interface
 
@@ -215,8 +249,8 @@ namespace RC.Engine.Simulator.Scenarios
         /// <param name="id">The ID of this entity.</param>
         internal void OnAddedToScenario(Scenario scenario, int id)
         {
-            if (this.scenario != null) { throw new InvalidOperationException("The entity is already added to a scenario!"); }
-            this.scenario = scenario;
+            if (this.scenario.Read() != null) { throw new InvalidOperationException("The entity is already added to a scenario!"); }
+            this.scenario.Write(scenario);
             this.id.Write(id);
             this.OnAddedToScenarioImpl();
         }
@@ -226,9 +260,10 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         internal void OnRemovedFromScenario()
         {
-            if (this.scenario == null) { throw new InvalidOperationException("The entity doesn't not belong to a scenario!"); }
-            if (this.scenario.VisibleEntities.HasContent(this)) { this.scenario.VisibleEntities.DetachContent(this); }
-            this.scenario = null;
+            if (this.scenario.Read() == null) { throw new InvalidOperationException("The entity doesn't not belong to a scenario!"); }
+            if (this.position.Read() != RCNumVector.Undefined) { throw new InvalidOperationException("The entity is not removed from the map!"); }
+
+            this.scenario.Write(null);
             this.id.Write(-1);
             this.OnRemovedFromScenarioImpl();
         }
@@ -239,6 +274,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// <param name="owner">The player that owns this entity.</param>
         internal void OnAddedToPlayer(Player owner)
         {
+            if (this.scenario.Read() == null) { throw new InvalidOperationException("The entity doesn't not belong to a scenario!"); }
             if (this.owner.Read() != null) { throw new InvalidOperationException("The entity is already added to a player!"); }
             this.owner.Write(owner);
         }
@@ -248,6 +284,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         internal void OnRemovedFromPlayer()
         {
+            if (this.scenario.Read() == null) { throw new InvalidOperationException("The entity doesn't not belong to a scenario!"); }
             if (this.owner.Read() == null) { throw new InvalidOperationException("The entity doesn't not belong to a player!"); }
             this.owner.Write(null);
         }
@@ -259,7 +296,7 @@ namespace RC.Engine.Simulator.Scenarios
         {
             /// Update the velocity and position of this entity only if it's visible on the map, has
             /// an actuator and a path-tracker and the path-tracker is active.
-            if (this.scenario.VisibleEntities.HasContent(this) &&
+            if (this.scenario.Read().VisibleEntities.HasContent(this) &&
                 this.entityActuator != null &&
                 this.pathTracker.Read() != null &&
                 this.pathTracker.Read().IsActive)
@@ -278,37 +315,45 @@ namespace RC.Engine.Simulator.Scenarios
                     this.velocity.Write(new RCNumVector(0, 0));
                 }
 
-                /// If the velocity is not (0,0) we handle the collisions and update the position of this entity
-                /// if there was no collision.
+                /// If the velocity is not (0,0) update the position of this entity.
                 if (this.velocity.Read() != new RCNumVector(0, 0))
                 {
-                    /// Check if the new position would remain inside the walkable area of the map.
-                    /// TODO: put this check into a virtual method to be able to override in case of flying entities!
                     RCNumVector newPosition = this.position.Read() + this.velocity.Read();
-                    if (this.pathFinder.GetNavMeshNode(newPosition) == null)
-                    {
-                        throw new InvalidOperationException("Entity wants to go to a non-walkable position on the map!");
-                    }
-
-                    /// Check if the entity wouldn't collide with other entities at the new position.
-                    /// TODO: put this check into a virtual method to be able to override in the derived classes.
-                    RCNumRectangle newEntityArea =
-                        new RCNumRectangle(newPosition - this.ElementType.Area.Read() / 2, this.elementType.Area.Read());
-                    bool collision = false;
-                    foreach (Entity collidingEntity in this.scenario.GetVisibleEntities<Entity>(newEntityArea))
-                    {
-                        if (collidingEntity != this) { collision = true; break; }
-                    }
-
-                    /// In case of collision reduce the velocity to (0,0); otherwise set the new position of the entity
-                    /// based on the velocity.
-                    if (!collision) { this.SetPosition(newPosition); }
+                    if (this.ValidatePosition(newPosition)) { this.SetPosition(newPosition); }
                     else { this.velocity.Write(new RCNumVector(0, 0)); }
                 }
             }
 
             /// Execute additional update procedures of the derived classes.
             this.UpdateStateImpl();
+        }
+
+        /// <summary>
+        /// Checks whether the given position is valid for this entity.
+        /// </summary>
+        /// <param name="position">The position to be checked.</param>
+        /// <returns>True if the given position is valid for this entity; otherwise false.</returns>
+        /// <remarks>Must be overriden in the derived classes.</remarks>
+        /// TODO: Make this method abstract and implement it in the derived classes! This is only a temporary solution.
+        protected virtual bool ValidatePosition(RCNumVector position)
+        {
+            if (this.pathFinder.GetNavMeshNode(position) == null)
+            {
+                /// The entity wants to go to a non-walkable position on the map -> invalid position
+                return false;
+            }
+
+            /// Detect collision with other entities.
+            RCNumRectangle newEntityArea =
+                new RCNumRectangle(position - this.ElementType.Area.Read() / 2, this.elementType.Area.Read());
+            bool collision = false;
+            foreach (Entity collidingEntity in this.scenario.Read().GetVisibleEntities<Entity>(newEntityArea))
+            {
+                if (collidingEntity != this) { collision = true; break; }
+            }
+
+            /// Return true if there is no collision with other entities.
+            return !collision;
         }
 
         /// <summary>
@@ -341,32 +386,38 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// The position of this entity.
         /// </summary>
-        private HeapedValue<RCNumVector> position;
+        private readonly HeapedValue<RCNumVector> position;
 
         /// <summary>
         /// The velocity of this entity.
         /// </summary>
-        private HeapedValue<RCNumVector> velocity;
+        private readonly HeapedValue<RCNumVector> velocity;
 
         /// <summary>
         /// The ID of this entity.
         /// </summary>
-        private HeapedValue<int> id;
+        private readonly HeapedValue<int> id;
 
         /// <summary>
         /// The ID of the element type of this entity.
         /// </summary>
-        private HeapedValue<int> typeID;
+        private readonly HeapedValue<int> typeID;
 
         /// <summary>
         /// Reference to the path-tracker of this entity.
         /// </summary>
-        private HeapedValue<PathTrackerBase> pathTracker;
+        private readonly HeapedValue<PathTrackerBase> pathTracker;
 
         /// <summary>
         /// Reference to the player who owns this entity or null if this entity is neutral or is a start location.
         /// </summary>
-        private HeapedValue<Player> owner;
+        private readonly HeapedValue<Player> owner;
+
+        /// <summary>
+        /// Reference to the scenario that this entity belongs to or null if this entity doesn't belong to any scenario.
+        /// to a scenario.
+        /// </summary>
+        private readonly HeapedValue<Scenario> scenario;
 
         #endregion Heaped members
 
@@ -379,12 +430,6 @@ namespace RC.Engine.Simulator.Scenarios
         /// Reference to the element type of this entity.
         /// </summary>
         private IScenarioElementType elementType;
-
-        /// <summary>
-        /// Reference to the scenario that this entity belongs to or null if this entity doesn't belong to any scenario.
-        /// to a scenario.
-        /// </summary>
-        private Scenario scenario;
 
         /// <summary>
         /// Reference to the actuator of this entity.

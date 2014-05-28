@@ -67,7 +67,7 @@ namespace RC.App.BizLogic.Core
                 retList.Add(new ObjectInst()
                 {
                     Owner = entityAsStartLoc != null
-                          ? (PlayerEnum)entityAsStartLoc.PlayerIndex.Read()
+                          ? (PlayerEnum)entityAsStartLoc.PlayerIndex
                           : (entity.Owner != null ? (PlayerEnum)entity.Owner.PlayerIndex : PlayerEnum.Neutral),
                     Sprites = entitySprites
                 });

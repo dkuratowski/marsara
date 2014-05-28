@@ -76,6 +76,7 @@
     <Compile Include="Core\ColumnChangeSet.cs" />
     <Compile Include="Core\NavMeshEdge.cs" />
     <Compile Include="Core\NavMeshLoader.cs" />
+    <Compile Include="PublicInterfaces\CellIteratorBase.cs" />
     <Compile Include="PublicInterfaces\INavMeshEdge.cs" />
     <Compile Include="PublicInterfaces\INavMeshNode.cs" />
     <Compile Include="PublicInterfaces\IWalkabilityGrid.cs" />

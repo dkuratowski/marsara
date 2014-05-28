@@ -241,29 +241,29 @@ namespace RC.Engine.Simulator.MotionControl
         /// The beginning coordinates of the current path or RCNumVector.Undefined if there is currently no path being searched
         /// or followed.
         /// </summary>
-        private HeapedValue<RCNumVector> currentPathFromCoords;
+        private readonly HeapedValue<RCNumVector> currentPathFromCoords;
 
         /// <summary>
         /// The target coordinates of the current path or RCNumVector.Undefined if there is currently no path being searched
         /// or followed.
         /// </summary>
-        private HeapedValue<RCNumVector> currentPathToCoords;
+        private readonly HeapedValue<RCNumVector> currentPathToCoords;
 
         /// <summary>
         /// The closest distance to the target position that has been reached during the following of the current path
         /// or -1 if the closes distance has to be considered as infinite.
         /// </summary>
-        private HeapedValue<RCNumber> closestDistanceToTarget;
+        private readonly HeapedValue<RCNumber> closestDistanceToTarget;
 
         /// <summary>
         /// The number of elapsed frames since the closest distance to the target has been reached.
         /// </summary>
-        private HeapedValue<short> timeSinceClosestDistanceReached;
+        private readonly HeapedValue<short> timeSinceClosestDistanceReached;
 
         /// <summary>
         /// The entity that this path tracker controls.
         /// </summary>
-        private HeapedValue<Entity> controlledEntity;
+        private readonly HeapedValue<Entity> controlledEntity;
 
         #endregion Heaped members
 

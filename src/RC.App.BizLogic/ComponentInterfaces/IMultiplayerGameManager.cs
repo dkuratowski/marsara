@@ -170,6 +170,11 @@ namespace RC.App.BizLogic.ComponentInterfaces
         EntitySelector Selector { get; }
 
         /// <summary>
+        /// Gets the player manager business object.
+        /// </summary>
+        IPlayerManager PlayerManager { get; }
+
+        /// <summary>
         /// This event is raised several times on every peer when the start of the multiplayer game that this peer is currently connected
         /// to has been initiated by the host. The event indicates the remaining time until the start of the game.
         /// </summary>

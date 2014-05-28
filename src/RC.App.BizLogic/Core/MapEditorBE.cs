@@ -10,6 +10,7 @@ using RC.Engine.Simulator.Scenarios;
 using RC.Engine.Simulator.ComponentInterfaces;
 using System.Collections.Generic;
 using RC.Common.Diagnostics;
+using RC.Engine.Simulator.MotionControl;
 
 namespace RC.App.BizLogic.Core
 {
@@ -39,6 +40,7 @@ namespace RC.App.BizLogic.Core
             this.navmeshLoader = ComponentManager.GetInterface<INavMeshLoader>();
             this.mapEditor = ComponentManager.GetInterface<IMapEditor>();
             this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
+            this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
         }
 
         /// <see cref="IComponent.Stop"/>
@@ -71,6 +73,7 @@ namespace RC.App.BizLogic.Core
             byte[] mapBytes = File.ReadAllBytes(filename);
             MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
             this.activeMap = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
+            this.pathFinder.Initialize(this.navmeshLoader.LoadNavMesh(mapBytes), MAX_PATHFINDING_ITERATIONS_PER_FRAMES);
             this.activeScenario = this.scenarioLoader.LoadScenario(this.activeMap, mapBytes);
             this.timeScheduler = new Scheduler(MAPEDITOR_MS_PER_FRAMES);
             this.timeScheduler.AddScheduledFunction(this.activeScenario.UpdateAnimations);
@@ -190,7 +193,7 @@ namespace RC.App.BizLogic.Core
                 {
                     this.activeScenario.VisibleEntities.DetachContent(affectedEntity);
                     bool violatingConstraints = false;
-                    if (affectedEntity.ElementType.CheckConstraints(this.activeScenario, affectedEntity.QuadCoords).Count != 0)
+                    if (affectedEntity.ElementType.CheckConstraints(this.activeScenario, affectedEntity.LastKnownQuadCoords).Count != 0)
                     {
                         this.activeScenario.RemoveEntity(affectedEntity);
                         affectedEntity.Dispose();
@@ -231,7 +234,7 @@ namespace RC.App.BizLogic.Core
                 {
                     this.activeScenario.VisibleEntities.DetachContent(affectedEntity);
                     bool violatingConstraints = false;
-                    if (affectedEntity.ElementType.CheckConstraints(this.activeScenario, affectedEntity.QuadCoords).Count != 0)
+                    if (affectedEntity.ElementType.CheckConstraints(this.activeScenario, affectedEntity.LastKnownQuadCoords).Count != 0)
                     {
                         this.activeScenario.RemoveEntity(affectedEntity);
                         affectedEntity.Dispose();
@@ -285,7 +288,7 @@ namespace RC.App.BizLogic.Core
             StartLocation startLocation = null;
             foreach (StartLocation sl in startLocations)
             {
-                if (sl.PlayerIndex.Read() == playerIndex)
+                if (sl.PlayerIndex == playerIndex)
                 {
                     startLocation = sl;
                     break;
@@ -294,8 +297,16 @@ namespace RC.App.BizLogic.Core
 
             /// If a start location with the given player index already exists, change its quadratic coordinates,
             /// otherwise create a new start location.
-            if (startLocation != null) { startLocation.SetQuadCoords(topLeftQuadCoords); }
-            else { this.activeScenario.AddEntity(new StartLocation(topLeftQuadCoords, playerIndex)); }
+            if (startLocation != null)
+            {
+                startLocation.RemoveFromMap();
+            }
+            else
+            {
+                startLocation = new StartLocation(playerIndex);
+                this.activeScenario.AddEntity(startLocation);
+            }
+            startLocation.AddToMap(this.activeMap.GetQuadTile(topLeftQuadCoords));
             return true;
         }
 
@@ -315,8 +326,9 @@ namespace RC.App.BizLogic.Core
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
             if (objectType.CheckConstraints(this.activeScenario, topLeftQuadCoords).Count != 0) { return false; }
 
-            MineralField placedMineralField = new MineralField(topLeftQuadCoords);
+            MineralField placedMineralField = new MineralField();
             this.activeScenario.AddEntity(placedMineralField);
+            placedMineralField.AddToMap(this.activeMap.GetQuadTile(topLeftQuadCoords));
             return true;
         }
 
@@ -336,8 +348,9 @@ namespace RC.App.BizLogic.Core
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
             if (objectType.CheckConstraints(this.activeScenario, topLeftQuadCoords).Count != 0) { return false; }
 
-            VespeneGeyser placedVespeneGeyser = new VespeneGeyser(topLeftQuadCoords);
+            VespeneGeyser placedVespeneGeyser = new VespeneGeyser();
             this.activeScenario.AddEntity(placedVespeneGeyser);
+            placedVespeneGeyser.AddToMap(this.activeMap.GetQuadTile(topLeftQuadCoords));
             return true;
         }
 
@@ -409,6 +422,11 @@ namespace RC.App.BizLogic.Core
         private INavMeshLoader navmeshLoader;
 
         /// <summary>
+        /// Reference to the RC.Engine.Simulator.PathFinder component.
+        /// </summary>
+        private IPathFinder pathFinder;
+
+        /// <summary>
         /// Reference to the currently active map.
         /// </summary>
         private IMapAccess activeMap;
@@ -427,5 +445,10 @@ namespace RC.App.BizLogic.Core
         /// The elapsed time between frames in the map editor in frames.
         /// </summary>
         private const int MAPEDITOR_MS_PER_FRAMES = 40;
+
+        /// <summary>
+        /// The maximum number of pathfinding iterations per frames.
+        /// </summary>
+        private const int MAX_PATHFINDING_ITERATIONS_PER_FRAMES = 2500;
     }
 }

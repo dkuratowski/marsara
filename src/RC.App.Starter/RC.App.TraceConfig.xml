@@ -28,14 +28,14 @@
     <ctorParam type="STRING">RC.App.ConsoleTrace</ctorParam>
   </registerTrace>
 
-  <!--<registerTrace>
+  <!--registerTrace>
     <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
     <class>RC.Common.Diagnostics.RCLogTrace</class>
     <ctorParam type="STRING">RC.App.RCLogTrace</ctorParam>
     <ctorParam type="STRING">RC.App</ctorParam>
   </registerTrace>-->
 
-  <!--<registerTrace>
+  <!--registerTrace>
     <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
     <class>RC.Common.Diagnostics.LogfileTrace</class>
     <ctorParam type="STRING">RC.App.LogfileTrace</ctorParam>

@@ -16,10 +16,9 @@ namespace RC.Engine.Simulator.Scenarios
         /// Constructs a resource object.
         /// </summary>
         /// <param name="elementTypeName">The name of the element type of the resource object.</param>
-        /// <param name="quadCoords">The quadratic coordinates of the resource object.</param>
         /// <param name="initialAmount">The initial amount of resources in this resource object.</param>
-        public ResourceObject(string elementTypeName, RCIntVector quadCoords, int initialAmount)
-            : base(elementTypeName, quadCoords)
+        public ResourceObject(string elementTypeName, int initialAmount)
+            : base(elementTypeName)
         {
             if (initialAmount < 0) { throw new ArgumentOutOfRangeException("initialAmount"); }
 
@@ -62,9 +61,8 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// Constructs a mineral field instance.
         /// </summary>
-        /// <param name="quadCoords">The quadratic coordinates of the mineral field.</param>
-        public MineralField(RCIntVector quadCoords)
-            : base(MINERALFIELD_TYPE_NAME, quadCoords, INITIAL_RESOURCE_AMOUNT)
+        public MineralField()
+            : base(MINERALFIELD_TYPE_NAME, INITIAL_RESOURCE_AMOUNT)
         {
         }
 
@@ -103,9 +101,8 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// Constructs a vespene geyser instance.
         /// </summary>
-        /// <param name="quadCoords">The quadratic coordinates of the vespene geyser.</param>
-        public VespeneGeyser(RCIntVector quadCoords)
-            : base(VESPENEGEYSER_TYPE_NAME, quadCoords, INITIAL_RESOURCE_AMOUNT)
+        public VespeneGeyser()
+            : base(VESPENEGEYSER_TYPE_NAME, INITIAL_RESOURCE_AMOUNT)
         {
         }
 

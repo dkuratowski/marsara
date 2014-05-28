@@ -15,9 +15,8 @@ namespace RC.Engine.Simulator.Terran.Buildings
         /// <summary>
         /// Constructs a Terran Command Center instance.
         /// </summary>
-        /// <param name="quadCoords">The quadratic coordinates of the Command Center.</param>
-        public CommandCenter(RCIntVector quadCoords)
-            : base(COMMANDCENTER_TYPE_NAME, quadCoords)
+        public CommandCenter()
+            : base(COMMANDCENTER_TYPE_NAME)
         {
             this.SetCurrentAnimation("Normal");
         }

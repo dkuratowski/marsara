@@ -50,9 +50,13 @@ namespace RC.App.BizLogic.Core
             {
                 if (currentSelection.Contains(entity.ID.Read()))
                 {
+                    SelIndicatorTypeEnum indicatorType
+                        = entity.Owner != null
+                        ? (entity.Owner.PlayerIndex == (int)this.selector.Owner ? SelIndicatorTypeEnum.Friendly : SelIndicatorTypeEnum.Enemy)
+                        : SelIndicatorTypeEnum.Neutral;
                     retList.Add(new SelIndicatorInst()
                     {
-                        SelIndicatorType = SelIndicatorTypeEnum.Friendly, // TODO: must base on the owner of the entity
+                        SelIndicatorType = indicatorType,
                         IndicatorRect = (RCIntRectangle)((entity.BoundingBox - cellWindow.Location + MapViewBase.HALF_VECT) * MapViewBase.PIXEL_PER_NAVCELL_VECT) - displayOffset,
                         HpNorm = (RCNumber)1, // TODO: must base on real data
                         ShieldNorm = (RCNumber)1, // TODO: must base on real data

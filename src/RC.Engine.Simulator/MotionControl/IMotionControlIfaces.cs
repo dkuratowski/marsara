@@ -77,9 +77,9 @@ namespace RC.Engine.Simulator.MotionControl
         IEnumerable<DynamicObstacleInfo> DynamicObstacles { get; }
 
         /// <summary>
-        /// Gets whether the given velocity is valid.
+        /// Checks whether the controlled target remains inside the followed path with the given velocity.
         /// </summary>
-        /// <param name="velocity">The velocity to be validated.</param>
+        /// <param name="velocity">The velocity to be check.</param>
         /// <returns>True if the given velocity is valid; otherwise false.</returns>
         bool ValidateVelocity(RCNumVector velocity);
     }

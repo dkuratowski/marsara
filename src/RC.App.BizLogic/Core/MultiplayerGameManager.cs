@@ -57,10 +57,13 @@ namespace RC.App.BizLogic.Core
             IMapAccess map = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
             this.pathFinder.Initialize(this.navmeshLoader.LoadNavMesh(mapBytes), MAX_PATHFINDING_ITERATIONS_PER_FRAMES);
             this.gameScenario = this.scenarioLoader.LoadScenario(map, mapBytes);
-            StartLocation startLocation = this.gameScenario.GetVisibleEntities<StartLocation>()[0];
-            this.gameScenario.CreatePlayer(0, startLocation, RaceEnum.Terran);
-            this.gameScenario.FinalizePlayers();
-            this.entitySelector = new EntitySelector(this.gameScenario, 0);
+            this.playerManager = new PlayerManager(this.gameScenario);
+            this.playerManager[0].ConnectRandomPlayer(RaceEnum.Terran);
+            this.playerManager[1].ConnectRandomPlayer(RaceEnum.Terran);
+            this.playerManager[2].ConnectRandomPlayer(RaceEnum.Terran);
+            this.playerManager[3].ConnectRandomPlayer(RaceEnum.Terran);
+            this.playerManager.Lock();
+            this.entitySelector = new EntitySelector(this.gameScenario, this.playerManager[0].Player);
             this.commandDispatcher = new CommandDispatcher();
             this.triggeredScheduler = new TriggeredScheduler(1000 / (int)gameSpeed);
             this.triggeredScheduler.AddScheduledFunction(this.pathFinder.Flush);
@@ -108,6 +111,12 @@ namespace RC.App.BizLogic.Core
         public EntitySelector Selector
         {
             get { return this.entitySelector; }
+        }
+
+        /// <see cref="IMultiplayerGameManager.PlayerManager"/>
+        public IPlayerManager PlayerManager
+        {
+            get { return this.playerManager; }
         }
 
         /// <see cref="IMultiplayerGameManager.GameScenario"/>
@@ -180,6 +189,11 @@ namespace RC.App.BizLogic.Core
         /// Reference to the entity selector of the local player.
         /// </summary>
         private EntitySelector entitySelector;
+
+        /// <summary>
+        /// Reference to the player manager of the active scenario.
+        /// </summary>
+        private PlayerManager playerManager;
 
         /// <summary>
         /// Reference to the RC.Engine.Simulator.ScenarioLoader component.

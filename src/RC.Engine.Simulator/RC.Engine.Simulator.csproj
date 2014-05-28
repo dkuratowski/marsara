@@ -54,6 +54,7 @@
     <Compile Include="MotionControl\PathNode.cs" />
     <Compile Include="MotionControl\PathFindingAlgorithm.cs" />
     <Compile Include="MotionControl\PathTrackerBase.cs" />
+    <Compile Include="PublicInterfaces\EntityNeighbourhoodIterator.cs" />
     <Compile Include="Scenarios\Addon.cs" />
     <Compile Include="Scenarios\AddonType.cs" />
     <Compile Include="Core\BinaryHeap.cs" />

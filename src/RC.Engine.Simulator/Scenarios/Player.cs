@@ -12,12 +12,6 @@ namespace RC.Engine.Simulator.Scenarios
     public class Player : HeapedObject
     {
         /// <summary>
-        /// Represents a method that creates some initial entitites for a player at its start location.
-        /// </summary>
-        /// <param name="player">The player that will own the initial entities.</param>
-        public delegate void Initializer(Player player);
-
-        /// <summary>
         /// Constructs a new player instance.
         /// </summary>
         /// <param name="playerIndex">The index of the player.</param>
@@ -98,23 +92,35 @@ namespace RC.Engine.Simulator.Scenarios
         /// <see cref="IDisposable.Dispose"/>
         protected override void DisposeImpl()
         {
+            foreach (Unit unit in this.units)
+            {
+                this.startLocation.Read().Scenario.RemoveEntity(unit);
+                unit.Dispose();
+            }
             foreach (Building building in this.buildings)
             {
                 this.startLocation.Read().Scenario.RemoveEntity(building);
+                building.Dispose();
             }
+            this.units.Clear();
+            this.buildings.Clear();
         }
 
         #endregion IDisposable methods
 
+        #region Heaped members
+
         /// <summary>
         /// The index of the player.
         /// </summary>
-        private HeapedValue<int> playerIndex;
+        private readonly HeapedValue<int> playerIndex;
 
         /// <summary>
         /// The start location of the player.
         /// </summary>
-        private HeapedValue<StartLocation> startLocation;
+        private readonly HeapedValue<StartLocation> startLocation;
+
+        #endregion Heaped members
 
         /// <summary>
         /// The buildings of the player.

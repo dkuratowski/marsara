@@ -25,6 +25,6 @@ namespace RC.Engine.Simulator.ComponentInterfaces
         /// </summary>
         /// <param name="race">The race that the initializer belongs to.</param>
         /// <param name="initializer">The initializer method.</param>
-        void RegisterPlayerInitializer(RaceEnum race, Player.Initializer initializer);
+        void RegisterPlayerInitializer(RaceEnum race, Action<Player> initializer);
     }
 }

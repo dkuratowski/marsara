@@ -49,7 +49,7 @@ namespace RC.Engine.Maps.Core
         public IIsoTile GetIsoTile(RCIntVector coords) { return this.mapStructure.GetIsoTile(coords); }
 
         /// <see cref="IMapAccess.GetCell"/>
-        public ICell GetCell(RCIntVector index) { return this.mapStructure.GetCell(index); }
+        public ICell GetCell(RCIntVector coords) { return this.mapStructure.GetCell(coords); }
 
         /// <see cref="IMapAccess.QuadToCellRect"/>
         public RCIntRectangle QuadToCellRect(RCIntRectangle quadRect) { return this.mapStructure.QuadToCellRect(quadRect); }

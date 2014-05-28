@@ -71,7 +71,11 @@
   <ItemGroup>
     <Compile Include="ComponentInterfaces\IMultiplayerGameManager.cs" />
     <Compile Include="Core\EntitySelector.cs" />
+    <Compile Include="Core\IPlayerManager.cs" />
+    <Compile Include="Core\IPlayerSlot.cs" />
     <Compile Include="Core\MapObjectControlView.cs" />
+    <Compile Include="Core\PlayerManager.cs" />
+    <Compile Include="Core\PlayerSlot.cs" />
     <Compile Include="Core\SelectionIndicatorView.cs" />
     <Compile Include="PublicInterfaces\IMapObjectControlView.cs" />
     <Compile Include="Core\BizLogicConstants.cs" />

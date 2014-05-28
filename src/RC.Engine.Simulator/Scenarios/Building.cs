@@ -17,9 +17,8 @@ namespace RC.Engine.Simulator.Scenarios
         /// Constructs a Building instance.
         /// </summary>
         /// <param name="buildingTypeName">The name of the type of this building.</param>
-        /// <param name="quadCoords">The quadratic coordinates of the building.</param>
-        public Building(string buildingTypeName, RCIntVector quadCoords)
-            : base(buildingTypeName, quadCoords)
+        public Building(string buildingTypeName)
+            : base(buildingTypeName)
         {
             this.buildingType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetBuildingType(buildingTypeName);
         }

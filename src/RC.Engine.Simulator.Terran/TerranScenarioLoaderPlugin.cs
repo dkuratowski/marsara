@@ -9,6 +9,8 @@ using RC.Engine.Simulator.Terran.Buildings;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Simulator.Terran.Units;
 using RC.Common;
+using RC.Engine.Maps.PublicInterfaces;
+using RC.Common.Diagnostics;
 
 namespace RC.Engine.Simulator.Terran
 {
@@ -43,36 +45,45 @@ namespace RC.Engine.Simulator.Terran
         {
             if (player == null) { throw new ArgumentNullException("player"); }
 
+            /// Add a Terran Command Center to the position of the start location.
             Scenario scenario = player.StartLocation.Scenario;
-            CommandCenter commandCenter = new CommandCenter(player.StartLocation.QuadCoords);
+            CommandCenter commandCenter = new CommandCenter();
             scenario.AddEntity(commandCenter);
             player.AddBuilding(commandCenter);
+            commandCenter.AddToMap(scenario.Map.GetQuadTile(player.StartLocation.LastKnownQuadCoords));
 
-            SCV[] scvList = new SCV[12];
-            RCIntVector cmdCenterTopLeft = commandCenter.Scenario.Map.GetQuadTile(commandCenter.QuadCoords).GetCell(new RCIntVector(0, 0)).MapCoords;
-            for (int i = 0; i < scvList.Length; i++)
+            /// Find place for the given number of SCVs using an EntityNeighbourhoodIterator.
+            EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(commandCenter);
+            IEnumerator<ICell> cellEnumerator = cellIterator.GetEnumerator();
+            for (int scvCount = 0; scvCount < NUM_OF_SCVS; scvCount++)
             {
+                /// Create the next SCV
                 SCV scv = new SCV();
                 scenario.AddEntity(scv);
                 player.AddUnit(scv);
-                scv.AddToMap(new RCNumVector(cmdCenterTopLeft + SCV_POSITIONS[i]));
+
+                /// Search a place for the new SCV on the map.
+                bool scvPlacedSuccessfully = false;
+                while (cellEnumerator.MoveNext())
+                {
+                    if (scv.AddToMap(cellEnumerator.Current.MapCoords))
+                    {
+                        scvPlacedSuccessfully = true;
+                        break;
+                    }
+                }
+
+                /// Remove the SCV and stop initializing if there is no more place on the map.
+                if (!scvPlacedSuccessfully)
+                {
+                    player.RemoveUnit(scv);
+                    scenario.RemoveEntity(scv);
+                    scv.Dispose();
+                    break;
+                }
             }
         }
 
-        private static RCIntVector[] SCV_POSITIONS = new RCIntVector[12]
-        {
-            new RCIntVector(1, 14),
-            new RCIntVector(4, 14),
-            new RCIntVector(7, 14),
-            new RCIntVector(10, 14),
-            new RCIntVector(13, 14),
-            new RCIntVector(1, 17),
-            new RCIntVector(4, 17),
-            new RCIntVector(7, 17),
-            new RCIntVector(10, 17),
-            new RCIntVector(13, 17),
-            new RCIntVector(6, 20),
-            new RCIntVector(9, 20),
-        };
+        private const int NUM_OF_SCVS = 5;
     }
 }

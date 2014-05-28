@@ -27,24 +27,6 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <summary>
-        /// Adds this unit to the map.
-        /// </summary>
-        /// <param name="position">The position of this unit on the map.</param>
-        public void AddToMap(RCNumVector position)
-        {
-            this.SetPosition(position);
-            this.Scenario.VisibleEntities.AttachContent(this);
-        }
-
-        /// <summary>
-        /// Removes this unit from the map.
-        /// </summary>
-        public void RemoveFromMap()
-        {
-            this.Scenario.VisibleEntities.DetachContent(this);
-        }
-
-        /// <summary>
         /// Gets the metadata type definition of the unit.
         /// </summary>
         public IUnitType UnitType { get { return this.unitType; } }

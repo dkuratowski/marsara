@@ -155,7 +155,7 @@ namespace RC.Engine.Simulator.Scenarios
             if (this.players[index].Read() != null) { throw new SimulatorException(string.Format("Player with index {0} already exists!", index)); }
 
             Player newPlayer = new Player(index, startLocation);
-            this.visibleEntities.DetachContent(startLocation);
+            startLocation.RemoveFromMap();
             this.players[index].Write(newPlayer);
             this.playerInitializer.Initialize(newPlayer, race);
         }
@@ -170,7 +170,8 @@ namespace RC.Engine.Simulator.Scenarios
             if (index < 0 || index >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("index"); }
             if (this.players[index].Read() == null) { throw new SimulatorException(string.Format("Player with index {0} doesn't exist!", index)); }
 
-            this.visibleEntities.AttachContent(this.players[index].Read().StartLocation);
+            StartLocation startLoc = this.players[index].Read().StartLocation;
+            startLoc.AddToMap(this.map.GetQuadTile(startLoc.LastKnownQuadCoords));
             this.players[index].Read().Dispose();
             this.players[index].Write(null);
         }
@@ -185,7 +186,7 @@ namespace RC.Engine.Simulator.Scenarios
 
             foreach (StartLocation startLocation in this.GetVisibleEntities<StartLocation>())
             {
-                this.visibleEntities.DetachContent(startLocation);
+                startLocation.RemoveFromMap();
             }
             this.playersFinalized.Write(0x01);
         }
@@ -202,6 +203,11 @@ namespace RC.Engine.Simulator.Scenarios
             if (index < 0 || index >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("index"); }
             return this.players[index].Read();
         }
+
+        /// <summary>
+        /// Gets whether this Scenario has already at least 1 player or not.
+        /// </summary>
+        public bool HasPlayers { get { return this.players.Any(player => player.Read() != null); } }
 
         /// <summary>
         /// Gets the entities of the scenario that are visible on the map.
@@ -253,22 +259,22 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// The ID of the next entity.
         /// </summary>
-        private HeapedValue<int> nextID;
+        private readonly HeapedValue<int> nextID;
 
         /// <summary>
         /// The index of the current frame.
         /// </summary>
-        private HeapedValue<int> currentFrameIndex;
+        private readonly HeapedValue<int> currentFrameIndex;
 
         /// <summary>
         /// This flag indicates whether the players are finalized (0x00) or not (any other value) on this scenario.
         /// </summary>
-        private HeapedValue<byte> playersFinalized;
+        private readonly HeapedValue<byte> playersFinalized;
 
         /// <summary>
         /// List of the players mapped by their IDs.
         /// </summary>
-        private HeapedArray<Player> players;
+        private readonly HeapedArray<Player> players;
 
         #endregion Heaped members
 

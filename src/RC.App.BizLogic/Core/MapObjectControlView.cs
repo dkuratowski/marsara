@@ -65,7 +65,7 @@ namespace RC.App.BizLogic.Core
 
                 RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                             (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-
+                
                 this.gameManager.PostCommand(RCCommand.Create(FastCommand.MNEMONIC, this.selector.CurrentSelection.ToArray(), navCellCoords, -1, null));
             }
         }

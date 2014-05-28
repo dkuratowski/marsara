@@ -17,9 +17,8 @@ namespace RC.Engine.Simulator.Scenarios
         /// Constructs an Addon instance.
         /// </summary>
         /// <param name="addonTypeName">The name of the type of this addon.</param>
-        /// <param name="quadCoords">The quadratic coordinates of the addon.</param>
-        public Addon(string addonTypeName, RCIntVector quadCoords)
-            : base(addonTypeName, quadCoords)
+        public Addon(string addonTypeName)
+            : base(addonTypeName)
         {
             this.addonType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetAddonType(addonTypeName);
         }

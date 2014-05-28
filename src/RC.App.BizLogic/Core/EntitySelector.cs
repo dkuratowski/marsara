@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.App.BizLogic.PublicInterfaces;
 
 namespace RC.App.BizLogic.Core
 {
@@ -17,10 +18,10 @@ namespace RC.App.BizLogic.Core
         /// </summary>
         /// <param name="scenario">Reference to the scenario in which to perform the selections.</param>
         /// <param name="owner">The index of the player that owns this EntitySelector.</param>
-        public EntitySelector(Scenario scenario, int owner)
+        public EntitySelector(Scenario scenario, PlayerEnum owner)
         {
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
-            if (owner < 0 || owner >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("owner"); }
+            if (owner == PlayerEnum.Neutral) { throw new ArgumentException("Owner cannot be PlayerEnum.Neutral!", "owner"); }
 
             this.scenario = scenario;
             this.owner = owner;
@@ -64,7 +65,7 @@ namespace RC.App.BizLogic.Core
                 if (entity is Unit)
                 {
                     /// If the entity is a unit then check its owner.
-                    if (entity.Owner.PlayerIndex == this.owner)
+                    if (entity.Owner.PlayerIndex == (int)this.owner)
                     {
                         /// If owned by the owner of this selector then add it to the current selection.
                         if (!ownerUnitFound)
@@ -83,7 +84,7 @@ namespace RC.App.BizLogic.Core
                 else if (entity is Building && !ownerUnitFound)
                 {
                     /// If the entity is a building then check its owner.
-                    if (entity.Owner.PlayerIndex == this.owner)
+                    if (entity.Owner.PlayerIndex == (int)this.owner)
                     {
                         if (ownerBuilding == null) { ownerBuilding = entity; }
                     }
@@ -95,7 +96,7 @@ namespace RC.App.BizLogic.Core
                 else if (entity is Addon && !ownerUnitFound)
                 {
                     /// If the entity is an addon then check its owner.
-                    if (entity.Owner.PlayerIndex == this.owner)
+                    if (entity.Owner.PlayerIndex == (int)this.owner)
                     {
                         if (ownerAddon == null) { ownerAddon = entity; }
                     }
@@ -232,6 +233,11 @@ namespace RC.App.BizLogic.Core
         public Scenario TargetScenario { get { return this.scenario; } }
 
         /// <summary>
+        /// Gets the index of the player that owns this EntitySelector.
+        /// </summary>
+        public PlayerEnum Owner { get { return this.owner; } }
+
+        /// <summary>
         /// Updates the current and the saved selections.
         /// </summary>
         private void Update()
@@ -264,7 +270,7 @@ namespace RC.App.BizLogic.Core
         /// <summary>
         /// The index of the player that owns this EntitySelector.
         /// </summary>
-        private int owner;
+        private PlayerEnum owner;
 
         /// <summary>
         /// Reference to the scenario in which to perform the selections.

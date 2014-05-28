@@ -27,7 +27,7 @@ namespace RC.Engine.Simulator.Scenarios
         {
             this.metadata = null;
             this.entityConstraints = new Dictionary<string, List<EntityConstraint>>();
-            this.playerInitializers = new Dictionary<RaceEnum, Player.Initializer>();
+            this.playerInitializers = new Dictionary<RaceEnum, Action<Player>>();
 
             this.RegisterEntityConstraint(MineralField.MINERALFIELD_TYPE_NAME, new BuildableAreaConstraint());
             this.RegisterEntityConstraint(MineralField.MINERALFIELD_TYPE_NAME, new MinimumDistanceConstraint<StartLocation>(new RCIntVector(3, 3)));
@@ -66,20 +66,25 @@ namespace RC.Engine.Simulator.Scenarios
                 offset += parsedBytes;
                 if (package.PackageFormat.ID == ScenarioFileFormat.MINERAL_FIELD)
                 {
-                    MineralField mineralField = new MineralField(new RCIntVector(package.ReadShort(0), package.ReadShort(1)));
+                    IQuadTile quadTile = map.GetQuadTile(new RCIntVector(package.ReadShort(0), package.ReadShort(1)));
+                    MineralField mineralField = new MineralField();
                     mineralField.ResourceAmount.Write(package.ReadInt(2));
                     scenario.AddEntity(mineralField);
+                    mineralField.AddToMap(quadTile);
                 }
                 else if (package.PackageFormat.ID == ScenarioFileFormat.VESPENE_GEYSER)
                 {
-                    VespeneGeyser vespeneGeyser = new VespeneGeyser(new RCIntVector(package.ReadShort(0), package.ReadShort(1)));
+                    IQuadTile quadTile = map.GetQuadTile(new RCIntVector(package.ReadShort(0), package.ReadShort(1)));
+                    VespeneGeyser vespeneGeyser = new VespeneGeyser();
                     vespeneGeyser.ResourceAmount.Write(package.ReadInt(2));
                     scenario.AddEntity(vespeneGeyser);
+                    vespeneGeyser.AddToMap(quadTile);
                 }
                 else if (package.PackageFormat.ID == ScenarioFileFormat.START_LOCATION)
                 {
-                    StartLocation startLocation = new StartLocation(new RCIntVector(package.ReadShort(0), package.ReadShort(1)), package.ReadByte(2));
+                    StartLocation startLocation = new StartLocation(package.ReadByte(2));
                     scenario.AddEntity(startLocation);
+                    startLocation.AddToMap(scenario.Map.GetQuadTile(new RCIntVector(package.ReadShort(0), package.ReadShort(1))));
                 }
             }
 
@@ -90,7 +95,7 @@ namespace RC.Engine.Simulator.Scenarios
                 if (quadEntity != null)
                 {
                     scenario.VisibleEntities.DetachContent(entity);
-                    if (quadEntity.ElementType.CheckConstraints(scenario, quadEntity.QuadCoords).Count != 0) { throw new MapException(string.Format("Entity at {0} is voilating its placement constraints!", quadEntity.QuadCoords)); }
+                    if (quadEntity.ElementType.CheckConstraints(scenario, quadEntity.LastKnownQuadCoords).Count != 0) { throw new MapException(string.Format("Entity at {0} is voilating its placement constraints!", quadEntity.LastKnownQuadCoords)); }
                     scenario.VisibleEntities.AttachContent(entity);
                 }
             }
@@ -108,8 +113,8 @@ namespace RC.Engine.Simulator.Scenarios
             foreach (MineralField mineralField in scenario.GetAllEntities<MineralField>())
             {
                 RCPackage mineralFieldPackage = RCPackage.CreateCustomDataPackage(ScenarioFileFormat.MINERAL_FIELD);
-                mineralFieldPackage.WriteShort(0, (short)mineralField.QuadCoords.X);
-                mineralFieldPackage.WriteShort(1, (short)mineralField.QuadCoords.Y);
+                mineralFieldPackage.WriteShort(0, (short)mineralField.LastKnownQuadCoords.X);
+                mineralFieldPackage.WriteShort(1, (short)mineralField.LastKnownQuadCoords.Y);
                 mineralFieldPackage.WriteInt(2, mineralField.ResourceAmount.Read());
                 entityPackages.Add(mineralFieldPackage);
                 retArrayLength += mineralFieldPackage.PackageLength;
@@ -117,8 +122,8 @@ namespace RC.Engine.Simulator.Scenarios
             foreach (VespeneGeyser vespeneGeyser in scenario.GetAllEntities<VespeneGeyser>())
             {
                 RCPackage vespeneGeyserPackage = RCPackage.CreateCustomDataPackage(ScenarioFileFormat.VESPENE_GEYSER);
-                vespeneGeyserPackage.WriteShort(0, (short)vespeneGeyser.QuadCoords.X);
-                vespeneGeyserPackage.WriteShort(1, (short)vespeneGeyser.QuadCoords.Y);
+                vespeneGeyserPackage.WriteShort(0, (short)vespeneGeyser.LastKnownQuadCoords.X);
+                vespeneGeyserPackage.WriteShort(1, (short)vespeneGeyser.LastKnownQuadCoords.Y);
                 vespeneGeyserPackage.WriteInt(2, vespeneGeyser.ResourceAmount.Read());
                 entityPackages.Add(vespeneGeyserPackage);
                 retArrayLength += vespeneGeyserPackage.PackageLength;
@@ -126,9 +131,9 @@ namespace RC.Engine.Simulator.Scenarios
             foreach (StartLocation startLocation in scenario.GetAllEntities<StartLocation>())
             {
                 RCPackage startLocationPackage = RCPackage.CreateCustomDataPackage(ScenarioFileFormat.START_LOCATION);
-                startLocationPackage.WriteShort(0, (short)startLocation.QuadCoords.X);
-                startLocationPackage.WriteShort(1, (short)startLocation.QuadCoords.Y);
-                startLocationPackage.WriteByte(2, (byte)startLocation.PlayerIndex.Read());
+                startLocationPackage.WriteShort(0, (short)startLocation.LastKnownQuadCoords.X);
+                startLocationPackage.WriteShort(1, (short)startLocation.LastKnownQuadCoords.Y);
+                startLocationPackage.WriteByte(2, (byte)startLocation.PlayerIndex);
                 entityPackages.Add(startLocationPackage);
                 retArrayLength += startLocationPackage.PackageLength;
             }
@@ -169,7 +174,7 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <see cref="IScenarioLoaderPluginInstall.RegisterPlayerInitializer"/>
-        public void RegisterPlayerInitializer(RaceEnum race, Player.Initializer initializer)
+        public void RegisterPlayerInitializer(RaceEnum race, Action<Player> initializer)
         {
             if (initializer == null) { throw new ArgumentNullException("initializer"); }
             if (this.playerInitializers.ContainsKey(race)) { throw new InvalidOperationException(string.Format("Player initializer has already been registered for race '{0}'!", race)); }
@@ -226,7 +231,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// List of the registered player initializers mapped by the corresponding races.
         /// </summary>
-        private Dictionary<RaceEnum, Player.Initializer> playerInitializers;
+        private Dictionary<RaceEnum, Action<Player>> playerInitializers;
 
         /// <summary>
         /// Reference to the simulation metadata.

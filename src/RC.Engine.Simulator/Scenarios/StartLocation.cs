@@ -16,13 +16,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// Constructs a start location instance.
         /// </summary>
-        /// <param name="quadCoords">The quadratic coordinates of the start location.</param>
         /// <param name="playerIndex">The index of the player that this start location belongs to.</param>
-        public StartLocation(RCIntVector quadCoords, int playerIndex)
-            : base(STARTLOCATION_TYPE_NAME, quadCoords)
+        public StartLocation(int playerIndex)
+            : base(STARTLOCATION_TYPE_NAME)
         {
             if (playerIndex < 0 || playerIndex >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("playerIndex"); }
-            if (quadCoords == RCIntVector.Undefined) { throw new ArgumentNullException("quadCoords"); }
             this.playerIndex = this.ConstructField<int>("playerIndex");
             this.playerIndex.Write(playerIndex);
         }
@@ -30,7 +28,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// Gets the index of the player that this start location belongs to.
         /// </summary>
-        public IValueRead<int> PlayerIndex { get { return this.playerIndex; } }
+        public int PlayerIndex { get { return this.playerIndex.Read(); } }
 
         /// <see cref="Entity.OnAddedToScenarioImpl"/>
         protected override void OnAddedToScenarioImpl()
@@ -44,7 +42,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// The index of the player that this start location belongs to.
         /// </summary>
-        private HeapedValue<int> playerIndex;
+        private readonly HeapedValue<int> playerIndex;
 
         #endregion Heaped members
 

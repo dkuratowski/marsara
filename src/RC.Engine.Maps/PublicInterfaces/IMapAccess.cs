@@ -45,10 +45,10 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// </returns>
         IIsoTile GetIsoTile(RCIntVector coords);
 
-        /// <summary>Gets the cell of this changeset target at the given index.</summary>
-        /// <param name="index">The index of the cell to get.</param>
-        /// <returns>The cell at the given index or null if the given index is outside of the changeset target.</returns>
-        ICell GetCell(RCIntVector index);
+        /// <summary>Gets the cell of this map at the given coordinates.</summary>
+        /// <param name="coords">The coordinates of the cell to get.</param>
+        /// <returns>The cell at the given coordinates.</returns>
+        ICell GetCell(RCIntVector coords);
 
         /// <summary>
         /// Converts a rectangle of quadratic tiles to a rectangle of cells.
