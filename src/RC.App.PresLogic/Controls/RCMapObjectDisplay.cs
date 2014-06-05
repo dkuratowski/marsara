@@ -6,6 +6,8 @@ using RC.App.BizLogic.PublicInterfaces;
 using RC.UI;
 using RC.Common;
 using RC.Common.Diagnostics;
+using RC.App.BizLogic.ComponentInterfaces;
+using RC.Common.ComponentModel;
 
 namespace RC.App.PresLogic.Controls
 {
@@ -19,26 +21,11 @@ namespace RC.App.PresLogic.Controls
         /// Constructs an RCMapObjectDisplay extension for the given map display control.
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
-        /// <param name="mapObjectView">Reference to a map object view.</param>
-        /// <param name="metadataView">Reference to the metadata view.</param>
-        public RCMapObjectDisplay(RCMapDisplay extendedControl, IMapObjectView mapObjectView, IMetadataView metadataView)
-            : base(extendedControl, mapObjectView)
+        public RCMapObjectDisplay(RCMapDisplay extendedControl)
+            : base(extendedControl)
         {
-            if (mapObjectView == null) { throw new ArgumentNullException("mapObjectView"); }
-            if (metadataView == null) { throw new ArgumentNullException("metadataView"); }
-
-            this.mapObjectView = mapObjectView;
-
+            this.mapObjectView = null;
             this.mapObjectSprites = new List<SpriteGroup>();
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player0));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player1));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player2));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player3));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player4));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player5));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player6));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player7));
-            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Neutral));
         }
 
         /// <summary>
@@ -50,26 +37,43 @@ namespace RC.App.PresLogic.Controls
 
         #region Overrides
 
-        /// <see cref="RCMapDisplayExtension.StartExtensionProc_i"/>
-        protected override void StartExtensionProc_i()
+        /// <see cref="RCMapDisplayExtension.MapView"/>
+        protected override IMapView MapView { get { return this.mapObjectView; } }
+
+        /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
+        protected override void ConnectEx_i()
         {
-            foreach (SpriteGroup spriteGroup in this.mapObjectSprites)
-            {
-                spriteGroup.Load();
-            }
+            IViewFactory viewFactory = ComponentManager.GetInterface<IViewFactory>();
+            this.mapObjectView = viewFactory.CreateView<IMapObjectView>();
+
+            IMetadataView metadataView = viewFactory.CreateView<IMetadataView>();
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player0));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player1));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player2));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player3));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player4));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player5));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player6));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player7));
+            this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Neutral));
         }
 
-        /// <see cref="RCMapDisplayExtension.StopExtensionProc_i"/>
-        protected override void StopExtensionProc_i()
+        /// <see cref="RCMapDisplayExtension.ConnectExBackgroundProc_i"/>
+        protected override void ConnectExBackgroundProc_i()
         {
-            foreach (SpriteGroup spriteGroup in this.mapObjectSprites)
-            {
-                spriteGroup.Unload();
-            }
+            foreach (SpriteGroup spriteGroup in this.mapObjectSprites) { spriteGroup.Load(); }
         }
 
-        /// <see cref="RCMapDisplayExtension.RenderExtension_i"/>
-        protected override void RenderExtension_i(IUIRenderContext renderContext)
+        /// <see cref="RCMapDisplayExtension.DisconnectExBackgroundProc_i"/>
+        protected override void DisconnectExBackgroundProc_i()
+        {
+            foreach (SpriteGroup spriteGroup in this.mapObjectSprites) { spriteGroup.Unload(); }
+            this.mapObjectView = null;
+            this.mapObjectSprites.Clear();
+        }
+
+        /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
+        protected override void RenderEx_i(IUIRenderContext renderContext)
         {
             /// Retrieve the list of the visible map objects.
             List<ObjectInst> mapObjects = this.mapObjectView.GetVisibleMapObjects(this.DisplayedArea);
@@ -103,15 +107,5 @@ namespace RC.App.PresLogic.Controls
         /// Reference to the map object view.
         /// </summary>
         private IMapObjectView mapObjectView;
-
-        /// <summary>
-        /// The default color of the transparent parts of the map object sprites.
-        /// </summary>
-        public static readonly UIColor DEFAULT_MAPOBJECT_TRANSPARENT_COLOR = new UIColor(255, 0, 255);
-
-        /// <summary>
-        /// The default owner mask color of the map object sprites.
-        /// </summary>
-        public static readonly UIColor DEFAULT_MAPOBJECT_OWNERMASK_COLOR = new UIColor(0, 255, 255);
     }
 }

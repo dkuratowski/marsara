@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.App.BizLogic.ComponentInterfaces;
+using RC.Common.ComponentModel;
 
 namespace RC.App.PresLogic.Controls
 {
@@ -18,12 +20,10 @@ namespace RC.App.PresLogic.Controls
         /// Constructs an RCMapWalkabilityDisplay extension for the given map display control.
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
-        /// <param name="mapTerrainView">Reference to a map terrain view.</param>
-        public RCMapWalkabilityDisplay(RCMapDisplay extendedControl, IMapTerrainView mapTerrainView)
-            : base(extendedControl, mapTerrainView)
+        public RCMapWalkabilityDisplay(RCMapDisplay extendedControl)
+            : base(extendedControl)
         {
-            if (mapTerrainView == null) { throw new ArgumentNullException("mapTerrainView"); }
-            this.mapTerrainView = mapTerrainView;
+            this.mapTerrainView = null;
 
             this.greenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.greenBrush.Upload();
@@ -31,8 +31,24 @@ namespace RC.App.PresLogic.Controls
 
         #region Overrides
 
-        /// <see cref="RCMapDisplayExtension.RenderExtension_i"/>
-        protected override void RenderExtension_i(IUIRenderContext renderContext)
+        /// <see cref="RCMapDisplayExtension.MapView"/>
+        protected override IMapView MapView { get { return this.mapTerrainView; } }
+
+        /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
+        protected override void ConnectEx_i()
+        {
+            IViewFactory viewFactory = ComponentManager.GetInterface<IViewFactory>();
+            this.mapTerrainView = viewFactory.CreateView<IMapTerrainView>();
+        }
+
+        /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>
+        protected override void DisconnectEx_i()
+        {
+            this.mapTerrainView = null;
+        }
+
+        /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
+        protected override void RenderEx_i(IUIRenderContext renderContext)
         {
             foreach (RCIntRectangle walkableCell in this.mapTerrainView.GetWalkableCells(this.DisplayedArea))
             {

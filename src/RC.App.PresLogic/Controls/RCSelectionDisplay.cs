@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.App.BizLogic.ComponentInterfaces;
 using RC.App.BizLogic.PublicInterfaces;
 using RC.Common;
+using RC.Common.ComponentModel;
 using RC.UI;
 
 namespace RC.App.PresLogic.Controls
@@ -20,11 +22,10 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
         /// <param name="selIndicatorView">Reference to a selection indicator view.</param>
-        public RCSelectionDisplay(RCMapDisplay extendedControl, ISelectionIndicatorView selIndicatorView)
-            : base(extendedControl, selIndicatorView)
+        public RCSelectionDisplay(RCMapDisplay extendedControl)
+            : base(extendedControl)
         {
-            if (selIndicatorView == null) { throw new ArgumentNullException("selIndicatorView"); }
-            this.selectionIndicatorView = selIndicatorView;
+            this.selectionIndicatorView = null;
             this.selectionBox = RCIntRectangle.Undefined;
 
             this.lightGreenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
@@ -46,8 +47,24 @@ namespace RC.App.PresLogic.Controls
         
         #region Overrides
 
-        /// <see cref="RCMapDisplayExtension.RenderExtension_i"/>
-        protected override void RenderExtension_i(IUIRenderContext renderContext)
+        /// <see cref="RCMapDisplayExtension.MapView"/>
+        protected override IMapView MapView { get { return this.selectionIndicatorView; } }
+
+        /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
+        protected override void ConnectEx_i()
+        {
+            IViewFactory viewFactory = ComponentManager.GetInterface<IViewFactory>();
+            this.selectionIndicatorView = viewFactory.CreateView<ISelectionIndicatorView>();
+        }
+
+        /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>
+        protected override void DisconnectEx_i()
+        {
+            this.selectionIndicatorView = null;
+        }
+
+        /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
+        protected override void RenderEx_i(IUIRenderContext renderContext)
         {
             /// Render the selection indicators of the selected map objects.
             List<SelIndicatorInst> selectionIndicators = this.selectionIndicatorView.GetVisibleSelIndicators(this.DisplayedArea);

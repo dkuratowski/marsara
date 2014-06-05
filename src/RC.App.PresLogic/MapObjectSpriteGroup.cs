@@ -9,7 +9,11 @@ using RC.Common;
 
 namespace RC.App.PresLogic
 {
-    class MapObjectSpriteGroup : SpriteGroup
+    /// <summary>
+    /// This sprite group loads the sprites defined in the simulation metadata and masks them to a target color that
+    /// corresponds to the given player.
+    /// </summary>
+    class MapObjectSpriteGroup : MaskedSpriteGroup
     {
         /// <summary>
         /// Constructs a MapObjectSpriteGroup instance.
@@ -25,43 +29,18 @@ namespace RC.App.PresLogic
             this.owner = owner;
         }
 
-        /// <see cref="SpriteGroup.Load_i"/>
-        protected override List<UISprite> Load_i()
-        {
-            List<UISprite> retList = new List<UISprite>();
-            foreach (SpriteDef objType in this.metadataView.GetMapObjectTypes())
-            {
-                if (this.owner == PlayerEnum.Neutral || objType.HasOwner)
-                {
-                    UISprite origSprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(
-                        objType.ImageData,
-                        UIWorkspace.Instance.PixelScaling);
-                    origSprite.TransparentColor = objType.OwnerMaskColorStr != null ?
-                                            UIResourceLoader.LoadColor(objType.OwnerMaskColorStr) :
-                                            RCMapObjectDisplay.DEFAULT_MAPOBJECT_OWNERMASK_COLOR;
-                    UISprite objSprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(
-                        PLAYER_COLOR_MAPPINGS[this.owner],
-                        origSprite.Size,
-                        origSprite.PixelSize);
-                    IUIRenderContext ctx =
-                        UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateRenderContext(objSprite);
-                    ctx.RenderSprite(origSprite, new RCIntVector(0, 0));
-                    UIRoot.Instance.GraphicsPlatform.SpriteManager.CloseRenderContext(objSprite);
-                    UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(origSprite);
-                    objSprite.TransparentColor = objType.TransparentColorStr != null ?
-                                            UIResourceLoader.LoadColor(objType.TransparentColorStr) :
-                                            RCMapObjectDisplay.DEFAULT_MAPOBJECT_TRANSPARENT_COLOR;
-                    objSprite.Upload();
-                    retList.Add(objSprite);
-                }
-                else
-                {
-                    /// No sprite for the current owner at the given index...
-                    retList.Add(null);
-                }
-            }
-            return retList;
-        }
+        #region Overriden from MaskedSpriteGroup
+
+        /// <see cref="MaskedSpriteGroup.SpriteDefinitions"/>
+        protected override IEnumerable<SpriteDef> SpriteDefinitions { get { return this.metadataView.GetMapObjectTypes(); } }
+
+        /// <see cref="MaskedSpriteGroup.IsMaskingForced"/>
+        protected override bool IsMaskingForced { get { return this.owner == PlayerEnum.Neutral; } }
+
+        /// <see cref="MaskedSpriteGroup.TargetColor"/>
+        protected override UIColor TargetColor { get { return PLAYER_COLOR_MAPPINGS[this.owner]; } }
+
+        #endregion Overriden from MaskedSpriteGroup
 
         /// <summary>
         /// Reference to a view on the metadata of the game engine.

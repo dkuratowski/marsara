@@ -68,7 +68,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AggregateGameConnector.cs" />
+    <Compile Include="CmdButtonSpriteGroup.cs" />
     <Compile Include="Controls\IMapControl.cs" />
+    <Compile Include="Controls\RCCommandButton.cs" />
     <Compile Include="Controls\RCIsoTileDisplay.cs" />
     <Compile Include="Controls\RCDropdownSelector.cs" />
     <Compile Include="Controls\RCListBox.cs" />
@@ -80,8 +83,10 @@
     <Compile Include="Controls\IScrollableControl.cs" />
     <Compile Include="Controls\RCResourceAmountDisplay.cs" />
     <Compile Include="Controls\RCSelectionDisplay.cs" />
+    <Compile Include="IGameConnector.cs" />
     <Compile Include="IsoTileSpriteGroup.cs" />
     <Compile Include="MapObjectSpriteGroup.cs" />
+    <Compile Include="MaskedSpriteGroup.cs" />
     <Compile Include="MouseHandler.cs" />
     <Compile Include="PresLogicConstants.cs" />
     <Compile Include="ScrollHandler.cs" />

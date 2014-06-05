@@ -17,36 +17,24 @@ namespace RC.App.BizLogic.Core
         /// Constructs a map object data view.
         /// </summary>
         /// <param name="scenario">Reference to the scenario whose entities is being read by this view.</param>
-        public MapObjectDataView(Scenario scenario)
-            : base(scenario.Map)
+        public MapObjectDataView(Entity entity)
+            : base(entity.Scenario.Map)
         {
-            if (scenario == null) { throw new ArgumentNullException("scenario"); }
-            this.scenario = scenario;
+            if (entity == null) { throw new ArgumentNullException("entity"); }
+            this.entity = entity;
         }
 
         #region IMapObjectDataView members
 
-        /// <see cref="IMapObjectDataView.StartReadingMapObject"/>
-        public void StartReadingMapObject(int objectID)
-        {
-            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
-
-            this.entityBeingRead = this.scenario.GetEntity<Entity>(objectID);
-        }
-
-        /// <see cref="IMapObjectDataView.StopReadingMapObject"/>
-        public void StopReadingMapObject() { this.entityBeingRead = null; }
-
-        /// <see cref="IMapObjectDataView.ObjectID"/>
-        public int ObjectID { get { return this.entityBeingRead != null ? this.entityBeingRead.ID.Read() : -1; } }
+        /// <see cref="IMapObjectDataView.MapObjectID"/>
+        public int ObjectID { get { return this.entity.ID.Read(); } }
 
         /// <see cref="IMapObjectDataView.VespeneGasAmount"/>
         public int VespeneGasAmount
         {
             get
             {
-                if (this.entityBeingRead == null) { throw new InvalidOperationException("There is no map object currently being read by the view!"); }
-                MineralField entityAsMineralField = this.entityBeingRead as MineralField;
+                MineralField entityAsMineralField = this.entity as MineralField;
                 return entityAsMineralField != null ? entityAsMineralField.ResourceAmount.Read() : -1;
             }
         }
@@ -56,8 +44,7 @@ namespace RC.App.BizLogic.Core
         {
             get
             {
-                if (this.entityBeingRead == null) { throw new InvalidOperationException("There is no map object currently being read by the view!"); }
-                VespeneGeyser entityAsVespeneGeyser = this.entityBeingRead as VespeneGeyser;
+                VespeneGeyser entityAsVespeneGeyser = this.entity as VespeneGeyser;
                 return entityAsVespeneGeyser != null ? entityAsVespeneGeyser.ResourceAmount.Read() : -1;
             }
         }
@@ -65,13 +52,8 @@ namespace RC.App.BizLogic.Core
         #endregion IMapObjectDataView members
 
         /// <summary>
-        /// Reference to the scenario whose entities is being read by this view.
-        /// </summary>
-        private Scenario scenario;
-
-        /// <summary>
         /// Reference to the entity being read by this view or null if there is no entity being read by this view.
         /// </summary>
-        private Entity entityBeingRead;
+        private Entity entity;
     }
 }

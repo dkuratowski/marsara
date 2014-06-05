@@ -36,14 +36,6 @@ namespace RC.App.PresLogic.Pages
         /// </summary>
         public RCGameplayPage() : base()
         {
-            this.gameplayBE = ComponentManager.GetInterface<IGameplayBE>();
-            this.mapTerrainView = null;
-            this.mapObjectView = null;
-            this.selectionIndicatorView = null;
-            this.mapObjectControlView = null;
-            this.tilesetView = null;
-            this.metadataView = null;
-
             this.mapDisplay = null;
             this.mapDisplayBasic = null;
             this.mapWalkabilityDisplay = null;
@@ -90,29 +82,17 @@ namespace RC.App.PresLogic.Pages
             if (this.currentConnectionStatus != ConnectionStatus.Offline) { throw new InvalidOperationException("The gameplay page is not offline!"); }
             
             /// TODO: A scenario shall be running at this point!
-            this.gameplayBE.StartTestScenario();
-
-            /// Create the necessary views.
-            this.mapTerrainView = this.gameplayBE.CreateMapTerrainView();
-            this.mapObjectView = this.gameplayBE.CreateMapObjectView();
-            this.selectionIndicatorView = this.gameplayBE.CreateSelIndicatorView();
-            this.mapObjectControlView = this.gameplayBE.CreateMapObjectControlView();
-            this.tilesetView = this.gameplayBE.CreateTileSetView();
-            this.metadataView = this.gameplayBE.CreateMetadataView();
+            ComponentManager.GetInterface<IGameplayBE>().StartTestScenario();
 
             /// Create and start the map display control.
-            this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135), this.mapTerrainView, this.tilesetView);
-            //this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic, this.mapTerrainView);
-            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic, this.mapObjectView, this.metadataView);
-            this.selectionDisplayEx = new RCSelectionDisplay(this.mapObjectDisplayEx, this.selectionIndicatorView);
-            this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.selectionDisplayEx, this.mapTerrainView);
+            this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135));
+            //this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic);
+            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic);
+            this.selectionDisplayEx = new RCSelectionDisplay(this.mapObjectDisplayEx);
+            this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.selectionDisplayEx);
             this.mapDisplay = this.objectPlacementDisplayEx;
-            this.mapDisplay.Started += this.OnMapDisplayStarted;
-            this.mapDisplay.Start();
-
-            /// Create the handlers for the map display.
-            this.scrollHandler = new ScrollHandler(this, this.mapDisplay);
-            this.mouseHandler = new MouseHandler(this.selectionDisplayEx, this.selectionDisplayEx, this.mapObjectControlView);
+            this.mapDisplay.ConnectorOperationFinished += this.OnMapDisplayConnected;
+            this.mapDisplay.Connect();
 
             /// Set the connection status to ConnectionStatus.Connecting.
             this.CurrentConnectionStatus = ConnectionStatus.Connecting;
@@ -127,7 +107,7 @@ namespace RC.App.PresLogic.Pages
         {
             if (this.currentConnectionStatus != ConnectionStatus.Online) { throw new InvalidOperationException("The gameplay page is not online!"); }
 
-            this.gameplayBE.StopTestScenario();
+            ComponentManager.GetInterface<IGameplayBE>().StopTestScenario();
 
             /// TODO: deactivate mouse handling
             this.menuButtonPanel.MouseSensor.ButtonDown -= this.OnMenuButtonPressed;
@@ -143,8 +123,8 @@ namespace RC.App.PresLogic.Pages
             this.Detach(this.mapDisplay);
 
             /// Stop the map display control.
-            this.mapDisplay.Stopped += this.OnMapDisplayStopped;
-            this.mapDisplay.Stop();
+            this.mapDisplay.ConnectorOperationFinished += this.OnMapDisplayDisconnected;
+            this.mapDisplay.Disconnect();
 
             /// Set the connection status to ConnectionStatus.Disconnecting.
             this.CurrentConnectionStatus = ConnectionStatus.Disconnecting;
@@ -195,16 +175,18 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// This method is called when the map display started successfully.
         /// </summary>
-        private void OnMapDisplayStarted(object sender, EventArgs args)
+        private void OnMapDisplayConnected(IGameConnector sender)
         {
-            this.mapDisplay.Started -= this.OnMapDisplayStarted;
+            this.mapDisplay.ConnectorOperationFinished -= this.OnMapDisplayConnected;
 
             /// Attach the map display control to this page.
             this.Attach(this.mapDisplay);
             this.AttachSensitive(this.mapDisplay);
             this.mapDisplay.SendToBottom();
 
-            /// TODO: activate mouse handling
+            /// Create the mouse handlers for the map display.
+            this.scrollHandler = new ScrollHandler(this, this.mapDisplay);
+            this.mouseHandler = new MouseHandler(this.selectionDisplayEx, this.selectionDisplayEx);
             this.scrollHandler.ActivateMouseHandling();
             this.mouseHandler.ActivateMouseHandling();
             this.scrollHandler.MouseActivityStarted += this.OnMouseActivityStarted;
@@ -221,17 +203,9 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// This method is called when the map display started successfully.
         /// </summary>
-        private void OnMapDisplayStopped(object sender, EventArgs args)
+        private void OnMapDisplayDisconnected(IGameConnector sender)
         {
-            this.mapDisplay.Stopped -= this.OnMapDisplayStopped;
-
-            /// Remove the views.
-            this.mapTerrainView = null;
-            this.mapObjectView = null;
-            this.selectionIndicatorView = null;
-            this.mapObjectControlView = null;
-            this.tilesetView = null;
-            this.metadataView = null;
+            this.mapDisplay.ConnectorOperationFinished -= this.OnMapDisplayDisconnected;
 
             /// Remove the map display control.
             this.mapDisplayBasic = null;
@@ -349,41 +323,6 @@ namespace RC.App.PresLogic.Pages
         /// Extension of the map display that displays the object placement boxes.
         /// </summary>
         private RCObjectPlacementDisplay objectPlacementDisplayEx;
-
-        /// <summary>
-        /// Reference to the gameplay backend component.
-        /// </summary>
-        private IGameplayBE gameplayBE;
-
-        /// <summary>
-        /// Reference to the map terrain view.
-        /// </summary>
-        private IMapTerrainView mapTerrainView;
-
-        /// <summary>
-        /// Reference to the map object view.
-        /// </summary>
-        private IMapObjectView mapObjectView;
-
-        /// <summary>
-        /// Reference to the seleciton indicator view.
-        /// </summary>
-        private ISelectionIndicatorView selectionIndicatorView;
-
-        /// <summary>
-        /// Reference to the map object control view.
-        /// </summary>
-        private IMapObjectControlView mapObjectControlView;
-
-        /// <summary>
-        /// Reference to the tileset view.
-        /// </summary>
-        private ITileSetView tilesetView;
-
-        /// <summary>
-        /// Reference to the metadata view.
-        /// </summary>
-        private IMetadataView metadataView;
 
         /// <summary>
         /// The current connection status of the page.

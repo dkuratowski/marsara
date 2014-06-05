@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.App.BizLogic.ComponentInterfaces;
 using RC.App.BizLogic.PublicInterfaces;
 using RC.App.PresLogic.Controls;
 using RC.Common;
+using RC.Common.ComponentModel;
 using RC.Common.Diagnostics;
 using RC.UI;
 
@@ -20,8 +22,7 @@ namespace RC.App.PresLogic
         /// </summary>
         /// <param name="evtSource">The UISensitiveObject that will raise the input events.</param>
         /// <param name="targetControl">Reference to the target control.</param>
-        /// <param name="mapObjectControlView">Reference to the control interface of the BE.</param>
-        public MouseHandler(UISensitiveObject evtSource, IMapControl targetControl, IMapObjectControlView mapObjectControlView)
+        public MouseHandler(UISensitiveObject evtSource, IMapControl targetControl)
         {
             if (evtSource == null) { throw new ArgumentNullException("evtSource"); }
             if (targetControl == null) { throw new ArgumentNullException("targetControl"); }
@@ -29,7 +30,7 @@ namespace RC.App.PresLogic
 
             this.eventSource = evtSource;
             this.targetControl = targetControl;
-            this.mapObjectControlView = mapObjectControlView;
+            this.mapObjectControlView = ComponentManager.GetInterface<IViewFactory>().CreateView<IMapObjectControlView>();
             this.isMouseHandlingActive = false;
             this.eventSource.MouseSensor.StateReset += this.OnStateReset;
         }

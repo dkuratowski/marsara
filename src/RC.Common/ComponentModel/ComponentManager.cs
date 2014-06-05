@@ -399,7 +399,7 @@ namespace RC.Common.ComponentModel
         /// <summary>
         /// ID of the RC.Common.ComponentMgr.Info trace filter.
         /// </summary>
-        public static readonly int COMPONENT_MGR_INFO = TraceManager.GetTraceFilterID("RC.Common.ComponentMgr.Info");
+        private static readonly int COMPONENT_MGR_INFO = TraceManager.GetTraceFilterID("RC.Common.ComponentMgr.Info");
 
         /// <summary>
         /// This flag indicates whether the registered components are running or not.

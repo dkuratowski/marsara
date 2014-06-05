@@ -11,7 +11,7 @@ namespace RC.App.BizLogic.Core
     /// <summary>
     /// Implementation of object placement views for terrain objects.
     /// </summary>
-    class TerrainObjectPlacementView : ObjectPlacementView, IObjectPlacementView
+    class TerrainObjectPlacementView : ObjectPlacementView, ITerrainObjectPlacementView
     {
         /// <summary>
         /// Constructs a TerrainObjectPlacementView instance.

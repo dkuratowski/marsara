@@ -5,6 +5,8 @@ using System.Text;
 using RC.UI;
 using RC.App.BizLogic.PublicInterfaces;
 using RC.Common;
+using RC.Common.ComponentModel;
+using RC.App.BizLogic.ComponentInterfaces;
 
 namespace RC.App.PresLogic.Controls
 {
@@ -18,13 +20,10 @@ namespace RC.App.PresLogic.Controls
         /// Constructs an RCIsoTileDisplay extension for the given map display control.
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
-        /// <param name="map">Reference to a map view.</param>
-        public RCIsoTileDisplay(RCMapDisplay extendedControl, IMapTerrainView map)
-            : base(extendedControl, map)
+        public RCIsoTileDisplay(RCMapDisplay extendedControl)
+            : base(extendedControl)
         {
-            if (map == null) { throw new ArgumentNullException("map"); }
-
-            this.map = map;
+            this.mapTerrainView = null;
             this.highlightIsoTile = false;
             this.isotileHighlightedSprite = UIResourceManager.GetResource<UISprite>("RC.MapEditor.Sprites.IsotileHighlighted");
             this.isotileNormalSprite = UIResourceManager.GetResource<UISprite>("RC.MapEditor.Sprites.IsotileNormal");
@@ -54,26 +53,32 @@ namespace RC.App.PresLogic.Controls
 
         #endregion Extension settings
 
-        /// <see cref="RCMapDisplayExtension.StartExtension_i"/>
-        protected override void StartExtension_i()
+        /// <see cref="RCMapDisplayExtension.MapView"/>
+        protected override IMapView MapView { get { return this.mapTerrainView; } }
+
+        /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
+        protected override void ConnectEx_i()
         {
+            IViewFactory viewFactory = ComponentManager.GetInterface<IViewFactory>();
+            this.mapTerrainView = viewFactory.CreateView<IMapTerrainView>();
             this.MouseSensor.Move += this.OnMouseMove;
         }
 
-        /// <see cref="RCMapDisplayExtension.StopExtension_i"/>
-        protected override void StopExtension_i()
+        /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>
+        protected override void DisconnectEx_i()
         {
+            this.mapTerrainView = null;
             this.MouseSensor.Move -= this.OnMouseMove;
         }
 
-        /// <see cref="RCMapDisplayExtension.RenderExtension_i"/>
-        protected override void RenderExtension_i(IUIRenderContext renderContext)
+        /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
+        protected override void RenderEx_i(IUIRenderContext renderContext)
         {
             if (this.highlightIsoTile &&
                 this.DisplayedArea != RCIntRectangle.Undefined &&
                 this.lastKnownMousePosition != RCIntVector.Undefined)
             {
-                renderContext.RenderSprite(this.isotileHighlightedSprite, this.map.GetIsoTileDisplayCoords(this.DisplayedArea, this.lastKnownMousePosition));
+                renderContext.RenderSprite(this.isotileHighlightedSprite, this.mapTerrainView.GetIsoTileDisplayCoords(this.DisplayedArea, this.lastKnownMousePosition));
             }
         }
 
@@ -109,8 +114,8 @@ namespace RC.App.PresLogic.Controls
         private RCIntVector lastKnownMousePosition;
 
         /// <summary>
-        /// Reference to the map view.
+        /// Reference to the map terrain view.
         /// </summary>
-        private IMapTerrainView map;
+        private IMapTerrainView mapTerrainView;
     }
 }

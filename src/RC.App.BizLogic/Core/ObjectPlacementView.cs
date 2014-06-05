@@ -11,7 +11,7 @@ namespace RC.App.BizLogic.Core
     /// <summary>
     /// Common base class of object placement views.
     /// </summary>
-    abstract class ObjectPlacementView : MapViewBase, IObjectPlacementView
+    abstract class ObjectPlacementView : MapViewBase
     {
         /// <summary>
         /// Constructs an ObjectPlacementView instance.

@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.App.BizLogic.ComponentInterfaces;
+using RC.Common.ComponentModel;
 
 namespace RC.App.PresLogic.Controls
 {
@@ -17,36 +19,63 @@ namespace RC.App.PresLogic.Controls
         /// Constructs an RCResourceAmountDisplay extension for the given map display control.
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
-        /// <param name="dataView">Reference to a data view.</param>
-        /// <param name="map">Reference to a map view.</param>
-        public RCResourceAmountDisplay(RCMapDisplay extendedControl, IMapObjectDataView dataView, IMapView map)
-            : base(extendedControl, map)
+        public RCResourceAmountDisplay(RCMapDisplay extendedControl)
+            : base(extendedControl)
         {
-            if (dataView == null) { throw new ArgumentNullException("dataView"); }
-
-            this.mapObjectDataView = dataView;
+            this.mapView = null;
+            this.mapObjectDataView = null;
             this.drawPosition = RCIntVector.Undefined;
             this.stringToRender = new UIString("R:{0}", UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, UIColor.White);
             this.backgroundBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Black, new RCIntVector(1, this.stringToRender.Font.MinimumLineHeight), UIWorkspace.Instance.PixelScaling);
             this.backgroundBrush.Upload();
         }
 
-        /// <see cref="RCMapDisplayExtension.StartExtension_i"/>
-        protected override void StartExtension_i()
+        /// <summary>
+        /// Starts reading the data of the given map object.
+        /// </summary>
+        /// <param name="objectID">The ID of the map object to read.</param>
+        public void StartReadingMapObject(int objectID)
         {
+            if (this.mapObjectDataView != null) { throw new InvalidOperationException("Reading map object has already been started!"); }
+            this.mapObjectDataView = ComponentManager.GetInterface<IViewFactory>().CreateView<IMapObjectDataView, int>(objectID);
+        }
+
+        /// <summary>
+        /// Stops reading the data of the map object currently being read. If reading has already been stopped or has not yet
+        /// started then this function has no effect.
+        /// </summary>
+        public void StopReadingMapObject()
+        {
+            this.mapObjectDataView = null;
+        }
+
+        /// <summary>
+        /// Gets the ID of the map object that is currently being read or -1 if there is no map object currently being read.
+        /// </summary>
+        public int MapObjectID { get { return this.mapObjectDataView != null ? this.mapObjectDataView.ObjectID : -1; } }
+
+        /// <see cref="RCMapDisplayExtension.MapView"/>
+        protected override IMapView MapView { get { return this.mapView; } }
+
+        /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
+        protected override void ConnectEx_i()
+        {
+            IViewFactory viewFactory = ComponentManager.GetInterface<IViewFactory>();
+            this.mapView = viewFactory.CreateView<IMapTerrainView>();
             this.MouseSensor.Move += this.OnMouseMove;
         }
 
-        /// <see cref="RCMapDisplayExtension.StopExtension_i"/>
-        protected override void StopExtension_i()
+        /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>
+        protected override void DisconnectEx_i()
         {
+            this.mapView = null;
             this.MouseSensor.Move -= this.OnMouseMove;
         }
 
-        /// <see cref="RCMapDisplayExtension.RenderExtension_i"/>
-        protected override void RenderExtension_i(IUIRenderContext renderContext)
+        /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
+        protected override void RenderEx_i(IUIRenderContext renderContext)
         {
-            if (this.DisplayedArea != RCIntRectangle.Undefined && this.drawPosition != RCIntVector.Undefined && this.mapObjectDataView.ObjectID != -1)
+            if (this.DisplayedArea != RCIntRectangle.Undefined && this.drawPosition != RCIntVector.Undefined && this.mapObjectDataView != null)
             {
                 if (this.mapObjectDataView.MineralsAmount != -1)
                 {
@@ -73,6 +102,11 @@ namespace RC.App.PresLogic.Controls
                 this.drawPosition = evtArgs.Position - new RCIntVector(0, this.stringToRender.Font.MinimumLineHeight);
             }
         }
+
+        /// <summary>
+        /// Reference to a map view.
+        /// </summary>
+        private IMapView mapView;
 
         /// <summary>
         /// Reference to the map object data view or null if there is no map object whose resource data is being displayed.

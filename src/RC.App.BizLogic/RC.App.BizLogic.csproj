@@ -69,7 +69,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandManagement\CommandType.cs" />
+    <Compile Include="CommandManagement\SpritePalette.cs" />
     <Compile Include="ComponentInterfaces\IMultiplayerGameManager.cs" />
+    <Compile Include="ComponentInterfaces\IViewFactory.cs" />
+    <Compile Include="ComponentInterfaces\IViewFactoryRegistry.cs" />
     <Compile Include="Core\EntitySelector.cs" />
     <Compile Include="Core\IPlayerManager.cs" />
     <Compile Include="Core\IPlayerSlot.cs" />
@@ -77,6 +81,10 @@
     <Compile Include="Core\PlayerManager.cs" />
     <Compile Include="Core\PlayerSlot.cs" />
     <Compile Include="Core\SelectionIndicatorView.cs" />
+    <Compile Include="Core\ViewFactory.cs" />
+    <Compile Include="PublicInterfaces\CmdButtonStateEnum.cs" />
+    <Compile Include="PublicInterfaces\ICommandButtonView.cs" />
+    <Compile Include="PublicInterfaces\ICommandPanelView.cs" />
     <Compile Include="PublicInterfaces\IMapObjectControlView.cs" />
     <Compile Include="Core\BizLogicConstants.cs" />
     <Compile Include="Core\CommandDispatcher.cs" />

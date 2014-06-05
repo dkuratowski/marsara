@@ -13,24 +13,19 @@ namespace RC.App.PresLogic.Controls
     /// <summary>
     /// Defines the interface of a map display control.
     /// </summary>
-    public abstract class RCMapDisplay : UISensitiveObject, IScrollableControl
+    public abstract class RCMapDisplay : UISensitiveObject, IScrollableControl, IGameConnector
     {
         /// <summary>
         /// Constructs a map display control at the given position with the given size.
         /// </summary>
         /// <param name="position">The position of the map display control.</param>
         /// <param name="size">The size of the map display control.</param>
-        /// <param name="map">Reference to a map view.</param>
-        /// <param name="tilesetView">Reference to a tileset view.</param>
-        public RCMapDisplay(RCIntVector position, RCIntVector size, IMapView map)
+        public RCMapDisplay(RCIntVector position, RCIntVector size)
             : base(position, new RCIntRectangle(0, 0, size.X, size.Y))
         {
-            if (map == null) { throw new ArgumentNullException("map"); }
-
-            this.isStarted = false;
+            this.isConnected = false;
             this.backgroundTask = null;
             this.displayedArea = RCIntRectangle.Undefined;
-            this.map = map;
         }
 
         #region IScrollableControl methods
@@ -38,7 +33,7 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="IScrollableControl.ScrollTo"/>
         public void ScrollTo(RCIntVector where)
         {
-            if (!this.isStarted || this.backgroundTask != null) { throw new InvalidOperationException("The map display has been stopped or is currently being stopped!"); }
+            if (!this.isConnected || this.backgroundTask != null) { throw new InvalidOperationException("The map display has been stopped or is currently being stopped!"); }
             if (where == RCIntVector.Undefined) { throw new ArgumentNullException("where"); }
 
             this.ScrollTo_i(where);
@@ -49,19 +44,17 @@ namespace RC.App.PresLogic.Controls
 
         #endregion IScrollableControl methods
 
-        #region Public interface
+        #region IGameConnector members
 
-        /// <summary>
-        /// Starts displaying the map.
-        /// </summary>
-        public void Start()
+        /// <see cref="IGameConnector.Connect"/>
+        public void Connect()
         {
-            if (this.isStarted || this.backgroundTask != null) { throw new InvalidOperationException("The map display has been started or is currently being started!"); }
+            if (this.isConnected || this.backgroundTask != null) { throw new InvalidOperationException("The map display has been connected or is currently being connected!"); }
 
-            this.Started += this.OnStarted;
+            this.ConnectorOperationFinished += this.OnConnected;
 
-            this.Start_i();
-            this.backgroundTask = UITaskManager.StartParallelTask(this.StartProc_i, "RCMapDisplay.Start");
+            this.Connect_i();
+            this.backgroundTask = UITaskManager.StartParallelTask(this.ConnectBackgroundProc_i, "RCMapDisplay.Connect");
             this.backgroundTask.Finished += this.OnBackgroundTaskFinished;
             this.backgroundTask.Failed += delegate(IUIBackgroundTask sender, object message)
             {
@@ -69,17 +62,15 @@ namespace RC.App.PresLogic.Controls
             };
         }
 
-        /// <summary>
-        /// Stops displaying the map.
-        /// </summary>
-        public void Stop()
+        /// <see cref="IGameConnector.Disconnect"/>
+        public void Disconnect()
         {
-            if (!this.isStarted || this.backgroundTask != null) { throw new InvalidOperationException("The map display has been stopped or is currently being stopped!"); }
+            if (!this.isConnected || this.backgroundTask != null) { throw new InvalidOperationException("The map display has been connected or is currently being connected!"); }
 
             this.displayedArea = RCIntRectangle.Undefined;
 
-            this.Stop_i();
-            this.backgroundTask = UITaskManager.StartParallelTask(this.StopProc_i, "RCMapDisplay.Stop");
+            this.Disconnect_i();
+            this.backgroundTask = UITaskManager.StartParallelTask(this.DisconnectBackgroundProc_i, "RCMapDisplay.Disconnect");
             this.backgroundTask.Finished += this.OnBackgroundTaskFinished;
             this.backgroundTask.Failed += delegate(IUIBackgroundTask sender, object message)
             {
@@ -87,19 +78,27 @@ namespace RC.App.PresLogic.Controls
             };
         }
 
-        /// <summary>
-        /// Raised when this map display control has been started.
-        /// </summary>
-        public event EventHandler Started;
+        /// <see cref="IGameConnector.CurrentStatus"/>
+        public ConnectionStatusEnum CurrentStatus
+        {
+            get
+            {
+                if (this.backgroundTask == null) { return this.isConnected ? ConnectionStatusEnum.Online : ConnectionStatusEnum.Offline; }
+                else { return this.isConnected ? ConnectionStatusEnum.Disconnecting : ConnectionStatusEnum.Connecting; }
+            }
+        }
 
-        /// <summary>
-        /// Raised when this map display control has been stopped.
-        /// </summary>
-        public event EventHandler Stopped;
+        /// <see cref="IGameConnector.ConnectorOperationFinished"/>
+        public event Action<IGameConnector> ConnectorOperationFinished;
 
-        #endregion Public interface
+        #endregion IGameConnector members
 
         #region Overridables
+
+        /// <summary>
+        /// Gets the currently active map view.
+        /// </summary>
+        protected abstract IMapView MapView { get; }
 
         /// <summary>
         /// The internal implementation RCMapDisplay.ScrollTo that can be overriden by the derived classes.
@@ -109,40 +108,40 @@ namespace RC.App.PresLogic.Controls
         protected virtual void ScrollTo_i(RCIntVector where)
         {
             RCIntVector location =
-               new RCIntVector(Math.Max(0, Math.Min(this.map.MapSize.X - this.Range.Width, where.X)),
-                               Math.Max(0, Math.Min(this.map.MapSize.Y - this.Range.Height, where.Y)));
+               new RCIntVector(Math.Max(0, Math.Min(this.MapView.MapSize.X - this.Range.Width, where.X)),
+                               Math.Max(0, Math.Min(this.MapView.MapSize.Y - this.Range.Height, where.Y)));
             this.displayedArea = new RCIntRectangle(location, this.Range.Size);
         }
 
         /// <summary>
-        /// The internal implementation of the starting procedure that can be overriden by the derived classes.
+        /// The internal implementation of the connecting procedure that can be overriden by the derived classes.
         /// Note that this method will be called from the UI-thread!
         /// The default implementation does nothing.
         /// </summary>
-        protected virtual void Start_i() { }
+        protected virtual void Connect_i() { }
 
         /// <summary>
-        /// The internal implementation of the stopping procedure that can be overriden by the derived classes.
+        /// The internal implementation of the disconnecting procedure that can be overriden by the derived classes.
         /// Note that this method will be called from the UI-thread!
         /// The default implementation does nothing.
         /// </summary>
-        protected virtual void Stop_i() { }
+        protected virtual void Disconnect_i() { }
 
         /// <summary>
-        /// The internal implementation of the starting procedure that can be overriden by the derived classes.
+        /// The internal implementation of the connecting procedure that can be overriden by the derived classes.
         /// Note that this method will be called from a background thread!
         /// The default implementation does nothing.
         /// </summary>
         /// <param name="parameter">Not used.</param>
-        protected virtual void StartProc_i(object parameter) { }
+        protected virtual void ConnectBackgroundProc_i(object parameter) { }
 
         /// <summary>
-        /// The internal implementation of the stopping procedure that can be overriden by the derived classes.
+        /// The internal implementation of the disconnecting procedure that can be overriden by the derived classes.
         /// Note that this method will be called from a background thread!
         /// The default implementation does nothing.
         /// </summary>
         /// <param name="parameter">Not used.</param>
-        protected virtual void StopProc_i(object parameter) { }
+        protected virtual void DisconnectBackgroundProc_i(object parameter) { }
 
         #endregion Overridables
 
@@ -154,36 +153,36 @@ namespace RC.App.PresLogic.Controls
         private void OnBackgroundTaskFinished(IUIBackgroundTask sender, object message)
         {
             this.backgroundTask = null;
-            if (!this.isStarted)
+            if (!this.isConnected)
             {
-                this.isStarted = true;
-                if (this.Started != null) { this.Started(this, new EventArgs()); }
+                this.isConnected = true;
+                if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
             }
             else
             {
-                this.isStarted = false;
-                if (this.Stopped != null) { this.Stopped(this, new EventArgs()); }
+                this.isConnected = false;
+                if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
             }
         }
 
         /// <summary>
-        /// Called when this RCMapDisplay has been started.
+        /// Called when this RCMapDisplay has been connected.
         /// </summary>
-        private void OnStarted(object sender, EventArgs args)
+        private void OnConnected(IGameConnector sender)
         {
-            this.Started -= this.OnStarted;
+            this.ConnectorOperationFinished -= this.OnConnected;
             this.ScrollTo(new RCIntVector(0, 0));
         }
 
         #endregion Event handlers
 
         /// <summary>
-        /// This flag indicates whether this map display control has been started or not.
+        /// This flag indicates whether this map display control has been connected or not.
         /// </summary>
-        private bool isStarted;
+        private bool isConnected;
 
         /// <summary>
-        /// Reference to the currently executed starting/stopping task or null if no such a task is under execution.
+        /// Reference to the currently executed connecting/disconnecting task or null if no such a task is under execution.
         /// </summary>
         private IUIBackgroundTask backgroundTask;
 
@@ -191,10 +190,5 @@ namespace RC.App.PresLogic.Controls
         /// The displayed area of the map in pixels.
         /// </summary>
         private RCIntRectangle displayedArea;
-
-        /// <summary>
-        /// Reference to a generic view on the map.
-        /// </summary>
-        private IMapView map;
     }
 }

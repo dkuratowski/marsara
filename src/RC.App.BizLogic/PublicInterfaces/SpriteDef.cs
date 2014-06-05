@@ -6,14 +6,14 @@ using System.Text;
 namespace RC.App.BizLogic.PublicInterfaces
 {
     /// <summary>
-    /// This structure contains image informations about a sprite that can be displayed on the map.
+    /// This structure contains image informations about a sprite that can be displayed on the UI.
     /// </summary>
     public struct SpriteDef
     {
         /// <summary>
-        /// This flag indicates whether the image data might belong to a player (true) or is always neutral (false).
+        /// This flag indicates whether the image data can be masked or not.
         /// </summary>
-        public bool HasOwner { get; set; }
+        public bool IsMaskableSprite { get; set; }
 
         /// <summary>
         /// The byte-stream that contains the image data of this sprite definition.
@@ -26,8 +26,8 @@ namespace RC.App.BizLogic.PublicInterfaces
         public string TransparentColorStr { get; set; }
 
         /// <summary>
-        /// The string that represents the owner mask color of this sprite definition.
+        /// The string that represents the mask color of this sprite definition.
         /// </summary>
-        public string OwnerMaskColorStr { get; set; }
+        public string MaskColorStr { get; set; }
     }
 }

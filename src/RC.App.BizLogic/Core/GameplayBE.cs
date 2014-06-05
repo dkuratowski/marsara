@@ -37,6 +37,7 @@ namespace RC.App.BizLogic.Core
         {
             this.scenarioLoader = ComponentManager.GetInterface<IScenarioLoader>();
             this.multiplayerGameManager = ComponentManager.GetInterface<IMultiplayerGameManager>();
+            this.viewFactoryRegistry = ComponentManager.GetInterface<IViewFactoryRegistry>();
         }
 
         /// <see cref="IComponent.Stop"/>
@@ -49,56 +50,106 @@ namespace RC.App.BizLogic.Core
 
         #region IGameplayBE methods
 
-        /// <see cref="IGameplayBE.CreateMapTerrainView"/>
-        public IMapTerrainView CreateMapTerrainView()
-        {
-            return new MapTerrainView(this.multiplayerGameManager.GameScenario.Map);
-        }
-
-        /// <see cref="IGameplayBE.CreateMapObjectView"/>
-        public IMapObjectView CreateMapObjectView()
-        {
-            return new MapObjectView(this.multiplayerGameManager.GameScenario);
-        }
-
-        /// <see cref="IGameplayBE.CreateSelIndicatorView"/>
-        public ISelectionIndicatorView CreateSelIndicatorView()
-        {
-            return new SelectionIndicatorView(this.multiplayerGameManager.Selector);
-        }
-
-        /// <see cref="IGameplayBE.CreateMapObjectControlView"/>
-        public IMapObjectControlView CreateMapObjectControlView()
-        {
-            return new MapObjectControlView(this.multiplayerGameManager.GameScenario, this.multiplayerGameManager.Selector);
-        }
-
-        /// <see cref="IGameplayBE.CreateTileSetView"/>
-        public ITileSetView CreateTileSetView()
-        {
-            return new TileSetView(this.multiplayerGameManager.GameScenario.Map.Tileset);
-        }
-
-        /// <see cref="IGameplayBE.CreateMetadataView"/>
-        public IMetadataView CreateMetadataView()
-        {
-            return new MetadataView(this.scenarioLoader.Metadata);
-        }
-
         /// TODO: Remove this section when no longer necessary *********************************************************
         public void StartTestScenario()
         {
             this.multiplayerGameManager.CreateNewGame(".\\maps\\testmap4.rcm", GameTypeEnum.Melee, GameSpeedEnum.Fastest);
+            this.RegisterFactoryMethods();
         }
 
         public void StopTestScenario()
         {
+            this.UnregisterFactoryMethods();
             this.multiplayerGameManager.LeaveCurrentGame();
         }
 
         /// TODO_END ***************************************************************************************************
 
         #endregion IGameplayBE methods
+        
+        #region View factory methods
+
+        /// <summary>
+        /// Creates a view of type IMapTerrainView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IMapTerrainView CreateMapTerrainView()
+        {
+            return new MapTerrainView(this.multiplayerGameManager.GameScenario.Map);
+        }
+
+        /// <summary>
+        /// Creates a view of type ITileSetView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private ITileSetView CreateTileSetView()
+        {
+            return new TileSetView(this.multiplayerGameManager.GameScenario.Map.Tileset);
+        }
+
+        /// <summary>
+        /// Creates a view of type IMetadataView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IMetadataView CreateMetadataView()
+        {
+            return new MetadataView(this.scenarioLoader.Metadata);
+        }
+
+        /// <summary>
+        /// Creates a view of type IMapObjectView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IMapObjectView CreateMapObjectView()
+        {
+            return new MapObjectView(this.multiplayerGameManager.GameScenario);
+        }
+
+        /// <summary>
+        /// Creates a view of type ISelectionIndicatorView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private ISelectionIndicatorView CreateSelIndicatorView()
+        {
+            return new SelectionIndicatorView(this.multiplayerGameManager.Selector);
+        }
+
+        /// <summary>
+        /// Creates a view of type IMapObjectControlView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IMapObjectControlView CreateMapObjectControlView()
+        {
+            return new MapObjectControlView(this.multiplayerGameManager.GameScenario, this.multiplayerGameManager.Selector);
+        }
+
+        /// <summary>
+        /// Registers the implemented factory methods to the view factory.
+        /// </summary>
+        private void RegisterFactoryMethods()
+        {
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapTerrainView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateTileSetView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMetadataView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateSelIndicatorView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectControlView);
+        }
+
+        /// <summary>
+        /// Unregisters the implemented factory methods from the view factory.
+        /// </summary>
+        private void UnregisterFactoryMethods()
+        {
+            this.viewFactoryRegistry.UnregisterViewFactory<IMapTerrainView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<ITileSetView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IMetadataView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<ISelectionIndicatorView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectControlView>();
+        }
+
+        #endregion View factory methods
 
         /// <summary>
         /// Reference to the RC.Engine.Simulator.ScenarioLoader component.
@@ -109,5 +160,10 @@ namespace RC.App.BizLogic.Core
         /// Reference to the RC.App.BizLogic.MultiplayerGameManager component.
         /// </summary>
         private IMultiplayerGameManager multiplayerGameManager;
+
+        /// <summary>
+        /// Reference to the registry interface of the RC.App.BizLogic.ViewFactory component.
+        /// </summary>
+        private IViewFactoryRegistry viewFactoryRegistry;
     }
 }

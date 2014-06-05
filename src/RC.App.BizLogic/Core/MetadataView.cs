@@ -37,8 +37,8 @@ namespace RC.App.BizLogic.Core
                     SpriteDef info = new SpriteDef();
                     info.ImageData = imageData;
                     info.TransparentColorStr = objType.SpritePalette.TransparentColorStr;
-                    info.OwnerMaskColorStr = objType.SpritePalette.OwnerMaskColorStr;
-                    info.HasOwner = objType.HasOwner;
+                    info.MaskColorStr = objType.SpritePalette.OwnerMaskColorStr;
+                    info.IsMaskableSprite = objType.HasOwner;
                     retList.Add(info);
                 }
             }
@@ -59,7 +59,7 @@ namespace RC.App.BizLogic.Core
             SpriteDef info = new SpriteDef();
             info.ImageData = imageData;
             info.TransparentColorStr = objType.SpritePalette.TransparentColorStr;
-            info.OwnerMaskColorStr = objType.SpritePalette.OwnerMaskColorStr;
+            info.MaskColorStr = objType.SpritePalette.OwnerMaskColorStr;
             return info;
         }
 

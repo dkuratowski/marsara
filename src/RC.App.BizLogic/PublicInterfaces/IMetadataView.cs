@@ -11,9 +11,9 @@ namespace RC.App.BizLogic.PublicInterfaces
     public interface IMetadataView
     {
         /// <summary>
-        /// Gets the map sprite types for each ma object types defined in the game engine metadata.
+        /// Gets the sprite definitions for each map object types defined in the game engine metadata.
         /// </summary>
-        /// <returns>The list of the map sprite types for map object types.</returns>
+        /// <returns>The list of the sprite definitions for the map object types.</returns>
         List<SpriteDef> GetMapObjectTypes();
     }
 }

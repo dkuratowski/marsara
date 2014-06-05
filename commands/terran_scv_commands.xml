@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<commandTypes>
+  <spritePalette image="terran_scv_commands.xml" transparentColor="255;0;255" maskColor="0;255;255">
+    <sprite name="RepairBtn" sourceRegion="" />
+    <sprite name="GatherBtn" sourceRegion="" />
+    <sprite name="ReturnBtn" sourceRegion="" />
+    <sprite name="BuildBtn" sourceRegion="" />
+    <sprite name="CommandCenterBtn" sourceRegion="" />
+    <sprite name="SupplyDepotBtn" sourceRegion="" />
+    <sprite name="RefineryBtn" sourceRegion="" />
+    <sprite name="BarracksBtn" sourceRegion="" />
+    <sprite name="EngineeringBayBtn" sourceRegion="" />
+    <sprite name="MissileTurretBtn" sourceRegion="" />
+    <sprite name="AcademyBtn" sourceRegion="" />
+    <sprite name="BunkerBtn" sourceRegion="" />
+    <sprite name="AdvancedBuildBtn" sourceRegion="" />
+    <sprite name="FactoryBtn" sourceRegion="" />
+    <sprite name="StarportBtn" sourceRegion="" />
+    <sprite name="ScienceFacilityBtn" sourceRegion="" />
+    <sprite name="ArmoryBtn" sourceRegion="" />
+    <sprite name="CancelBtn" sourceRegion="" />
+  </spritePalette>
+  <commandType name="Repair" availability="AllHave">
+    <showButton sprite="RepairBtn" panelPosition="1;0">
+	  <showButton sprite="CancelBtn" panelPosition="2;2" >
+	    <cancel />
+	  </showButton>
+	  <triggerCommand when="TargetPositionSelected" />
+	</showButton>
+  </commandType>
+  <commandType name="Gather" availability="AllHave">
+    <showButton sprite="GatherBtn" panelPosition="1;1">
+	  <showButton sprite="CancelBtn" panelPosition="2;2" >
+	    <cancel />
+	  </showButton>
+	  <triggerCommand when="TargetPositionSelected" />
+	</showButton>
+  </commandType>
+  <commandType name="Return" availability="AllHave">
+    <showButton sprite="ReturnBtn" panelPosition="1;2" >
+	  <triggerCommand when="Immediately" />
+	</showButton>
+  </commandType>
+  <commandType name="Build" availability="Individual">
+    <showButton sprite="BuildBtn" panelPosition="2;0">
+	  <showButton sprite="CommandCenterBtn" panelPosition="0;0">
+	    <selectTargetType type="CommandCenter" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+	  <showButton sprite="SupplyDepotBtn" panelPosition="0;1">
+	    <selectTargetType type="SupplyDepot" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+	  <showButton sprite="RefineryBtn" panelPosition="0;2">
+	    <selectTargetType type="Refinery" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+	  <showButton sprite="BarracksBtn" panelPosition="1;0">
+	    <selectTargetType type="Barracks" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+	  <showButton sprite="EngineeringBayBtn" panelPosition="1;1">
+	    <selectTargetType type="EngineeringBay" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+	  <showButton sprite="MissileTurretBtn" panelPosition="1;2">
+	    <selectTargetType type="MissileTurret" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+	  <showButton sprite="AcademyBtn" panelPosition="2;0">
+	    <selectTargetType type="Academy" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+	  <showButton sprite="BunkerBtn" panelPosition="2;1">
+	    <selectTargetType type="Bunker" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+      <showButton sprite="CancelBtn" panelPosition="2;2" >
+	    <cancel />
+	  </showButton>
+	</showButton>
+    <showButton sprite="AdvancedBuildBtn" panelPosition="2;1">
+	  <showButton sprite="FactoryBtn" panelPosition="0;0">
+	    <selectTargetType type="Factory" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+	  <showButton sprite="StarportBtn" panelPosition="0;1">
+	    <selectTargetType type="Starport" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+	  <showButton sprite="ScienceFacilityBtn" panelPosition="0;2">
+	    <selectTargetType type="ScienceFacility" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+	  <showButton sprite="ArmoryBtn" panelPosition="1;0">
+	    <selectTargetType type="Armory" />
+	    <showButton sprite="CancelBtn" panelPosition="2;2" >
+	      <cancel />
+	    </showButton>
+	    <triggerCommand when="BuildPositionSelected" />
+	  </showButton>
+	  <showButton sprite="CancelBtn" panelPosition="2;2" >
+	    <cancel />
+	  </showButton>
+	</showButton>
+  </commandType>
+</commandTypes>

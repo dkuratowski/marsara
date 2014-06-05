@@ -7,7 +7,7 @@ using RC.Common;
 namespace RC.App.BizLogic.PublicInterfaces
 {
     /// <summary>
-    /// This structure contains informations for displaying an instance of a sprite on the map.
+    /// This structure contains informations for displaying an instance of a sprite on the UI.
     /// </summary>
     public struct SpriteInst
     {

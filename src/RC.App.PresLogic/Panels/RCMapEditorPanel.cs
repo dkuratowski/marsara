@@ -10,6 +10,7 @@ using RC.Common.ComponentModel;
 using RC.App.PresLogic.Controls;
 using RC.App.BizLogic.PublicInterfaces;
 using RC.App.PresLogic.Pages;
+using RC.App.BizLogic.ComponentInterfaces;
 
 namespace RC.App.PresLogic.Panels
 {
@@ -55,12 +56,10 @@ namespace RC.App.PresLogic.Panels
         public RCMapEditorPanel(RCIntRectangle backgroundRect, RCIntRectangle contentRect,
                                ShowMode showMode, HideMode hideMode,
                                int appearDuration, int disappearDuration,
-                               string backgroundSprite,
-                               ITileSetView tilesetView)
+                               string backgroundSprite)
             : base(backgroundRect, contentRect, showMode, hideMode, appearDuration, disappearDuration, backgroundSprite)
         {
-            if (tilesetView == null) { throw new ArgumentNullException("tilesetView"); }
-            this.tilesetView = tilesetView;
+            this.tilesetView = ComponentManager.GetInterface<IViewFactory>().CreateView<ITileSetView>();
 
             /// Create the controls.
             this.editModeSelector = new RCDropdownSelector(new RCIntVector(6, 6), 85, new string[4] { "Draw terrain", "Place terrain object", "Place start location", "Place resource" });

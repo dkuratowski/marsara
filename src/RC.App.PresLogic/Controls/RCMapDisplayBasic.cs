@@ -7,6 +7,7 @@ using RC.UI;
 using RC.Common.ComponentModel;
 using RC.App.BizLogic;
 using RC.App.BizLogic.PublicInterfaces;
+using RC.App.BizLogic.ComponentInterfaces;
 
 namespace RC.App.PresLogic.Controls
 {
@@ -21,17 +22,12 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         /// <param name="position">The position of the map display control.</param>
         /// <param name="size">The size of the map display control.</param>
-        /// <param name="map">Reference to a map view.</param>
-        /// <param name="tilesetView">Reference to a tileset view.</param>
-        public RCMapDisplayBasic(RCIntVector position, RCIntVector size, IMapTerrainView map, ITileSetView tilesetView)
-            : base(position, size, map)
+        public RCMapDisplayBasic(RCIntVector position, RCIntVector size)
+            : base(position, size)
         {
-            if (map == null) { throw new ArgumentNullException("map"); }
-            if (tilesetView == null) { throw new ArgumentNullException("tilesetView"); }
-
-            this.mapView = map;
-            this.tiles = new IsoTileSpriteGroup(tilesetView);
-            this.terrainObjects = new TerrainObjectSpriteGroup(tilesetView);
+            this.mapView = null;
+            this.tiles = null;
+            this.terrainObjects = null;
         }
 
         /// <summary>
@@ -41,18 +37,34 @@ namespace RC.App.PresLogic.Controls
 
         #region Overrides
 
-        /// <see cref="RCMapDisplay.StartProc_i"/>
-        protected override void StartProc_i(object parameter)
+        /// <see cref="RCMapDisplay.MapView"/>
+        protected override IMapView MapView { get { return this.mapView; } }
+
+        /// <see cref="RCMapDisplay.Connect_i"/>
+        protected override void Connect_i()
+        {
+            IViewFactory viewFactory = ComponentManager.GetInterface<IViewFactory>();
+            this.mapView = viewFactory.CreateView<IMapTerrainView>();
+            ITileSetView tilesetView = viewFactory.CreateView<ITileSetView>();
+            this.tiles = new IsoTileSpriteGroup(tilesetView);
+            this.terrainObjects = new TerrainObjectSpriteGroup(tilesetView);
+        }
+
+        /// <see cref="RCMapDisplay.ConnectBackgroundProc_i"/>
+        protected override void ConnectBackgroundProc_i(object parameter)
         {
             this.tiles.Load();
             this.terrainObjects.Load();
         }
 
-        /// <see cref="RCMapDisplay.StopProc_i"/>
-        protected override void StopProc_i(object parameter)
+        /// <see cref="RCMapDisplay.DisconnectBackgroundProc_i"/>
+        protected override void DisconnectBackgroundProc_i(object parameter)
         {
             this.tiles.Unload();
             this.terrainObjects.Unload();
+            this.mapView = null;
+            this.tiles = null;
+            this.terrainObjects = null;
         }
 
         /// <see cref="UIObject.Render_i"/>

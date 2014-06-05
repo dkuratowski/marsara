@@ -19,4 +19,11 @@ namespace RC.App.BizLogic.PublicInterfaces
         /// <returns>The object placement box to be displayed.</returns>
         ObjectPlacementBox GetObjectPlacementBox(RCIntRectangle displayedArea, RCIntVector position);
     }
+
+    /// <summary>
+    /// Dummy interfaces needed to distinguish between the factory methods of the MapObjectPlacementView
+    /// and the TerrainObjectPlacementView.
+    /// </summary>
+    public interface IMapObjectPlacementView : IObjectPlacementView { }
+    public interface ITerrainObjectPlacementView : IObjectPlacementView { }
 }

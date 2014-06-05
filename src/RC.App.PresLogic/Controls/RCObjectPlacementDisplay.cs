@@ -5,6 +5,8 @@ using System.Text;
 using RC.App.BizLogic.PublicInterfaces;
 using RC.UI;
 using RC.Common;
+using RC.App.BizLogic.ComponentInterfaces;
+using RC.Common.ComponentModel;
 
 namespace RC.App.PresLogic.Controls
 {
@@ -18,10 +20,10 @@ namespace RC.App.PresLogic.Controls
         /// Constructs an RCObjectPlacementDisplay extension for the given map display control.
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
-        /// <param name="map">Reference to a map view.</param>
-        public RCObjectPlacementDisplay(RCMapDisplay extendedControl, IMapView map)
-            : base(extendedControl, map)
+        public RCObjectPlacementDisplay(RCMapDisplay extendedControl)
+            : base(extendedControl)
         {
+            this.mapView = null;
             this.objects = null;
             this.objectPlacementView = null;
             this.objectPlacementMaskGreen = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ObjectPlacementMaskGreen");
@@ -60,20 +62,26 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         public bool PlacingObject { get { return this.objectPlacementView != null; } }
 
-        /// <see cref="RCMapDisplayExtension.StartExtension_i"/>
-        protected override void StartExtension_i()
+        /// <see cref="RCMapDisplayExtension.MapView"/>
+        protected override IMapView MapView { get { return this.mapView; } }
+
+        /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
+        protected override void ConnectEx_i()
         {
+            IViewFactory viewFactory = ComponentManager.GetInterface<IViewFactory>();
+            this.mapView = viewFactory.CreateView<IMapTerrainView>();
             this.MouseSensor.Move += this.OnMouseMove;
         }
 
-        /// <see cref="RCMapDisplayExtension.StopExtension_i"/>
-        protected override void StopExtension_i()
+        /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>
+        protected override void DisconnectEx_i()
         {
+            this.mapView = null;
             this.MouseSensor.Move -= this.OnMouseMove;
         }
 
-        /// <see cref="RCMapDisplayExtension.RenderExtension_i"/>
-        protected override void RenderExtension_i(IUIRenderContext renderContext)
+        /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
+        protected override void RenderEx_i(IUIRenderContext renderContext)
         {
             if (this.DisplayedArea != RCIntRectangle.Undefined && this.objectPlacementView != null && this.lastKnownMousePosition != RCIntVector.Undefined)
             {
@@ -117,6 +125,11 @@ namespace RC.App.PresLogic.Controls
         /// The sprite for displaying the red parts of the object placement mask.
         /// </summary>
         private UISprite objectPlacementMaskRed;
+
+        /// <summary>
+        /// Reference to a map view.
+        /// </summary>
+        private IMapView mapView;
 
         /// <summary>
         /// Reference to the object placement view or null if there is no object being placed.

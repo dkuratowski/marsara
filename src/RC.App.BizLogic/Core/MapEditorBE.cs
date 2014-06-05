@@ -41,6 +41,7 @@ namespace RC.App.BizLogic.Core
             this.mapEditor = ComponentManager.GetInterface<IMapEditor>();
             this.tilesetStore = ComponentManager.GetInterface<ITileSetStore>();
             this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
+            this.viewFactoryRegistry = ComponentManager.GetInterface<IViewFactoryRegistry>();
         }
 
         /// <see cref="IComponent.Stop"/>
@@ -62,6 +63,8 @@ namespace RC.App.BizLogic.Core
             this.activeScenario = this.scenarioLoader.NewScenario(this.activeMap);
             this.timeScheduler = new Scheduler(MAPEDITOR_MS_PER_FRAMES);
             this.timeScheduler.AddScheduledFunction(this.activeScenario.UpdateAnimations);
+
+            this.RegisterFactoryMethods();
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
@@ -77,6 +80,8 @@ namespace RC.App.BizLogic.Core
             this.activeScenario = this.scenarioLoader.LoadScenario(this.activeMap, mapBytes);
             this.timeScheduler = new Scheduler(MAPEDITOR_MS_PER_FRAMES);
             this.timeScheduler.AddScheduledFunction(this.activeScenario.UpdateAnimations);
+
+            this.RegisterFactoryMethods();
         }
 
         /// <see cref="IMapEditorBE.NewMap"/>
@@ -109,66 +114,14 @@ namespace RC.App.BizLogic.Core
         {
             if (this.activeMap != null)
             {
+                this.UnregisterFactoryMethods();
+
                 this.timeScheduler.Dispose();
                 this.timeScheduler = null;
                 this.activeMap.Close();
                 this.activeMap = null;
                 this.activeScenario = null;
             }
-        }
-
-        /// <see cref="IMapEditorBE.CreateMapTerrainView"/>
-        public IMapTerrainView CreateMapTerrainView()
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            return new MapTerrainView(this.activeMap);
-        }
-
-        /// <see cref="IMapEditorBE.CreateMapObjectView"/>
-        public IMapObjectView CreateMapObjectView()
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            return new MapObjectView(this.activeScenario);
-        }
-
-        /// <see cref="IMapEditorBE.CreateMapObjectDataView"/>
-        public IMapObjectDataView CreateMapObjectDataView()
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            return new MapObjectDataView(this.activeScenario);
-        }
-
-        /// <see cref="IMapEditorBE.CreateTileSetView"/>
-        public ITileSetView CreateTileSetView()
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            return new TileSetView(this.activeMap.Tileset);
-        }
-
-        /// <see cref="IMapEditorBE.CreateMetadataView"/>
-        public IMetadataView CreateMetadataView()
-        {
-            return new MetadataView(this.scenarioLoader.Metadata);
-        }
-
-        /// <see cref="IMapEditorBE.CreateTerrainObjectPlacementView"/>
-        public IObjectPlacementView CreateTerrainObjectPlacementView(string terrainObjectName)
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            if (terrainObjectName == null) { throw new ArgumentNullException("terrainObjectName"); }
-
-            ITerrainObjectType terrainObjectType = this.activeMap.Tileset.GetTerrainObjectType(terrainObjectName);
-            return new TerrainObjectPlacementView(terrainObjectType, this.activeMap);
-        }
-
-        /// <see cref="IMapEditorBE.CreateMapObjectPlacementView"/>
-        public IObjectPlacementView CreateMapObjectPlacementView(string mapObjectTypeName)
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            if (mapObjectTypeName == null) { throw new ArgumentNullException("mapObjectTypeName"); }
-
-            IScenarioElementType elementType = this.scenarioLoader.Metadata.GetElementType(mapObjectTypeName);
-            return new MapObjectPlacementView(elementType, this.activeScenario, this.timeScheduler);
         }
 
         /// <see cref="IMapEditorBE.DrawTerrain"/>
@@ -365,6 +318,7 @@ namespace RC.App.BizLogic.Core
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
             foreach (Entity entity in this.activeScenario.VisibleEntities.GetContents(navCellCoords))
             {
+                entity.RemoveFromMap();
                 this.activeScenario.RemoveEntity(entity);
                 entity.Dispose();
                 return true;
@@ -396,6 +350,117 @@ namespace RC.App.BizLogic.Core
 
         #endregion IMapEditorBE methods
 
+        #region View factory methods
+
+        /// <summary>
+        /// Creates a view of type IMapTerrainView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IMapTerrainView CreateMapTerrainView()
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            return new MapTerrainView(this.activeMap);
+        }
+
+        /// <summary>
+        /// Creates a view of type ITileSetView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private ITileSetView CreateTileSetView()
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            return new TileSetView(this.activeMap.Tileset);
+        }
+
+        /// <summary>
+        /// Creates a view of type IMetadataView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IMetadataView CreateMetadataView()
+        {
+            return new MetadataView(this.scenarioLoader.Metadata);
+        }
+
+        /// <summary>
+        /// Creates a view of type IMapObjectView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IMapObjectView CreateMapObjectView()
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            return new MapObjectView(this.activeScenario);
+        }
+
+        /// <summary>
+        /// Creates a view of type IMapObjectDataView.
+        /// </summary>
+        /// <param name="objectID">The ID of the map object to read.</param>
+        /// <returns>The created view.</returns>
+        private IMapObjectDataView CreateMapObjectDataView(int objectID)
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            Entity entity = this.activeScenario.GetEntity<Entity>(objectID);
+            return entity != null ? new MapObjectDataView(entity) : null;
+        }
+
+        /// <summary>
+        /// Creates a view of type ITerrainObjectPlacementView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private ITerrainObjectPlacementView CreateTerrainObjectPlacementView(string terrainObjectName)
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (terrainObjectName == null) { throw new ArgumentNullException("terrainObjectName"); }
+
+            ITerrainObjectType terrainObjectType = this.activeMap.Tileset.GetTerrainObjectType(terrainObjectName);
+            return new TerrainObjectPlacementView(terrainObjectType, this.activeMap);
+        }
+
+        /// <summary>
+        /// Creates a view of type IMapObjectPlacementView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IMapObjectPlacementView CreateMapObjectPlacementView(string mapObjectTypeName)
+        {
+            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (mapObjectTypeName == null) { throw new ArgumentNullException("mapObjectTypeName"); }
+
+            IScenarioElementType elementType = this.scenarioLoader.Metadata.GetElementType(mapObjectTypeName);
+            return new MapObjectPlacementView(elementType, this.activeScenario, this.timeScheduler);
+        }
+
+        /// <summary>
+        /// Registers the implemented factory methods to the view factory.
+        /// </summary>
+        private void RegisterFactoryMethods()
+        {
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapTerrainView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateTileSetView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMetadataView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectView);
+            this.viewFactoryRegistry.RegisterViewFactory<IMapObjectDataView, int>(this.CreateMapObjectDataView);
+            this.viewFactoryRegistry.RegisterViewFactory<ITerrainObjectPlacementView, string>(this.CreateTerrainObjectPlacementView);
+            this.viewFactoryRegistry.RegisterViewFactory<IMapObjectPlacementView, string>(this.CreateMapObjectPlacementView);
+        }
+
+        /// <summary>
+        /// Unregisters the implemented factory methods from the view factory.
+        /// </summary>
+        private void UnregisterFactoryMethods()
+        {
+            this.viewFactoryRegistry.UnregisterViewFactory<IMapTerrainView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<ITileSetView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IMetadataView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectDataView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<ITerrainObjectPlacementView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectPlacementView>();
+        }
+
+        #endregion View factory methods
+
         /// <summary>
         /// Reference to the RC.App.BizLogic.TileSetStore component.
         /// </summary>
@@ -425,6 +490,11 @@ namespace RC.App.BizLogic.Core
         /// Reference to the RC.Engine.Simulator.PathFinder component.
         /// </summary>
         private IPathFinder pathFinder;
+
+        /// <summary>
+        /// Reference to the registry interface of the RC.App.BizLogic.ViewFactory component.
+        /// </summary>
+        private IViewFactoryRegistry viewFactoryRegistry;
 
         /// <summary>
         /// Reference to the currently active map.

@@ -13,7 +13,7 @@ namespace RC.App.BizLogic.Core
     /// <summary>
     /// Implementation of object placement views for map objects.
     /// </summary>
-    class MapObjectPlacementView : ObjectPlacementView, IObjectPlacementView
+    class MapObjectPlacementView : ObjectPlacementView, IMapObjectPlacementView
     {
         /// <summary>
         /// Constructs a MapObjectPlacementView instance.
