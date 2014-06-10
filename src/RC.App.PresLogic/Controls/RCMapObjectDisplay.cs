@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using RC.App.BizLogic.PublicInterfaces;
 using RC.UI;
 using RC.Common;
 using RC.Common.Diagnostics;
-using RC.App.BizLogic.ComponentInterfaces;
 using RC.Common.ComponentModel;
+using RC.App.BizLogic.Views;
+using RC.App.BizLogic.Services;
 
 namespace RC.App.PresLogic.Controls
 {
@@ -43,10 +43,10 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
-            IViewFactory viewFactory = ComponentManager.GetInterface<IViewFactory>();
-            this.mapObjectView = viewFactory.CreateView<IMapObjectView>();
+            IViewService viewService = ComponentManager.GetInterface<IViewService>();
+            this.mapObjectView = viewService.CreateView<IMapObjectView>();
 
-            IMetadataView metadataView = viewFactory.CreateView<IMetadataView>();
+            IMetadataView metadataView = viewService.CreateView<IMetadataView>();
             this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player0));
             this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player1));
             this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player2));

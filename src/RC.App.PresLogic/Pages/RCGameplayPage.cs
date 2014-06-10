@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using RC.App.BizLogic.PublicInterfaces;
 using RC.App.PresLogic.Controls;
 using RC.Common.ComponentModel;
 using RC.App.PresLogic.Panels;
 using RC.Common;
 using RC.UI;
-using RC.App.BizLogic.ComponentInterfaces;
 using System.Threading;
 using RC.Common.Diagnostics;
 using System.Diagnostics;
+using RC.App.BizLogic.Services;
 
 namespace RC.App.PresLogic.Pages
 {
@@ -82,7 +81,7 @@ namespace RC.App.PresLogic.Pages
             if (this.currentConnectionStatus != ConnectionStatus.Offline) { throw new InvalidOperationException("The gameplay page is not offline!"); }
             
             /// TODO: A scenario shall be running at this point!
-            ComponentManager.GetInterface<IGameplayBE>().StartTestScenario();
+            ComponentManager.GetInterface<IMultiplayerService>().CreateNewGame(".\\maps\\testmap4.rcm", GameTypeEnum.Melee, GameSpeedEnum.Fastest);
 
             /// Create and start the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135));
@@ -107,7 +106,7 @@ namespace RC.App.PresLogic.Pages
         {
             if (this.currentConnectionStatus != ConnectionStatus.Online) { throw new InvalidOperationException("The gameplay page is not online!"); }
 
-            ComponentManager.GetInterface<IGameplayBE>().StopTestScenario();
+            ComponentManager.GetInterface<IMultiplayerService>().LeaveCurrentGame();
 
             /// TODO: deactivate mouse handling
             this.menuButtonPanel.MouseSensor.ButtonDown -= this.OnMenuButtonPressed;

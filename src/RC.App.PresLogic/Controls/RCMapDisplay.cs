@@ -6,7 +6,7 @@ using RC.UI;
 using RC.Common;
 using RC.App.BizLogic;
 using RC.Common.ComponentModel;
-using RC.App.BizLogic.PublicInterfaces;
+using RC.App.BizLogic.Views;
 
 namespace RC.App.PresLogic.Controls
 {

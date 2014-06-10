@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.UI;
-using RC.App.BizLogic.PublicInterfaces;
 using RC.Common;
 using RC.Common.ComponentModel;
-using RC.App.BizLogic.ComponentInterfaces;
+using RC.App.BizLogic.Views;
+using RC.App.BizLogic.Services;
 
 namespace RC.App.PresLogic.Controls
 {
@@ -59,8 +59,8 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
-            IViewFactory viewFactory = ComponentManager.GetInterface<IViewFactory>();
-            this.mapTerrainView = viewFactory.CreateView<IMapTerrainView>();
+            IViewService viewService = ComponentManager.GetInterface<IViewService>();
+            this.mapTerrainView = viewService.CreateView<IMapTerrainView>();
             this.MouseSensor.Move += this.OnMouseMove;
         }
 

@@ -6,8 +6,8 @@ using RC.Common;
 using RC.UI;
 using RC.Common.ComponentModel;
 using RC.App.BizLogic;
-using RC.App.BizLogic.PublicInterfaces;
-using RC.App.BizLogic.ComponentInterfaces;
+using RC.App.BizLogic.Views;
+using RC.App.BizLogic.Services;
 
 namespace RC.App.PresLogic.Controls
 {
@@ -43,9 +43,9 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="RCMapDisplay.Connect_i"/>
         protected override void Connect_i()
         {
-            IViewFactory viewFactory = ComponentManager.GetInterface<IViewFactory>();
-            this.mapView = viewFactory.CreateView<IMapTerrainView>();
-            ITileSetView tilesetView = viewFactory.CreateView<ITileSetView>();
+            IViewService viewService = ComponentManager.GetInterface<IViewService>();
+            this.mapView = viewService.CreateView<IMapTerrainView>();
+            ITileSetView tilesetView = viewService.CreateView<ITileSetView>();
             this.tiles = new IsoTileSpriteGroup(tilesetView);
             this.terrainObjects = new TerrainObjectSpriteGroup(tilesetView);
         }

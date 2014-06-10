@@ -123,7 +123,7 @@
     <Compile Include="Pages\RCSelectGamePage.cs" />
     <Compile Include="Panels\RCSelectGamePanel.cs" />
     <Compile Include="Panels\RCSelectMapPanel.cs" />
-    <Compile Include="TaskManagerAdapter.cs" />
+    <Compile Include="TaskManagerBC.cs" />
     <Compile Include="TerrainObjectSpriteGroup.cs" />
   </ItemGroup>
   <ItemGroup>

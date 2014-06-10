@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using RC.App.BizLogic.ComponentInterfaces;
-using RC.App.BizLogic.PublicInterfaces;
+using RC.App.BizLogic.Services;
+using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.UI;
@@ -53,8 +53,8 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
-            IViewFactory viewFactory = ComponentManager.GetInterface<IViewFactory>();
-            this.selectionIndicatorView = viewFactory.CreateView<ISelectionIndicatorView>();
+            IViewService viewService = ComponentManager.GetInterface<IViewService>();
+            this.selectionIndicatorView = viewService.CreateView<ISelectionIndicatorView>();
         }
 
         /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>

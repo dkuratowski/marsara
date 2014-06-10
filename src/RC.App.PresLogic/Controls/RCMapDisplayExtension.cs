@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 using RC.UI;
-using RC.App.BizLogic.PublicInterfaces;
 using System.Threading;
 
 namespace RC.App.PresLogic.Controls

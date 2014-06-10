@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using RC.App.BizLogic.ComponentInterfaces;
-using RC.App.BizLogic.PublicInterfaces;
+using RC.App.BizLogic.Services;
+using RC.App.BizLogic.Views;
 using RC.App.PresLogic.Controls;
 using RC.Common;
 using RC.Common.ComponentModel;
@@ -26,11 +26,10 @@ namespace RC.App.PresLogic
         {
             if (evtSource == null) { throw new ArgumentNullException("evtSource"); }
             if (targetControl == null) { throw new ArgumentNullException("targetControl"); }
-            if (mapObjectControlView == null) { throw new ArgumentNullException("mapObjectControlView"); }
 
             this.eventSource = evtSource;
             this.targetControl = targetControl;
-            this.mapObjectControlView = ComponentManager.GetInterface<IViewFactory>().CreateView<IMapObjectControlView>();
+            this.mapObjectControlView = ComponentManager.GetInterface<IViewService>().CreateView<IMapObjectControlView>();
             this.isMouseHandlingActive = false;
             this.eventSource.MouseSensor.StateReset += this.OnStateReset;
         }

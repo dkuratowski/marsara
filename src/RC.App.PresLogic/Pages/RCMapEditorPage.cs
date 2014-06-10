@@ -6,10 +6,10 @@ using RC.Common;
 using RC.UI;
 using RC.App.BizLogic;
 using RC.Common.ComponentModel;
-using RC.App.BizLogic.PublicInterfaces;
 using RC.App.PresLogic.Panels;
 using RC.App.PresLogic.Controls;
-using RC.App.BizLogic.ComponentInterfaces;
+using RC.App.BizLogic.Services;
+using RC.App.BizLogic.Views;
 
 namespace RC.App.PresLogic.Pages
 {
@@ -53,8 +53,8 @@ namespace RC.App.PresLogic.Pages
         /// </summary>
         private RCMapEditorPage() : base()
         {
-            this.mapEditorBE = ComponentManager.GetInterface<IMapEditorBE>();
-            this.viewFactory = ComponentManager.GetInterface<IViewFactory>();
+            this.mapEditorBE = ComponentManager.GetInterface<IMapEditorService>();
+            this.viewService = ComponentManager.GetInterface<IViewService>();
             this.activatorBtn = UIMouseButton.Undefined;
             this.scrollHandler = null;
         }
@@ -112,8 +112,8 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplay.Connect();
 
             /// Create the necessary views.
-            this.mapTerrainView = this.viewFactory.CreateView<IMapTerrainView>();
-            this.mapObjectView = this.viewFactory.CreateView<IMapObjectView>();
+            this.mapTerrainView = this.viewService.CreateView<IMapTerrainView>();
+            this.mapObjectView = this.viewService.CreateView<IMapObjectView>();
 
             /// Create the scroll handler for the map display.
             this.scrollHandler = new ScrollHandler(this, this.mapDisplay);
@@ -201,21 +201,21 @@ namespace RC.App.PresLogic.Pages
             {
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
-                    this.viewFactory.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
+                    this.viewService.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                     this.mapDisplayBasic.TerrainObjectSprites);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
-                    this.viewFactory.CreateView<IMapObjectPlacementView, string>(STARTLOCATION_NAME),
+                    this.viewService.CreateView<IMapObjectPlacementView, string>(STARTLOCATION_NAME),
                     this.mapObjectDisplayEx.GetMapObjectSprites((PlayerEnum)(this.mapEditorPanel.SelectedIndex)));
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
-                    this.viewFactory.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
+                    this.viewService.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                     this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral));
             }
             else
@@ -233,21 +233,21 @@ namespace RC.App.PresLogic.Pages
             {
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
-                    this.viewFactory.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
+                    this.viewService.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                     this.mapDisplayBasic.TerrainObjectSprites);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
-                    this.viewFactory.CreateView<IMapObjectPlacementView, string>(STARTLOCATION_NAME),
+                    this.viewService.CreateView<IMapObjectPlacementView, string>(STARTLOCATION_NAME),
                     this.mapObjectDisplayEx.GetMapObjectSprites((PlayerEnum)(this.mapEditorPanel.SelectedIndex)));
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
                 this.objectPlacementDisplayEx.StopPlacingObject();
                 this.objectPlacementDisplayEx.StartPlacingObject(
-                    this.viewFactory.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
+                    this.viewService.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                     this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral));
             }
         }
@@ -343,7 +343,7 @@ namespace RC.App.PresLogic.Pages
                     if (!this.objectPlacementDisplayEx.PlacingObject)
                     {
                         this.objectPlacementDisplayEx.StartPlacingObject(
-                            this.viewFactory.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
+                            this.viewService.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                             this.mapDisplayBasic.TerrainObjectSprites);
                     }
                 }
@@ -366,7 +366,7 @@ namespace RC.App.PresLogic.Pages
                     if (!this.objectPlacementDisplayEx.PlacingObject)
                     {
                         this.objectPlacementDisplayEx.StartPlacingObject(
-                            this.viewFactory.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
+                            this.viewService.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                             this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral));
                     }
                 }
@@ -471,12 +471,12 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// Reference to the map editor backend component.
         /// </summary>
-        private IMapEditorBE mapEditorBE;
+        private IMapEditorService mapEditorBE;
 
         /// <summary>
-        /// Reference to the view factory component.
+        /// Reference to the view service.
         /// </summary>
-        private IViewFactory viewFactory;
+        private IViewService viewService;
 
         /// <summary>
         /// Reference to the map terrain view.
