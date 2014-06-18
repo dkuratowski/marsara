@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Scenarios
@@ -94,11 +95,13 @@ namespace RC.Engine.Simulator.Scenarios
         {
             foreach (Unit unit in this.units)
             {
+                if (unit.PositionValue.Read() != RCNumVector.Undefined) { unit.RemoveFromMap(); }
                 this.startLocation.Read().Scenario.RemoveEntity(unit);
                 unit.Dispose();
             }
             foreach (Building building in this.buildings)
             {
+                if (building.PositionValue.Read() != RCNumVector.Undefined) { building.RemoveFromMap(); }
                 this.startLocation.Read().Scenario.RemoveEntity(building);
                 building.Dispose();
             }

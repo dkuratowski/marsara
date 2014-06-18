@@ -16,9 +16,7 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Constructs an ObjectPlacementView instance.
         /// </summary>
-        /// <param name="map">Reference to the map.</param>
-        public ObjectPlacementView(IMapAccess map)
-            : base(map)
+        public ObjectPlacementView()
         {
         }
 
@@ -41,7 +39,7 @@ namespace RC.App.BizLogic.Views.Core
 
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
-            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);

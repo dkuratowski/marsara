@@ -11,35 +11,41 @@
   <commandType name="Move" availability="IfAny">
     <showButton sprite="MoveBtn" panelPosition="0;0">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelCommand />
 	  </showButton>
-	  <triggerCommand when="TargetPositionSelected" />
+	  <selectPosition>
+		<triggerCommand />
+	  </selectPosition>
 	</showButton>
   </commandType>
   <commandType name="Stop" availability="IfAny">
     <showButton sprite="StopBtn" panelPosition="0;1" >
-	  <triggerCommand when="Immediately" />
+	  <triggerCommand />
 	</showButton>
   </commandType>
   <commandType name="Attack" availability="IfAny">
     <showButton sprite="AttackBtn" panelPosition="0;2">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelCommand />
 	  </showButton>
-	  <triggerCommand when="TargetPositionSelected" />
+	  <selectPosition>
+		<triggerCommand />
+	  </selectPosition>
 	</showButton>
   </commandType>
   <commandType name="Patrol" availability="IfAny">
     <showButton sprite="PatrolBtn" panelPosition="1;0">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelCommand />
 	  </showButton>
-	  <triggerCommand when="TargetPositionSelected" />
+	  <selectPosition>
+		<triggerCommand />
+	  </selectPosition>
 	</showButton>
   </commandType>
   <commandType name="Hold" availability="IfAny">
     <showButton sprite="StopBtn" panelPosition="1;1" >
-	  <triggerCommand when="Immediately" />
+	  <triggerCommand />
 	</showButton>
   </commandType>
 </commandTypes>

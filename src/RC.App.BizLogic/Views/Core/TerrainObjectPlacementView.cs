@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Common;
+using RC.Common.ComponentModel;
+using RC.App.BizLogic.BusinessComponents;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -15,12 +17,12 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Constructs a TerrainObjectPlacementView instance.
         /// </summary>
-        /// <param name="terrainObjectType">Reference to the type of the terrain object being placed.</param>
-        /// <param name="map">Reference to the map.</param>
-        public TerrainObjectPlacementView(ITerrainObjectType terrainObjectType, IMapAccess map) : base(map)
+        /// <param name="terrainObjectName">The name of the type of the terrain object being placed.</param>
+        public TerrainObjectPlacementView(string terrainObjectName)
         {
-            if (terrainObjectType == null) { throw new ArgumentNullException("terrainObjectType"); }
-            this.terrainObjectType = terrainObjectType;
+            if (terrainObjectName == null) { throw new ArgumentNullException("terrainObjectName"); }
+
+            this.terrainObjectType = this.Map.Tileset.GetTerrainObjectType(terrainObjectName);
         }
 
         #region ObjectPlacementView overrides

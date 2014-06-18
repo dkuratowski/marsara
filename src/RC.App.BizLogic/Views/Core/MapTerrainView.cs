@@ -16,8 +16,7 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Constructs a MapTerrainView instance.
         /// </summary>
-        /// <param name="map">The subject of this view.</param>
-        public MapTerrainView(IMapAccess map) : base(map)
+        public MapTerrainView()
         {
         }
 
@@ -31,7 +30,7 @@ namespace RC.App.BizLogic.Views.Core
 
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
-            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             List<SpriteInst> retList = new List<SpriteInst>();
             HashSet<IIsoTile> tmpIsoTileList = new HashSet<IIsoTile>();
@@ -121,7 +120,7 @@ namespace RC.App.BizLogic.Views.Core
 
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
-            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
@@ -139,7 +138,7 @@ namespace RC.App.BizLogic.Views.Core
 
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
-            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             List<SpriteInst> retList = new List<SpriteInst>();
             HashSet<ITerrainObject> visibleTerrainObjects = this.Map.TerrainObjects.GetContents(
@@ -171,7 +170,7 @@ namespace RC.App.BizLogic.Views.Core
 
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
-            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
@@ -197,7 +196,7 @@ namespace RC.App.BizLogic.Views.Core
 
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
-            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             List<RCIntRectangle> retList = new List<RCIntRectangle>();
             for (int row = cellWindow.Top; row < cellWindow.Bottom; row++)

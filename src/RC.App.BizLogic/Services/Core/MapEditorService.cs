@@ -27,8 +27,6 @@ namespace RC.App.BizLogic.Services.Core
         /// </summary>
         public MapEditorService()
         {
-            this.activeMap = null;
-            this.activeScenario = null;
             this.timeScheduler = null;
         }
 
@@ -37,12 +35,8 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IComponent.Start"/>
         public void Start()
         {
-            this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
-            this.scenarioLoader = ComponentManager.GetInterface<IScenarioLoader>();
-            this.navmeshLoader = ComponentManager.GetInterface<INavMeshLoader>();
+            this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
             this.mapEditor = ComponentManager.GetInterface<IMapEditor>();
-            this.tilesetStore = ComponentManager.GetInterface<ITilesetManagerBC>();
-            this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
             this.viewFactoryRegistry = ComponentManager.GetInterface<IViewFactoryRegistry>();
         }
 
@@ -59,12 +53,9 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.NewMap"/>
         public void NewMap(string mapName, string tilesetName, string defaultTerrain, RCIntVector mapSize)
         {
-            if (this.activeMap != null) { throw new InvalidOperationException("Another map is already opened!"); }
-
-            this.activeMap = this.mapLoader.NewMap(mapName, this.tilesetStore.GetTileSet(tilesetName), defaultTerrain, mapSize);
-            this.activeScenario = this.scenarioLoader.NewScenario(this.activeMap);
+            this.scenarioManager.NewScenario(mapName, tilesetName, defaultTerrain, mapSize);
             this.timeScheduler = new Scheduler(MAPEDITOR_MS_PER_FRAMES);
-            this.timeScheduler.AddScheduledFunction(this.activeScenario.UpdateAnimations);
+            this.timeScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.UpdateAnimations);
 
             this.RegisterFactoryMethods();
         }
@@ -72,16 +63,9 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.NewMap"/>
         public void LoadMap(string filename)
         {
-            if (this.activeMap != null) { throw new InvalidOperationException("Another map is already opened!"); }
-            if (filename == null) { throw new ArgumentNullException("fileName"); }
-
-            byte[] mapBytes = File.ReadAllBytes(filename);
-            MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
-            this.activeMap = this.mapLoader.LoadMap(this.tilesetStore.GetTileSet(mapHeader.TilesetName), mapBytes);
-            this.pathFinder.Initialize(this.navmeshLoader.LoadNavMesh(mapBytes), MAX_PATHFINDING_ITERATIONS_PER_FRAMES);
-            this.activeScenario = this.scenarioLoader.LoadScenario(this.activeMap, mapBytes);
+            this.scenarioManager.OpenScenario(filename);
             this.timeScheduler = new Scheduler(MAPEDITOR_MS_PER_FRAMES);
-            this.timeScheduler.AddScheduledFunction(this.activeScenario.UpdateAnimations);
+            this.timeScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.UpdateAnimations);
 
             this.RegisterFactoryMethods();
         }
@@ -89,72 +73,53 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.NewMap"/>
         public void SaveMap(string filename)
         {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            if (filename == null) { throw new ArgumentNullException("fileName"); }
-
-            /// Try to create a navmesh from the map but do not crash.
-            INavMesh navmesh = null;
-            try { navmesh = this.navmeshLoader.NewNavMesh(new MapWalkabilityReader(this.activeMap)); }
-            catch (Exception ex) { TraceManager.WriteExceptionAllTrace(ex, false); }
-
-            /// Serialize the map, the scenario and the navmesh if it has been successfully created.
-            byte[] mapBytes = this.mapLoader.SaveMap(this.activeMap);
-            byte[] scenarioBytes = this.scenarioLoader.SaveScenario(this.activeScenario);
-            byte[] navmeshBytes = navmesh != null ? this.navmeshLoader.SaveNavMesh(navmesh) : new byte[0];
-
-            /// Write the serialized data into the output file.
-            int outIdx = 0;
-            byte[] outputBytes = new byte[mapBytes.Length + scenarioBytes.Length + navmeshBytes.Length];
-            for (int i = 0; i < mapBytes.Length; i++, outIdx++) { outputBytes[outIdx] = mapBytes[i]; }
-            for (int i = 0; i < scenarioBytes.Length; i++, outIdx++) { outputBytes[outIdx] = scenarioBytes[i]; }
-            for (int i = 0; i < navmeshBytes.Length; i++, outIdx++) { outputBytes[outIdx] = navmeshBytes[i]; }
-            File.WriteAllBytes(filename, outputBytes);
+            this.scenarioManager.SaveScenario(filename);
         }
 
         /// <see cref="IMapEditorService.NewMap"/>
         public void CloseMap()
         {
-            if (this.activeMap != null)
+            if (this.scenarioManager.ActiveScenario != null)
             {
                 this.UnregisterFactoryMethods();
 
                 this.timeScheduler.Dispose();
                 this.timeScheduler = null;
-                this.activeMap.Close();
-                this.activeMap = null;
-                this.activeScenario = null;
+                this.scenarioManager.CloseScenario();
             }
         }
 
         /// <see cref="IMapEditorService.DrawTerrain"/>
         public void DrawTerrain(RCIntRectangle displayedArea, RCIntVector position, string terrainType)
         {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
             if (terrainType == null) { throw new ArgumentNullException("terrainType"); }
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            IIsoTile isotile = this.activeMap.GetCell(navCellCoords).ParentIsoTile;
+            IIsoTile isotile = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentIsoTile;
 
-            IEnumerable<IIsoTile> affectedIsoTiles = this.mapEditor.DrawTerrain(this.activeMap, isotile, this.activeMap.Tileset.GetTerrainType(terrainType));
+            IEnumerable<IIsoTile> affectedIsoTiles = this.mapEditor.DrawTerrain(this.scenarioManager.ActiveScenario.Map, isotile,
+                                                                                this.scenarioManager.ActiveScenario.Map.Tileset.GetTerrainType(terrainType));
 
             foreach (IIsoTile affectedIsoTile in affectedIsoTiles)
             {
                 RCNumRectangle isoTileRect = new RCNumRectangle(affectedIsoTile.GetCellMapCoords(new RCIntVector(0, 0)), affectedIsoTile.CellSize)
                                            - new RCNumVector(1, 1) / 2;
-                foreach (QuadEntity affectedEntity in this.activeScenario.GetVisibleEntities<QuadEntity>(isoTileRect))
+                foreach (QuadEntity affectedEntity in this.scenarioManager.ActiveScenario.GetVisibleEntities<QuadEntity>(isoTileRect))
                 {
-                    this.activeScenario.VisibleEntities.DetachContent(affectedEntity);
-                    bool violatingConstraints = false;
-                    if (affectedEntity.ElementType.CheckConstraints(this.activeScenario, affectedEntity.LastKnownQuadCoords).Count != 0)
+                    affectedEntity.RemoveFromMap();
+                    if (affectedEntity.ElementType.CheckConstraints(this.scenarioManager.ActiveScenario, affectedEntity.LastKnownQuadCoords).Count != 0)
                     {
-                        this.activeScenario.RemoveEntity(affectedEntity);
+                        this.scenarioManager.ActiveScenario.RemoveEntity(affectedEntity);
                         affectedEntity.Dispose();
-                        violatingConstraints = true;
                     }
-                    if (!violatingConstraints) { this.activeScenario.VisibleEntities.AttachContent(affectedEntity); }
+                    else
+                    {
+                        affectedEntity.AddToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(affectedEntity.LastKnownQuadCoords));
+                    }
                 }
             }
         }
@@ -162,40 +127,41 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.PlaceTerrainObject"/>
         public bool PlaceTerrainObject(RCIntRectangle displayedArea, RCIntVector position, string terrainObject)
         {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
             if (terrainObject == null) { throw new ArgumentNullException("terrainObject"); }
 
-            ITerrainObjectType terrainObjType = this.activeMap.Tileset.GetTerrainObjectType(terrainObject);
+            ITerrainObjectType terrainObjType = this.scenarioManager.ActiveScenario.Map.Tileset.GetTerrainObjectType(terrainObject);
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                 (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            IQuadTile quadTileAtPos = this.activeMap.GetCell(navCellCoords).ParentQuadTile;
+            IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - terrainObjType.QuadraticSize / 2;
 
             ITerrainObject placedTerrainObject = null;
             if (topLeftQuadCoords.X >= 0 && topLeftQuadCoords.Y >= 0 &&
-                topLeftQuadCoords.X < this.activeMap.Size.X && topLeftQuadCoords.Y < this.activeMap.Size.Y)
+                topLeftQuadCoords.X < this.scenarioManager.ActiveScenario.Map.Size.X && topLeftQuadCoords.Y < this.scenarioManager.ActiveScenario.Map.Size.Y)
             {
-                IQuadTile targetQuadTile = this.activeMap.GetQuadTile(topLeftQuadCoords);
-                placedTerrainObject = this.mapEditor.PlaceTerrainObject(this.activeMap, targetQuadTile, terrainObjType);
+                IQuadTile targetQuadTile = this.scenarioManager.ActiveScenario.Map.GetQuadTile(topLeftQuadCoords);
+                placedTerrainObject = this.mapEditor.PlaceTerrainObject(this.scenarioManager.ActiveScenario.Map, targetQuadTile, terrainObjType);
             }
 
             if (placedTerrainObject != null)
             {
-                RCNumRectangle terrObjRect = new RCNumRectangle(this.activeMap.GetQuadTile(placedTerrainObject.MapCoords).GetCell(new RCIntVector(0, 0)).MapCoords, placedTerrainObject.CellSize)
+                RCNumRectangle terrObjRect = new RCNumRectangle(this.scenarioManager.ActiveScenario.Map.GetQuadTile(placedTerrainObject.MapCoords).GetCell(new RCIntVector(0, 0)).MapCoords, placedTerrainObject.CellSize)
                                            - new RCNumVector(1, 1) / 2;
-                foreach (QuadEntity affectedEntity in this.activeScenario.GetVisibleEntities<QuadEntity>(terrObjRect))
+                foreach (QuadEntity affectedEntity in this.scenarioManager.ActiveScenario.GetVisibleEntities<QuadEntity>(terrObjRect))
                 {
-                    this.activeScenario.VisibleEntities.DetachContent(affectedEntity);
-                    bool violatingConstraints = false;
-                    if (affectedEntity.ElementType.CheckConstraints(this.activeScenario, affectedEntity.LastKnownQuadCoords).Count != 0)
+                    affectedEntity.RemoveFromMap();
+                    if (affectedEntity.ElementType.CheckConstraints(this.scenarioManager.ActiveScenario, affectedEntity.LastKnownQuadCoords).Count != 0)
                     {
-                        this.activeScenario.RemoveEntity(affectedEntity);
+                        this.scenarioManager.ActiveScenario.RemoveEntity(affectedEntity);
                         affectedEntity.Dispose();
-                        violatingConstraints = true;
                     }
-                    if (!violatingConstraints) { this.activeScenario.VisibleEntities.AttachContent(affectedEntity); }
+                    else
+                    {
+                        affectedEntity.AddToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(affectedEntity.LastKnownQuadCoords));
+                    }
                 }
             }
             return placedTerrainObject != null;
@@ -204,18 +170,18 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.RemoveTerrainObject"/>
         public bool RemoveTerrainObject(RCIntRectangle displayedArea, RCIntVector position)
         {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            IQuadTile quadTileAtPos = this.activeMap.GetCell(navCellCoords).ParentQuadTile;
-            foreach (ITerrainObject objToCheck in this.activeMap.TerrainObjects.GetContents(navCellCoords))
+            IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
+            foreach (ITerrainObject objToCheck in this.scenarioManager.ActiveScenario.Map.TerrainObjects.GetContents(navCellCoords))
             {
                 if (!objToCheck.Type.IsExcluded(quadTileAtPos.MapCoords - objToCheck.MapCoords))
                 {
-                    this.mapEditor.RemoveTerrainObject(this.activeMap, objToCheck);
+                    this.mapEditor.RemoveTerrainObject(this.scenarioManager.ActiveScenario.Map, objToCheck);
                     return true;
                 }
             }
@@ -225,21 +191,21 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.PlaceStartLocation"/>
         public bool PlaceStartLocation(RCIntRectangle displayedArea, RCIntVector position, int playerIndex)
         {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            IQuadTile quadTileAtPos = this.activeMap.GetCell(navCellCoords).ParentQuadTile;
+            IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
 
-            IScenarioElementType objectType = this.scenarioLoader.Metadata.GetElementType(StartLocation.STARTLOCATION_TYPE_NAME);
-            RCIntVector objQuadSize = this.activeMap.CellToQuadSize(objectType.Area.Read());
+            IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(StartLocation.STARTLOCATION_TYPE_NAME);
+            RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read());
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
-            if (objectType.CheckConstraints(this.activeScenario, topLeftQuadCoords).Count != 0) { return false; }
+            if (objectType.CheckConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords).Count != 0) { return false; }
 
             /// Check if a start location with the given player index already exists.
-            List<StartLocation> startLocations = this.activeScenario.GetAllEntities<StartLocation>();
+            List<StartLocation> startLocations = this.scenarioManager.ActiveScenario.GetAllEntities<StartLocation>();
             StartLocation startLocation = null;
             foreach (StartLocation sl in startLocations)
             {
@@ -259,69 +225,69 @@ namespace RC.App.BizLogic.Services.Core
             else
             {
                 startLocation = new StartLocation(playerIndex);
-                this.activeScenario.AddEntity(startLocation);
+                this.scenarioManager.ActiveScenario.AddEntity(startLocation);
             }
-            startLocation.AddToMap(this.activeMap.GetQuadTile(topLeftQuadCoords));
+            startLocation.AddToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(topLeftQuadCoords));
             return true;
         }
 
         /// <see cref="IMapEditorService.PlaceMineralField"/>
         public bool PlaceMineralField(RCIntRectangle displayedArea, RCIntVector position)
         {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            IQuadTile quadTileAtPos = this.activeMap.GetCell(navCellCoords).ParentQuadTile;
+            IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
 
-            IScenarioElementType objectType = this.scenarioLoader.Metadata.GetElementType(MineralField.MINERALFIELD_TYPE_NAME);
-            RCIntVector objQuadSize = this.activeMap.CellToQuadSize(objectType.Area.Read());
+            IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(MineralField.MINERALFIELD_TYPE_NAME);
+            RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read());
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
-            if (objectType.CheckConstraints(this.activeScenario, topLeftQuadCoords).Count != 0) { return false; }
+            if (objectType.CheckConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords).Count != 0) { return false; }
 
             MineralField placedMineralField = new MineralField();
-            this.activeScenario.AddEntity(placedMineralField);
-            placedMineralField.AddToMap(this.activeMap.GetQuadTile(topLeftQuadCoords));
+            this.scenarioManager.ActiveScenario.AddEntity(placedMineralField);
+            placedMineralField.AddToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(topLeftQuadCoords));
             return true;
         }
 
         /// <see cref="IMapEditorService.PlaceVespeneGeyser"/>
         public bool PlaceVespeneGeyser(RCIntRectangle displayedArea, RCIntVector position)
         {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            IQuadTile quadTileAtPos = this.activeMap.GetCell(navCellCoords).ParentQuadTile;
+            IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
 
-            IScenarioElementType objectType = this.scenarioLoader.Metadata.GetElementType(VespeneGeyser.VESPENEGEYSER_TYPE_NAME);
-            RCIntVector objQuadSize = this.activeMap.CellToQuadSize(objectType.Area.Read());
+            IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(VespeneGeyser.VESPENEGEYSER_TYPE_NAME);
+            RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read());
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
-            if (objectType.CheckConstraints(this.activeScenario, topLeftQuadCoords).Count != 0) { return false; }
+            if (objectType.CheckConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords).Count != 0) { return false; }
 
             VespeneGeyser placedVespeneGeyser = new VespeneGeyser();
-            this.activeScenario.AddEntity(placedVespeneGeyser);
-            placedVespeneGeyser.AddToMap(this.activeMap.GetQuadTile(topLeftQuadCoords));
+            this.scenarioManager.ActiveScenario.AddEntity(placedVespeneGeyser);
+            placedVespeneGeyser.AddToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(topLeftQuadCoords));
             return true;
         }
 
         /// <see cref="IMapEditorService.RemoveEntity"/>
         public bool RemoveEntity(RCIntRectangle displayedArea, RCIntVector position)
         {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            foreach (Entity entity in this.activeScenario.VisibleEntities.GetContents(navCellCoords))
+            foreach (Entity entity in this.scenarioManager.ActiveScenario.VisibleEntities.GetContents(navCellCoords))
             {
                 entity.RemoveFromMap();
-                this.activeScenario.RemoveEntity(entity);
+                this.scenarioManager.ActiveScenario.RemoveEntity(entity);
                 entity.Dispose();
                 return true;
             }
@@ -331,10 +297,11 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.RemoveEntity"/>
         public bool ChangeResourceAmount(int objectID, int delta)
         {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
             if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
 
-            MineralField mineralField = this.activeScenario.GetEntity<MineralField>(objectID);
-            VespeneGeyser vespeneGeyser = this.activeScenario.GetEntity<VespeneGeyser>(objectID);
+            MineralField mineralField = this.scenarioManager.ActiveScenario.GetEntity<MineralField>(objectID);
+            VespeneGeyser vespeneGeyser = this.scenarioManager.ActiveScenario.GetEntity<VespeneGeyser>(objectID);
             if (mineralField != null)
             {
                 int currentResourceAmount = mineralField.ResourceAmount.Read();
@@ -352,73 +319,7 @@ namespace RC.App.BizLogic.Services.Core
 
         #endregion IMapEditorService methods
 
-        #region View factory methods
-
-        /// <summary>
-        /// Creates a view of type IMapTerrainView.
-        /// </summary>
-        /// <returns>The created view.</returns>
-        private IMapTerrainView CreateMapTerrainView()
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            return new MapTerrainView(this.activeMap);
-        }
-
-        /// <summary>
-        /// Creates a view of type ITileSetView.
-        /// </summary>
-        /// <returns>The created view.</returns>
-        private ITileSetView CreateTileSetView()
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            return new TileSetView(this.activeMap.Tileset);
-        }
-
-        /// <summary>
-        /// Creates a view of type IMetadataView.
-        /// </summary>
-        /// <returns>The created view.</returns>
-        private IMetadataView CreateMetadataView()
-        {
-            return new MetadataView(this.scenarioLoader.Metadata);
-        }
-
-        /// <summary>
-        /// Creates a view of type IMapObjectView.
-        /// </summary>
-        /// <returns>The created view.</returns>
-        private IMapObjectView CreateMapObjectView()
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            return new MapObjectView(this.activeScenario);
-        }
-
-        /// <summary>
-        /// Creates a view of type IMapObjectDataView.
-        /// </summary>
-        /// <param name="objectID">The ID of the map object to read.</param>
-        /// <returns>The created view.</returns>
-        private IMapObjectDataView CreateMapObjectDataView(int objectID)
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
-
-            Entity entity = this.activeScenario.GetEntity<Entity>(objectID);
-            return entity != null ? new MapObjectDataView(entity) : null;
-        }
-
-        /// <summary>
-        /// Creates a view of type ITerrainObjectPlacementView.
-        /// </summary>
-        /// <returns>The created view.</returns>
-        private ITerrainObjectPlacementView CreateTerrainObjectPlacementView(string terrainObjectName)
-        {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
-            if (terrainObjectName == null) { throw new ArgumentNullException("terrainObjectName"); }
-
-            ITerrainObjectType terrainObjectType = this.activeMap.Tileset.GetTerrainObjectType(terrainObjectName);
-            return new TerrainObjectPlacementView(terrainObjectType, this.activeMap);
-        }
+        #region View factory methods (TODO: move to ScenarioManagerBC)
 
         /// <summary>
         /// Creates a view of type IMapObjectPlacementView.
@@ -426,11 +327,10 @@ namespace RC.App.BizLogic.Services.Core
         /// <returns>The created view.</returns>
         private IMapObjectPlacementView CreateMapObjectPlacementView(string mapObjectTypeName)
         {
-            if (this.activeMap == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
             if (mapObjectTypeName == null) { throw new ArgumentNullException("mapObjectTypeName"); }
 
-            IScenarioElementType elementType = this.scenarioLoader.Metadata.GetElementType(mapObjectTypeName);
-            return new MapObjectPlacementView(elementType, this.activeScenario, this.timeScheduler);
+            return new MapObjectPlacementView(mapObjectTypeName, this.timeScheduler);
         }
 
         /// <summary>
@@ -438,12 +338,6 @@ namespace RC.App.BizLogic.Services.Core
         /// </summary>
         private void RegisterFactoryMethods()
         {
-            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapTerrainView);
-            this.viewFactoryRegistry.RegisterViewFactory(this.CreateTileSetView);
-            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMetadataView);
-            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectView);
-            this.viewFactoryRegistry.RegisterViewFactory<IMapObjectDataView, int>(this.CreateMapObjectDataView);
-            this.viewFactoryRegistry.RegisterViewFactory<ITerrainObjectPlacementView, string>(this.CreateTerrainObjectPlacementView);
             this.viewFactoryRegistry.RegisterViewFactory<IMapObjectPlacementView, string>(this.CreateMapObjectPlacementView);
         }
 
@@ -452,21 +346,10 @@ namespace RC.App.BizLogic.Services.Core
         /// </summary>
         private void UnregisterFactoryMethods()
         {
-            this.viewFactoryRegistry.UnregisterViewFactory<IMapTerrainView>();
-            this.viewFactoryRegistry.UnregisterViewFactory<ITileSetView>();
-            this.viewFactoryRegistry.UnregisterViewFactory<IMetadataView>();
-            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectView>();
-            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectDataView>();
-            this.viewFactoryRegistry.UnregisterViewFactory<ITerrainObjectPlacementView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectPlacementView>();
         }
 
-        #endregion View factory methods
-
-        /// <summary>
-        /// Reference to the RC.App.BizLogic.TilesetManagerBC business component.
-        /// </summary>
-        private ITilesetManagerBC tilesetStore;
+        #endregion View factory methods (TODO: move to ScenarioManagerBC)
 
         /// <summary>
         /// Reference to the RC.Engine.Maps.MapEditor component.
@@ -474,39 +357,14 @@ namespace RC.App.BizLogic.Services.Core
         private IMapEditor mapEditor;
 
         /// <summary>
-        /// Reference to the RC.Engine.Maps.MapLoader component.
-        /// </summary>
-        private IMapLoader mapLoader;
-
-        /// <summary>
-        /// Reference to the RC.Engine.Scenarios.ScenarioLoader component.
-        /// </summary>
-        private IScenarioLoader scenarioLoader;
-
-        /// <summary>
-        /// Reference to the RC.Engine.Maps.NavMeshLoader component.
-        /// </summary>
-        private INavMeshLoader navmeshLoader;
-
-        /// <summary>
-        /// Reference to the RC.Engine.Simulator.PathFinder component.
-        /// </summary>
-        private IPathFinder pathFinder;
-
-        /// <summary>
         /// Reference to the registry interface of the RC.App.BizLogic.ViewFactory component.
         /// </summary>
         private IViewFactoryRegistry viewFactoryRegistry;
 
         /// <summary>
-        /// Reference to the currently active map.
+        /// Reference to the scenario manager business component.
         /// </summary>
-        private IMapAccess activeMap;
-
-        /// <summary>
-        /// Reference to the currently active scenario.
-        /// </summary>
-        private Scenario activeScenario;
+        private IScenarioManagerBC scenarioManager;
 
         /// <summary>
         /// Reference to the scheduler of the map editor.
@@ -517,10 +375,5 @@ namespace RC.App.BizLogic.Services.Core
         /// The elapsed time between frames in the map editor in frames.
         /// </summary>
         private const int MAPEDITOR_MS_PER_FRAMES = 40;
-
-        /// <summary>
-        /// The maximum number of pathfinding iterations per frames.
-        /// </summary>
-        private const int MAX_PATHFINDING_ITERATIONS_PER_FRAMES = 2500;
     }
 }

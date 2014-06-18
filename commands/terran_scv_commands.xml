@@ -20,25 +20,29 @@
     <sprite name="ArmoryBtn" sourceRegion="" />
     <sprite name="CancelBtn" sourceRegion="" />
   </spritePalette>
-  <commandType name="Repair" availability="AllHave">
+  <commandType name="Repair" availability="IfAll">
     <showButton sprite="RepairBtn" panelPosition="1;0">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelCommand />
 	  </showButton>
-	  <triggerCommand when="TargetPositionSelected" />
+	  <selectPosition>
+		<triggerCommand />
+	  </selectPosition>
 	</showButton>
   </commandType>
-  <commandType name="Gather" availability="AllHave">
+  <commandType name="Gather" availability="IfAll">
     <showButton sprite="GatherBtn" panelPosition="1;1">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelCommand />
 	  </showButton>
-	  <triggerCommand when="TargetPositionSelected" />
+	  <selectPosition>
+		<triggerCommand />
+	  </selectPosition>
 	</showButton>
   </commandType>
-  <commandType name="Return" availability="AllHave">
+  <commandType name="Return" availability="IfAll">
     <showButton sprite="ReturnBtn" panelPosition="1;2" >
-	  <triggerCommand when="Immediately" />
+	  <triggerCommand />
 	</showButton>
   </commandType>
   <commandType name="Build" availability="Individual">
@@ -46,94 +50,118 @@
 	  <showButton sprite="CommandCenterBtn" panelPosition="0;0">
 	    <selectTargetType type="CommandCenter" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="SupplyDepotBtn" panelPosition="0;1">
 	    <selectTargetType type="SupplyDepot" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="RefineryBtn" panelPosition="0;2">
 	    <selectTargetType type="Refinery" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="BarracksBtn" panelPosition="1;0">
 	    <selectTargetType type="Barracks" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="EngineeringBayBtn" panelPosition="1;1">
 	    <selectTargetType type="EngineeringBay" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="MissileTurretBtn" panelPosition="1;2">
 	    <selectTargetType type="MissileTurret" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="AcademyBtn" panelPosition="2;0">
 	    <selectTargetType type="Academy" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="BunkerBtn" panelPosition="2;1">
 	    <selectTargetType type="Bunker" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
       <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelCommand />
 	  </showButton>
 	</showButton>
     <showButton sprite="AdvancedBuildBtn" panelPosition="2;1">
 	  <showButton sprite="FactoryBtn" panelPosition="0;0">
 	    <selectTargetType type="Factory" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="StarportBtn" panelPosition="0;1">
 	    <selectTargetType type="Starport" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="ScienceFacilityBtn" panelPosition="0;2">
 	    <selectTargetType type="ScienceFacility" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="ArmoryBtn" panelPosition="1;0">
 	    <selectTargetType type="Armory" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelCommand />
 	    </showButton>
-	    <triggerCommand when="BuildPositionSelected" />
+		<selectBuildPosition>
+		  <triggerCommand />
+		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelCommand />
 	  </showButton>
 	</showButton>
   </commandType>

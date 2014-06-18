@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.App.BizLogic.BusinessComponents;
 using RC.App.BizLogic.BusinessComponents.Core;
+using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.App.BizLogic.Views.Core
@@ -15,11 +17,9 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Constructs a TileSetView instance.
         /// </summary>
-        /// <param name="tileset">The subject of this view.</param>
-        public TileSetView(ITileSet tileset)
+        public TileSetView()
         {
-            if (tileset == null) { throw new ArgumentNullException("tileset"); }
-            this.tileset = tileset;
+            this.tileset = ComponentManager.GetInterface<IScenarioManagerBC>().ActiveScenario.Map.Tileset;
         }
 
         #region ITileSetView methods

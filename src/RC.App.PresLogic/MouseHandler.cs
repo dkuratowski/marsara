@@ -29,7 +29,7 @@ namespace RC.App.PresLogic
 
             this.eventSource = evtSource;
             this.targetControl = targetControl;
-            this.mapObjectControlView = ComponentManager.GetInterface<IViewService>().CreateView<IMapObjectControlView>();
+            this.commandService = ComponentManager.GetInterface<ICommandService>();
             this.isMouseHandlingActive = false;
             this.eventSource.MouseSensor.StateReset += this.OnStateReset;
         }
@@ -91,7 +91,7 @@ namespace RC.App.PresLogic
                 {
                     /// Handle the mouse event.
                     TraceManager.WriteAllTrace(string.Format("RIGHT_CLICK {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                    this.mapObjectControlView.RightClick(this.targetControl.DisplayedArea, evtArgs.Position);
+                    this.commandService.FastCommand(this.targetControl.DisplayedArea, evtArgs.Position);
                     this.CurrentMouseStatus = MouseStatus.RightDown;
                 }
                 else if (evtArgs.Button == UIMouseButton.Left)
@@ -158,7 +158,7 @@ namespace RC.App.PresLogic
 
                 /// Handle the mouse event.
                 TraceManager.WriteAllTrace(string.Format("LEFT_CLICK {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                this.mapObjectControlView.LeftClick(this.targetControl.DisplayedArea, evtArgs.Position);
+                this.commandService.Select(this.targetControl.DisplayedArea, evtArgs.Position);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
@@ -171,7 +171,7 @@ namespace RC.App.PresLogic
 
                 /// Handle the mouse event.
                 TraceManager.WriteAllTrace(string.Format("SELECTION {0}", this.targetControl.SelectionBox), PresLogicTraceFilters.INFO);
-                this.mapObjectControlView.SelectionBox(this.targetControl.DisplayedArea, this.targetControl.SelectionBox);
+                this.commandService.Select(this.targetControl.DisplayedArea, this.targetControl.SelectionBox);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
@@ -186,7 +186,7 @@ namespace RC.App.PresLogic
             {
                 /// Handle the mouse event.
                 TraceManager.WriteAllTrace(string.Format("DOUBLE_CLICK {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                this.mapObjectControlView.DoubleClick(this.targetControl.DisplayedArea, evtArgs.Position);
+                this.commandService.SelectType(this.targetControl.DisplayedArea, evtArgs.Position);
 
                 this.CurrentMouseStatus = MouseStatus.None;
             }
@@ -299,8 +299,8 @@ namespace RC.App.PresLogic
         private bool isMouseHandlingActive;
 
         /// <summary>
-        /// Reference to the control interface of the BE.
+        /// Reference to the command service.
         /// </summary>
-        private IMapObjectControlView mapObjectControlView;
+        private ICommandService commandService;
     }
 }

@@ -94,9 +94,9 @@ namespace RC.Engine.Simulator.Scenarios
                 QuadEntity quadEntity = entity as QuadEntity;
                 if (quadEntity != null)
                 {
-                    scenario.VisibleEntities.DetachContent(entity);
+                    quadEntity.RemoveFromMap();
                     if (quadEntity.ElementType.CheckConstraints(scenario, quadEntity.LastKnownQuadCoords).Count != 0) { throw new MapException(string.Format("Entity at {0} is voilating its placement constraints!", quadEntity.LastKnownQuadCoords)); }
-                    scenario.VisibleEntities.AttachContent(entity);
+                    quadEntity.AddToMap(scenario.Map.GetQuadTile(quadEntity.LastKnownQuadCoords));
                 }
             }
             return scenario;

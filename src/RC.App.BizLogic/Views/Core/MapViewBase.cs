@@ -5,6 +5,9 @@ using System.Text;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Common;
 using RC.App.BizLogic.BusinessComponents.Core;
+using RC.App.BizLogic.BusinessComponents;
+using RC.Common.ComponentModel;
+using RC.Engine.Simulator.Scenarios;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -16,52 +19,31 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Constructs a MapViewBase instance.
         /// </summary>
-        /// <param name="map">Reference to the map.</param>
-        public MapViewBase(IMapAccess map)
+        public MapViewBase()
         {
-            if (map == null) { throw new ArgumentNullException("map"); }
-            this.map = map;
+            this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
         }
 
         #region IMapView methods
 
         /// <see cref="IMapView.MapSize"/>
-        public RCIntVector MapSize { get { return this.map.CellSize * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL); } }
+        public RCIntVector MapSize { get { return this.Map.CellSize * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT; } }
 
         #endregion IMapView methods
 
         /// <summary>
-        /// Calculates the rectangle of visible cells on the map.
+        /// Gets the map of the active scenario.
         /// </summary>
-        /// <param name="displayedArea">The display area in pixels.</param>
-        /// <param name="cellWindow">The calculated cell rectangle.</param>
-        /// <param name="displayOffset">
-        /// The difference between the top-left corner of the displayed area and the top-left corner of the
-        /// top-left visible cell.
-        /// </param>
-        protected void CalculateCellWindow(RCIntRectangle displayedArea, out RCIntRectangle cellWindow, out RCIntVector displayOffset)
-        {
-            cellWindow = new RCIntRectangle(displayedArea.X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                            displayedArea.Y / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                            (displayedArea.Right - 1) / BizLogicConstants.PIXEL_PER_NAVCELL - displayedArea.X / BizLogicConstants.PIXEL_PER_NAVCELL + 1,
-                                            (displayedArea.Bottom - 1) / BizLogicConstants.PIXEL_PER_NAVCELL - displayedArea.Y / BizLogicConstants.PIXEL_PER_NAVCELL + 1);
-            displayOffset = new RCIntVector(displayedArea.X % BizLogicConstants.PIXEL_PER_NAVCELL, displayedArea.Y % BizLogicConstants.PIXEL_PER_NAVCELL);
-        }
+        protected IMapAccess Map { get { return this.scenarioManager.ActiveScenario.Map; } }
 
         /// <summary>
-        /// Gets the map of this view.
+        /// Gets the active scenario.
         /// </summary>
-        protected IMapAccess Map { get { return this.map; } }
+        protected Scenario Scenario { get { return this.scenarioManager.ActiveScenario; } }
 
         /// <summary>
-        /// Reference to the map.
+        /// Reference to the scenario manager business component.
         /// </summary>
-        private IMapAccess map;
-
-        /// <summary>
-        /// Constants for coordinate transformations.
-        /// </summary>
-        public static readonly RCNumVector PIXEL_PER_NAVCELL_VECT = new RCNumVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL);
-        public static readonly RCNumVector HALF_VECT = new RCNumVector(1, 1) / 2;
+        private IScenarioManagerBC scenarioManager;
     }
 }

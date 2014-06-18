@@ -7,6 +7,8 @@ using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.App.BizLogic.BusinessComponents.Core;
+using RC.Common.ComponentModel;
+using RC.App.BizLogic.BusinessComponents;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -18,20 +20,16 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Constructs a MapObjectPlacementView instance.
         /// </summary>
-        /// <param name="objectType">Reference to the type of the map object being placed.</param>
-        /// <param name="scenario">Reference to the scenario.</param>
+        /// <param name="objectTypeName">The name of the type of the map object being placed.</param>
         /// <param name="scheduler">
         /// Reference to a scheduler that will step the preview animation of the map object being placed.
         /// </param>
-        public MapObjectPlacementView(IScenarioElementType objectType, Scenario scenario, Scheduler scheduler)
-            : base(scenario.Map)
+        public MapObjectPlacementView(string objectTypeName, Scheduler scheduler)
         {
-            if (objectType == null) { throw new ArgumentNullException("objectType"); }
-            if (scenario == null) { throw new ArgumentNullException("scenario"); }
+            if (objectTypeName == null) { throw new ArgumentNullException("objectTypeName"); }
             if (scheduler == null) { throw new ArgumentNullException("scheduler"); }
 
-            this.scenario = scenario;
-            this.objectType = objectType;
+            this.objectType = ComponentManager.GetInterface<IScenarioManagerBC>().Metadata.GetElementType(objectTypeName);
             this.scheduler = scheduler;
             if (this.objectType.AnimationPalette != null)
             {
@@ -49,13 +47,13 @@ namespace RC.App.BizLogic.Views.Core
         /// <see cref="ObjectPlacementView.CheckObjectConstraints"/>
         protected override HashSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords)
         {
-            return this.objectType.CheckConstraints(this.scenario, topLeftCoords);
+            return this.objectType.CheckConstraints(this.Scenario, topLeftCoords);
         }
 
         /// <see cref="ObjectPlacementView.GetObjectQuadraticSize"/>
         protected override RCIntVector GetObjectQuadraticSize()
         {
-            return this.scenario.Map.CellToQuadSize(this.objectType.Area.Read());
+            return this.Scenario.Map.CellToQuadSize(this.objectType.Area.Read());
         }
 
         /// <see cref="ObjectPlacementView.GetObjectSprites"/>
@@ -86,11 +84,6 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         #endregion ObjectPlacementView overrides
-
-        /// <summary>
-        /// Reference to the scenario.
-        /// </summary>
-        private Scenario scenario;
 
         /// <summary>
         /// Reference to the type of the map object being placed.

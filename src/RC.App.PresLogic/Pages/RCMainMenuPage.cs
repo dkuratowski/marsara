@@ -37,7 +37,7 @@ namespace RC.App.PresLogic.Pages
             this.headerFooterFont = UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6");
             this.loadingFont = UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font7");
             this.headerString = new UIString("DAVID MOLDVAI ENTERTAINMENT PRESENTS:", this.headerFooterFont, UIWorkspace.Instance.PixelScaling, new UIColor(220, 220, 220));
-            this.footerString = new UIString("COPYRIGHT 1984", this.headerFooterFont, UIWorkspace.Instance.PixelScaling, new UIColor(220, 220, 220));
+            this.footerString = new UIString("COPYRIGHT 1986", this.headerFooterFont, UIWorkspace.Instance.PixelScaling, new UIColor(220, 220, 220));
             this.loadingString = new UIString("Loading...", this.loadingFont, UIWorkspace.Instance.PixelScaling, new UIColor(220, 220, 220));
         }
 

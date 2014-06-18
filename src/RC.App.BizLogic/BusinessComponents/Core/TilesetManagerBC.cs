@@ -9,7 +9,7 @@ using RC.Engine.Maps.PublicInterfaces;
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
     /// <summary>
-    /// The implementation of the TileSetStore component.
+    /// The implementation of the TilesetManager business component.
     /// </summary>
     [Component("RC.App.BizLogic.TilesetManagerBC")]
     class TilesetManagerBC : ITilesetManagerBC, IComponent

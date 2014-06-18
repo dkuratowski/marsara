@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common.ComponentModel;
+using RC.App.BizLogic.BusinessComponents;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -14,11 +16,9 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Constructs a MetadataView instance.
         /// </summary>
-        /// <param name="metadata">The subject of this view.</param>
-        public MetadataView(IScenarioMetadata metadata)
+        public MetadataView()
         {
-            if (metadata == null) { throw new ArgumentNullException("metadata"); }
-            this.metadata = metadata;
+            this.metadata = ComponentManager.GetInterface<IScenarioManagerBC>().Metadata;
         }
 
         #region IMetadataView members

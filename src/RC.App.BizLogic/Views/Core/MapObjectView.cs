@@ -19,12 +19,8 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Constructs a MapObjectView instance.
         /// </summary>
-        /// <param name="scenario">The subject of this view.</param>
-        public MapObjectView(Scenario scenario)
-            : base(scenario.Map)
+        public MapObjectView()
         {
-            if (scenario == null) { throw new ArgumentNullException("scenario"); }
-            this.scenario = scenario;
         }
 
         #region IMapObjectView methods
@@ -37,18 +33,18 @@ namespace RC.App.BizLogic.Views.Core
 
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
-            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             List<ObjectInst> retList = new List<ObjectInst>();
-            HashSet<Entity> visibleEntities = this.scenario.VisibleEntities.GetContents(
-                new RCNumRectangle(cellWindow.X - MapViewBase.HALF_VECT.X,
-                                   cellWindow.Y - MapViewBase.HALF_VECT.Y,
+            HashSet<Entity> visibleEntities = this.Scenario.VisibleEntities.GetContents(
+                new RCNumRectangle(cellWindow.X - CoordTransformationHelper.HALF_VECT.X,
+                                   cellWindow.Y - CoordTransformationHelper.HALF_VECT.Y,
                                    cellWindow.Width,
                                    cellWindow.Height));
             foreach (Entity entity in visibleEntities)
             {
                 RCIntRectangle displayRect =
-                    (RCIntRectangle)((entity.BoundingBox - cellWindow.Location + MapViewBase.HALF_VECT) * MapViewBase.PIXEL_PER_NAVCELL_VECT) - displayOffset;
+                    (RCIntRectangle)((entity.BoundingBox - cellWindow.Location + CoordTransformationHelper.HALF_VECT) * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT) - displayOffset;
                 List<SpriteInst> entitySprites = new List<SpriteInst>();
                 foreach (AnimationPlayer animation in entity.CurrentAnimations)
                 {
@@ -85,11 +81,11 @@ namespace RC.App.BizLogic.Views.Core
 
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
-            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            foreach (Entity entity in this.scenario.VisibleEntities.GetContents(navCellCoords))
+            foreach (Entity entity in this.Scenario.VisibleEntities.GetContents(navCellCoords))
             {
                 return entity.ID.Read();
             }
@@ -97,10 +93,5 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         #endregion IMapObjectView methods
-
-        /// <summary>
-        /// Reference to the scenario.
-        /// </summary>
-        private Scenario scenario;
     }
 }

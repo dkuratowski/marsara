@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.App.BizLogic.BusinessComponents.Core;
+using RC.App.BizLogic.BusinessComponents;
+using RC.Common.ComponentModel;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -17,12 +19,9 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Constructs a SelectionIndicatorView instance.
         /// </summary>
-        /// <param name="selector">The subject of this view.</param>
-        public SelectionIndicatorView(EntitySelector selector)
-            : base(selector.TargetScenario.Map)
+        public SelectionIndicatorView()
         {
-            if (selector == null) { throw new ArgumentNullException("selector"); }
-            this.selector = selector;
+            this.selectionManager = ComponentManager.GetInterface<ISelectionManagerBC>();
         }
 
         #region ISelectionIndicatorView
@@ -33,17 +32,17 @@ namespace RC.App.BizLogic.Views.Core
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
 
-            HashSet<int> currentSelection = this.selector.CurrentSelection;
+            HashSet<int> currentSelection = this.selectionManager.CurrentSelection;
             if (currentSelection.Count == 0) { return new List<SelIndicatorInst>(); }
 
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
-            this.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
             List<SelIndicatorInst> retList = new List<SelIndicatorInst>();
-            HashSet<Entity> visibleEntities = this.selector.TargetScenario.VisibleEntities.GetContents(
-                new RCNumRectangle(cellWindow.X - MapViewBase.HALF_VECT.X,
-                                   cellWindow.Y - MapViewBase.HALF_VECT.Y,
+            HashSet<Entity> visibleEntities = this.Scenario.VisibleEntities.GetContents(
+                new RCNumRectangle(cellWindow.X - CoordTransformationHelper.HALF_VECT.X,
+                                   cellWindow.Y - CoordTransformationHelper.HALF_VECT.Y,
                                    cellWindow.Width,
                                    cellWindow.Height));
             foreach (Entity entity in visibleEntities)
@@ -52,12 +51,12 @@ namespace RC.App.BizLogic.Views.Core
                 {
                     SelIndicatorTypeEnum indicatorType
                         = entity.Owner != null
-                        ? (entity.Owner.PlayerIndex == (int)this.selector.Owner ? SelIndicatorTypeEnum.Friendly : SelIndicatorTypeEnum.Enemy)
+                        ? (entity.Owner.PlayerIndex == (int)this.selectionManager.LocalPlayer ? SelIndicatorTypeEnum.Friendly : SelIndicatorTypeEnum.Enemy)
                         : SelIndicatorTypeEnum.Neutral;
                     retList.Add(new SelIndicatorInst()
                     {
                         SelIndicatorType = indicatorType,
-                        IndicatorRect = (RCIntRectangle)((entity.BoundingBox - cellWindow.Location + MapViewBase.HALF_VECT) * MapViewBase.PIXEL_PER_NAVCELL_VECT) - displayOffset,
+                        IndicatorRect = (RCIntRectangle)((entity.BoundingBox - cellWindow.Location + CoordTransformationHelper.HALF_VECT) * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT) - displayOffset,
                         HpNorm = (RCNumber)1, // TODO: must base on real data
                         ShieldNorm = (RCNumber)1, // TODO: must base on real data
                         EnergyNorm = (RCNumber)1 // TODO: must base on real data
@@ -70,8 +69,8 @@ namespace RC.App.BizLogic.Views.Core
         #endregion ISelectionIndicatorView
 
         /// <summary>
-        /// Reference to the entity selector.
+        /// Reference to the selection manager business component.
         /// </summary>
-        private EntitySelector selector;
+        private ISelectionManagerBC selectionManager;
     }
 }

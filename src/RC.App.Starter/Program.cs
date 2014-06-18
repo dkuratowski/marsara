@@ -232,7 +232,10 @@ namespace RC.App.Starter
                                                 new string[]
                                                 {
                                                     "RC.App.BizLogic.TilesetManagerBC",
+                                                    "RC.App.BizLogic.ScenarioManagerBC",
+                                                    "RC.App.BizLogic.SelectionManagerBC",
                                                     "RC.App.BizLogic.MultiplayerService",
+                                                    "RC.App.BizLogic.CommandService",
                                                     "RC.App.BizLogic.MapEditorService",
                                                     "RC.App.BizLogic.ViewService"
                                                 });
