@@ -18,7 +18,7 @@ namespace RC.UI
         /// <param name="color">The color to fill the created sprite.</param>
         /// <param name="spriteSize">The size of the sprite to create.</param>
         /// <returns>The created UISprite.</returns>
-        UISprite CreateSprite(UIColor color, RCIntVector spriteSize);
+        UISprite CreateSprite(RCColor color, RCIntVector spriteSize);
 
         /// <summary>
         /// Creates an empty 2D sprite with the given pixel size that is filled with the given color.
@@ -27,7 +27,7 @@ namespace RC.UI
         /// <param name="spriteSize">The size of the sprite to create.</param>
         /// <param name="pixelSize">The pixel size of the created sprite.</param>
         /// <returns>The created UISprite.</returns>
-        UISprite CreateSprite(UIColor color, RCIntVector spriteSize, RCIntVector pixelSize);
+        UISprite CreateSprite(RCColor color, RCIntVector spriteSize, RCIntVector pixelSize);
 
         /// <summary>
         /// Loads a 2D sprite from the given file with the original pixel size.
@@ -103,10 +103,10 @@ namespace RC.UI
         #region IUISpriteManager members
 
         /// <see cref="IUISpriteManager.CreateSprite"/>
-        public abstract UISprite CreateSprite(UIColor color, RCIntVector spriteSize);
+        public abstract UISprite CreateSprite(RCColor color, RCIntVector spriteSize);
 
         /// <see cref="IUISpriteManager.CreateSprite"/>
-        public abstract UISprite CreateSprite(UIColor color, RCIntVector spriteSize, RCIntVector pixelSize);
+        public abstract UISprite CreateSprite(RCColor color, RCIntVector spriteSize, RCIntVector pixelSize);
 
         /// <see cref="IUISpriteManager.LoadSprite"/>
         public abstract UISprite LoadSprite(string fileName);

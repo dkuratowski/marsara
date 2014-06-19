@@ -34,7 +34,7 @@ namespace RC.App.BizLogic.Views.Core
                 Array.Copy(tile.ImageData, imageData, tile.ImageData.Length);
                 SpriteDef info = new SpriteDef();
                 info.ImageData = imageData;
-                info.TransparentColorStr = tile.GetProperty(BizLogicConstants.TILEPROP_TRANSPARENTCOLOR);
+                info.TransparentColor = tile.TransparentColor;
                 retList.Add(info);
             }
             return retList;
@@ -50,7 +50,7 @@ namespace RC.App.BizLogic.Views.Core
                 Array.Copy(terrainObjectType.ImageData, imageData, terrainObjectType.ImageData.Length);
                 SpriteDef info = new SpriteDef();
                 info.ImageData = imageData;
-                info.TransparentColorStr = terrainObjectType.GetProperty(BizLogicConstants.TERRAINOBJPROP_TRANSPARENTCOLOR);
+                info.TransparentColor = terrainObjectType.TransparentColor;
                 retList.Add(info);
             }
             return retList;

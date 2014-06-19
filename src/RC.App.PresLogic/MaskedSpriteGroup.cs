@@ -31,9 +31,7 @@ namespace RC.App.PresLogic
                     UISprite origSprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(
                         spriteDef.ImageData,
                         UIWorkspace.Instance.PixelScaling);
-                    origSprite.TransparentColor = spriteDef.MaskColorStr != null ?
-                                            UIResourceLoader.LoadColor(spriteDef.MaskColorStr) :
-                                            DEFAULT_MASK_COLOR;
+                    origSprite.TransparentColor = spriteDef.MaskColor != RCColor.Undefined ? spriteDef.MaskColor : DEFAULT_MASK_COLOR;
                     UISprite maskedSprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(
                         this.TargetColor,
                         origSprite.Size,
@@ -43,9 +41,7 @@ namespace RC.App.PresLogic
                     ctx.RenderSprite(origSprite, new RCIntVector(0, 0));
                     UIRoot.Instance.GraphicsPlatform.SpriteManager.CloseRenderContext(maskedSprite);
                     UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(origSprite);
-                    maskedSprite.TransparentColor = spriteDef.TransparentColorStr != null ?
-                                            UIResourceLoader.LoadColor(spriteDef.TransparentColorStr) :
-                                            DEFAULT_TRANSPARENT_COLOR;
+                    maskedSprite.TransparentColor = spriteDef.TransparentColor != RCColor.Undefined ? spriteDef.TransparentColor : DEFAULT_TRANSPARENT_COLOR;
                     maskedSprite.Upload();
                     retList.Add(maskedSprite);
                 }
@@ -75,18 +71,18 @@ namespace RC.App.PresLogic
         /// <summary>
         /// The target color of the masked pixels.
         /// </summary>
-        protected abstract UIColor TargetColor { get; }
+        protected abstract RCColor TargetColor { get; }
 
         #endregion Overridable methods
 
         /// <summary>
         /// The default color of the transparent parts of the sprites.
         /// </summary>
-        private static readonly UIColor DEFAULT_TRANSPARENT_COLOR = new UIColor(255, 0, 255);
+        private static readonly RCColor DEFAULT_TRANSPARENT_COLOR = new RCColor(255, 0, 255);
 
         /// <summary>
         /// The default mask color of the sprites.
         /// </summary>
-        private static readonly UIColor DEFAULT_MASK_COLOR = new UIColor(0, 255, 255);
+        private static readonly RCColor DEFAULT_MASK_COLOR = new RCColor(0, 255, 255);
     }
 }

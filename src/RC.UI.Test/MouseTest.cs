@@ -21,12 +21,12 @@ namespace RC.UI.Test
 
             display = new TestUIObject(new RCIntVector(2, 2), new RCIntVector(0, 0), new RCIntRectangle(0, 0, 400, 300));
             workspace = new MySensitiveObject(new RCIntVector(40, 50), new RCIntRectangle(0, 0, 320, 200),
-                                              "Workspace", UIColor.Gray, UIColor.Gray);
+                                              "Workspace", RCColor.Gray, RCColor.Gray);
             display.Attach(workspace);
 
-            MySensitiveObject objA = new MySensitiveObject(new RCIntVector(5, 12), new RCIntRectangle(0, 0, 130, 90), "A", UIColor.Blue, UIColor.LightBlue);
-            MySensitiveObject objB = new MySensitiveObject(new RCIntVector(5, 107), new RCIntRectangle(0, 0, 130, 90), "B", UIColor.Blue, UIColor.LightBlue);
-            MyDraggableObject objC = new MyDraggableObject(new RCIntVector(140, 12), new RCIntRectangle(0, 0, 130, 180), "C", UIColor.Cyan, UIColor.LightCyan);
+            MySensitiveObject objA = new MySensitiveObject(new RCIntVector(5, 12), new RCIntRectangle(0, 0, 130, 90), "A", RCColor.Blue, RCColor.LightBlue);
+            MySensitiveObject objB = new MySensitiveObject(new RCIntVector(5, 107), new RCIntRectangle(0, 0, 130, 90), "B", RCColor.Blue, RCColor.LightBlue);
+            MyDraggableObject objC = new MyDraggableObject(new RCIntVector(140, 12), new RCIntRectangle(0, 0, 130, 180), "C", RCColor.Cyan, RCColor.LightCyan);
             workspace.Attach(objA);
             workspace.Attach(objB);
             workspace.Attach(objC);
@@ -34,12 +34,12 @@ namespace RC.UI.Test
             workspace.AttachSensitive(objB);
             workspace.AttachSensitive(objC);
 
-            MySensitiveObject objAA = new MySensitiveObject(new RCIntVector(5, 12), new RCIntRectangle(0, 0, 120, 30), "AA", UIColor.Green, UIColor.LightGreen);
-            MySensitiveObject objAB = new MySensitiveObject(new RCIntVector(5, 47), new RCIntRectangle(0, 0, 120, 30), "AB", UIColor.Green, UIColor.LightGreen);
-            MySensitiveObject objBA = new MySensitiveObject(new RCIntVector(5, 12), new RCIntRectangle(0, 0, 120, 30), "BA", UIColor.Green, UIColor.LightGreen);
-            MySensitiveObject objBB = new MySensitiveObject(new RCIntVector(5, 47), new RCIntRectangle(0, 0, 120, 30), "BB", UIColor.Green, UIColor.LightGreen);
-            MyDraggableObject objCA = new MyDraggableObject(new RCIntVector(5, 12), new RCIntRectangle(0, 0, 120, 30), "CA", UIColor.Magenta, UIColor.LightMagenta);
-            MyDraggableObject objCB = new MyDraggableObject(new RCIntVector(5, 47), new RCIntRectangle(0, 0, 120, 30), "CB", UIColor.Gray, UIColor.White);
+            MySensitiveObject objAA = new MySensitiveObject(new RCIntVector(5, 12), new RCIntRectangle(0, 0, 120, 30), "AA", RCColor.Green, RCColor.LightGreen);
+            MySensitiveObject objAB = new MySensitiveObject(new RCIntVector(5, 47), new RCIntRectangle(0, 0, 120, 30), "AB", RCColor.Green, RCColor.LightGreen);
+            MySensitiveObject objBA = new MySensitiveObject(new RCIntVector(5, 12), new RCIntRectangle(0, 0, 120, 30), "BA", RCColor.Green, RCColor.LightGreen);
+            MySensitiveObject objBB = new MySensitiveObject(new RCIntVector(5, 47), new RCIntRectangle(0, 0, 120, 30), "BB", RCColor.Green, RCColor.LightGreen);
+            MyDraggableObject objCA = new MyDraggableObject(new RCIntVector(5, 12), new RCIntRectangle(0, 0, 120, 30), "CA", RCColor.Magenta, RCColor.LightMagenta);
+            MyDraggableObject objCB = new MyDraggableObject(new RCIntVector(5, 47), new RCIntRectangle(0, 0, 120, 30), "CB", RCColor.Gray, RCColor.White);
             objA.Attach(objAA);
             objA.Attach(objAB);
             objB.Attach(objBA);
@@ -60,7 +60,7 @@ namespace RC.UI.Test
             //root.SystemEventQueue.Subscribe<UIMouseEventArgs>(OnMouseEvent);
 
             UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\testui_sprites\\pointer.png");
-            mouseIcon.TransparentColor = new UIColor(255, 0, 255);
+            mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             mouseIcon.Upload();
             UIMouseManager mouseMgr = new UIMouseManager(workspace);
             mouseMgr.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));
@@ -80,12 +80,12 @@ namespace RC.UI.Test
         public MySensitiveObject(RCIntVector position,
                                  RCIntRectangle range,
                                  string name,
-                                 UIColor basicColor,
-                                 UIColor highColor)
+                                 RCColor basicColor,
+                                 RCColor highColor)
             : base(position, range)
         {
-            this.nameStrBasic = new UIString(name, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), new RCIntVector(2, 2), UIColor.WhiteHigh);
-            this.nameStrHigh = new UIString(name, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), new RCIntVector(2, 2), UIColor.LightRed);
+            this.nameStrBasic = new UIString(name, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), new RCIntVector(2, 2), RCColor.WhiteHigh);
+            this.nameStrHigh = new UIString(name, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), new RCIntVector(2, 2), RCColor.LightRed);
             this.backgroundBasic = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(basicColor, this.Range.Size, new RCIntVector(2, 2));
             this.backgroundHigh = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(highColor, this.Range.Size, new RCIntVector(2, 2));
 
@@ -172,8 +172,8 @@ namespace RC.UI.Test
         public MySensitiveAnimObject(RCIntVector position,
                                  RCIntRectangle range,
                                  string name,
-                                 UIColor basicColor,
-                                 UIColor highColor)
+                                 RCColor basicColor,
+                                 RCColor highColor)
             : base(position, range, name, basicColor, highColor)
         {
             this.anim = UIResourceManager.GetResource<UIAnimation>("RC.App.Animations.MainMenuTitleAnim");
@@ -195,8 +195,8 @@ namespace RC.UI.Test
         public MyDraggableObject(RCIntVector position,
                                  RCIntRectangle range,
                                  string name,
-                                 UIColor basicColor,
-                                 UIColor highColor) : base(position, range, name, basicColor, highColor)
+                                 RCColor basicColor,
+                                 RCColor highColor) : base(position, range, name, basicColor, highColor)
         {
             this.hookPosition = RCIntVector.Undefined;
 

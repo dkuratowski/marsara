@@ -87,8 +87,10 @@
     <Compile Include="Configuration\ConfigurationObject.cs" />
     <Compile Include="Configuration\ConstantsLoader.cs" />
     <Compile Include="Configuration\ConstantsTable.cs" />
+    <Compile Include="Configuration\ISpritePalette.cs" />
     <Compile Include="Configuration\RCPackageFormatLoader.cs" />
     <Compile Include="Configuration\RCPackageFormatMap.cs" />
+    <Compile Include="Configuration\SpritePalette.cs" />
     <Compile Include="Configuration\TraceConfigLoader.cs" />
     <Compile Include="Configuration\XmlHelper.cs" />
     <Compile Include="CRC32.cs" />
@@ -97,6 +99,7 @@
     <Compile Include="Fifo.cs" />
     <Compile Include="FifoException.cs" />
     <Compile Include="Math\RCPolygon.cs" />
+    <Compile Include="RCColor.cs" />
     <Compile Include="SearchTree\BspSearchTree.cs" />
     <Compile Include="SearchTree\BspSearchTreeNode.cs" />
     <Compile Include="SearchTree\ISearchTreeContent.cs" />

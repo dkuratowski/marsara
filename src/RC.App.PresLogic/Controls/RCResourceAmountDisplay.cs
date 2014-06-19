@@ -25,8 +25,8 @@ namespace RC.App.PresLogic.Controls
             this.mapView = null;
             this.mapObjectDataView = null;
             this.drawPosition = RCIntVector.Undefined;
-            this.stringToRender = new UIString("R:{0}", UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, UIColor.White);
-            this.backgroundBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Black, new RCIntVector(1, this.stringToRender.Font.MinimumLineHeight), UIWorkspace.Instance.PixelScaling);
+            this.stringToRender = new UIString("R:{0}", UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, RCColor.White);
+            this.backgroundBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Black, new RCIntVector(1, this.stringToRender.Font.MinimumLineHeight), UIWorkspace.Instance.PixelScaling);
             this.backgroundBrush.Upload();
         }
 

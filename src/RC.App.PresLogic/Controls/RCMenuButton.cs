@@ -18,8 +18,8 @@ namespace RC.App.PresLogic.Controls
         public RCMenuButton(string text, RCIntRectangle buttonRect) : base(buttonRect.Location, buttonRect.Size)
         {
             this.menuButtonFont = UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font9B");
-            this.normalText = new UIString(text, this.menuButtonFont, UIWorkspace.Instance.PixelScaling, new UIColor(220, 220, 220));
-            this.highlightedText = new UIString(text, this.menuButtonFont, UIWorkspace.Instance.PixelScaling, UIColor.White);
+            this.normalText = new UIString(text, this.menuButtonFont, UIWorkspace.Instance.PixelScaling, new RCColor(220, 220, 220));
+            this.highlightedText = new UIString(text, this.menuButtonFont, UIWorkspace.Instance.PixelScaling, RCColor.White);
             this.textPosition = new RCIntVector((this.Range.Width - this.normalText.Width) / 2,
                 (this.Range.Height - (this.menuButtonFont.CharBottomMaximum + this.menuButtonFont.CharTopMaximum + 1)) / 2 +
                 this.menuButtonFont.CharTopMaximum);

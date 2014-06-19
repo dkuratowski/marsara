@@ -38,10 +38,10 @@ namespace RC.UI.XnaPlugin
                 this.targetGC.Dispose(); this.targetGC = null;
                 this.targetBmp = null;
                 this.targetSprite.Unlock();
-                this.targetSprite.TransparentColor = UIColor.Undefined;
+                this.targetSprite.TransparentColor = RCColor.Undefined;
                 this.targetSprite.TransparentColor = this.targetTraspColor;
                 this.targetSprite = null;
-                this.targetTraspColor = UIColor.Undefined;
+                this.targetTraspColor = RCColor.Undefined;
                 this.spriteManager = null;
                 this.isClosed = true;
             }
@@ -89,7 +89,7 @@ namespace RC.UI.XnaPlugin
             XnaBitmapUtils.CopyBitmapScaled(srcSprite.RawBitmap, sectionBmp,
                                             sprite.PixelSize, this.targetSprite.PixelSize,
                                             section, new RCIntVector(0, 0));
-            if (srcSprite.TransparentColor != UIColor.Undefined)
+            if (srcSprite.TransparentColor != RCColor.Undefined)
             {
                 sectionBmp.MakeTransparent(Color.FromArgb(srcSprite.TransparentColor.R,
                                                           srcSprite.TransparentColor.G,
@@ -169,7 +169,7 @@ namespace RC.UI.XnaPlugin
         /// <summary>
         /// The transparent color of the target sprite.
         /// </summary>
-        private UIColor targetTraspColor;
+        private RCColor targetTraspColor;
 
         /// <summary>
         /// Reference to the sprite manager that created this render context.

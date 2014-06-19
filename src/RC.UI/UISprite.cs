@@ -21,7 +21,7 @@ namespace RC.UI
         {
             this.size = new RCIntVector(width, height);
             this.pixelSize = pixelSize;
-            this.transparentColor = UIColor.Undefined;
+            this.transparentColor = RCColor.Undefined;
         }
 
         /// <summary>
@@ -32,9 +32,9 @@ namespace RC.UI
 
         /// <summary>
         /// Gets or sets the color that is used to mark transparent pixels of this UISprite.
-        /// UIColor.Undefined means that there is no transparency defined.
+        /// RCColor.Undefined means that there is no transparency defined.
         /// </summary>
-        public UIColor TransparentColor
+        public RCColor TransparentColor
         {
             get { return this.transparentColor; }
             set
@@ -84,13 +84,13 @@ namespace RC.UI
         /// </summary>
         /// <param name="newColor">The new transparent color to set.</param>
         /// <remarks>This method is only called when the transparent color has been changed.</remarks>
-        protected abstract void TransparentColor_set(UIColor newColor);
+        protected abstract void TransparentColor_set(RCColor newColor);
 
         /// <summary>
-        /// The color that is used to mark transparent pixels of this UISprite or UIColor.Undefined if
+        /// The color that is used to mark transparent pixels of this UISprite or RCColor.Undefined if
         /// there is no transparency defined.
         /// </summary>
-        private UIColor transparentColor;
+        private RCColor transparentColor;
 
         /// <summary>
         /// The pixel size of this UISprite.

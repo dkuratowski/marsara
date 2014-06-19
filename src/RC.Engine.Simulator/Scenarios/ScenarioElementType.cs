@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common.Configuration;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Scenarios
 {
@@ -45,10 +47,10 @@ namespace RC.Engine.Simulator.Scenarios
         public bool HasOwner { get { return this.hasOwner; } }
 
         /// <see cref="IScenarioElementType.SpritePalette"/>
-        public ISpritePalette SpritePalette { get { return this.GetSpritePaletteImpl(); } }
+        public ISpritePalette<MapDirection> SpritePalette { get { return this.spritePalette; } }
 
         /// <see cref="IScenarioElementType.AnimationPalette"/>
-        public IAnimationPalette AnimationPalette { get { return this.GetAnimationPaletteImpl(); } }
+        public IAnimationPalette AnimationPalette { get { return this.animationPalette; } }
 
         #region Costs data properties
 
@@ -134,16 +136,6 @@ namespace RC.Engine.Simulator.Scenarios
 
         #endregion IScenarioElementType members
 
-        #region Internal public methods
-
-        /// <see cref="IScenarioElementType.SpritePalette"/>
-        public SpritePalette GetSpritePaletteImpl() { return this.spritePalette; }
-
-        /// <see cref="IScenarioElementType.AnimationPalette"/>
-        public AnimationPalette GetAnimationPaletteImpl() { return this.animationPalette; }
-
-        #endregion Internal public methods
-
         #region ScenarioElementType buildup methods
 
         /// <summary>
@@ -171,7 +163,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// Sets the sprite palette of this element type.
         /// </summary>
         /// <param name="spritePalette">The sprite palette of this element type.</param>
-        public void SetSpritePalette(SpritePalette spritePalette)
+        public void SetSpritePalette(ISpritePalette<MapDirection> spritePalette)
         {
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (spritePalette == null) { throw new ArgumentNullException("spritePalette"); }
@@ -362,7 +354,6 @@ namespace RC.Engine.Simulator.Scenarios
         {
             if (!this.metadata.IsFinalized)
             {
-                if (this.spritePalette != null) { this.spritePalette.CheckAndFinalize(); }
                 if (this.animationPalette != null) { this.animationPalette.CheckAndFinalize(); }
                 if (this.groundWeapon != null) { this.groundWeapon.CheckAndFinalize(); }
                 if (this.airWeapon != null) { this.airWeapon.CheckAndFinalize(); }
@@ -423,7 +414,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// The sprite palette of this element type.
         /// </summary>
-        private SpritePalette spritePalette;
+        private ISpritePalette<MapDirection> spritePalette;
 
         /// <summary>
         /// The animation palette of this element type.

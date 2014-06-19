@@ -37,7 +37,7 @@ namespace RC.App.PresLogic.Panels
             : base(backgroundRect, contentRect, showMode, hideMode, appearDuration, disappearDuration, backgroundSprite)
         {
             this.selectMapTitle = new UIString(SELECT_MAP_TITLE, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font9B"),
-                                              UIWorkspace.Instance.PixelScaling, UIColor.LightBlue);
+                                              UIWorkspace.Instance.PixelScaling, RCColor.LightBlue);
         }
 
         /// <see cref="UIObject.Render_i"/>

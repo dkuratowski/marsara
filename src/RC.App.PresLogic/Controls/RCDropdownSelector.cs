@@ -30,9 +30,9 @@ namespace RC.App.PresLogic.Controls
 
             for (int i = 0; i < options.Length; i++)
             {
-                this.options[i] = new UIString(options[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, UIColor.Green);
-                this.highlightedOptions[i] = new UIString(options[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, UIColor.LightGreen);
-                this.disabledOptions[i] = new UIString(options[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, UIColor.White);
+                this.options[i] = new UIString(options[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, RCColor.Green);
+                this.highlightedOptions[i] = new UIString(options[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, RCColor.LightGreen);
+                this.disabledOptions[i] = new UIString(options[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, RCColor.White);
             }
 
             this.controlSprite = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.DropdownSelector");

@@ -38,7 +38,7 @@ namespace RC.App.PresLogic.Panels
             : base(backgroundRect, contentRect, showMode, hideMode, appearDuration, disappearDuration, backgroundSprite)
         {
             this.selectGameTitle = new UIString(SELECT_GAME_TITLE, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font9B"),
-                                              UIWorkspace.Instance.PixelScaling, UIColor.LightBlue);
+                                              UIWorkspace.Instance.PixelScaling, RCColor.LightBlue);
             this.createGameButton = new RCMenuButton(CREATE_GAME_BUTTON, new RCIntRectangle(0, 99, 85, 15));
             this.AddControl(this.createGameButton);
         }

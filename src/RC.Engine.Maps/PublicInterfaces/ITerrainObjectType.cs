@@ -37,16 +37,14 @@ namespace RC.Engine.Maps.PublicInterfaces
         byte[] ImageData { get; }
 
         /// <summary>
+        /// Gets the transparent color of this terrain object type.
+        /// </summary>
+        RCColor TransparentColor { get; }
+
+        /// <summary>
         /// Gets the index of this terrain object type in the tileset.
         /// </summary>
         int Index { get; }
-
-        /// <summary>
-        /// Gets the value of a given property.
-        /// </summary>
-        /// <param name="propName">The name of the property to get.</param>
-        /// <returns>The value of the property of null if the property doesn't exists.</returns>
-        string GetProperty(string propName);
 
         /// <summary>
         /// Collects all the quadratic coordinates that violate the placement constraints of this terrain object type

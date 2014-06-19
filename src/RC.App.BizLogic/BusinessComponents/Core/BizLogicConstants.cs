@@ -18,16 +18,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         public static readonly string TILESET_DIR = ConstantsTable.Get<string>("RC.App.BizLogic.TileSetDir");
 
         /// <summary>
-        /// Name of the tile variant property that stores the transparent color.
-        /// </summary>
-        public const string TILEPROP_TRANSPARENTCOLOR = "TransparentColor";
-
-        /// <summary>
-        /// Name of the terrain object type property that stores the transparent color.
-        /// </summary>
-        public const string TERRAINOBJPROP_TRANSPARENTCOLOR = "TransparentColor";
-
-        /// <summary>
         /// Number of pixels per cells in both horizontal and vertical direction.
         /// </summary>
         public const int PIXEL_PER_NAVCELL = 4;

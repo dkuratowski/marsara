@@ -108,6 +108,6 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// The default color of the transparent parts of the tiles.
         /// </summary>
-        public static readonly UIColor DEFAULT_TILE_TRANSPARENT_COLOR = new UIColor(255, 0, 255);
+        public static readonly RCColor DEFAULT_TILE_TRANSPARENT_COLOR = new RCColor(255, 0, 255);
     }
 }

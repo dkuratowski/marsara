@@ -15,41 +15,41 @@
   </terrainType>
   <declareTiles>
     <simpleTile terrain="Water">
-      <variant image="water.png">
+      <variant image="water.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </simpleTile>
     <simpleTile terrain="Dirt">
-      <variant image="dirt.png"></variant>
+      <variant image="dirt.png" transparentColor="255;0;255"></variant>
     </simpleTile>
     <simpleTile terrain="Asphalt">
-      <variant image="asphalt.png"></variant>
+      <variant image="asphalt.png" transparentColor="255;0;255"></variant>
     </simpleTile>
     <simpleTile terrain="Structure">
-      <variant image="structure.png">
+      <variant image="structure.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </simpleTile>
     <simpleTile terrain="HighDirt">
-      <variant image="highdirt.png">
+      <variant image="highdirt.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </simpleTile>
     <simpleTile terrain="HighGrass">
-      <variant image="highgrass.png">
+      <variant image="highgrass.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </simpleTile>
     <simpleTile terrain="Mud">
-      <variant image="mud.png"></variant>
+      <variant image="mud.png" transparentColor="255;0;255"></variant>
     </simpleTile>
     <simpleTile terrain="Grass">
-      <variant image="grass.png"></variant>
+      <variant image="grass.png" transparentColor="255;0;255"></variant>
     </simpleTile>
     <simpleTile terrain="RockyGround">
-      <variant image="rockyground.png">
+      <variant image="rockyground.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </simpleTile>
@@ -63,7 +63,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="water_dirt_baaa_0.png">
+          <variant image="water_dirt_baaa_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
@@ -79,7 +79,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="water_dirt_baaa_1.png">
+          <variant image="water_dirt_baaa_1.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
@@ -95,33 +95,33 @@
           </or>
         </and>
         <then>
-          <variant image="water_dirt_baaa_2.png">
+          <variant image="water_dirt_baaa_2.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
         </then>
       </elseIf>
       <else>
-        <variant image="water_dirt_baaa_3.png">
+        <variant image="water_dirt_baaa_3.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
         </variant>
       </else>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="ABAA">
-      <variant image="water_dirt_abaa.png">
+      <variant image="water_dirt_abaa.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="AABA">
-      <variant image="water_dirt_aaba.png">
+      <variant image="water_dirt_aaba.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="AAAB">
-      <variant image="water_dirt_aaab.png">
+      <variant image="water_dirt_aaab.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
@@ -133,27 +133,27 @@
           <neighbourCondition which="NorthWest" combination="ABAB" />
         </or>
         <then>
-          <variant image="water_dirt_bbaa_0.png">
+          <variant image="water_dirt_bbaa_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
         </then>
       </if>
       <else>
-        <variant image="water_dirt_bbaa_1.png">
+        <variant image="water_dirt_bbaa_1.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
         </variant>
       </else>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="ABBA">
-      <variant image="water_dirt_abba.png">
+      <variant image="water_dirt_abba.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="AABB">
-      <variant image="water_dirt_aabb.png">
+      <variant image="water_dirt_aabb.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
@@ -165,14 +165,14 @@
           <neighbourCondition which="NorthEast" combination="ABAB" />
         </or>
         <then>
-          <variant image="water_dirt_baab_0.png">
+          <variant image="water_dirt_baab_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
         </then>
       </if>
       <else>
-        <variant image="water_dirt_baab_1.png">
+        <variant image="water_dirt_baab_1.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
         </variant>
@@ -187,7 +187,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="water_dirt_baba_0.png">
+          <variant image="water_dirt_baba_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
@@ -203,7 +203,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="water_dirt_baba_1.png">
+          <variant image="water_dirt_baba_1.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
@@ -219,21 +219,21 @@
           </or>
         </and>
         <then>
-          <variant image="water_dirt_baba_2.png">
+          <variant image="water_dirt_baba_2.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
         </then>
       </elseIf>
       <else>
-        <variant image="water_dirt_baba_3.png">
+        <variant image="water_dirt_baba_3.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
         </variant>
       </else>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="ABAB">
-      <variant image="water_dirt_abab.png">
+      <variant image="water_dirt_abab.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
@@ -245,21 +245,21 @@
           <neighbourCondition which="NorthWest" combination="ABAB" />
         </or>
         <then>
-          <variant image="water_dirt_bbba_1.png">
+          <variant image="water_dirt_bbba_1.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
         </then>
       </if>
       <else>
-        <variant image="water_dirt_bbba_0.png">
+        <variant image="water_dirt_bbba_0.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
         </variant>
       </else>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="ABBB">
-      <variant image="water_dirt_abbb.png">
+      <variant image="water_dirt_abbb.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
@@ -271,71 +271,71 @@
           <neighbourCondition which="NorthEast" combination="ABAB" />
         </or>
         <then>
-          <variant image="water_dirt_babb_1.png">
+          <variant image="water_dirt_babb_1.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
         </then>
       </if>
       <else>
-        <variant image="water_dirt_babb_0.png">
+        <variant image="water_dirt_babb_0.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
         </variant>
       </else>
     </mixedTile>
     <mixedTile terrainA="Water" terrainB="Dirt" combination="BBAB">
-      <variant image="water_dirt_bbab.png">
+      <variant image="water_dirt_bbab.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
       </variant>
     </mixedTile>
     <!-- Dirt-Asphalt transitions -->
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="ABBB">
-      <variant image="dirt_asphalt_abbb.png"></variant>
+      <variant image="dirt_asphalt_abbb.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="BABB">
-      <variant image="dirt_asphalt_babb.png"></variant>
+      <variant image="dirt_asphalt_babb.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="BBAB">
-      <variant image="dirt_asphalt_bbab.png"></variant>
+      <variant image="dirt_asphalt_bbab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="BBBA">
-      <variant image="dirt_asphalt_bbba.png"></variant>
+      <variant image="dirt_asphalt_bbba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="AABB">
-      <variant image="dirt_asphalt_aabb.png"></variant>
+      <variant image="dirt_asphalt_aabb.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="BAAB">
-      <variant image="dirt_asphalt_baab.png"></variant>
+      <variant image="dirt_asphalt_baab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="BBAA">
-      <variant image="dirt_asphalt_bbaa.png"></variant>
+      <variant image="dirt_asphalt_bbaa.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="ABBA">
-      <variant image="dirt_asphalt_abba.png"></variant>
+      <variant image="dirt_asphalt_abba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="BABA">
-      <variant image="dirt_asphalt_baba.png"></variant>
+      <variant image="dirt_asphalt_baba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="ABAB">
-      <variant image="dirt_asphalt_abab.png"></variant>
+      <variant image="dirt_asphalt_abab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="AAAB">
-      <variant image="dirt_asphalt_aaab.png"></variant>
+      <variant image="dirt_asphalt_aaab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="BAAA">
-      <variant image="dirt_asphalt_baaa.png"></variant>
+      <variant image="dirt_asphalt_baaa.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="ABAA">
-      <variant image="dirt_asphalt_abaa.png"></variant>
+      <variant image="dirt_asphalt_abaa.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Asphalt" combination="AABA">
-      <variant image="dirt_asphalt_aaba.png"></variant>
+      <variant image="dirt_asphalt_aaba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <!-- Asphalt-Structure transitions -->
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="ABBB">
-      <variant image="asphalt_structure_abbb.png">
+      <variant image="asphalt_structure_abbb.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="3;4;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="5;5;2;2">false</dataChangesetRect>
@@ -366,7 +366,7 @@
           <neighbourCondition which="NorthEast" combination="ABAB" />
         </or>
         <then>
-          <variant image="asphalt_structure_babb_1.png">
+          <variant image="asphalt_structure_babb_1.png" transparentColor="255;0;255">
             <dataChangesetRect field="IsWalkable" rect="0;0;12;8">false</dataChangesetRect>
             <dataChangesetRect field="IsBuildable" rect="0;0;12;8">false</dataChangesetRect>
             <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
@@ -380,7 +380,7 @@
         </then>
       </if>
       <else>
-        <variant image="asphalt_structure_babb_0.png">
+        <variant image="asphalt_structure_babb_0.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
           <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
@@ -400,7 +400,7 @@
       </else>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BBAB">
-      <variant image="asphalt_structure_bbab.png">
+      <variant image="asphalt_structure_bbab.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
         <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
@@ -419,7 +419,7 @@
           <neighbourCondition which="NorthWest" combination="ABAB" />
         </or>
         <then>
-          <variant image="asphalt_structure_bbba_1.png">
+          <variant image="asphalt_structure_bbba_1.png" transparentColor="255;0;255">
             <dataChangesetRect field="IsWalkable" rect="5;0;11;8">false</dataChangesetRect>
             <dataChangesetRect field="IsBuildable" rect="5;0;11;8">false</dataChangesetRect>
             <dataChangesetRect field="GroundLevel" rect="7;0;2;2">1</dataChangesetRect>
@@ -433,7 +433,7 @@
         </then>
       </if>
       <else>
-        <variant image="asphalt_structure_bbba_0.png">
+        <variant image="asphalt_structure_bbba_0.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
           <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
@@ -453,7 +453,7 @@
       </else>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="AABB">
-      <variant image="asphalt_structure_aabb.png">
+      <variant image="asphalt_structure_aabb.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="3;4;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="5;5;2;2">false</dataChangesetRect>
@@ -475,7 +475,7 @@
           <neighbourCondition which="NorthEast" combination="ABAB" />
         </or>
         <then>
-          <variant image="asphalt_structure_baab_0.png">
+          <variant image="asphalt_structure_baab_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetCell field="IsWalkable" cell="8;7">true</dataChangesetCell>
             <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
@@ -492,7 +492,7 @@
         </then>
       </if>
       <else>
-        <variant image="asphalt_structure_baab_1.png">
+        <variant image="asphalt_structure_baab_1.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetCell field="IsWalkable" cell="8;7">true</dataChangesetCell>
           <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
@@ -517,7 +517,7 @@
           <neighbourCondition which="NorthWest" combination="ABAB" />
         </or>
         <then>
-          <variant image="asphalt_structure_bbaa_0.png">
+          <variant image="asphalt_structure_bbaa_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetCell field="IsWalkable" cell="7;7">true</dataChangesetCell>
             <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
@@ -534,7 +534,7 @@
         </then>
       </if>
       <else>
-        <variant image="asphalt_structure_bbaa_1.png">
+        <variant image="asphalt_structure_bbaa_1.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetCell field="IsWalkable" cell="7;7">true</dataChangesetCell>
           <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
@@ -553,7 +553,7 @@
       </else>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="ABBA">
-      <variant image="asphalt_structure_abba.png">
+      <variant image="asphalt_structure_abba.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="11;4;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="9;5;2;2">false</dataChangesetRect>
@@ -577,7 +577,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="asphalt_structure_baba_0.png">
+          <variant image="asphalt_structure_baba_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
             <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
@@ -607,7 +607,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="asphalt_structure_baba_1.png">
+          <variant image="asphalt_structure_baba_1.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
             <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
@@ -633,7 +633,7 @@
           </or>
         </and>
         <then>
-          <variant image="asphalt_structure_baba_2.png">
+          <variant image="asphalt_structure_baba_2.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
             <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
@@ -650,7 +650,7 @@
         </then>
       </elseIf>
       <else>
-        <variant image="asphalt_structure_baba_3.png">
+        <variant image="asphalt_structure_baba_3.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
           <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
@@ -663,7 +663,7 @@
       </else>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="ABAB">
-      <variant image="asphalt_structure_abab.png">
+      <variant image="asphalt_structure_abab.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
@@ -673,7 +673,7 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="AAAB">
-      <variant image="asphalt_structure_aaab.png">
+      <variant image="asphalt_structure_aaab.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="3;4;1;2">false</dataChangesetRect>
         <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
@@ -690,7 +690,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="asphalt_structure_baaa_0.png">
+          <variant image="asphalt_structure_baaa_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
             <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
@@ -721,7 +721,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="asphalt_structure_baaa_1.png">
+          <variant image="asphalt_structure_baaa_1.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
             <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
@@ -748,7 +748,7 @@
           </or>
         </and>
         <then>
-          <variant image="asphalt_structure_baaa_2.png">
+          <variant image="asphalt_structure_baaa_2.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
             <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
@@ -766,7 +766,7 @@
         </then>
       </elseIf>
       <else>
-        <variant image="asphalt_structure_baaa_3.png">
+        <variant image="asphalt_structure_baaa_3.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetRect field="IsWalkable" rect="7;7;2;1">true</dataChangesetRect>
           <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
@@ -780,7 +780,7 @@
       </else>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="ABAA">
-      <variant image="asphalt_structure_abaa.png">
+      <variant image="asphalt_structure_abaa.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="12;4;1;2">false</dataChangesetRect>
         <dataChangesetRect field="IsBuildable" rect="13;3;2;2">false</dataChangesetRect>
@@ -789,7 +789,7 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="AABA">
-      <variant image="asphalt_structure_aaba.png">
+      <variant image="asphalt_structure_aaba.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="7;6;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsBuildable" rect="7;6;2;2">false</dataChangesetRect>
         <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
@@ -797,7 +797,7 @@
     </mixedTile>
     <!-- Dirt-HighDirt transitions -->
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="ABBB">
-      <variant image="dirt_highdirt_abbb.png">
+      <variant image="dirt_highdirt_abbb.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="3;4;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="5;5;2;2">false</dataChangesetRect>
@@ -828,7 +828,7 @@
           <neighbourCondition which="NorthEast" combination="ABAB" />
         </or>
         <then>
-          <variant image="dirt_highdirt_babb_1.png">
+          <variant image="dirt_highdirt_babb_1.png" transparentColor="255;0;255">
             <dataChangesetQuarter field="IsWalkable" which="North">false</dataChangesetQuarter>
             <dataChangesetQuarter field="IsWalkable" which="West">false</dataChangesetQuarter>
             <dataChangesetQuarter field="IsWalkable" which="South">false</dataChangesetQuarter>
@@ -862,7 +862,7 @@
         </then>
       </if>
       <else>
-        <variant image="dirt_highdirt_babb_0.png">
+        <variant image="dirt_highdirt_babb_0.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetCell field="IsWalkable" cell="14;4">true</dataChangesetCell>
           <dataChangesetCell field="IsWalkable" cell="12;5">true</dataChangesetCell>
@@ -882,7 +882,7 @@
       </else>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="BBAB">
-      <variant image="dirt_highdirt_bbab.png">
+      <variant image="dirt_highdirt_bbab.png" transparentColor="255;0;255">
         <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
         <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
         <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
@@ -901,7 +901,7 @@
           <neighbourCondition which="NorthWest" combination="ABAB" />
         </or>
         <then>
-          <variant image="dirt_highdirt_bbba_1.png">
+          <variant image="dirt_highdirt_bbba_1.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
             <dataChangesetRect field="IsWalkable" rect="13;3;2;2">true</dataChangesetRect>
@@ -929,7 +929,7 @@
         </then>
       </if>
       <else>
-        <variant image="dirt_highdirt_bbba_0.png">
+        <variant image="dirt_highdirt_bbba_0.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetCell field="IsWalkable" cell="1;4">true</dataChangesetCell>
           <dataChangesetCell field="IsWalkable" cell="3;5">true</dataChangesetCell>
@@ -949,7 +949,7 @@
       </else>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="AABB">
-      <variant image="dirt_highdirt_aabb.png">
+      <variant image="dirt_highdirt_aabb.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="3;4;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="5;5;2;2">false</dataChangesetRect>
@@ -971,7 +971,7 @@
           <neighbourCondition which="NorthEast" combination="ABAB" />
         </or>
         <then>
-          <variant image="dirt_highdirt_baab_0.png">
+          <variant image="dirt_highdirt_baab_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetCell field="IsWalkable" cell="8;7">true</dataChangesetCell>
             <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
@@ -988,7 +988,7 @@
         </then>
       </if>
       <else>
-        <variant image="dirt_highdirt_baab_1.png">
+        <variant image="dirt_highdirt_baab_1.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetCell field="IsWalkable" cell="8;7">true</dataChangesetCell>
           <dataChangesetCell field="IsWalkable" cell="10;6">true</dataChangesetCell>
@@ -1013,7 +1013,7 @@
           <neighbourCondition which="NorthWest" combination="ABAB" />
         </or>
         <then>
-          <variant image="dirt_highdirt_bbaa_0.png">
+          <variant image="dirt_highdirt_bbaa_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetCell field="IsWalkable" cell="7;7">true</dataChangesetCell>
             <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
@@ -1030,7 +1030,7 @@
         </then>
       </if>
       <else>
-        <variant image="dirt_highdirt_bbaa_1.png">
+        <variant image="dirt_highdirt_bbaa_1.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetCell field="IsWalkable" cell="7;7">true</dataChangesetCell>
           <dataChangesetCell field="IsWalkable" cell="5;6">true</dataChangesetCell>
@@ -1049,7 +1049,7 @@
       </else>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="ABBA">
-      <variant image="dirt_highdirt_abba.png">
+      <variant image="dirt_highdirt_abba.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="11;4;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="9;5;2;2">false</dataChangesetRect>
@@ -1073,7 +1073,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="dirt_highdirt_baba_0.png">
+          <variant image="dirt_highdirt_baba_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
             <dataChangesetRect field="GroundLevel" rect="7;7;2;1">1</dataChangesetRect>
@@ -1090,7 +1090,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="dirt_highdirt_baba_1.png">
+          <variant image="dirt_highdirt_baba_1.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
@@ -1109,7 +1109,7 @@
           </or>
         </and>
         <then>
-          <variant image="dirt_highdirt_baba_2.png">
+          <variant image="dirt_highdirt_baba_2.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
@@ -1119,7 +1119,7 @@
         </then>
       </elseIf>
       <else>
-        <variant image="dirt_highdirt_baba_3.png">
+        <variant image="dirt_highdirt_baba_3.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
           <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
@@ -1131,7 +1131,7 @@
       </else>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="ABAB">
-      <variant image="dirt_highdirt_abab.png">
+      <variant image="dirt_highdirt_abab.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
@@ -1141,7 +1141,7 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="AAAB">
-      <variant image="dirt_highdirt_aaab.png">
+      <variant image="dirt_highdirt_aaab.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="1;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="3;4;1;2">false</dataChangesetRect>
         <dataChangesetRect field="IsBuildable" rect="1;3;2;2">false</dataChangesetRect>
@@ -1158,7 +1158,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="dirt_highdirt_baaa_0.png">
+          <variant image="dirt_highdirt_baaa_0.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
           </variant>
@@ -1174,7 +1174,7 @@
           <not><neighbourCondition which="NorthWest" combination="ABAB" /></not>
         </and>
         <then>
-          <variant image="dirt_highdirt_baaa_1.png">
+          <variant image="dirt_highdirt_baaa_1.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
@@ -1192,7 +1192,7 @@
           </or>
         </and>
         <then>
-          <variant image="dirt_highdirt_baaa_2.png">
+          <variant image="dirt_highdirt_baaa_2.png" transparentColor="255;0;255">
             <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
             <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
             <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
@@ -1201,7 +1201,7 @@
         </then>
       </elseIf>
       <else>
-        <variant image="dirt_highdirt_baaa_3.png">
+        <variant image="dirt_highdirt_baaa_3.png" transparentColor="255;0;255">
           <dataChangesetAll field="IsWalkable">false</dataChangesetAll>
           <dataChangesetRect field="IsWalkable" rect="1;2;4;4">true</dataChangesetRect>
           <dataChangesetRect field="IsWalkable" rect="12;2;3;4">true</dataChangesetRect>
@@ -1212,7 +1212,7 @@
       </else>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="ABAA">
-      <variant image="dirt_highdirt_abaa.png">
+      <variant image="dirt_highdirt_abaa.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="13;3;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsWalkable" rect="12;4;1;2">false</dataChangesetRect>
         <dataChangesetRect field="IsBuildable" rect="13;3;2;2">false</dataChangesetRect>
@@ -1221,7 +1221,7 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="HighDirt" combination="AABA">
-      <variant image="dirt_highdirt_aaba.png">
+      <variant image="dirt_highdirt_aaba.png" transparentColor="255;0;255">
         <dataChangesetRect field="IsWalkable" rect="7;6;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsBuildable" rect="7;6;2;2">false</dataChangesetRect>
         <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
@@ -1229,164 +1229,164 @@
     </mixedTile>
     <!-- HighDirt-HighGrass transitions -->
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="ABBB">
-      <variant image="highdirt_highgrass_abbb.png">
+      <variant image="highdirt_highgrass_abbb.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BABB">
-      <variant image="highdirt_highgrass_babb.png">
+      <variant image="highdirt_highgrass_babb.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BBAB">
-      <variant image="highdirt_highgrass_bbab.png">
+      <variant image="highdirt_highgrass_bbab.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BBBA">
-      <variant image="highdirt_highgrass_bbba.png">
+      <variant image="highdirt_highgrass_bbba.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="AABB">
-      <variant image="highdirt_highgrass_aabb.png">
+      <variant image="highdirt_highgrass_aabb.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BAAB">
-      <variant image="highdirt_highgrass_baab.png">
+      <variant image="highdirt_highgrass_baab.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BBAA">
-      <variant image="highdirt_highgrass_bbaa.png">
+      <variant image="highdirt_highgrass_bbaa.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="ABBA">
-      <variant image="highdirt_highgrass_abba.png">
+      <variant image="highdirt_highgrass_abba.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BABA">
-      <variant image="highdirt_highgrass_baba.png">
+      <variant image="highdirt_highgrass_baba.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
 	  </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="ABAB">
-      <variant image="highdirt_highgrass_abab.png">
+      <variant image="highdirt_highgrass_abab.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
 	  </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="AAAB">
-      <variant image="highdirt_highgrass_aaab.png">
+      <variant image="highdirt_highgrass_aaab.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="BAAA">
-      <variant image="highdirt_highgrass_baaa.png">
+      <variant image="highdirt_highgrass_baaa.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="ABAA">
-      <variant image="highdirt_highgrass_abaa.png">
+      <variant image="highdirt_highgrass_abaa.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <mixedTile terrainA="HighDirt" terrainB="HighGrass" combination="AABA">
-      <variant image="highdirt_highgrass_aaba.png">
+      <variant image="highdirt_highgrass_aaba.png" transparentColor="255;0;255">
         <dataChangesetAll field="GroundLevel">1</dataChangesetAll>
       </variant>
     </mixedTile>
     <!-- Dirt-Grass transitions -->
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="ABBB">
-      <variant image="dirt_grass_abbb.png"></variant>
+      <variant image="dirt_grass_abbb.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="BABB">
-      <variant image="dirt_grass_babb.png"></variant>
+      <variant image="dirt_grass_babb.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="BBAB">
-      <variant image="dirt_grass_bbab.png"></variant>
+      <variant image="dirt_grass_bbab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="BBBA">
-      <variant image="dirt_grass_bbba.png"></variant>
+      <variant image="dirt_grass_bbba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="AABB">
-      <variant image="dirt_grass_aabb.png"></variant>
+      <variant image="dirt_grass_aabb.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="BAAB">
-      <variant image="dirt_grass_baab.png"></variant>
+      <variant image="dirt_grass_baab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="BBAA">
-      <variant image="dirt_grass_bbaa.png"></variant>
+      <variant image="dirt_grass_bbaa.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="ABBA">
-      <variant image="dirt_grass_abba.png"></variant>
+      <variant image="dirt_grass_abba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="BABA">
-      <variant image="dirt_grass_baba.png"></variant>
+      <variant image="dirt_grass_baba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="ABAB">
-      <variant image="dirt_grass_abab.png"></variant>
+      <variant image="dirt_grass_abab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="AAAB">
-      <variant image="dirt_grass_aaab.png"></variant>
+      <variant image="dirt_grass_aaab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="BAAA">
-      <variant image="dirt_grass_baaa.png"></variant>
+      <variant image="dirt_grass_baaa.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="ABAA">
-      <variant image="dirt_grass_abaa.png"></variant>
+      <variant image="dirt_grass_abaa.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Grass" combination="AABA">
-      <variant image="dirt_grass_aaba.png"></variant>
+      <variant image="dirt_grass_aaba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <!-- Dirt-Mud transitions -->
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="ABBB">
-      <variant image="dirt_mud_abbb.png"></variant>
+      <variant image="dirt_mud_abbb.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="BABB">
-      <variant image="dirt_mud_babb.png"></variant>
+      <variant image="dirt_mud_babb.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="BBAB">
-      <variant image="dirt_mud_bbab.png"></variant>
+      <variant image="dirt_mud_bbab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="BBBA">
-      <variant image="dirt_mud_bbba.png"></variant>
+      <variant image="dirt_mud_bbba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="AABB">
-      <variant image="dirt_mud_aabb.png"></variant>
+      <variant image="dirt_mud_aabb.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="BAAB">
-      <variant image="dirt_mud_baab.png"></variant>
+      <variant image="dirt_mud_baab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="BBAA">
-      <variant image="dirt_mud_bbaa.png"></variant>
+      <variant image="dirt_mud_bbaa.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="ABBA">
-      <variant image="dirt_mud_abba.png"></variant>
+      <variant image="dirt_mud_abba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="BABA">
-      <variant image="dirt_mud_baba.png"></variant>
+      <variant image="dirt_mud_baba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="ABAB">
-      <variant image="dirt_mud_abab.png"></variant>
+      <variant image="dirt_mud_abab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="AAAB">
-      <variant image="dirt_mud_aaab.png"></variant>
+      <variant image="dirt_mud_aaab.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="BAAA">
-      <variant image="dirt_mud_baaa.png"></variant>
+      <variant image="dirt_mud_baaa.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="ABAA">
-      <variant image="dirt_mud_abaa.png"></variant>
+      <variant image="dirt_mud_abaa.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="Mud" combination="AABA">
-      <variant image="dirt_mud_aaba.png"></variant>
+      <variant image="dirt_mud_aaba.png" transparentColor="255;0;255"></variant>
     </mixedTile>
     <!-- Dirt-RockyGround transitions -->
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="ABBB">
-      <variant image="dirt_rockyground_abbb.png">
+      <variant image="dirt_rockyground_abbb.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
@@ -1395,14 +1395,14 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BABB">
-      <variant image="dirt_rockyground_babb.png">
+      <variant image="dirt_rockyground_babb.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BBAB">
-      <variant image="dirt_rockyground_bbab.png">
+      <variant image="dirt_rockyground_bbab.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
@@ -1412,14 +1412,14 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BBBA">
-      <variant image="dirt_rockyground_bbba.png">
+      <variant image="dirt_rockyground_bbba.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="AABB">
-      <variant image="dirt_rockyground_aabb.png">
+      <variant image="dirt_rockyground_aabb.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
         <dataChangesetCell field="IsBuildable" cell="4;2">false</dataChangesetCell>
@@ -1436,7 +1436,7 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BAAB">
-      <variant image="dirt_rockyground_baab.png">
+      <variant image="dirt_rockyground_baab.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
         <dataChangesetCell field="IsBuildable" cell="8;3">false</dataChangesetCell>
@@ -1446,7 +1446,7 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BBAA">
-      <variant image="dirt_rockyground_bbaa.png">
+      <variant image="dirt_rockyground_bbaa.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
         <dataChangesetCell field="IsBuildable" cell="5;3">false</dataChangesetCell>
@@ -1454,21 +1454,21 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="ABBA">
-      <variant image="dirt_rockyground_abba.png">
+      <variant image="dirt_rockyground_abba.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
         <dataChangesetCell field="IsBuildable" cell="7;3">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BABA">
-      <variant image="dirt_rockyground_baba.png">
+      <variant image="dirt_rockyground_baba.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
         <dataChangesetCell field="IsBuildable" cell="6;3">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="ABAB">
-      <variant image="dirt_rockyground_abab.png">
+      <variant image="dirt_rockyground_abab.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
         <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
         <dataChangesetCell field="IsBuildable" cell="8;4">false</dataChangesetCell>
@@ -1477,19 +1477,19 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="AAAB">
-      <variant image="dirt_rockyground_aaab.png">
+      <variant image="dirt_rockyground_aaab.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="West">false</dataChangesetQuarter>
         <dataChangesetCell field="IsBuildable" cell="4;5">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="BAAA">
-      <variant image="dirt_rockyground_baaa.png">
+      <variant image="dirt_rockyground_baaa.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="North">false</dataChangesetQuarter>
         <dataChangesetCell field="IsBuildable" cell="5;3">false</dataChangesetCell>
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="ABAA">
-      <variant image="dirt_rockyground_abaa.png">
+      <variant image="dirt_rockyground_abaa.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="East">false</dataChangesetQuarter>
         <dataChangesetCell field="IsBuildable" cell="7;4">false</dataChangesetCell>
         <dataChangesetCell field="IsBuildable" cell="8;5">false</dataChangesetCell>
@@ -1497,7 +1497,7 @@
       </variant>
     </mixedTile>
     <mixedTile terrainA="Dirt" terrainB="RockyGround" combination="AABA">
-      <variant image="dirt_rockyground_aaba.png">
+      <variant image="dirt_rockyground_aaba.png" transparentColor="255;0;255">
         <dataChangesetQuarter field="IsBuildable" which="South">false</dataChangesetQuarter>
         <dataChangesetCell field="IsBuildable" cell="8;4">false</dataChangesetCell>
       </variant>
@@ -1505,7 +1505,7 @@
   </declareTiles>
   
   <declareTerrainObjects>
-    <terrainObject name="Bridge0" image="terrainobj_bridge_0.png" quadSize="14;9" offset="0;0">
+    <terrainObject name="Bridge0" image="terrainobj_bridge_0.png" quadSize="14;9" offset="0;0" transparentColor="255;0;255">
       <excludeArea rect="0;0;6;3" />
       <excludeArea rect="0;3;4;1" />
       <excludeArea rect="8;0;2;1" />
@@ -1539,7 +1539,6 @@
       <tileConstraint quadCoords="2;6" terrainA="Dirt" terrainB="Asphalt" combinations="AABB" />
       <tileConstraint quadCoords="4;7" terrainA="Dirt" terrainB="Asphalt" combinations="AAAB" />
       <tileConstraint quadCoords="0;7" terrain="Asphalt" />
-      <property name="TransparentColor">255;0;255</property>
       <dataChangesetRect field="IsWalkable" rect="12;19;18;5">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="21;14;20;5">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="30;9;20;5">true</dataChangesetRect>
@@ -1571,7 +1570,7 @@
       <dataChangesetRect field="IsWalkable" rect="32;8;2;1">true</dataChangesetRect>
       <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
     </terrainObject>
-    <terrainObject name="Bridge1" image="terrainobj_bridge_1.png" quadSize="14;9" offset="0;0">
+    <terrainObject name="Bridge1" image="terrainobj_bridge_1.png" quadSize="14;9" offset="0;0" transparentColor="255;0;255">
       <excludeArea rect="8;0;6;3" />
       <excludeArea rect="10;3;4;1" />
       <excludeArea rect="4;0;2;1" />
@@ -1605,7 +1604,6 @@
       <tileConstraint quadCoords="11;6" terrainA="Dirt" terrainB="Asphalt" combinations="ABBA" />
       <tileConstraint quadCoords="9;7" terrainA="Dirt" terrainB="Asphalt" combinations="ABAA" />
       <tileConstraint quadCoords="13;7" terrain="Asphalt" />
-      <property name="TransparentColor">255;0;255</property>
       <dataChangesetRect field="IsWalkable" rect="11;7;10;10">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="21;12;10;9">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="31;17;10;10">true</dataChangesetRect>
@@ -1640,7 +1638,7 @@
       <dataChangesetRect field="IsWalkable" rect="29;25;2;1">true</dataChangesetRect>
       <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
     </terrainObject>
-    <terrainObject name="Cliff0" image="terrainobj_cliff_0.png" quadSize="6;6" offset="0;0">
+    <terrainObject name="Cliff0" image="terrainobj_cliff_0.png" quadSize="6;6" offset="0;0" transparentColor="255;0;255">
       <tileConstraint quadCoords="5;0" terrain="HighDirt" />      
       <tileConstraint quadCoords="2;0" terrain="HighDirt" />
       <tileConstraint quadCoords="4;1" terrain="HighDirt" />
@@ -1655,7 +1653,6 @@
       <tileConstraint quadCoords="5;5" terrain="Dirt" />
       <tileConstraint quadCoords="0;4" terrain="Dirt" />
       <tileConstraint quadCoords="2;5" terrain="Dirt" />
-      <property name="TransparentColor">255;0;255</property>
       <dataChangesetRect field="IsWalkable" rect="0;9;9;13">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="9;4;7;9">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="6;6;3;3">true</dataChangesetRect>
@@ -1688,7 +1685,7 @@
       <dataChangesetRect field="GroundLevel" rect="14;12;2;1">1</dataChangesetRect>
       <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
     </terrainObject>
-    <terrainObject name="Cliff1" image="terrainobj_cliff_1.png" quadSize="6;6" offset="0;0">
+    <terrainObject name="Cliff1" image="terrainobj_cliff_1.png" quadSize="6;6" offset="0;0" transparentColor="255;0;255">
       <tileConstraint quadCoords="0;0" terrain="HighDirt" />
       <tileConstraint quadCoords="3;0" terrain="HighDirt" />
       <tileConstraint quadCoords="1;1" terrain="HighDirt" />
@@ -1703,7 +1700,6 @@
       <tileConstraint quadCoords="0;5" terrain="Dirt" />
       <tileConstraint quadCoords="5;4" terrain="Dirt" />
       <tileConstraint quadCoords="3;5" terrain="Dirt" />
-      <property name="TransparentColor">255;0;255</property>
       <dataChangesetRect field="IsWalkable" rect="4;6;7;4">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="11;4;5;5">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="11;9;5;8">true</dataChangesetRect>
@@ -1741,7 +1737,7 @@
       <dataChangesetCell field="GroundLevel" cell="8;12">1</dataChangesetCell>
       <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
     </terrainObject>
-    <terrainObject name="StructureWall0" image="terrainobj_structwall_0.png" quadSize="4;4" offset="0;0">
+    <terrainObject name="StructureWall0" image="terrainobj_structwall_0.png" quadSize="4;4" offset="0;0" transparentColor="255;0;255">
       <excludeArea rect="2;0;2;1" />
       <tileConstraint quadCoords="1;0" terrain="Structure" />
       <tileConstraint quadCoords="3;1" terrain="Structure" />
@@ -1750,7 +1746,6 @@
       <tileConstraint quadCoords="3;2" terrainA="Asphalt" terrainB="Structure" combinations="BBAA;BAAA" />
       <tileConstraint quadCoords="0;2" terrain="Asphalt" />
       <tileConstraint quadCoords="2;3" terrain="Asphalt" />
-      <property name="TransparentColor">255;0;255</property>
       <dataChangesetRect field="IsWalkable" rect="7;4;8;5">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="6;5;1;4">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="5;6;1;3">true</dataChangesetRect>
@@ -1778,7 +1773,7 @@
       <dataChangesetRect field="GroundLevel" rect="11;10;2;1">1</dataChangesetRect>
       <dataChangesetAll field="IsBuildable">false</dataChangesetAll>
     </terrainObject>
-    <terrainObject name="StructureWall1" image="terrainobj_structwall_1.png" quadSize="4;4" offset="0;0">
+    <terrainObject name="StructureWall1" image="terrainobj_structwall_1.png" quadSize="4;4" offset="0;0" transparentColor="255;0;255">
       <excludeArea rect="0;0;2;1" />
       <tileConstraint quadCoords="2;0" terrain="Structure" />
       <tileConstraint quadCoords="0;1" terrain="Structure" />
@@ -1787,7 +1782,6 @@
       <tileConstraint quadCoords="0;2" terrainA="Asphalt" terrainB="Structure" combinations="BAAB;BAAA" />
       <tileConstraint quadCoords="3;2" terrain="Asphalt" />
       <tileConstraint quadCoords="1;3" terrain="Asphalt" />
-      <property name="TransparentColor">255;0;255</property>
       <dataChangesetRect field="IsWalkable" rect="0;4;8;5">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="8;5;1;4">true</dataChangesetRect>
       <dataChangesetRect field="IsWalkable" rect="9;6;1;3">true</dataChangesetRect>

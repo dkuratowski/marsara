@@ -38,7 +38,7 @@ namespace RC.App.PresLogic
         protected override bool IsMaskingForced { get { return this.owner == PlayerEnum.Neutral; } }
 
         /// <see cref="MaskedSpriteGroup.TargetColor"/>
-        protected override UIColor TargetColor { get { return PLAYER_COLOR_MAPPINGS[this.owner]; } }
+        protected override RCColor TargetColor { get { return PLAYER_COLOR_MAPPINGS[this.owner]; } }
 
         #endregion Overriden from MaskedSpriteGroup
 
@@ -55,17 +55,17 @@ namespace RC.App.PresLogic
         /// <summary>
         /// Defines the colors of the players.
         /// </summary>
-        private static readonly Dictionary<PlayerEnum, UIColor> PLAYER_COLOR_MAPPINGS = new Dictionary<PlayerEnum, UIColor>()
+        private static readonly Dictionary<PlayerEnum, RCColor> PLAYER_COLOR_MAPPINGS = new Dictionary<PlayerEnum, RCColor>()
         {
-            { PlayerEnum.Neutral, UIColor.Black },
-            { PlayerEnum.Player0, UIColor.Red },
-            { PlayerEnum.Player1, UIColor.Blue },
-            { PlayerEnum.Player2, UIColor.Cyan },
-            { PlayerEnum.Player3, UIColor.Magenta },
-            { PlayerEnum.Player4, UIColor.LightMagenta },
-            { PlayerEnum.Player5, UIColor.Green },
-            { PlayerEnum.Player6, UIColor.WhiteHigh },
-            { PlayerEnum.Player7, UIColor.Yellow }
+            { PlayerEnum.Neutral, RCColor.Black },
+            { PlayerEnum.Player0, RCColor.Red },
+            { PlayerEnum.Player1, RCColor.Blue },
+            { PlayerEnum.Player2, RCColor.Cyan },
+            { PlayerEnum.Player3, RCColor.Magenta },
+            { PlayerEnum.Player4, RCColor.LightMagenta },
+            { PlayerEnum.Player5, RCColor.Green },
+            { PlayerEnum.Player6, RCColor.WhiteHigh },
+            { PlayerEnum.Player7, RCColor.Yellow }
         };
     }
 }

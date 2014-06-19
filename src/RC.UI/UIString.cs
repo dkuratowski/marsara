@@ -29,12 +29,12 @@ namespace RC.UI
         /// character in format, specify two leading or trailing brace characters; that is, "{{" or "}}".
         /// Note that every whitespace characters in the format string will be replaced by spaces.
         /// </remarks>
-        public UIString(string format, UIFont font, RCIntVector pixelSize, UIColor color)
+        public UIString(string format, UIFont font, RCIntVector pixelSize, RCColor color)
         {
             if (format == null || format.Length == 0) { throw new ArgumentNullException("format"); }
             if (font == null) { throw new ArgumentNullException("font"); }
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
-            if (color == UIColor.Undefined) { throw new ArgumentNullException("color"); }
+            if (color == RCColor.Undefined) { throw new ArgumentNullException("color"); }
 
             /// Parse the incoming format string.
             format = Regex.Replace(format, "\\s", " ");

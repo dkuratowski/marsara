@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 
 namespace RC.Engine.Maps.PublicInterfaces
 {
@@ -26,17 +27,15 @@ namespace RC.Engine.Maps.PublicInterfaces
         byte[] ImageData { get; }
 
         /// <summary>
+        /// Gets the transparent color of this variant.
+        /// </summary>
+        RCColor TransparentColor { get; }
+
+        /// <summary>
         /// Gets the index of this TileVariant in the tileset. Note that this is the absolute index of this
         /// variant that is not equal with the variant index of the isometric tiles (for getting the variant
         /// index of an isometric tile use the IIsoTile.VariantIdx property)!
         /// </summary>
         int Index { get; }
-
-        /// <summary>
-        /// Gets the value of a given property.
-        /// </summary>
-        /// <param name="propName">The name of the property to get.</param>
-        /// <returns>The value of the property or null if the property doesn't exists.</returns>
-        string GetProperty(string propName);
     }
 }

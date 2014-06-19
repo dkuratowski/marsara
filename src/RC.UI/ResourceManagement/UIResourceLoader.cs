@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using RC.Common.Configuration;
+using RC.Common;
 
 namespace RC.UI
 {
@@ -12,22 +13,6 @@ namespace RC.UI
     /// </summary>
     public abstract class UIResourceLoader
     {
-        /// <summary>
-        /// Loads a UIColor from the given string.
-        /// </summary>
-        /// <param name="fromStr">The string to load from.</param>
-        /// <returns>The loaded UIColor.</returns>
-        public static UIColor LoadColor(string fromStr)
-        {
-            string[] colorStrings = fromStr.Trim().Split(';');
-            if (colorStrings.Length != 3) { throw new ArgumentException(string.Format("Invalid UIColor format: '{0}'!", fromStr)); }
-
-            int r = XmlHelper.LoadInt(colorStrings[0]);
-            int g = XmlHelper.LoadInt(colorStrings[1]);
-            int b = XmlHelper.LoadInt(colorStrings[2]);
-            return new UIColor(r, g, b);
-        }
-
         /// <summary>
         /// Creates a UIResourceLoader instance.
         /// </summary>

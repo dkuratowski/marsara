@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<commandTypes>
+<commandWorkflows>
   <spritePalette image="terran_scv_commands.xml" transparentColor="255;0;255" maskColor="0;255;255">
     <sprite name="RepairBtn" sourceRegion="" />
     <sprite name="GatherBtn" sourceRegion="" />
@@ -20,149 +20,149 @@
     <sprite name="ArmoryBtn" sourceRegion="" />
     <sprite name="CancelBtn" sourceRegion="" />
   </spritePalette>
-  <commandType name="Repair" availability="IfAll">
+  <commandWorkflow name="Repair" availability="IfAll">
     <showButton sprite="RepairBtn" panelPosition="1;0">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancelCommand />
+	    <cancel />
 	  </showButton>
 	  <selectPosition>
-		<triggerCommand />
+		<finish />
 	  </selectPosition>
 	</showButton>
-  </commandType>
-  <commandType name="Gather" availability="IfAll">
+  </commandWorkflow>
+  <commandWorkflow name="Gather" availability="IfAll">
     <showButton sprite="GatherBtn" panelPosition="1;1">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancelCommand />
+	    <cancel />
 	  </showButton>
 	  <selectPosition>
-		<triggerCommand />
+		<finish />
 	  </selectPosition>
 	</showButton>
-  </commandType>
-  <commandType name="Return" availability="IfAll">
+  </commandWorkflow>
+  <commandWorkflow name="Return" availability="IfAll">
     <showButton sprite="ReturnBtn" panelPosition="1;2" >
-	  <triggerCommand />
+	  <finish />
 	</showButton>
-  </commandType>
-  <commandType name="Build" availability="Individual">
+  </commandWorkflow>
+  <commandWorkflow name="Build" availability="Individual">
     <showButton sprite="BuildBtn" panelPosition="2;0">
 	  <showButton sprite="CommandCenterBtn" panelPosition="0;0">
 	    <selectTargetType type="CommandCenter" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="SupplyDepotBtn" panelPosition="0;1">
 	    <selectTargetType type="SupplyDepot" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="RefineryBtn" panelPosition="0;2">
 	    <selectTargetType type="Refinery" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="BarracksBtn" panelPosition="1;0">
 	    <selectTargetType type="Barracks" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="EngineeringBayBtn" panelPosition="1;1">
 	    <selectTargetType type="EngineeringBay" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="MissileTurretBtn" panelPosition="1;2">
 	    <selectTargetType type="MissileTurret" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="AcademyBtn" panelPosition="2;0">
 	    <selectTargetType type="Academy" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="BunkerBtn" panelPosition="2;1">
 	    <selectTargetType type="Bunker" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
       <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancelCommand />
+	    <cancel />
 	  </showButton>
 	</showButton>
     <showButton sprite="AdvancedBuildBtn" panelPosition="2;1">
 	  <showButton sprite="FactoryBtn" panelPosition="0;0">
 	    <selectTargetType type="Factory" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="StarportBtn" panelPosition="0;1">
 	    <selectTargetType type="Starport" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="ScienceFacilityBtn" panelPosition="0;2">
 	    <selectTargetType type="ScienceFacility" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="ArmoryBtn" panelPosition="1;0">
 	    <selectTargetType type="Armory" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancelCommand />
+	      <cancel />
 	    </showButton>
 		<selectBuildPosition>
-		  <triggerCommand />
+		  <finish />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancelCommand />
+	    <cancel />
 	  </showButton>
 	</showButton>
-  </commandType>
-</commandTypes>
+  </commandWorkflow>
+</commandWorkflows>

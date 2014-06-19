@@ -60,9 +60,9 @@ namespace RC.App.PresLogic.Controls
 
             for (int i = 0; i < itemStrings.Length; i++)
             {
-                this.items[i] = new UIString(itemStrings[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, UIColor.Green);
-                this.highlightedItems[i] = new UIString(itemStrings[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, UIColor.LightGreen);
-                this.disabledItems[i] = new UIString(itemStrings[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, UIColor.White);
+                this.items[i] = new UIString(itemStrings[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, RCColor.Green);
+                this.highlightedItems[i] = new UIString(itemStrings[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, RCColor.LightGreen);
+                this.disabledItems[i] = new UIString(itemStrings[i], UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, RCColor.White);
                 this.itemStrings[i] = itemStrings[i];
             }
 

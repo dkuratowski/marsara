@@ -13,7 +13,7 @@
       <sightRange>11</sightRange>
       <speed>0.25</speed>
     </generalData>
-    <spritePalette image="terran_commandcenter.png" transparentColor="255;0;255" ownerMaskColor="0;255;255">
+    <spritePalette image="terran_commandcenter.png" transparentColor="255;0;255" maskColor="0;255;255">
       <sprite name="Construction0" sourceRegion="1;1;62;48" offset="0;0" />
       <sprite name="Construction1" sourceRegion="64;1;62;48" offset="0;0" />
       <sprite name="Construction2" sourceRegion="127;1;62;48" offset="0;0" />

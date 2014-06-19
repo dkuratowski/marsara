@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<commandTypes>
+<commandWorkflows>
   <spritePalette image="basic_commands.xml" transparentColor="255;0;255" maskColor="0;255;255">
     <sprite name="MoveBtn" sourceRegion="1;1;20;20" />
     <sprite name="StopBtn" sourceRegion="22;1;20;20" />
@@ -8,44 +8,44 @@
     <sprite name="HoldBtn" sourceRegion="22;22;20;20" />
     <sprite name="CancelBtn" sourceRegion="43;22;20;20" />
   </spritePalette>
-  <commandType name="Move" availability="IfAny">
+  <commandWorkflow name="Move" availability="IfAny">
     <showButton sprite="MoveBtn" panelPosition="0;0">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancelCommand />
+	    <cancel />
 	  </showButton>
 	  <selectPosition>
-		<triggerCommand />
+		<finish />
 	  </selectPosition>
 	</showButton>
-  </commandType>
-  <commandType name="Stop" availability="IfAny">
+  </commandWorkflow>
+  <commandWorkflow name="Stop" availability="IfAny">
     <showButton sprite="StopBtn" panelPosition="0;1" >
-	  <triggerCommand />
+	  <finish />
 	</showButton>
-  </commandType>
-  <commandType name="Attack" availability="IfAny">
+  </commandWorkflow>
+  <commandWorkflow name="Attack" availability="IfAny">
     <showButton sprite="AttackBtn" panelPosition="0;2">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancelCommand />
+	    <cancel />
 	  </showButton>
 	  <selectPosition>
-		<triggerCommand />
+		<finish />
 	  </selectPosition>
 	</showButton>
-  </commandType>
-  <commandType name="Patrol" availability="IfAny">
+  </commandWorkflow>
+  <commandWorkflow name="Patrol" availability="IfAny">
     <showButton sprite="PatrolBtn" panelPosition="1;0">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancelCommand />
+	    <cancel />
 	  </showButton>
 	  <selectPosition>
-		<triggerCommand />
+		<finish />
 	  </selectPosition>
 	</showButton>
-  </commandType>
-  <commandType name="Hold" availability="IfAny">
+  </commandWorkflow>
+  <commandWorkflow name="Hold" availability="IfAny">
     <showButton sprite="StopBtn" panelPosition="1;1" >
-	  <triggerCommand />
+	  <finish />
 	</showButton>
-  </commandType>
-</commandTypes>
+  </commandWorkflow>
+</commandWorkflows>

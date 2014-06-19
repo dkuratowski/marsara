@@ -160,10 +160,10 @@ namespace RC.Engine.Simulator.Core
 
             /// Load the sprite palette of the element type.
             XElement spritePaletteElem = elementTypeElem.Element(XmlMetadataConstants.SPRITEPALETTE_ELEM);
-            SpritePalette spritePalette = null;
+            ISpritePalette<MapDirection> spritePalette = null;
             if (spritePaletteElem != null)
             {
-                spritePalette = LoadSpritePalette(spritePaletteElem, metadata);
+                spritePalette = XmlHelper.LoadSpritePalette(spritePaletteElem, MapDirection.Undefined, tmpImageDir);
                 elementType.SetSpritePalette(spritePalette);
             }
 
@@ -206,62 +206,13 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Loads a sprite palette definition from the given XML node.
-        /// </summary>
-        /// <param name="spritePaletteElem">The XML node to load from.</param>
-        /// <param name="metadata">The metadata object.</param>
-        /// <returns>The constructed sprite palette definition.</returns>
-        private static SpritePalette LoadSpritePalette(XElement spritePaletteElem, ScenarioMetadata metadata)
-        {
-            XAttribute imageAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITEPALETTE_IMAGE_ATTR);
-            XAttribute transpColorAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITEPALETTE_TRANSPCOLOR_ATTR);
-            XAttribute ownerMaskColorAttr = spritePaletteElem.Attribute(XmlMetadataConstants.SPRITEPALETTE_OWNERMASKCOLOR_ATTR);
-            if (imageAttr == null) { throw new SimulatorException("Image not defined for sprite palette!"); }
-
-            /// Read the image data.
-            string imagePath = System.IO.Path.Combine(tmpImageDir, imageAttr.Value);
-            byte[] imageData = File.ReadAllBytes(imagePath);
-
-            /// Create the sprite palette object.
-            SpritePalette spritePalette = new SpritePalette(imageData,
-                                                            transpColorAttr != null ? transpColorAttr.Value : null,
-                                                            ownerMaskColorAttr != null ? ownerMaskColorAttr.Value : null,
-                                                            metadata);
-
-            /// Load the sprites.
-            foreach (XElement spriteElem in spritePaletteElem.Elements(XmlMetadataConstants.SPRITE_ELEM))
-            {
-                XAttribute spriteNameAttr = spriteElem.Attribute(XmlMetadataConstants.SPRITE_NAME_ATTR);
-                XAttribute spriteDirectionAttr = spriteElem.Attribute(XmlMetadataConstants.SPRITE_DIRECTION_ATTR);
-                XAttribute sourceRegionAttr = spriteElem.Attribute(XmlMetadataConstants.SPRITE_SOURCEREGION_ATTR);
-                XAttribute offsetAttr = spriteElem.Attribute(XmlMetadataConstants.SPRITE_OFFSET_ATTR);
-                if (spriteNameAttr == null) { throw new SimulatorException("Sprite name not defined for a sprite in sprite palette!"); }
-                if (sourceRegionAttr == null) { throw new SimulatorException("Source region not defined in sprite palette!"); }
-                if (offsetAttr == null) { throw new SimulatorException("Offset not defined in sprite palette!"); }
-
-                MapDirection direction = MapDirection.Undefined;
-                if (spriteDirectionAttr != null)
-                {
-                    if (!EnumMap<MapDirection, string>.Demap(spriteDirectionAttr.Value, out direction))
-                    {
-                        throw new SimulatorException(string.Format("Unexpected sprite direction '{0}'!", spriteDirectionAttr.Value));
-                    }
-                }
-                spritePalette.AddSprite(spriteNameAttr.Value, direction, XmlHelper.LoadIntRectangle(sourceRegionAttr.Value), XmlHelper.LoadIntVector(offsetAttr.Value));
-            }
-
-            spritePalette.AddSpritesWithUndefinedDirection();
-            return spritePalette;
-        }
-
-        /// <summary>
         /// Loads an animation palette definition from the given XML node.
         /// </summary>
         /// <param name="animPaletteElem">The XML node to load from.</param>
         /// <param name="metadata">The metadata object.</param>
         /// <param name="spritePalette">The sprite palette that the animation palette is based on.</param>
         /// <returns>The constructed animation palette definition.</returns>
-        private static AnimationPalette LoadAnimationPalette(XElement animPaletteElem, ISpritePalette spritePalette, ScenarioMetadata metadata)
+        private static AnimationPalette LoadAnimationPalette(XElement animPaletteElem, ISpritePalette<MapDirection> spritePalette, ScenarioMetadata metadata)
         {
             /// Create the animation palette object.
             AnimationPalette animPalette = new AnimationPalette(metadata);
@@ -284,7 +235,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="animElem">The XML node to load from.</param>
         /// <param name="spritePalette">The sprite palette that the animation is based on.</param>
         /// <returns>The constructed animation definition.</returns>
-        private static Animation LoadAnimation(XElement animElem, ISpritePalette spritePalette)
+        private static Animation LoadAnimation(XElement animElem, ISpritePalette<MapDirection> spritePalette)
         {
             /// Collect the labels.
             Dictionary<string, int> labels = new Dictionary<string, int>();
@@ -328,7 +279,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="instructionElem">The XML node to load from.</param>
         /// <param name="spritePalette">The sprite palette that the animation instruction is based on.</param>
         /// <returns>The constructed instruction.</returns>
-        private static Animation.IInstruction LoadNewFrameInstruction(XElement instructionElem, ISpritePalette spritePalette)
+        private static Animation.IInstruction LoadNewFrameInstruction(XElement instructionElem, ISpritePalette<MapDirection> spritePalette)
         {
             XAttribute spritesAttr = instructionElem.Attribute(XmlMetadataConstants.FRAME_SPRITES_ATTR);
             XAttribute durationAttr = instructionElem.Attribute(XmlMetadataConstants.FRAME_DURATION_ATTR);

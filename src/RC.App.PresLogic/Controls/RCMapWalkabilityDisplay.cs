@@ -25,7 +25,7 @@ namespace RC.App.PresLogic.Controls
         {
             this.mapTerrainView = null;
 
-            this.greenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.greenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.greenBrush.Upload();
         }
 

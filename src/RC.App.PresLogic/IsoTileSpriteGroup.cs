@@ -5,6 +5,7 @@ using System.Text;
 using RC.UI;
 using RC.App.PresLogic.Controls;
 using RC.App.BizLogic.Views;
+using RC.Common;
 
 namespace RC.App.PresLogic
 {
@@ -31,9 +32,7 @@ namespace RC.App.PresLogic
             foreach (SpriteDef tileType in this.tilesetView.GetIsoTileTypes())
             {
                 UISprite tile = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(tileType.ImageData, UIWorkspace.Instance.PixelScaling);
-                tile.TransparentColor = tileType.TransparentColorStr != null ?
-                                        UIResourceLoader.LoadColor(tileType.TransparentColorStr) :
-                                        RCMapDisplayBasic.DEFAULT_TILE_TRANSPARENT_COLOR;
+                tile.TransparentColor = tileType.TransparentColor != RCColor.Undefined ? tileType.TransparentColor : RCMapDisplayBasic.DEFAULT_TILE_TRANSPARENT_COLOR;
                 tile.Upload();
                 retList.Add(tile);
             }

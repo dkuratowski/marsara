@@ -24,8 +24,7 @@ namespace RC.Engine.Maps.Core
         public const string MIXEDTILE_COMBINATION_ATTR = "combination";
         public const string VARIANT_ELEM = "variant";
         public const string VARIANT_IMAGE_ATTR = "image";
-        public const string VARIANTPROP_ELEM = "property";
-        public const string VARIANTPROP_NAME_ATTR = "name";
+        public const string VARIANT_TRANSPCOLOR_ATTR = "transparentColor";
         public const string CELLDATACHANGESET_ALL_ELEM = "dataChangesetAll";
         public const string CELLDATACHANGESET_FIELD_ATTR = "field";
         public const string CELLDATACHANGESET_ROW_ELEM = "dataChangesetRow";
@@ -56,6 +55,8 @@ namespace RC.Engine.Maps.Core
         public const string TERRAINOBJ_NAME_ATTR = "name";
         public const string TERRAINOBJ_IMAGE_ATTR = "image";
         public const string TERRAINOBJ_QUADSIZE_ATTR = "quadSize";
+        public const string TERRAINOBJ_OFFSET_ATTR = "offset";  // NOT USED
+        public const string TERRAINOBJ_TRANSPCOLOR_ATTR = "transparentColor";
         public const string TERRAINOBJ_EXCLUDEAREA_ELEM = "excludeArea";
         public const string TERRAINOBJ_EXCLUDEAREA_RECT_ATTR = "rect";
         public const string TERRAINOBJ_TILECONSTRAINT_ELEM = "tileConstraint";
@@ -64,7 +65,5 @@ namespace RC.Engine.Maps.Core
         public const string TERRAINOBJ_TILECONSTRAINT_TERRAINA_ATTR = "terrainA";
         public const string TERRAINOBJ_TILECONSTRAINT_TERRAINB_ATTR = "terrainB";
         public const string TERRAINOBJ_TILECONSTRAINT_COMBINATIONS_ATTR = "combinations";
-        public const string TERRAINOBJ_PROP_ELEM = "property";
-        public const string TERRAINOBJ_PROP_NAME_ATTR = "name";
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 
 namespace RC.App.BizLogic.Views
 {
@@ -21,13 +22,13 @@ namespace RC.App.BizLogic.Views
         public byte[] ImageData { get; set; }
 
         /// <summary>
-        /// The string that represents the transparent color of this sprite definition.
+        /// The transparent color of this sprite definition.
         /// </summary>
-        public string TransparentColorStr { get; set; }
+        public RCColor TransparentColor { get; set; }
 
         /// <summary>
-        /// The string that represents the mask color of this sprite definition.
+        /// The mask color of this sprite definition.
         /// </summary>
-        public string MaskColorStr { get; set; }
+        public RCColor MaskColor { get; set; }
     }
 }

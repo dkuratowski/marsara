@@ -35,7 +35,7 @@ namespace RC.UI.Test
             root.SystemEventQueue.Subscribe<UIMouseSystemEventArgs>(OnMouseEvent);
 
             UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\test_scene_sprites\\pointer.png");
-            mouseIcon.TransparentColor = new UIColor(255, 0, 255);
+            mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             //UIMouseManager mouseMgr = new UIMouseManager(obj1);
             //mouseMgr.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));
 
@@ -86,8 +86,8 @@ namespace RC.UI.Test
 
         public void ActivateStringRender()
         {
-            this.str = new UIString("Hours: {0} Minutes: {1} Seconds: {2}", UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), this.AbsolutePixelScaling, new UIColor(255, 255, 255));
-            //this.str = new UIString("::", UIFont.TestFont, this.AbsolutePixelScaling, new UIColor(255, 255, 255));
+            this.str = new UIString("Hours: {0} Minutes: {1} Seconds: {2}", UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), this.AbsolutePixelScaling, new RCColor(255, 255, 255));
+            //this.str = new UIString("::", UIFont.TestFont, this.AbsolutePixelScaling, new RCColor(255, 255, 255));
         }
 
         public UISprite Sprite { get { return this.sprite; } }

@@ -38,7 +38,7 @@ namespace RC.App.PresLogic.Panels
             : base(backgroundRect, contentRect, showMode, hideMode, appearDuration, disappearDuration, backgroundSprite)
         {
             this.registryTitle = new UIString(REGISTRY_TITLE, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font9B"),
-                                              UIWorkspace.Instance.PixelScaling, UIColor.LightBlue);
+                                              UIWorkspace.Instance.PixelScaling, RCColor.LightBlue);
             this.newIdButton = new RCMenuButton(NEW_ID_BUTTON, new RCIntRectangle(0, 99, 85, 15));
             this.deleteButton = new RCMenuButton(DELETE_BUTTON, new RCIntRectangle(88, 99, 66, 15));
             this.AddControl(this.newIdButton);

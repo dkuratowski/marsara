@@ -30,10 +30,10 @@ namespace RC.UI.XnaPlugin
         #region UISpriteManagerBase overrides
 
         /// <see cref="IUISpriteManager.CreateSprite"/>
-        public override UISprite CreateSprite(UIColor color, RCIntVector spriteSize)
+        public override UISprite CreateSprite(RCColor color, RCIntVector spriteSize)
         {
             if (this.ObjectDisposed) { throw new ObjectDisposedException("XnaSpriteManager"); }
-            if (color == UIColor.Undefined) { throw new ArgumentNullException("color"); }
+            if (color == RCColor.Undefined) { throw new ArgumentNullException("color"); }
             if (spriteSize == RCIntVector.Undefined) { throw new ArgumentNullException("spriteSize"); }
 
             /// Create the empty bitmap and fill with the given color
@@ -54,10 +54,10 @@ namespace RC.UI.XnaPlugin
         }
 
         /// <see cref="IUISpriteManager.CreateSprite"/>
-        public override UISprite CreateSprite(UIColor color, RCIntVector spriteSize, RCIntVector pixelSize)
+        public override UISprite CreateSprite(RCColor color, RCIntVector spriteSize, RCIntVector pixelSize)
         {
             if (this.ObjectDisposed) { throw new ObjectDisposedException("XnaSpriteManager"); }
-            if (color == UIColor.Undefined) { throw new ArgumentNullException("color"); }
+            if (color == RCColor.Undefined) { throw new ArgumentNullException("color"); }
             if (spriteSize == RCIntVector.Undefined) { throw new ArgumentNullException("spriteSize"); }
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
 

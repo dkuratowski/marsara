@@ -91,7 +91,7 @@ namespace RC.UI
 
             ///// TODO: Implement an interface for changing the mouse cursor.
             //UISprite mouseIcon = UIResourceManager.GetResource<UISprite>("RC.Sprites.TestPointerSprite");
-            //mouseIcon.TransparentColor = new UIColor(255, 0, 255);
+            //mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             //this.mouseManager.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));
 
             TraceManager.WriteAllTrace("UIWorkspace.Instance created", UITraceFilters.INFO);

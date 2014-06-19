@@ -21,7 +21,7 @@ namespace RC.Engine.MotionControl.Test
         public RCMotionControlTestPage()
         {
             this.timeSinceLastUpdate = 0;
-            this.brush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.brush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.brush.Upload();
 
             this.entities = new BspSearchTree<TestEntity>(new RCNumRectangle(HALF_VECT * (-1), MAP_SIZE), 16, 10);

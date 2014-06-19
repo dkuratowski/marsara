@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Xml.Linq;
 using RC.Common.Configuration;
+using RC.Common;
 
 namespace RC.UI
 {
@@ -22,8 +23,8 @@ namespace RC.UI
             if (!this.HasPath(IMAGE_FILE_PATH)) { throw new ArgumentException(string.Format("Path '{0}' is missing!", IMAGE_FILE_PATH)); }
 
             this.transparentColor = this.HasParameter(TRANSPARENT_COLOR_PARAM) ?
-                                    UIResourceLoader.LoadColor(this.GetParameter(TRANSPARENT_COLOR_PARAM)) :
-                                    UIColor.Undefined;
+                                    XmlHelper.LoadColor(this.GetParameter(TRANSPARENT_COLOR_PARAM)) :
+                                    RCColor.Undefined;
 
             this.pixelSizeStr = DynamicString.FromString(this.HasParameter(PIXEL_SIZE_PARAM) ?
                                                          this.GetParameter(PIXEL_SIZE_PARAM) :
@@ -59,10 +60,10 @@ namespace RC.UI
         #endregion UIResourceLoader methods
 
         /// <summary>
-        /// The transparent color of the loaded UISprite or UIColor.Undefined if transparent color was
+        /// The transparent color of the loaded UISprite or RCColor.Undefined if transparent color was
         /// not defined.
         /// </summary>
-        private UIColor transparentColor;
+        private RCColor transparentColor;
 
         /// <summary>
         /// The DynamicString that will contain the pixel size of the sprite as soon as the UIWorkspace has

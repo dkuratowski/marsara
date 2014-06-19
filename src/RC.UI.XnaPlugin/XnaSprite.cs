@@ -80,11 +80,11 @@ namespace RC.UI.XnaPlugin
         }
 
         /// <see cref="UISprite.TransparentColor_set"/>
-        protected override void TransparentColor_set(UIColor newColor)
+        protected override void TransparentColor_set(RCColor newColor)
         {
             if (this.isLocked) { throw new UIException("Sprite is locked"); }
 
-            if (newColor == UIColor.Undefined)
+            if (newColor == RCColor.Undefined)
             {
                 /// The transparent bitmap should be deleted and the original bitmap has to be loaded.
                 this.transparentBitmap.Dispose();

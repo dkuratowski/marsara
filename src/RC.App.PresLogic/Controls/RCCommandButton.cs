@@ -19,10 +19,10 @@ namespace RC.App.PresLogic.Controls
         public RCCommandButton(RCIntRectangle buttonRect, string displayedStr) : base(buttonRect.Location, buttonRect.Size)
         {
             UIFont font = UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5");
-            this.displayedText = new UIString(displayedStr, font, UIWorkspace.Instance.PixelScaling, new UIColor(220, 220, 220));
+            this.displayedText = new UIString(displayedStr, font, UIWorkspace.Instance.PixelScaling, new RCColor(220, 220, 220));
 
-            this.tmpBrushA = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
-            this.tmpBrushB = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.LightRed, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.tmpBrushA = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.tmpBrushB = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.LightRed, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.tmpBrushA.Upload();
             this.tmpBrushB.Upload();
         }

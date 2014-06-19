@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common.Configuration;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Scenarios
 {
@@ -44,7 +46,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// <summary>
         /// Gets the sprite palette of this element type or null if this element type has no sprite palette.
         /// </summary>
-        ISpritePalette SpritePalette { get; }
+        ISpritePalette<MapDirection> SpritePalette { get; }
 
         /// <summary>
         /// Gets the animation palette of this element type or null if this element type has no animation palette.

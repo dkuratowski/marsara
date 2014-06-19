@@ -35,8 +35,8 @@ namespace RC.App.BizLogic.Views.Core
                     Array.Copy(objType.SpritePalette.ImageData, imageData, objType.SpritePalette.ImageData.Length);
                     SpriteDef info = new SpriteDef();
                     info.ImageData = imageData;
-                    info.TransparentColorStr = objType.SpritePalette.TransparentColorStr;
-                    info.MaskColorStr = objType.SpritePalette.OwnerMaskColorStr;
+                    info.TransparentColor = objType.SpritePalette.TransparentColor;
+                    info.MaskColor = objType.SpritePalette.MaskColor;
                     info.IsMaskableSprite = objType.HasOwner;
                     retList.Add(info);
                 }
@@ -45,22 +45,6 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         #endregion IMetadataView members
-
-        /// <summary>
-        /// Creates the map sprite type out of the given object type.
-        /// </summary>
-        /// <param name="objType">The object type.</param>
-        /// <returns>The created map sprite type.</returns>
-        private SpriteDef CreateMapSpriteType(IScenarioElementType objType)
-        {
-            byte[] imageData = new byte[objType.SpritePalette.ImageData.Length];
-            Array.Copy(objType.SpritePalette.ImageData, imageData, objType.SpritePalette.ImageData.Length);
-            SpriteDef info = new SpriteDef();
-            info.ImageData = imageData;
-            info.TransparentColorStr = objType.SpritePalette.TransparentColorStr;
-            info.MaskColorStr = objType.SpritePalette.OwnerMaskColorStr;
-            return info;
-        }
 
         /// <summary>
         /// Reference to the RC engine metadata.

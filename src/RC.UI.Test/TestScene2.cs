@@ -22,7 +22,7 @@ namespace RC.UI.Test
             workspace = new TestUIObject(new RCIntVector(2, 2), new RCIntVector(80, 100), new RCIntRectangle(0, 0, 320, 200));
             display.Attach(workspace);
             workspace.LoadSprite(".\\testui_sprites\\workspace.png");
-            workspace.Sprite.TransparentColor = new UIColor(255, 0, 255);
+            workspace.Sprite.TransparentColor = new RCColor(255, 0, 255);
             workspace.ActivateStringRender();
 
             root.GetEventSource("RC.UI.XnaPlugin.XnaMouseEventSource").Activate();
@@ -32,7 +32,7 @@ namespace RC.UI.Test
             //root.SystemEventQueue.Subscribe<UIMouseEventArgs>(OnMouseEvent);
 
             UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\testui_sprites\\pointer.png");
-            mouseIcon.TransparentColor = new UIColor(255, 0, 255);
+            mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             mouseIcon.Upload();
             //UIMouseManager mouseMgr = new UIMouseManager(workspace);
             //mouseMgr.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace RC.Common.Configuration
 {
@@ -151,8 +152,126 @@ namespace RC.Common.Configuration
         }
 
         /// <summary>
+        /// Loads a RCColor from the given string.
+        /// </summary>
+        /// <param name="fromStr">The string to load from.</param>
+        /// <returns>The loaded RCColor.</returns>
+        public static RCColor LoadColor(string fromStr)
+        {
+            string[] colorStrings = fromStr.Trim().Split(';');
+            if (colorStrings.Length != 3) { throw new ArgumentException(string.Format("Invalid RCColor format: '{0}'!", fromStr)); }
+
+            int r = XmlHelper.LoadInt(colorStrings[0]);
+            int g = XmlHelper.LoadInt(colorStrings[1]);
+            int b = XmlHelper.LoadInt(colorStrings[2]);
+            return new RCColor(r, g, b);
+        }
+
+        /// <summary>
+        /// Loads a single-variant sprite palette definition from the given XML node.
+        /// </summary>
+        /// <param name="spritePaletteElem">The XML node to load from.</param>
+        /// <param name="imagesDir">The directory of the referenced images.</param>
+        /// <returns>The constructed sprite palette.</returns>
+        public static ISpritePalette LoadSpritePalette(XElement spritePaletteElem, string imagesDir)
+        {
+            XAttribute imageAttr = spritePaletteElem.Attribute(SPRITEPALETTE_IMAGE_ATTR);
+            XAttribute transpColorAttr = spritePaletteElem.Attribute(SPRITEPALETTE_TRANSPCOLOR_ATTR);
+            XAttribute ownerMaskColorAttr = spritePaletteElem.Attribute(SPRITEPALETTE_MASKCOLOR_ATTR);
+            if (imageAttr == null) { throw new InvalidOperationException("Image not defined for sprite palette!"); }
+
+            /// Read the image data.
+            string imagePath = Path.Combine(imagesDir, imageAttr.Value);
+            byte[] imageData = File.ReadAllBytes(imagePath);
+
+            /// Create the sprite palette object.
+            SpritePalette spritePalette =
+                new SpritePalette(imageData,
+                                  transpColorAttr != null ? XmlHelper.LoadColor(transpColorAttr.Value) : RCColor.Undefined,
+                                  ownerMaskColorAttr != null ? XmlHelper.LoadColor(ownerMaskColorAttr.Value) : RCColor.Undefined);
+
+            /// Load the sprites of the sprite palette.
+            LoadSprites(spritePaletteElem, spritePalette, SpritePalette.DummyEnum.DummyEnumItem);
+            return spritePalette;
+        }
+
+        /// <summary>
+        /// Loads a multi-variant sprite palette definition from the given XML node.
+        /// </summary>
+        /// <param name="spritePaletteElem">The XML node to load from.</param>
+        /// <param name="defaultVariant">The default variant that should be used when no variant was found for a sprite definition.</param>
+        /// <param name="imagesDir">The directory of the referenced images.</param>
+        /// <returns>The constructed sprite palette.</returns>
+        public static ISpritePalette<TVariant> LoadSpritePalette<TVariant>(XElement spritePaletteElem, TVariant defaultVariant, string imagesDir) where TVariant : struct
+        {
+            XAttribute imageAttr = spritePaletteElem.Attribute(SPRITEPALETTE_IMAGE_ATTR);
+            XAttribute transpColorAttr = spritePaletteElem.Attribute(SPRITEPALETTE_TRANSPCOLOR_ATTR);
+            XAttribute ownerMaskColorAttr = spritePaletteElem.Attribute(SPRITEPALETTE_MASKCOLOR_ATTR);
+            if (imageAttr == null) { throw new InvalidOperationException("Image not defined for sprite palette!"); }
+
+            /// Read the image data.
+            string imagePath = Path.Combine(imagesDir, imageAttr.Value);
+            byte[] imageData = File.ReadAllBytes(imagePath);
+
+            /// Create the sprite palette object.
+            SpritePalette<TVariant> spritePalette =
+                new SpritePalette<TVariant>(imageData,
+                                            transpColorAttr != null ? XmlHelper.LoadColor(transpColorAttr.Value) : RCColor.Undefined,
+                                            ownerMaskColorAttr != null ? XmlHelper.LoadColor(ownerMaskColorAttr.Value) : RCColor.Undefined);
+
+            /// Load the sprites.
+            LoadSprites(spritePaletteElem, spritePalette, defaultVariant);
+            return spritePalette;
+        }
+
+        /// <summary>
+        /// Loads the sprites of the given sprite palette from the given XML-node.
+        /// </summary>
+        /// <typeparam name="TVariant">The type of the enumeration that determines the variants of a sprite.</typeparam>
+        /// <param name="spritePaletteElem">The XML-node to load from.</param>
+        /// <param name="palette">The target sprite palette.</param>
+        /// <param name="defaultVariant">The default variant that should be used when no variant was found for a sprite definition.</param>
+        private static void LoadSprites<TVariant>(XElement spritePaletteElem, SpritePalette<TVariant> palette, TVariant defaultVariant) where TVariant : struct
+        {
+            foreach (XElement spriteElem in spritePaletteElem.Elements(SPRITE_ELEM))
+            {
+                XAttribute spriteNameAttr = spriteElem.Attribute(SPRITE_NAME_ATTR);
+                XAttribute spriteVariantAttr = spriteElem.Attribute(SPRITE_VARIANT_ATTR);
+                XAttribute sourceRegionAttr = spriteElem.Attribute(SPRITE_SOURCEREGION_ATTR);
+                XAttribute offsetAttr = spriteElem.Attribute(SPRITE_OFFSET_ATTR);
+                if (spriteNameAttr == null) { throw new InvalidOperationException("Sprite name not defined for a sprite in sprite palette!"); }
+                if (sourceRegionAttr == null) { throw new InvalidOperationException("Source region not defined in sprite palette!"); }
+
+                TVariant variant = defaultVariant;
+                if (spriteVariantAttr != null)
+                {
+                    if (!EnumMap<TVariant, string>.Demap(spriteVariantAttr.Value, out variant))
+                    {
+                        throw new InvalidOperationException(string.Format("Unexpected sprite variant '{0}'!", spriteVariantAttr.Value));
+                    }
+                }
+                palette.AddSprite(spriteNameAttr.Value,
+                                  variant,
+                                  XmlHelper.LoadIntRectangle(sourceRegionAttr.Value),
+                                  offsetAttr != null ? XmlHelper.LoadIntVector(offsetAttr.Value) : new RCIntVector(0, 0));
+            }
+        }
+
+        /// <summary>
         /// Regular expression for checking the syntax of the RCNumbers.
         /// </summary>
         private static readonly Regex RCNUMBER_SYNTAX = new Regex("^[+-]?[0-9]{1,5}" + Regex.Escape(".") + "[0-9]{1,3}$");
+
+        /// <summary>
+        /// The supported XML-nodes and attributes.
+        /// </summary>
+        public const string SPRITEPALETTE_IMAGE_ATTR = "image";
+        public const string SPRITEPALETTE_TRANSPCOLOR_ATTR = "transparentColor";
+        public const string SPRITEPALETTE_MASKCOLOR_ATTR = "maskColor";
+        public const string SPRITE_ELEM = "sprite";
+        public const string SPRITE_NAME_ATTR = "name";
+        public const string SPRITE_VARIANT_ATTR = "variant";
+        public const string SPRITE_SOURCEREGION_ATTR = "sourceRegion";
+        public const string SPRITE_OFFSET_ATTR = "offset";
     }
 }

@@ -28,10 +28,10 @@ namespace RC.App.PresLogic.Controls
             this.selectionIndicatorView = null;
             this.selectionBox = RCIntRectangle.Undefined;
 
-            this.lightGreenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
-            this.greenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
-            this.yellowBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Yellow, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
-            this.redBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Red, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.lightGreenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.greenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.yellowBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Yellow, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.redBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Red, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.lightGreenBrush.Upload();
             this.greenBrush.Upload();
             this.yellowBrush.Upload();

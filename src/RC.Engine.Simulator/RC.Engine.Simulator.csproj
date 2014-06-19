@@ -77,7 +77,6 @@
     <Compile Include="Scenarios\EntityConstraint.cs" />
     <Compile Include="MotionControl\IMotionControlIfaces.cs" />
     <Compile Include="Scenarios\IScenarioElementType.cs" />
-    <Compile Include="Scenarios\ISpritePalette.cs" />
     <Compile Include="Scenarios\IWeaponData.cs" />
     <Compile Include="MotionControl\MotionController.cs" />
     <Compile Include="Scenarios\Player.cs" />
@@ -88,7 +87,6 @@
     <Compile Include="Scenarios\ResourceObject.cs" />
     <Compile Include="Scenarios\Scenario.cs" />
     <Compile Include="Scenarios\ScenarioElementType.cs" />
-    <Compile Include="Scenarios\SpritePalette.cs" />
     <Compile Include="Core\HeapSection.cs" />
     <Compile Include="Scenarios\ScenarioLoader.cs" />
     <Compile Include="Core\HeapType.cs" />

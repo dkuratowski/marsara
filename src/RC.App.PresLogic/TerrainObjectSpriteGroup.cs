@@ -5,6 +5,7 @@ using System.Text;
 using RC.UI;
 using RC.App.PresLogic.Controls;
 using RC.App.BizLogic.Views;
+using RC.Common;
 
 namespace RC.App.PresLogic
 {
@@ -28,9 +29,9 @@ namespace RC.App.PresLogic
             foreach (SpriteDef terrainObjectType in this.tilesetView.GetTerrainObjectTypes())
             {
                 UISprite terrainObject = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(terrainObjectType.ImageData, UIWorkspace.Instance.PixelScaling);
-                terrainObject.TransparentColor = terrainObjectType.TransparentColorStr != null ?
-                                        UIResourceLoader.LoadColor(terrainObjectType.TransparentColorStr) :
-                                        RCMapDisplayBasic.DEFAULT_TILE_TRANSPARENT_COLOR;
+                terrainObject.TransparentColor = terrainObjectType.TransparentColor != RCColor.Undefined
+                                               ? terrainObjectType.TransparentColor
+                                               : RCMapDisplayBasic.DEFAULT_TILE_TRANSPARENT_COLOR;
                 terrainObject.Upload();
                 retList.Add(terrainObject);
             }

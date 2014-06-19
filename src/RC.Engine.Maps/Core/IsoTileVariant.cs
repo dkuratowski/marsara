@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Maps.Core
@@ -17,13 +18,14 @@ namespace RC.Engine.Maps.Core
         /// <param name="imageData">The byte sequence that contains the image data of this variant.</param>
         /// <param name="transparentColor">The transparent color of the image of this variant.</param>
         /// <param name="tileset">Reference to the tileset of this variant.</param>
-        public IsoTileVariant(byte[] imageData, TileSet tileset)
+        public IsoTileVariant(byte[] imageData, RCColor transparentColor, TileSet tileset)
         {
             if (imageData == null || imageData.Length == 0) { throw new ArgumentNullException("imageData"); }
+            if (transparentColor == RCColor.Undefined) { throw new ArgumentNullException("transparentColor"); }
             if (tileset == null) { throw new ArgumentNullException("tileset"); }
 
             this.imageData = imageData;
-            this.properties = new Dictionary<string, string>();
+            this.transparentColor = transparentColor;
             this.cellDataChangesets = new List<ICellDataChangeSet>();
             this.tileset = tileset;
         }
@@ -39,21 +41,6 @@ namespace RC.Engine.Maps.Core
             if (this.tileset.IsFinalized) { throw new InvalidOperationException("TileSet already finalized!"); }
 
             this.cellDataChangesets.Add(changeset);
-        }
-
-        /// <summary>
-        /// Adds a property to this tile variant.
-        /// </summary>
-        /// <param name="propName">The name of the property.</param>
-        /// <param name="propValue">The value of the property.</param>
-        public void AddProperty(string propName, string propValue)
-        {
-            if (propName == null) { throw new ArgumentNullException("propName"); }
-            if (propValue == null) { throw new ArgumentNullException("propValue"); }
-            if (this.tileset.IsFinalized) { throw new InvalidOperationException("TileSet already finalized!"); }
-
-            if (this.properties.ContainsKey(propName)) { throw new TileSetException(string.Format("Variant already contains a property with name '{0}'!", propName)); }
-            this.properties.Add(propName, propValue);
         }
 
         /// <summary>
@@ -85,15 +72,11 @@ namespace RC.Engine.Maps.Core
         /// <see cref="IIsoTileVariant.ImageData"/>
         public byte[] ImageData { get { return this.imageData; } }
 
+        /// <see cref="IIsoTileVariant.TransparentColor"/>
+        public RCColor TransparentColor { get { return this.transparentColor; } }
+
         /// <see cref="IIsoTileVariant.Index"/>
         public int Index { get { return this.index; } }
-
-        /// <see cref="IIsoTileVariant.GetProperty"/>
-        public string GetProperty(string propName)
-        {
-            if (propName == null) { throw new ArgumentNullException("propName"); }
-            return this.properties.ContainsKey(propName) ? this.properties[propName] : null;
-        }
 
         #endregion IIsoTileVariant methods
 
@@ -103,9 +86,9 @@ namespace RC.Engine.Maps.Core
         private byte[] imageData;
 
         /// <summary>
-        /// List of the properties of this tile variant mapped by their name.
+        /// The transparent color of this variant.
         /// </summary>
-        private Dictionary<string, string> properties;
+        private RCColor transparentColor;
 
         /// <summary>
         /// List of the cell data changesets of this variant.

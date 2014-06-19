@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Common.Configuration;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Scenarios
 {
@@ -300,7 +302,7 @@ namespace RC.Engine.Simulator.Scenarios
             int currIdx = 0;
             foreach (ScenarioElementType objType in this.allTypes)
             {
-                SpritePalette spritePalette = objType.GetSpritePaletteImpl();
+                ISpritePalette<MapDirection> spritePalette = objType.SpritePalette;
                 if (spritePalette != null)
                 {
                     spritePalette.SetIndex(currIdx);

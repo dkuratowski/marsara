@@ -28,14 +28,6 @@ namespace RC.Engine.Simulator.Core
         public const string PREVIOUSLEVEL_ELEM = "previousLevel";
         public const string REQUIRES_ELEM = "requires";
         public const string SPRITEPALETTE_ELEM = "spritePalette";
-        public const string SPRITEPALETTE_IMAGE_ATTR = "image";
-        public const string SPRITEPALETTE_TRANSPCOLOR_ATTR = "transparentColor";
-        public const string SPRITEPALETTE_OWNERMASKCOLOR_ATTR = "ownerMaskColor";
-        public const string SPRITE_ELEM = "sprite";
-        public const string SPRITE_NAME_ATTR = "name";
-        public const string SPRITE_DIRECTION_ATTR = "direction";
-        public const string SPRITE_SOURCEREGION_ATTR = "sourceRegion";
-        public const string SPRITE_OFFSET_ATTR = "offset";
         public const string ANIMPALETTE_ELEM = "animationPalette";
         public const string ANIMATION_ELEM = "animation";
         public const string ANIMATION_NAME_ATTR = "name";

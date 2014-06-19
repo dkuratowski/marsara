@@ -18,20 +18,23 @@ namespace RC.Engine.Maps.Core
         /// <param name="name">The name of the TerrainObjectType.</param>
         /// <param name="imageData">The byte sequence that contains the image data of the TerrainObjectType.</param>
         /// <param name="quadraticSize">The size of the TerrainObjectType in quadratic tiles.</param>
-        public TerrainObjectType(string name, byte[] imageData, RCIntVector quadraticSize, TileSet tileset)
+        /// <param name="transparentColor">The transparent color of this TerrainObjectType.</param>
+        /// <param name="tileset">Reference to the tileset that this TerrainObjectType belongs to.</param>
+        public TerrainObjectType(string name, byte[] imageData, RCIntVector quadraticSize, RCColor transparentColor, TileSet tileset)
         {
             if (name == null) { throw new ArgumentNullException("name"); }
             if (imageData == null || imageData.Length == 0) { throw new ArgumentNullException("imageData"); }
             if (quadraticSize == RCIntVector.Undefined) { throw new ArgumentNullException("quadraticSize"); }
+            if (transparentColor == RCColor.Undefined) { throw new ArgumentNullException("transparentColor"); }
             if (tileset == null) { throw new ArgumentNullException("tileset"); }
             if (quadraticSize.X <= 0 || quadraticSize.Y <= 0) { throw new ArgumentOutOfRangeException("quadraticSize", "Quadratic size cannot be 0 in any direction!"); }
 
             this.name = name;
             this.imageData = imageData;
             this.quadraticSize = quadraticSize;
+            this.transparentColor = transparentColor;
             this.tileset = tileset;
             this.areaCanBeExcluded = true;
-            this.properties = new Dictionary<string, string>();
             this.constraints = new List<ITerrainObjectConstraint>();
             this.cellDataChangesets = new List<ICellDataChangeSet>();
 
@@ -94,21 +97,6 @@ namespace RC.Engine.Maps.Core
         }
 
         /// <summary>
-        /// Adds a property to this TerrainObjectType.
-        /// </summary>
-        /// <param name="propName">The name of the property.</param>
-        /// <param name="propValue">The value of the property.</param>
-        public void AddProperty(string propName, string propValue)
-        {
-            if (propName == null) { throw new ArgumentNullException("propName"); }
-            if (propValue == null) { throw new ArgumentNullException("propValue"); }
-            if (this.tileset.IsFinalized) { throw new InvalidOperationException("TileSet already finalized!"); }
-
-            if (this.properties.ContainsKey(propName)) { throw new TileSetException(string.Format("TerrainObjectType already contains a property with name '{0}'!", propName)); }
-            this.properties.Add(propName, propValue);
-        }
-
-        /// <summary>
         /// Sets the index of this TerrainObjectType in the tileset.
         /// </summary>
         /// <param name="newIndex">The new index.</param>
@@ -144,15 +132,11 @@ namespace RC.Engine.Maps.Core
         /// <see cref="ITerrainObjectType.ImageData"/>
         public byte[] ImageData { get { return this.imageData; } }
 
+        /// <see cref="ITerrainObjectType.TransparentColor"/>
+        public RCColor TransparentColor { get { return this.transparentColor; } }
+
         /// <see cref="ITerrainObjectType.Index"/>
         public int Index { get { return this.index; } }
-
-        /// <see cref="ITerrainObjectType.GetProperty"/>
-        public string GetProperty(string propName)
-        {
-            if (propName == null) { throw new ArgumentNullException("propName"); }
-            return this.properties.ContainsKey(propName) ? this.properties[propName] : null;
-        }
 
         /// <see cref="ITerrainObjectType.CheckConstraints"/>
         public HashSet<RCIntVector> CheckConstraints(IMapAccess map, RCIntVector position)
@@ -243,9 +227,9 @@ namespace RC.Engine.Maps.Core
         private byte[] imageData;
 
         /// <summary>
-        /// List of the properties of this TerrainObjectType mapped by their name.
+        /// The transparent color of this TerrainObjectType.
         /// </summary>
-        private Dictionary<string, string> properties;
+        private RCColor transparentColor;
 
         /// <summary>
         /// The name of this TerrainObjectType.

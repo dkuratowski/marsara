@@ -102,7 +102,7 @@ namespace RC.UI.Test
         public MyPanel(RCIntRectangle backgroundRect, RCIntRectangle contentRect, ShowMode showMode, HideMode hideMode)
             : base(backgroundRect, contentRect, showMode, hideMode, 300, 300)
         {
-            this.backgroundSprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(UIColor.Green, this.Range.Size, UIWorkspace.Instance.PixelScaling);
+            this.backgroundSprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Green, this.Range.Size, UIWorkspace.Instance.PixelScaling);
             this.backgroundSprite.Upload();
         }
 

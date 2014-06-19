@@ -100,7 +100,6 @@
     <Compile Include="TaskManagement\UITimeSharingTask.cs" />
     <Compile Include="UIAnimation.cs" />
     <Compile Include="UIRenderManagerBase.cs" />
-    <Compile Include="UIColor.cs" />
     <Compile Include="UIConstants.cs" />
     <Compile Include="UIEventQueue.cs" />
     <Compile Include="UIEvents.cs" />

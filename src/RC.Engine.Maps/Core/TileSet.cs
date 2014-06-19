@@ -170,14 +170,15 @@ namespace RC.Engine.Maps.Core
         /// </summary>
         /// <param name="name">The name of the TerrainObjectType.</param>
         /// <param name="imgData">The byte sequence that contains the image data of the TerrainObjectType.</param>
-        /// <param name="quadraticSize">The size of the TerrainObjectType in quadratic tiles.</param>
-        public void CreateTerrainObjectType(string name, byte[] imgData, RCIntVector quadSize)
+        /// <param name="quadSize">The size of the TerrainObjectType in quadratic tiles.</param>
+        /// <param name="transparentColor">The transparent color of the TerrainObjectType.</param>
+        public void CreateTerrainObjectType(string name, byte[] imgData, RCIntVector quadSize, RCColor transparentColor)
         {
             if (this.isFinalized) { throw new InvalidOperationException("It is not possible to create new TerrainObjectType for a finalized TileSet!"); }
             if (name == null) { throw new ArgumentNullException("name"); }
             if (this.terrainObjectTypes.ContainsKey(name)) { throw new TileSetException(string.Format("TerrainObjectType with name '{0}' already exists!", name)); }
 
-            TerrainObjectType newTerrainObject = new TerrainObjectType(name, imgData, quadSize, this);
+            TerrainObjectType newTerrainObject = new TerrainObjectType(name, imgData, quadSize, transparentColor, this);
             newTerrainObject.SetIndex(this.allTerrainObjectList.Count);
             this.terrainObjectTypes.Add(name, newTerrainObject);
             this.allTerrainObjectList.Add(newTerrainObject);

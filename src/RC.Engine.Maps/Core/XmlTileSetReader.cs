@@ -161,9 +161,11 @@ namespace RC.Engine.Maps.Core
             XAttribute nameAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_NAME_ATTR);
             XAttribute imageAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_IMAGE_ATTR);
             XAttribute quadSizeAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_QUADSIZE_ATTR);
+            XAttribute transpColorAttr = fromElem.Attribute(XmlTileSetConstants.TERRAINOBJ_TRANSPCOLOR_ATTR);
             if (nameAttr == null) { throw new TileSetException("Name not defined for terrain object!"); }
             if (imageAttr == null) { throw new TileSetException("Image not defined for terrain object!"); }
             if (quadSizeAttr == null) { throw new TileSetException("Quadratic size not defined for terrain object!"); }
+            if (transpColorAttr == null) { throw new TileSetException("Transparent color not defined for terrain object!"); }
 
             /// Read the image data.
             string imagePath = Path.Combine(tmpImageDir, imageAttr.Value);
@@ -171,7 +173,8 @@ namespace RC.Engine.Maps.Core
 
             tileset.CreateTerrainObjectType(nameAttr.Value,
                                             imageData,
-                                            XmlHelper.LoadIntVector(quadSizeAttr.Value));
+                                            XmlHelper.LoadIntVector(quadSizeAttr.Value),
+                                            XmlHelper.LoadColor(transpColorAttr.Value));
             TerrainObjectType terrainObj = tileset.GetTerrainObjectTypeImpl(nameAttr.Value);
 
             /// Apply the defined area exclusions.
@@ -182,16 +185,10 @@ namespace RC.Engine.Maps.Core
                 terrainObj.ExcludeArea(XmlHelper.LoadIntRectangle(rectAttr.Value));
             }
 
-            /// Load the constraints, the properties and the cell data changesets.
+            /// Load the constraints and the cell data changesets.
             foreach (XElement childElem in fromElem.Elements())
             {
-                if (childElem.Name.LocalName == XmlTileSetConstants.TERRAINOBJ_PROP_ELEM)
-                {
-                    XAttribute propNameAttr = childElem.Attribute(XmlTileSetConstants.TERRAINOBJ_PROP_NAME_ATTR);
-                    if (propNameAttr == null) { throw new TileSetException("Terrain object property name not defined!"); }
-                    terrainObj.AddProperty(propNameAttr.Value, childElem.Value);
-                }
-                else if (childElem.Name.LocalName == XmlTileSetConstants.TERRAINOBJ_TILECONSTRAINT_ELEM)
+                if (childElem.Name.LocalName == XmlTileSetConstants.TERRAINOBJ_TILECONSTRAINT_ELEM)
                 {
                     ITerrainObjectConstraint constraint = LoadTileConstraint(childElem, terrainObj, tileset);
                     terrainObj.AddConstraint(constraint);
@@ -201,7 +198,7 @@ namespace RC.Engine.Maps.Core
                     ICellDataChangeSet changeset = LoadCellDataChangeSet(childElem, tileset);
                     terrainObj.AddCellDataChangeset(changeset);
                 }
-                /// TODO: loading other constaint types can take place here!
+                /// TODO: loading other constraint types can take place here!
             }
         }
 
@@ -337,30 +334,23 @@ namespace RC.Engine.Maps.Core
         private static void LoadVariant(XElement fromElem, IsoTileType tile, TileSet tileset)
         {
             XAttribute imageAttr = fromElem.Attribute(XmlTileSetConstants.VARIANT_IMAGE_ATTR);
+            XAttribute transpColorAttr = fromElem.Attribute(XmlTileSetConstants.VARIANT_TRANSPCOLOR_ATTR);
             if (imageAttr == null) { throw new TileSetException("Image not defined for tile variant!"); }
+            if (transpColorAttr == null) { throw new TileSetException("Transparent color not defined for tile variant!"); }
 
             /// Read the image data.
             string imagePath = Path.Combine(tmpImageDir, imageAttr.Value);
             byte[] imageData = File.ReadAllBytes(imagePath);
 
             /// Create the new TileVariant object and add it to the tile type.
-            IsoTileVariant newVariant = new IsoTileVariant(imageData, tileset);
+            IsoTileVariant newVariant = new IsoTileVariant(imageData, XmlHelper.LoadColor(transpColorAttr.Value), tileset);
             tile.AddVariant(newVariant);
 
-            /// Load the cell data changesets and the properties.
+            /// Load the cell data changesets.
             foreach (XElement childElem in fromElem.Elements())
             {
-                if (childElem.Name.LocalName == XmlTileSetConstants.VARIANTPROP_ELEM)
-                {
-                    XAttribute propNameAttr = childElem.Attribute(XmlTileSetConstants.VARIANTPROP_NAME_ATTR);
-                    if (propNameAttr == null) { throw new TileSetException("Variant property name not defined!"); }
-                    newVariant.AddProperty(propNameAttr.Value, childElem.Value);
-                }
-                else
-                {
-                    ICellDataChangeSet changeset = LoadCellDataChangeSet(childElem, tileset);
-                    newVariant.AddCellDataChangeset(changeset);
-                }
+                ICellDataChangeSet changeset = LoadCellDataChangeSet(childElem, tileset);
+                newVariant.AddCellDataChangeset(changeset);
             }
 
             /// Register the variant to the tileset.

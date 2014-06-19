@@ -24,8 +24,8 @@ namespace RC.UI.Test
             UIRoot.Instance.InstallPlugins();
             UIFont testFont = UIFont.TestFont;
 
-            //UIString str = new UIString("This change affects the LobbyServer class. The network event handling and calling the interface of LobbyServer are performed in separate threads. Suppose that the caller thread has called LobbyServer.SendPackage with a package that has been inserted into a FIFO queue and then it returns. At the same time the lobby thread notices that the current connection on a line was lost, but it accepts another connection immediately on that line. The problem is that the package is still waiting in the FIFO, however it was targeted to the previous connection. We have to implement a mechanism in the lobby thread that removes those packages from the FIFO that were sent to lost connections. This mechanism should be executed just before accepting a new connection.", UIFont.TestFont, new RCIntVector(3, 6), new UIColor(0, 0, 255));
-            UIString str = new UIString("{0}{1}ABCDEFG{2} {0} {1}HIJKM {3} NOPQRSTUVWXYZ{0}{1}{2}abcdefghijklmnopq{0}rstuvwxyz 0123456789 !?;:.,\"'&()[]{{}}+-/\\_<>=@*%#$", UIFont.TestFont, new RCIntVector(1, 1), new UIColor(0, 255, 0));
+            //UIString str = new UIString("This change affects the LobbyServer class. The network event handling and calling the interface of LobbyServer are performed in separate threads. Suppose that the caller thread has called LobbyServer.SendPackage with a package that has been inserted into a FIFO queue and then it returns. At the same time the lobby thread notices that the current connection on a line was lost, but it accepts another connection immediately on that line. The problem is that the package is still waiting in the FIFO, however it was targeted to the previous connection. We have to implement a mechanism in the lobby thread that removes those packages from the FIFO that were sent to lost connections. This mechanism should be executed just before accepting a new connection.", UIFont.TestFont, new RCIntVector(3, 6), new RCColor(0, 0, 255));
+            UIString str = new UIString("{0}{1}ABCDEFG{2} {0} {1}HIJKM {3} NOPQRSTUVWXYZ{0}{1}{2}abcdefghijklmnopq{0}rstuvwxyz 0123456789 !?;:.,\"'&()[]{{}}+-/\\_<>=@*%#$", UIFont.TestFont, new RCIntVector(1, 1), new RCColor(0, 255, 0));
             str[0] = "X";
             UISprite testImg =
                 UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(testFont.TransparentColor,
@@ -159,9 +159,9 @@ namespace RC.UI.Test
             root.InstallPlugins();
 
             UISprite source = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\sprite_tests\\orig_source.png");
-            source.TransparentColor = new UIColor(255, 0, 0);
+            source.TransparentColor = new RCColor(255, 0, 0);
             UISprite med = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\sprite_tests\\orig_med.png", new RCIntVector(1, 2));
-            med.TransparentColor = new UIColor(0, 255, 255);
+            med.TransparentColor = new RCColor(0, 255, 255);
             UISprite final = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\sprite_tests\\orig_final.png", new RCIntVector(2, 1));
 
             IUIRenderContext ctx = root.GraphicsPlatform.SpriteManager.CreateRenderContext(med);
@@ -172,7 +172,7 @@ namespace RC.UI.Test
             ctx.RenderSprite(med, new RCIntVector(1, 2));
             root.GraphicsPlatform.SpriteManager.CloseRenderContext(final);
 
-            med.TransparentColor = UIColor.Undefined;
+            med.TransparentColor = RCColor.Undefined;
             med.Save(".\\sprite_tests\\med.png");
             final.Save(".\\sprite_tests\\final.png");
 
@@ -187,9 +187,9 @@ namespace RC.UI.Test
             new UIRoot();
             UIRoot.Instance.LoadPlugins(xnaPlugin);
             UIRoot.Instance.InstallPlugins();
-            UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6").GetFontSprite(new RCIntVector(6, 3), new UIColor(255, 0, 0)).Save("c255_0_0_ps6_3.png");
-            UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6").GetFontSprite(new RCIntVector(2, 3), new UIColor(0, 255, 0)).Save("c0_255_0_ps2_3.png");
-            UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6").GetFontSprite(new RCIntVector(4, 4), new UIColor(0, 0, 255)).Save("c0_0_255_ps4_4.png");
+            UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6").GetFontSprite(new RCIntVector(6, 3), new RCColor(255, 0, 0)).Save("c255_0_0_ps6_3.png");
+            UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6").GetFontSprite(new RCIntVector(2, 3), new RCColor(0, 255, 0)).Save("c0_255_0_ps2_3.png");
+            UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6").GetFontSprite(new RCIntVector(4, 4), new RCColor(0, 0, 255)).Save("c0_0_255_ps4_4.png");
         }
 
         static MyUIObject[] objList = new MyUIObject[1000];
@@ -222,7 +222,7 @@ namespace RC.UI.Test
         public MyUIObject2(): base(new RCIntVector(1, 1), new RCIntVector(0, 0), new RCIntRectangle(0, 0, 100, 100))
         {
             mySprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite("source.png", new RCIntVector(10, 5));
-            mySprite.TransparentColor = new UIColor(255, 0, 0);
+            mySprite.TransparentColor = new RCColor(255, 0, 0);
         }
 
         protected override void Render_i(IUIRenderContext renderContext)

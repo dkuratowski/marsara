@@ -30,22 +30,22 @@ namespace RC.UI.Test
 
             display = new TestUIObject(new RCIntVector(2, 2), new RCIntVector(0, 0), new RCIntRectangle(0, 0, 400, 300));
             workspace = new MySensitiveAnimObject(new RCIntVector(40, 50), new RCIntRectangle(0, 0, 320, 200),
-                                              "Workspace", UIColor.Gray, UIColor.Gray);
+                                              "Workspace", RCColor.Gray, RCColor.Gray);
             display.Attach(workspace);
 
             MyButton button = new MyButton(new RCIntVector(5, 12), new RCIntVector(60, 20),
-                                           UIColor.Brown, UIColor.Yellow, UIColor.White,
+                                           RCColor.Brown, RCColor.Yellow, RCColor.White,
                                            "MyButton");
             //button.MouseSensor.Enter += delegate(UISensitiveObject sender) { Console.WriteLine("BUTTON ENTER"); };
             //button.MouseSensor.Move += delegate(UISensitiveObject sender, UIMouseEventArgs args) { Console.WriteLine("BUTTON MOVE"); };
             //button.MouseSensor.Leave += delegate(UISensitiveObject sender) { Console.WriteLine("BUTTON LEAVE"); };
             MyCheckbox checkbox = new MyCheckbox(new RCIntVector(70, 12), new RCIntVector(80, 20),
-                                                 UIColor.Red, UIColor.Green, UIColor.LightRed, UIColor.LightGreen, UIColor.White,
+                                                 RCColor.Red, RCColor.Green, RCColor.LightRed, RCColor.LightGreen, RCColor.White,
                                                  "MyCheckbox");
             MyDropdownSelector selector = new MyDropdownSelector(new RCIntVector(5, 50), new RCIntVector(60, 20),
                                                                  new string[4] { "option0", "option1", "option2", "option3" },
-                                                                 UIColor.WhiteHigh, UIColor.Red,
-                                                                 UIColor.Green, UIColor.LightGreen, UIColor.LightBlue, UIColor.Gray);
+                                                                 RCColor.WhiteHigh, RCColor.Red,
+                                                                 RCColor.Green, RCColor.LightGreen, RCColor.LightBlue, RCColor.Gray);
             //selector.MouseSensor.Enter += delegate(UISensitiveObject sender) { Console.WriteLine("SELECTOR ENTER"); };
             //selector.MouseSensor.Move += delegate(UISensitiveObject sender, UIMouseEventArgs args) { Console.WriteLine("SELECTOR MOVE"); };
             //selector.MouseSensor.Leave += delegate(UISensitiveObject sender) { Console.WriteLine("SELECTOR LEAVE"); };
@@ -63,7 +63,7 @@ namespace RC.UI.Test
                                                    TrackPos = new RCIntVector(10, 5),
                                                    TrackSize = new RCIntVector(60, 1)
                                                },
-                                               UIColor.Green, UIColor.LightGreen, UIColor.White);
+                                               RCColor.Green, RCColor.LightGreen, RCColor.White);
             MySlider sliderVert = new MySlider(new RCIntVector(5, 100), new RCIntVector(10, 80),
                                                new UISlider.Settings()
                                                {
@@ -78,7 +78,7 @@ namespace RC.UI.Test
                                                    TrackPos = new RCIntVector(5, 10),
                                                    TrackSize = new RCIntVector(60, 1)
                                                },
-                                               UIColor.Green, UIColor.LightGreen, UIColor.White);
+                                               RCColor.Green, RCColor.LightGreen, RCColor.White);
             workspace.Attach(button);
             workspace.Attach(checkbox);
             workspace.Attach(selector);
@@ -116,7 +116,7 @@ namespace RC.UI.Test
             root.GetEventSource("RC.UI.XnaPlugin.XnaKeyboardEventSource").Activate();
 
             UISprite mouseIcon = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.TestPointerSprite");
-            //mouseIcon.TransparentColor = new UIColor(255, 0, 255);
+            //mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             UIMouseManager mouseMgr = new UIMouseManager(workspace);
             mouseMgr.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));
 
@@ -134,12 +134,12 @@ namespace RC.UI.Test
     {
         public MyButton(RCIntVector position,
                         RCIntVector size,
-                        UIColor basicColor,
-                        UIColor highlightedColor,
-                        UIColor disabledColor,
+                        RCColor basicColor,
+                        RCColor highlightedColor,
+                        RCColor disabledColor,
                         string text) : base(position, size)
         {
-            this.textStr = new UIString(text, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), new RCIntVector(2, 2), UIColor.Black);
+            this.textStr = new UIString(text, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), new RCIntVector(2, 2), RCColor.Black);
             this.basicBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(basicColor, this.Range.Size - new RCIntVector(2, 2), new RCIntVector(2, 2));
             this.highlightedBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(highlightedColor, this.Range.Size - new RCIntVector(2, 2), new RCIntVector(2, 2));
             this.disabledBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(disabledColor, this.Range.Size - new RCIntVector(2, 2), new RCIntVector(2, 2));
@@ -175,14 +175,14 @@ namespace RC.UI.Test
     {
         public MyCheckbox(RCIntVector position,
                           RCIntVector size,
-                          UIColor basicUncheckedColor,
-                          UIColor basicCheckedColor,
-                          UIColor highlightedUncheckedColor,
-                          UIColor highlightedCheckedColor,
-                          UIColor disabledColor,
+                          RCColor basicUncheckedColor,
+                          RCColor basicCheckedColor,
+                          RCColor highlightedUncheckedColor,
+                          RCColor highlightedCheckedColor,
+                          RCColor disabledColor,
                           string text) : base(position, size, true)
         {
-            this.textStr = new UIString(text, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), new RCIntVector(2, 2), UIColor.Black);
+            this.textStr = new UIString(text, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), new RCIntVector(2, 2), RCColor.Black);
             this.basicUncheckedBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(basicUncheckedColor, new RCIntVector(this.Range.Size.Y - 2, this.Range.Size.Y - 2), new RCIntVector(2, 2));
             this.basicCheckedBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(basicCheckedColor, new RCIntVector(this.Range.Size.Y - 2, this.Range.Size.Y - 2), new RCIntVector(2, 2));
             this.highlightedUncheckedBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(highlightedUncheckedColor, new RCIntVector(this.Range.Size.Y - 2, this.Range.Size.Y - 2), new RCIntVector(2, 2));
@@ -231,9 +231,9 @@ namespace RC.UI.Test
     class MyDropdownSelector : UIDropdownSelector
     {
         public MyDropdownSelector(RCIntVector position, RCIntVector size, string[] options,
-                                  UIColor basicTextColor, UIColor highlightedTextColor,
-                                  UIColor basicBackground, UIColor highlightedBackground,
-                                  UIColor optListBackground, UIColor disabledBackground)
+                                  RCColor basicTextColor, RCColor highlightedTextColor,
+                                  RCColor basicBackground, RCColor highlightedBackground,
+                                  RCColor optListBackground, RCColor disabledBackground)
             : base(position, size, options.Length)
         {
             this.basicOptions = new UIString[options.Length];
@@ -296,7 +296,7 @@ namespace RC.UI.Test
     class MySlider : UISlider
     {
         public MySlider(RCIntVector position, RCIntVector size, Settings settings,
-                        UIColor trackColor, UIColor sliderColor, UIColor disabledColor)
+                        RCColor trackColor, RCColor sliderColor, RCColor disabledColor)
             : base(position, size, settings)
         {
             this.trackBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(trackColor, settings.Alignment == Alignment.Horizontal ? new RCIntVector(settings.TrackSize.X, settings.TrackSize.Y * 2 + 1) : new RCIntVector(settings.TrackSize.Y * 2 + 1, settings.TrackSize.X), new RCIntVector(2, 2));

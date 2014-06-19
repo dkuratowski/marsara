@@ -63,8 +63,8 @@ namespace RC.UI
                 }
 
                 /// Load the transparent and masking colors
-                this.transparentColor = UIResourceLoader.LoadColor(transparentColorElem.Value);
-                this.characterMaskColor = UIResourceLoader.LoadColor(charMaskColorElem.Value);
+                this.transparentColor = XmlHelper.LoadColor(transparentColorElem.Value);
+                this.characterMaskColor = XmlHelper.LoadColor(charMaskColorElem.Value);
                 if (this.transparentColor == this.characterMaskColor)
                 {
                     throw new ConfigurationException("Transparent and character masking color cannot be equal!");
@@ -121,10 +121,10 @@ namespace RC.UI
         /// <param name="pixelSize">The pixel size of the font sprite.</param>
         /// <param name="fontColor">The color of the font sprite.</param>
         /// <returns>The font sprite with the given pixel size and font color.</returns>
-        public UISprite GetFontSprite(RCIntVector pixelSize, UIColor fontColor)
+        public UISprite GetFontSprite(RCIntVector pixelSize, RCColor fontColor)
         {
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
-            if (fontColor == UIColor.Undefined) { throw new ArgumentNullException("fontColor"); }
+            if (fontColor == RCColor.Undefined) { throw new ArgumentNullException("fontColor"); }
 
             UIFontSpriteDefinition spriteDef = new UIFontSpriteDefinition(pixelSize, fontColor);
             if (!this.fontSprites.ContainsKey(spriteDef))
@@ -174,12 +174,12 @@ namespace RC.UI
         /// <summary>
         /// Gets the transparent color on the font sprite.
         /// </summary>
-        public UIColor TransparentColor { get { return this.transparentColor; } }
+        public RCColor TransparentColor { get { return this.transparentColor; } }
 
         /// <summary>
         /// Gets the masking color of the characters on the font sprite.
         /// </summary>
-        public UIColor CharacterMaskColor { get { return this.characterMaskColor; } }
+        public RCColor CharacterMaskColor { get { return this.characterMaskColor; } }
 
         #endregion Public methods and properties
 
@@ -202,8 +202,8 @@ namespace RC.UI
             this.charBottomMax = 0;
             this.spaceBetweenChars = 0;
             this.minimumSpaceWidth = 0;
-            this.transparentColor = UIColor.Undefined;
-            this.characterMaskColor = UIColor.Undefined;
+            this.transparentColor = RCColor.Undefined;
+            this.characterMaskColor = RCColor.Undefined;
             this.originalFontSprite = null;
         }
 
@@ -295,12 +295,12 @@ namespace RC.UI
         /// <summary>
         /// The transparent color on the font sprite.
         /// </summary>
-        private UIColor transparentColor;
+        private RCColor transparentColor;
 
         /// <summary>
         /// The masking color of the characters on the font sprite.
         /// </summary>
-        private UIColor characterMaskColor;
+        private RCColor characterMaskColor;
 
         /// <summary>
         /// The original font sprite.
@@ -369,10 +369,10 @@ namespace RC.UI
         /// </summary>
         /// <param name="pixelSize">The pixel size of the font sprite.</param>
         /// <param name="fontColor">The color of the font sprite.</param>
-        public UIFontSpriteDefinition(RCIntVector pixelSize, UIColor fontColor)
+        public UIFontSpriteDefinition(RCIntVector pixelSize, RCColor fontColor)
         {
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
-            if (fontColor == UIColor.Undefined) { throw new ArgumentNullException("fontColor"); }
+            if (fontColor == RCColor.Undefined) { throw new ArgumentNullException("fontColor"); }
 
             this.isDefined = true;
             this.pixelSize = pixelSize;
@@ -445,7 +445,7 @@ namespace RC.UI
         /// <summary>
         /// Gets the color of the font sprite.
         /// </summary>
-        public UIColor FontColor
+        public RCColor FontColor
         {
             get
             {
@@ -471,7 +471,7 @@ namespace RC.UI
         /// <summary>
         /// The color of the font sprite.
         /// </summary>
-        private UIColor fontColor;
+        private RCColor fontColor;
 
         /// <summary>
         /// This flag is true if this is a defined UIFontSpriteDefinition.
