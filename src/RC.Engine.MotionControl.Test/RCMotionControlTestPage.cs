@@ -43,7 +43,7 @@ namespace RC.Engine.MotionControl.Test
             }
 
             this.MouseSensor.Move += this.OnMouseMove;
-            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnUpdate);
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnUpdate;
         }
 
         /// <see cref="UIObject.Render_i"/>
@@ -74,9 +74,9 @@ namespace RC.Engine.MotionControl.Test
         /// Called by the framework on updates.
         /// </summary>
         /// <param name="evtArgs">The details of the event.</param>
-        private void OnUpdate(UIUpdateSystemEventArgs evtArgs)
+        private void OnUpdate()
         {
-            timeSinceLastUpdate += evtArgs.TimeSinceLastUpdate;
+            timeSinceLastUpdate += UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
             if (timeSinceLastUpdate >= TIME_BETWEEN_UPDATES)
             {
                 timeSinceLastUpdate = 0;

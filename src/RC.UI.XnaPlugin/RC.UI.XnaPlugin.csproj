@@ -78,8 +78,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XnaConstants.cs" />
-    <Compile Include="XnaKeyboardEventSource.cs" />
-    <Compile Include="XnaMouseEventSource.cs" />
+    <Compile Include="XnaKeyboardInputDevice.cs" />
+    <Compile Include="XnaMouseInputDevice.cs" />
     <Compile Include="XnaRenderLoop.cs" />
     <Compile Include="XnaBitmapUtils.cs" />
     <Compile Include="XnaGraphicsPlatform.cs" />

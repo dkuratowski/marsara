@@ -28,6 +28,11 @@ namespace RC.UI.Test
             UIResourceManager.LoadResourceGroup("RC.App.SplashScreen");
             UIResourceManager.LoadResourceGroup("RC.App.CommonResources");
 
+            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("..\\..\\..\\..\\sprites\\pointers\\normal_pointer.png", new RCIntVector(2, 2));
+            mouseIcon.TransparentColor = new RCColor(255, 0, 255);
+            mouseIcon.Upload();
+            UIPointer pointer = new UIPointer(mouseIcon, new RCIntVector(0, 0));
+
             display = new TestUIObject(new RCIntVector(2, 2), new RCIntVector(0, 0), new RCIntRectangle(0, 0, 400, 300));
             workspace = new MySensitiveAnimObject(new RCIntVector(40, 50), new RCIntRectangle(0, 0, 320, 200),
                                               "Workspace", RCColor.Gray, RCColor.Gray);
@@ -112,13 +117,8 @@ namespace RC.UI.Test
                 TraceManager.WriteAllTrace(string.Format("SELECTED VALUE CHANGED (vertical): {0}", sliderVert.SelectedValue), TraceManager.GetTraceFilterID("RC.UI.Test.Info"));
             };
 
-            root.GetEventSource("RC.UI.XnaPlugin.XnaMouseEventSource").Activate();
-            root.GetEventSource("RC.UI.XnaPlugin.XnaKeyboardEventSource").Activate();
-
-            UISprite mouseIcon = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.TestPointerSprite");
-            //mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             UIMouseManager mouseMgr = new UIMouseManager(workspace);
-            mouseMgr.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));
+            mouseMgr.SetDefaultMousePointer(pointer);
 
             root.GraphicsPlatform.RenderManager.Attach(display);
             root.GraphicsPlatform.RenderLoop.Start(new RCIntVector(800, 600));
@@ -137,7 +137,8 @@ namespace RC.UI.Test
                         RCColor basicColor,
                         RCColor highlightedColor,
                         RCColor disabledColor,
-                        string text) : base(position, size)
+                        string text)
+            : base(position, size)
         {
             this.textStr = new UIString(text, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), new RCIntVector(2, 2), RCColor.Black);
             this.basicBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(basicColor, this.Range.Size - new RCIntVector(2, 2), new RCIntVector(2, 2));
@@ -180,7 +181,8 @@ namespace RC.UI.Test
                           RCColor highlightedUncheckedColor,
                           RCColor highlightedCheckedColor,
                           RCColor disabledColor,
-                          string text) : base(position, size, true)
+                          string text)
+            : base(position, size, true)
         {
             this.textStr = new UIString(text, UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6"), new RCIntVector(2, 2), RCColor.Black);
             this.basicUncheckedBackground = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(basicUncheckedColor, new RCIntVector(this.Range.Size.Y - 2, this.Range.Size.Y - 2), new RCIntVector(2, 2));

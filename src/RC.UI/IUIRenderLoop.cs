@@ -40,6 +40,11 @@ namespace RC.UI
         /// Gets whether rendering is in progress or not.
         /// </summary>
         bool IsRendering { get; }
+
+        /// <summary>
+        /// This event is raised on every frame updates.
+        /// </summary>
+        event Action FrameUpdate;
     }
 
     /// <summary>
@@ -129,6 +134,9 @@ namespace RC.UI
                 return this.isRendering;
             }
         }
+
+        /// <see cref="IUIRenderLoop.FrameUpdate"/>
+        public event Action FrameUpdate;
 
         #endregion IUIRenderLoop members
         
@@ -281,12 +289,7 @@ namespace RC.UI
                 this.intermediateTime1 = (int)this.renderLoopTimer.ElapsedMilliseconds;
             }
 
-            UIRoot.Instance.SystemEventQueue.EnqueueEvent<UIUpdateSystemEventArgs>(
-                this.intermediateTime0 <= this.intermediateTime1 ?
-                new UIUpdateSystemEventArgs(this.intermediateTime1 - this.intermediateTime0, this.intermediateTime1) :
-                new UIUpdateSystemEventArgs(this.intermediateTime0 - this.intermediateTime1, this.intermediateTime0));
-            UIRoot.Instance.SystemEventQueue.PostEvents();
-
+            if (this.FrameUpdate != null) { this.FrameUpdate(); }
             UITaskManager.OnUpdate();
         }
 

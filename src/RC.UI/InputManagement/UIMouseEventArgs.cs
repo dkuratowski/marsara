@@ -9,7 +9,7 @@ namespace RC.UI
     /// <summary>
     /// Provides data for the MouseUp, MouseDown, MouseClick, MouseDblClick, MouseWheel and MouseMove events.
     /// </summary>
-    public class UIMouseEventArgs : UIEventArgs
+    public class UIMouseEventArgs
     {
         /// <summary>
         /// Use this constructor for MouseMove events.

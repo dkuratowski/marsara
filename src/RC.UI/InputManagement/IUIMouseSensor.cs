@@ -112,6 +112,14 @@ namespace RC.UI
         /// <summary>
         /// Called by UIMouseManager.
         /// </summary>
+        public UIPointer GetMousePointer(RCIntVector absPosition)
+        {
+            return this.targetObject.GetMousePointer(this.targetObject.TransformAbsToLocal(absPosition));
+        }
+
+        /// <summary>
+        /// Called by UIMouseManager.
+        /// </summary>
         public void OnButtonDown(RCIntVector absPosition, UIMouseButton whichButton)
         {
             bool raiseDoubleClickEvt = false;
@@ -126,7 +134,7 @@ namespace RC.UI
                     this.doubleClickButton = whichButton;
                     this.doubleClickStartPos = absPosition;
                     this.doubleClickTimer = 0;
-                    UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                    UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
                 }
                 else if (this.doubleClickButton == whichButton && this.doubleClickStartPos == absPosition)
                 {
@@ -345,9 +353,9 @@ namespace RC.UI
         /// Called on every frame update if the double-click timer is running.
         /// </summary>
         /// <param name="evtArgs">Contains timing informations.</param>
-        private void OnFrameUpdate(UIUpdateSystemEventArgs evtArgs)
+        private void OnFrameUpdate()
         {
-            this.doubleClickTimer += evtArgs.TimeSinceLastUpdate;
+            this.doubleClickTimer += UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
             if (this.doubleClickTimer > DOUBLE_CLICK_TIME)
             {
                 /// Double-click time elapsed.
@@ -360,7 +368,7 @@ namespace RC.UI
         /// </summary>
         private void StopDoubleClickTimer()
         {
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
             this.doubleClickTimer = 0;
             this.doubleClickButton = UIMouseButton.Undefined;
             this.doubleClickStartPos = RCIntVector.Undefined;

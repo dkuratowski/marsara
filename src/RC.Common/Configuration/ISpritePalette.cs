@@ -28,7 +28,7 @@ namespace RC.Common.Configuration
         /// <summary>
         /// Gets the index of this sprite palette.
         /// </summary>
-        /// <exception cref="InvalidOperationException">If the index has not yet been set for this sprite palette.</exception>
+        /// <exception cref="InvalidOperationException">The index has not yet been set for this sprite palette.</exception>
         int Index { get; }
 
         /// <summary>

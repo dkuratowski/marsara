@@ -128,7 +128,7 @@ namespace RC.UI
                 this.Position = this.showStartPos;
                 this.movementStartTime = -1;
                 if (this.StatusChanged != null) { this.StatusChanged(this, this.currentStatus); }
-                UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
             }
         }
 
@@ -154,7 +154,7 @@ namespace RC.UI
                 this.Position = this.normalPosition;
                 this.movementStartTime = -1;
                 if (this.StatusChanged != null) { this.StatusChanged(this, this.currentStatus); }
-                UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
             }
         }
 
@@ -164,15 +164,17 @@ namespace RC.UI
         /// This method is called on every frame update.
         /// </summary>
         /// <param name="evtArgs">Contains timing informations.</param>
-        private void OnFrameUpdate(UIUpdateSystemEventArgs evtArgs)
+        private void OnFrameUpdate()
         {
+            int timeSinceStart = UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceStart;
+            int timeSinceLastUpdate = UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
             if (this.movementStartTime == -1)
             {
                 /// First update event
-                this.movementStartTime = evtArgs.TimeSinceStart - evtArgs.TimeSinceLastUpdate;
+                this.movementStartTime = timeSinceStart - timeSinceLastUpdate;
             }
 
-            int t = evtArgs.TimeSinceStart - this.movementStartTime;
+            int t = timeSinceStart - this.movementStartTime;
             if (this.currentStatus == Status.Appearing)
             {
                 if (t > this.showDuration)
@@ -180,7 +182,7 @@ namespace RC.UI
                     /// Appearing of the panel finished
                     this.currentStatus = Status.Visible;
                     this.Position = this.normalPosition;
-                    UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                    UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
                     if (this.StatusChanged != null) { this.StatusChanged(this, this.currentStatus); }
                 }
                 else
@@ -201,7 +203,7 @@ namespace RC.UI
                     /// Disappearing of the panel finished
                     this.currentStatus = Status.Hidden;
                     this.Position = this.normalPosition;
-                    UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                    UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
                     if (this.StatusChanged != null) { this.StatusChanged(this, this.currentStatus); }
                 }
                 else

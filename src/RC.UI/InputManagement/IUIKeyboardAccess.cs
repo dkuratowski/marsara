@@ -173,28 +173,18 @@ namespace RC.UI
     }
 
     /// <summary>
-    /// Contains event data of any keyboard events.
+    /// Interface for accessing the current state of the keyboard input device.
     /// </summary>
-    public class UIKeyboardSystemEventArgs : UIEventArgs
+    public interface IUIKeyboardAccess
     {
-        /// <summary>
-        /// Constructs a UIKeyboardSystemEventArgs object.
-        /// </summary>
-        /// <param name="pressedKeys">The list of the keys that are currently being pressed.</param>
-        public UIKeyboardSystemEventArgs(HashSet<UIKey> pressedKeys)
-        {
-            if (pressedKeys == null) { throw new ArgumentNullException("pressedKeys"); }
-            this.pressedKeys = pressedKeys;
-        }
-
         /// <summary>
         /// Gets the list of the keys that are currently being pressed.
         /// </summary>
-        public HashSet<UIKey> PressedKeys { get { return this.pressedKeys; } }
+        HashSet<UIKey> PressedKeys { get; }
 
         /// <summary>
-        /// The list of the keys that are currently being pressed.
+        /// This event is raised when the state of the keyboard input device has been changed.
         /// </summary>
-        private HashSet<UIKey> pressedKeys;
+        event Action StateChanged;
     }
 }

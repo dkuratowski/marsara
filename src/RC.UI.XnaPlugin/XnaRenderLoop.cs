@@ -24,16 +24,16 @@ namespace RC.UI.XnaPlugin
         /// <param name="platform">Reference to the platform.</param>
         public XnaRenderLoop(XnaGraphicsPlatform platform)
         {
-            this.mouseEventSource = new XnaMouseEventSource(platform);
-            this.keyboardEventSource = new XnaKeyboardEventSource();
-            UIRoot.Instance.RegisterEventSource(this.mouseEventSource);
-            UIRoot.Instance.RegisterEventSource(this.keyboardEventSource);
+            this.mouseInputDevice = new XnaMouseInputDevice(platform);
+            this.keyboardInputDevice = new XnaKeyboardInputDevice();
+            UIRoot.Instance.RegisterMouseInputDevice(this.mouseInputDevice);
+            UIRoot.Instance.RegisterKeyboardInputDevice(this.keyboardInputDevice);
 
             List<XnaRenderLoopImpl.UpdateDlgt> updateFunctions = new List<XnaRenderLoopImpl.UpdateDlgt>();
             List<XnaRenderLoopImpl.RenderDlgt> renderFunctions = new List<XnaRenderLoopImpl.RenderDlgt>();
             List<XnaRenderLoopImpl.InitializeDlgt> initFunctions = new List<XnaRenderLoopImpl.InitializeDlgt>();
-            updateFunctions.Add(this.mouseEventSource.Update);
-            updateFunctions.Add(this.keyboardEventSource.Update);
+            updateFunctions.Add(this.mouseInputDevice.Update);
+            updateFunctions.Add(this.keyboardInputDevice.Update);
             updateFunctions.Add(this.Update);
             renderFunctions.Add(this.Render);
             initFunctions.Add(this.Initialize);
@@ -71,8 +71,7 @@ namespace RC.UI.XnaPlugin
         /// <see cref="UIRenderLoopBase.Start_i"/>
         protected override void Start_i(RCIntVector screenSize)
         {
-            this.mouseEventSource.Reset(screenSize / 2);
-            //UIRoot.Instance.GetEventSource(this.mouseEventSource.Name).Activate();
+            this.mouseInputDevice.Reset(screenSize / 2);
             this.implementation.ScreenSize = screenSize;
             this.implementation.Run();
         }
@@ -80,14 +79,14 @@ namespace RC.UI.XnaPlugin
         /// <see cref="UIRenderLoopBase.Stop_i"/>
         protected override void Stop_i()
         {
-            //UIRoot.Instance.GetEventSource(this.mouseEventSource.Name).Deactivate();
             this.implementation.Exit();
         }
 
         /// <see cref="UIRenderLoopBase.Dispose_i"/>
         protected override void Dispose_i()
         {
-            UIRoot.Instance.UnregisterEventSource(this.mouseEventSource.Name);
+            UIRoot.Instance.UnregisterMouseInputDevice();
+            UIRoot.Instance.UnregisterKeyboardInputDevice();
             this.implementation.Dispose();
         }
 
@@ -223,13 +222,13 @@ namespace RC.UI.XnaPlugin
         private XnaGraphicsPlatform platform;
 
         /// <summary>
-        /// Source of system mouse events.
+        /// Reference to the mouse input device.
         /// </summary>
-        private XnaMouseEventSource mouseEventSource;
+        private XnaMouseInputDevice mouseInputDevice;
 
         /// <summary>
-        /// Source of the system keyboard events.
+        /// Reference to the keyboard input device.
         /// </summary>
-        private XnaKeyboardEventSource keyboardEventSource;
+        private XnaKeyboardInputDevice keyboardInputDevice;
     }
 }

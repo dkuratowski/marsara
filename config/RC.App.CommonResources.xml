@@ -1,6 +1,7 @@
 <resourceFile>
   <loader name="SpriteLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UISpriteLoader" />
   <loader name="FontLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UIFontLoader" />
+  <loader name="PointerLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UIPointerLoader" />
   <loader name="AnimationLoader" assembly="RC.UI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.UI.UIAnimationLoader" />
 
   <resourceGroup namespace="RC.App" name="SplashScreen">
@@ -44,15 +45,23 @@
   </resourceGroup>
   
   <resourceGroup namespace="RC.App" name="CommonResources">
-    <resource namespace="RC.App.Sprites" name="TestPointerSprite" loader="SpriteLoader">
-      <path name="imageFile">../sprites/pointers/testpointer.png</path>
+    <resource namespace="RC.App.Pointers" name="NormalPointer" loader="PointerLoader">
+      <path name="imageFile">../sprites/pointers/normal_pointer.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+	  <parameter name="offset">0;0</parameter>
     </resource>
-    <resource namespace="RC.App.Sprites" name="MenuPointerSprite" loader="SpriteLoader">
-      <path name="imageFile">../sprites/pointers/menu_pointer.png</path>
+    <resource namespace="RC.App.Pointers" name="SelectionBoxPointer" loader="PointerLoader">
+      <path name="imageFile">../sprites/pointers/selection_box_pointer.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+	  <parameter name="offset">3;3</parameter>
+    </resource>
+    <resource namespace="RC.App.Pointers" name="SelectTargetPointer" loader="PointerLoader">
+      <path name="imageFile">../sprites/pointers/select_target_pointer.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+	  <parameter name="offset">3;3</parameter>
     </resource>
     <resource namespace="RC.App.Sprites" name="CancelBtnPanel" loader="SpriteLoader">
       <path name="imageFile">../sprites/menusprites/cancel_btn_panel.png</path>

@@ -19,8 +19,6 @@ namespace RC.UI.Test
             root.InstallPlugins();
 
             UIWorkspace workspace = new UIWorkspace(new RCIntVector(740, 500), new RCIntVector(320, 200));
-            root.GetEventSource("RC.UI.XnaPlugin.XnaMouseEventSource").Activate();
-            root.GetEventSource("RC.UI.XnaPlugin.XnaKeyboardEventSource").Activate();
 
             pageA = new UIPage();
             pageB = new UIPage();

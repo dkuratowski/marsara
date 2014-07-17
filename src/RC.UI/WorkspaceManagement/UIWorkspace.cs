@@ -88,12 +88,6 @@ namespace RC.UI
                 delegate() { return string.Format("{0};{1}", this.PixelScaling.X, this.PixelScaling.Y); });
 
             theInstance = this;
-
-            ///// TODO: Implement an interface for changing the mouse cursor.
-            //UISprite mouseIcon = UIResourceManager.GetResource<UISprite>("RC.Sprites.TestPointerSprite");
-            //mouseIcon.TransparentColor = new RCColor(255, 0, 255);
-            //this.mouseManager.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));
-
             TraceManager.WriteAllTrace("UIWorkspace.Instance created", UITraceFilters.INFO);
         }
 
@@ -134,6 +128,12 @@ namespace RC.UI
         #region Public methods
 
         /// <summary>
+        /// Sets the default mouse pointer.
+        /// </summary>
+        /// <param name="defaultPointer">The default mouse pointer or null if no default pointer is defined.</param>
+        public void SetDefaultMousePointer(UIPointer defaultPointer) { this.mouseManager.SetDefaultMousePointer(defaultPointer); }
+
+        /// <summary>
         /// Registers the given page to the UIWorkspace.
         /// </summary>
         /// <param name="page">The page to register.</param>
@@ -172,16 +172,6 @@ namespace RC.UI
         /// </summary>
         public void CloseDialog()
         {
-        }
-
-        /// <summary>
-        /// Sets the mouse pointer of the UIWorkspace.
-        /// </summary>
-        /// <param name="ptr">The new pointer or null to turn off the pointer.</param>
-        /// <remarks>TODO: define mouse pointers as resources in the future.</remarks>
-        public void SetMousePointer(IUIMousePointer ptr)
-        {
-            this.mouseManager.Pointer = ptr;
         }
 
         #endregion Public methods

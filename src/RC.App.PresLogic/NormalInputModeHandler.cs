@@ -13,16 +13,16 @@ using RC.UI;
 namespace RC.App.PresLogic
 {
     /// <summary>
-    /// Internal class for handling mouse events during gameplay.
+    /// Internal class for handling mouse events in MouseInputModeEnum.NormalInputMode.
     /// </summary>
-    class MouseHandler
+    class NormalInputModeHandler : InputHandler
     {
         /// <summary>
         /// Constructs a MouseHandler instance.
         /// </summary>
         /// <param name="evtSource">The UISensitiveObject that will raise the input events.</param>
         /// <param name="targetControl">Reference to the target control.</param>
-        public MouseHandler(UISensitiveObject evtSource, IMapControl targetControl)
+        public NormalInputModeHandler(UISensitiveObject evtSource, IMapControl targetControl)
         {
             if (evtSource == null) { throw new ArgumentNullException("evtSource"); }
             if (targetControl == null) { throw new ArgumentNullException("targetControl"); }
@@ -30,53 +30,31 @@ namespace RC.App.PresLogic
             this.eventSource = evtSource;
             this.targetControl = targetControl;
             this.commandService = ComponentManager.GetInterface<ICommandService>();
-            this.isMouseHandlingActive = false;
             this.eventSource.MouseSensor.StateReset += this.OnStateReset;
         }
 
-        #region Public interface
+        #region Overrides from InputHandler
 
-        /// <summary>
-        /// This event is raised when a mouse handling activity has been started on this mouse handler.
-        /// </summary>
-        public event EventHandler MouseActivityStarted;
-
-        /// <summary>
-        /// This event is raised when a mouse handling activity has been finished on this mouse handler.
-        /// </summary>
-        public event EventHandler MouseActivityFinished;
-
-        /// <summary>
-        /// Activates the scroll handler. If it is currently active then this method has no effect.
-        /// </summary>
-        public void ActivateMouseHandling()
+        /// <see cref="InputHandler.StartImpl"/>
+        protected override void StartImpl()
         {
-            if (!this.isMouseHandlingActive)
-            {
-                this.eventSource.MouseSensor.ButtonDown += this.OnMouseDown;
-                this.eventSource.MouseSensor.Move += this.OnMouseMove;
-                this.eventSource.MouseSensor.ButtonUp += this.OnMouseUp;
-                this.eventSource.MouseSensor.DoubleClick += this.OnMouseDoubleClick;
-                this.isMouseHandlingActive = true;
-            }
+            this.eventSource.MouseSensor.ButtonDown += this.OnMouseDown;
+            this.eventSource.MouseSensor.Move += this.OnMouseMove;
+            this.eventSource.MouseSensor.ButtonUp += this.OnMouseUp;
+            this.eventSource.MouseSensor.DoubleClick += this.OnMouseDoubleClick;
         }
 
-        /// <summary>
-        /// Deactivates the scroll handler. If it is currently inactive then this method has no effect.
-        /// </summary>
-        public void DeactivateMouseHandling()
+        /// <see cref="InputHandler.StopImpl"/>
+        protected override void StopImpl()
         {
-            if (this.isMouseHandlingActive)
-            {
-                this.eventSource.MouseSensor.ButtonDown -= this.OnMouseDown;
-                this.eventSource.MouseSensor.Move -= this.OnMouseMove;
-                this.eventSource.MouseSensor.ButtonUp -= this.OnMouseUp;
-                this.eventSource.MouseSensor.DoubleClick -= this.OnMouseDoubleClick;
-                this.isMouseHandlingActive = false;
-            }
+            this.eventSource.MouseSensor.ButtonDown -= this.OnMouseDown;
+            this.eventSource.MouseSensor.Move -= this.OnMouseMove;
+            this.eventSource.MouseSensor.ButtonUp -= this.OnMouseUp;
+            this.eventSource.MouseSensor.DoubleClick -= this.OnMouseDoubleClick;
+            this.targetControl.SelectionBox = RCIntRectangle.Undefined;
         }
 
-        #endregion Public interface
+        #endregion Overrides from InputHandler
 
         #region Mouse sensor event handling
 
@@ -243,11 +221,11 @@ namespace RC.App.PresLogic
                 this.currentMouseStatus = value;
                 if (oldValue == MouseStatus.None && this.currentMouseStatus != MouseStatus.None)
                 {
-                    if (this.MouseActivityStarted != null) { this.MouseActivityStarted(this, new EventArgs()); }
+                    this.OnProcessingStarted();
                 }
                 else if (oldValue != MouseStatus.None && this.currentMouseStatus == MouseStatus.None)
                 {
-                    if (this.MouseActivityFinished != null) { this.MouseActivityFinished(this, new EventArgs()); }
+                    this.OnProcessingFinished();
                 }
             }
         }
@@ -292,11 +270,6 @@ namespace RC.App.PresLogic
         /// Reference to the target control.
         /// </summary>
         private IMapControl targetControl;
-
-        /// <summary>
-        /// This flag indicates whether the mouse handling is currently active or not.
-        /// </summary>
-        private bool isMouseHandlingActive;
 
         /// <summary>
         /// Reference to the command service.

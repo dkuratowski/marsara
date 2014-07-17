@@ -40,10 +40,6 @@ namespace RC.App.Starter
                 root.LoadPlugins(xnaPlugin);
                 root.InstallPlugins();
 
-                /// Activate the event sources (TODO: make it configurable)
-                root.GetEventSource("RC.UI.XnaPlugin.XnaMouseEventSource").Activate();
-                root.GetEventSource("RC.UI.XnaPlugin.XnaKeyboardEventSource").Activate();
-
                 /// Create the UIWorkspace (TODO: make it configurable)
                 UIWorkspace workspace = new UIWorkspace(new RCIntVector(1024, 768), MapEditorSetup.Mode == MapEditorMode.Off ? new RCIntVector(320, 200) : new RCIntVector(1024, 768));
 
@@ -55,7 +51,7 @@ namespace RC.App.Starter
                     UIResourceManager.LoadResourceGroup("RC.App.SplashScreen");
 
                     /// Initialize the pages of the RC application.
-                    root.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(InitPages);
+                    root.GraphicsPlatform.RenderLoop.FrameUpdate += InitPages;
 
                     /// Start and run the render loop
                     root.GraphicsPlatform.RenderLoop.Start(workspace.DisplaySize);
@@ -90,12 +86,12 @@ namespace RC.App.Starter
 
                     /// Load the resources for the map editor.
                     UIResourceManager.LoadResourceGroup("RC.MapEditor.Resources");
-                    UISprite mouseIcon = UIResourceManager.GetResource<UISprite>("RC.MapEditor.Sprites.MenuPointerSprite");
-                    UIBasicPointer basicPtr = new UIBasicPointer(mouseIcon, new RCIntVector(0, 0));
-                    UIWorkspace.Instance.SetMousePointer(basicPtr);
+
+                    /// Set the default mouse pointer.
+                    workspace.SetDefaultMousePointer(UIResourceManager.GetResource<UIPointer>("RC.App.Pointers.NormalPointer"));
 
                     /// Initialize the page of the map editor.
-                    root.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(InitMapEditorPage);
+                    root.GraphicsPlatform.RenderLoop.FrameUpdate += InitMapEditorPage;
 
                     /// Start and run the render loop
                     root.GraphicsPlatform.RenderLoop.Start(workspace.DisplaySize);
@@ -132,9 +128,9 @@ namespace RC.App.Starter
         /// <summary>
         /// Initializes the pages of the RC application.
         /// </summary>
-        private static void InitPages(UIUpdateSystemEventArgs evtArgs)
+        private static void InitPages()
         {
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(InitPages);
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= InitPages;
 
             /// Create the main page
             RCMainMenuPage mainMenuPage = new RCMainMenuPage();
@@ -184,9 +180,9 @@ namespace RC.App.Starter
         /// <summary>
         /// Initializes the page of the map editor.
         /// </summary>
-        private static void InitMapEditorPage(UIUpdateSystemEventArgs evtArgs)
+        private static void InitMapEditorPage()
         {
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(InitMapEditorPage);
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= InitMapEditorPage;
 
             /// Create and activate the map editor page.
             RCMapEditorPage mapEditorPage = null;
@@ -234,6 +230,7 @@ namespace RC.App.Starter
                                                     "RC.App.BizLogic.TilesetManagerBC",
                                                     "RC.App.BizLogic.ScenarioManagerBC",
                                                     "RC.App.BizLogic.SelectionManagerBC",
+                                                    "RC.App.BizLogic.CommandManagerBC",
                                                     "RC.App.BizLogic.MultiplayerService",
                                                     "RC.App.BizLogic.CommandService",
                                                     "RC.App.BizLogic.MapEditorService",

@@ -80,14 +80,15 @@
     <Compile Include="Controls\RCMapObjectDisplay.cs" />
     <Compile Include="Controls\RCMapWalkabilityDisplay.cs" />
     <Compile Include="Controls\RCObjectPlacementDisplay.cs" />
-    <Compile Include="Controls\IScrollableControl.cs" />
     <Compile Include="Controls\RCResourceAmountDisplay.cs" />
     <Compile Include="Controls\RCSelectionDisplay.cs" />
     <Compile Include="IGameConnector.cs" />
+    <Compile Include="InputHandler.cs" />
+    <Compile Include="GameplayInputManager.cs" />
     <Compile Include="IsoTileSpriteGroup.cs" />
     <Compile Include="MapObjectSpriteGroup.cs" />
     <Compile Include="MaskedSpriteGroup.cs" />
-    <Compile Include="MouseHandler.cs" />
+    <Compile Include="NormalInputModeHandler.cs" />
     <Compile Include="PresLogicConstants.cs" />
     <Compile Include="ScrollHandler.cs" />
     <Compile Include="Panels\RCCommandPanel.cs" />

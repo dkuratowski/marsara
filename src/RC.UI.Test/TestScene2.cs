@@ -25,9 +25,6 @@ namespace RC.UI.Test
             workspace.Sprite.TransparentColor = new RCColor(255, 0, 255);
             workspace.ActivateStringRender();
 
-            root.GetEventSource("RC.UI.XnaPlugin.XnaMouseEventSource").Activate();
-            root.GetEventSource("RC.UI.XnaPlugin.XnaKeyboardEventSource").Activate();
-
             //root.SystemEventQueue.Subscribe<UIKeyboardEventArgs>(OnKeyboardEvent);
             //root.SystemEventQueue.Subscribe<UIMouseEventArgs>(OnMouseEvent);
 

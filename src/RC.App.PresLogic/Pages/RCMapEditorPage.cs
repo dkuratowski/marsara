@@ -79,7 +79,7 @@ namespace RC.App.PresLogic.Pages
             this.loadMapTask.Failed -= this.OnLoadMapFailed;
 
             /// To avoid recursive call on the UITaskManager.
-            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnUpdateAfterMapLoaded);
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnUpdateAfterMapLoaded;
         }
 
         /// <summary>
@@ -96,9 +96,9 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// To avoid recursive call on the UITaskManager.
         /// </summary>
-        private void OnUpdateAfterMapLoaded(UIUpdateSystemEventArgs evtArgs)
+        private void OnUpdateAfterMapLoaded()
         {
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnUpdateAfterMapLoaded);
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnUpdateAfterMapLoaded;
 
             /// Create the map display control.
             this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize - new RCIntVector(97, 0));
@@ -131,7 +131,7 @@ namespace RC.App.PresLogic.Pages
             this.AttachSensitive(this.mapDisplay);
 
             /// Subscribe to the events of the appropriate mouse sensors.
-            this.scrollHandler.ActivateMouseHandling();
+            this.scrollHandler.Start();
             this.mapDisplay.MouseSensor.Move += this.OnMouseMoveOverDisplay;
             this.mapDisplay.MouseSensor.ButtonDown += this.OnMouseDown;
             this.mapDisplay.MouseSensor.ButtonUp += this.OnMouseUp;
@@ -308,7 +308,7 @@ namespace RC.App.PresLogic.Pages
         /// <param name="sender">Reference to the button.</param>
         private void OnExitPressed(UISensitiveObject sender)
         {
-            this.scrollHandler.DeactivateMouseHandling();
+            this.scrollHandler.Stop();
             this.mapDisplay.MouseSensor.Wheel -= this.OnMouseWheel;
             this.mapDisplay.MouseSensor.ButtonDown -= this.OnMouseDown;
             this.mapDisplay.MouseSensor.ButtonUp -= this.OnMouseUp;

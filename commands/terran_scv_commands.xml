@@ -1,167 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
 <commandWorkflows>
-  <spritePalette image="terran_scv_commands.xml" transparentColor="255;0;255" maskColor="0;255;255">
-    <sprite name="RepairBtn" sourceRegion="" />
-    <sprite name="GatherBtn" sourceRegion="" />
-    <sprite name="ReturnBtn" sourceRegion="" />
-    <sprite name="BuildBtn" sourceRegion="" />
-    <sprite name="CommandCenterBtn" sourceRegion="" />
-    <sprite name="SupplyDepotBtn" sourceRegion="" />
-    <sprite name="RefineryBtn" sourceRegion="" />
-    <sprite name="BarracksBtn" sourceRegion="" />
-    <sprite name="EngineeringBayBtn" sourceRegion="" />
-    <sprite name="MissileTurretBtn" sourceRegion="" />
-    <sprite name="AcademyBtn" sourceRegion="" />
-    <sprite name="BunkerBtn" sourceRegion="" />
-    <sprite name="AdvancedBuildBtn" sourceRegion="" />
-    <sprite name="FactoryBtn" sourceRegion="" />
-    <sprite name="StarportBtn" sourceRegion="" />
-    <sprite name="ScienceFacilityBtn" sourceRegion="" />
-    <sprite name="ArmoryBtn" sourceRegion="" />
-    <sprite name="CancelBtn" sourceRegion="" />
+  <spritePalette image="terran_scv_commands.png" transparentColor="255;0;255" maskColor="0;255;255">
+    <sprite name="RepairBtn" sourceRegion="1;1;20;20" />
+    <sprite name="GatherBtn" sourceRegion="1;1;20;20" />
+    <sprite name="ReturnBtn" sourceRegion="1;1;20;20" />
+    <sprite name="BuildBtn" sourceRegion="1;1;20;20" />
+    <sprite name="CommandCenterBtn" sourceRegion="1;1;20;20" />
+    <sprite name="SupplyDepotBtn" sourceRegion="1;1;20;20" />
+    <sprite name="RefineryBtn" sourceRegion="1;1;20;20" />
+    <sprite name="BarracksBtn" sourceRegion="1;1;20;20" />
+    <sprite name="EngineeringBayBtn" sourceRegion="1;1;20;20" />
+    <sprite name="MissileTurretBtn" sourceRegion="1;1;20;20" />
+    <sprite name="AcademyBtn" sourceRegion="1;1;20;20" />
+    <sprite name="BunkerBtn" sourceRegion="1;1;20;20" />
+    <sprite name="AdvancedBuildBtn" sourceRegion="1;1;20;20" />
+    <sprite name="FactoryBtn" sourceRegion="1;1;20;20" />
+    <sprite name="StarportBtn" sourceRegion="1;1;20;20" />
+    <sprite name="ScienceFacilityBtn" sourceRegion="1;1;20;20" />
+    <sprite name="ArmoryBtn" sourceRegion="1;1;20;20" />
+    <sprite name="CancelBtn" sourceRegion="1;1;20;20" />
   </spritePalette>
-  <commandWorkflow name="Repair" availability="IfAll">
+  <commandWorkflow name="Repair">
+    <activator assembly="RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.App.BizLogic.BusinessComponents.Core.UniversalQuantorWA" />
     <showButton sprite="RepairBtn" panelPosition="1;0">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelWorkflow />
 	  </showButton>
 	  <selectPosition>
-		<finish />
+		<finishWorkflow />
 	  </selectPosition>
 	</showButton>
   </commandWorkflow>
-  <commandWorkflow name="Gather" availability="IfAll">
+  <commandWorkflow name="Gather">
+    <activator assembly="RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.App.BizLogic.BusinessComponents.Core.UniversalQuantorWA" />
     <showButton sprite="GatherBtn" panelPosition="1;1">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelWorkflow />
 	  </showButton>
 	  <selectPosition>
-		<finish />
+		<finishWorkflow />
 	  </selectPosition>
 	</showButton>
   </commandWorkflow>
-  <commandWorkflow name="Return" availability="IfAll">
+  <commandWorkflow name="Return">
+    <activator assembly="RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.App.BizLogic.BusinessComponents.Core.UniversalQuantorWA" />
     <showButton sprite="ReturnBtn" panelPosition="1;2" >
-	  <finish />
+	  <finishWorkflow />
 	</showButton>
   </commandWorkflow>
-  <commandWorkflow name="Build" availability="Individual">
+  <commandWorkflow name="Build">
+    <activator assembly="RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.App.BizLogic.BusinessComponents.Core.IndividualCommandWA" />
     <showButton sprite="BuildBtn" panelPosition="2;0">
 	  <showButton sprite="CommandCenterBtn" panelPosition="0;0">
-	    <selectTargetType type="CommandCenter" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="CommandCenter">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="SupplyDepotBtn" panelPosition="0;1">
-	    <selectTargetType type="SupplyDepot" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="SupplyDepot">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="RefineryBtn" panelPosition="0;2">
-	    <selectTargetType type="Refinery" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="Refinery">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="BarracksBtn" panelPosition="1;0">
-	    <selectTargetType type="Barracks" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="Barracks">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="EngineeringBayBtn" panelPosition="1;1">
-	    <selectTargetType type="EngineeringBay" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="EngineeringBay">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="MissileTurretBtn" panelPosition="1;2">
-	    <selectTargetType type="MissileTurret" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="MissileTurret">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="AcademyBtn" panelPosition="2;0">
-	    <selectTargetType type="Academy" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="Academy">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="BunkerBtn" panelPosition="2;1">
-	    <selectTargetType type="Bunker" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="Bunker">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
       <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelWorkflow />
 	  </showButton>
 	</showButton>
     <showButton sprite="AdvancedBuildBtn" panelPosition="2;1">
 	  <showButton sprite="FactoryBtn" panelPosition="0;0">
-	    <selectTargetType type="Factory" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="Factory">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="StarportBtn" panelPosition="0;1">
-	    <selectTargetType type="Starport" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="Starport">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="ScienceFacilityBtn" panelPosition="0;2">
-	    <selectTargetType type="ScienceFacility" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="ScienceFacility">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="ArmoryBtn" panelPosition="1;0">
-	    <selectTargetType type="Armory" />
 	    <showButton sprite="CancelBtn" panelPosition="2;2" >
-	      <cancel />
+	      <cancelWorkflow />
 	    </showButton>
-		<selectBuildPosition>
-		  <finish />
+		<selectBuildPosition type="Armory">
+		  <finishWorkflow />
 		</selectBuildPosition>
 	  </showButton>
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelWorkflow />
 	  </showButton>
 	</showButton>
   </commandWorkflow>

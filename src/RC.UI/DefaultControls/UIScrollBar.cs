@@ -186,7 +186,7 @@ namespace RC.UI
             base.ResetState();
             this.pushedButton = null;
             this.timeSinceLastStep = 0;
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
         }
 
         #region Event handlers
@@ -223,7 +223,7 @@ namespace RC.UI
                     Math.Min(this.intervalLength - 1, this.sliderControl.SelectedValue + this.stepValueChange);
             }
 
-            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
         }
 
         /// <summary>
@@ -234,18 +234,17 @@ namespace RC.UI
         {
             this.pushedButton = null;
             this.timeSinceLastStep = 0;
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
         }
 
         /// <summary>
         /// This method is called on every frame update.
         /// </summary>
-        /// <param name="evtArgs">Contains timing informations.</param>
-        private void OnFrameUpdate(UIUpdateSystemEventArgs evtArgs)
+        private void OnFrameUpdate()
         {
             if (this.IsEnabled && this.pushedButton != null)
             {
-                this.timeSinceLastStep += evtArgs.TimeSinceLastUpdate;
+                this.timeSinceLastStep += UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
                 if (this.timeSinceLastStep > this.timeBetweenSteps)
                 {
                     this.timeSinceLastStep = 0;

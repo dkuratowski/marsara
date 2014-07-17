@@ -30,6 +30,13 @@ namespace RC.App.PresLogic.Controls
 
         #region Overrides
 
+        /// <see cref="UISensitiveObject.GetMousePointer"/>
+        public sealed override UIPointer GetMousePointer(RCIntVector localPosition)
+        {
+            UIPointer pointer = this.GetMousePointer_i(localPosition);
+            return pointer != null ? pointer : this.extendedControl.GetMousePointer(localPosition);
+        }
+
         /// <see cref="RCMapDisplay.ScrollTo_i"/>
         protected sealed override void ScrollTo_i(RCIntVector where)
         {
@@ -84,6 +91,18 @@ namespace RC.App.PresLogic.Controls
         #endregion Overrides
 
         #region Overridables
+
+        /// <summary>
+        /// Gets the mouse pointer that shall be displayed if the mouse is over this map display extension.
+        /// </summary>
+        /// <param name="localPosition">The position to test in the local coordinate system of this map display extension.</param>
+        /// <returns>
+        /// The mouse pointer that shall be displayed at the given position if the mouse is over this map display extension.
+        /// If this method returns null then the call will be propagated to the extended map display.
+        /// If every underlying extension returns null then the default mouse pointer will be displayed.
+        /// The default mouse pointer can be set using the UIWorkspace.SetDefaultMousePointer method.
+        /// </returns>
+        protected virtual UIPointer GetMousePointer_i(RCIntVector localPosition) { return null; }
 
         /// <summary>
         /// The internal implementation RCMapDisplayExtension.ScrollTo_i that can be overriden by the derived classes.

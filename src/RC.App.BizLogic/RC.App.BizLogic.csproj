@@ -69,7 +69,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessComponents\Core\CommandManagerBC.cs" />
+    <Compile Include="BusinessComponents\Core\CommandWorkflowActivator.cs" />
+    <Compile Include="BusinessComponents\Core\CommandWorkflowDefinition.cs" />
     <Compile Include="BusinessComponents\Core\CoordTransformationHelper.cs" />
+    <Compile Include="BusinessComponents\Core\XmlCommandWorkflowConstants.cs" />
+    <Compile Include="BusinessComponents\Core\XmlCommandWorkflowReader.cs" />
+    <Compile Include="BusinessComponents\ICommandManagerBC.cs" />
     <Compile Include="BusinessComponents\ISelectionManagerBC.cs" />
     <Compile Include="BusinessComponents\Core\ScenarioManagerBC.cs" />
     <Compile Include="BusinessComponents\IScenarioManagerBC.cs" />
@@ -83,10 +89,10 @@
     <Compile Include="BusinessComponents\Core\IPlayerSlot.cs" />
     <Compile Include="BusinessComponents\Core\PlayerManager.cs" />
     <Compile Include="BusinessComponents\Core\PlayerSlot.cs" />
+    <Compile Include="Views\Core\CommandPanelView.cs" />
     <Compile Include="Views\Core\SelectionIndicatorView.cs" />
     <Compile Include="Services\Core\ViewService.cs" />
     <Compile Include="Views\CmdButtonStateEnum.cs" />
-    <Compile Include="Views\ICommandButtonView.cs" />
     <Compile Include="Views\ICommandPanelView.cs" />
     <Compile Include="BusinessComponents\Core\BizLogicConstants.cs" />
     <Compile Include="BusinessComponents\Core\CommandDispatcher.cs" />
@@ -112,6 +118,7 @@
     <Compile Include="Views\IMapTerrainView.cs" />
     <Compile Include="Views\IMapView.cs" />
     <Compile Include="Views\IMetadataView.cs" />
+    <Compile Include="Views\MouseInputModeEnum.cs" />
     <Compile Include="Views\IObjectPlacementView.cs" />
     <Compile Include="BusinessComponents\ITaskManagerBC.cs" />
     <Compile Include="Views\ISelectionIndicatorView.cs" />

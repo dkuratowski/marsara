@@ -191,6 +191,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
+        /// Creates a view of type ICommandPanelView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private ICommandPanelView CreateCommandPanelView()
+        {
+            return new CommandPanelView();
+        }
+
+        /// <summary>
         /// Registers the implemented factory methods to the view factory.
         /// </summary>
         private void RegisterFactoryMethods()
@@ -200,6 +209,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMetadataView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateSelIndicatorView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateCommandPanelView);
             this.viewFactoryRegistry.RegisterViewFactory<IMapObjectDataView, int>(this.CreateMapObjectDataView);
             this.viewFactoryRegistry.RegisterViewFactory<ITerrainObjectPlacementView, string>(this.CreateTerrainObjectPlacementView);
         }
@@ -214,6 +224,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.UnregisterViewFactory<IMetadataView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ISelectionIndicatorView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<ICommandPanelView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectDataView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ITerrainObjectPlacementView>();
         }

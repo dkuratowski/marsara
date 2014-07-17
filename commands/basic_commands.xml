@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <commandWorkflows>
-  <spritePalette image="basic_commands.xml" transparentColor="255;0;255" maskColor="0;255;255">
+  <spritePalette image="basic_commands.png" transparentColor="255;0;255" maskColor="0;255;255">
     <sprite name="MoveBtn" sourceRegion="1;1;20;20" />
     <sprite name="StopBtn" sourceRegion="22;1;20;20" />
     <sprite name="AttackBtn" sourceRegion="43;1;20;20" />
@@ -8,44 +8,49 @@
     <sprite name="HoldBtn" sourceRegion="22;22;20;20" />
     <sprite name="CancelBtn" sourceRegion="43;22;20;20" />
   </spritePalette>
-  <commandWorkflow name="Move" availability="IfAny">
+  <commandWorkflow name="Move">
+    <activator assembly="RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.App.BizLogic.BusinessComponents.Core.ExistentialQuantorWA" />
     <showButton sprite="MoveBtn" panelPosition="0;0">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelWorkflow />
 	  </showButton>
 	  <selectPosition>
-		<finish />
+		<finishWorkflow />
 	  </selectPosition>
 	</showButton>
   </commandWorkflow>
-  <commandWorkflow name="Stop" availability="IfAny">
+  <commandWorkflow name="Stop">
+    <activator assembly="RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.App.BizLogic.BusinessComponents.Core.ExistentialQuantorWA" />
     <showButton sprite="StopBtn" panelPosition="0;1" >
-	  <finish />
+	  <finishWorkflow />
 	</showButton>
   </commandWorkflow>
-  <commandWorkflow name="Attack" availability="IfAny">
+  <commandWorkflow name="Attack">
+    <activator assembly="RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.App.BizLogic.BusinessComponents.Core.ExistentialQuantorWA" />
     <showButton sprite="AttackBtn" panelPosition="0;2">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelWorkflow />
 	  </showButton>
 	  <selectPosition>
-		<finish />
+		<finishWorkflow />
 	  </selectPosition>
 	</showButton>
   </commandWorkflow>
-  <commandWorkflow name="Patrol" availability="IfAny">
+  <commandWorkflow name="Patrol">
+    <activator assembly="RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.App.BizLogic.BusinessComponents.Core.ExistentialQuantorWA" />
     <showButton sprite="PatrolBtn" panelPosition="1;0">
 	  <showButton sprite="CancelBtn" panelPosition="2;2" >
-	    <cancel />
+	    <cancelWorkflow />
 	  </showButton>
 	  <selectPosition>
-		<finish />
+		<finishWorkflow />
 	  </selectPosition>
 	</showButton>
   </commandWorkflow>
-  <commandWorkflow name="Hold" availability="IfAny">
+  <commandWorkflow name="Hold">
+    <activator assembly="RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" class="RC.App.BizLogic.BusinessComponents.Core.ExistentialQuantorWA" />
     <showButton sprite="StopBtn" panelPosition="1;1" >
-	  <finish />
+	  <finishWorkflow />
 	</showButton>
   </commandWorkflow>
 </commandWorkflows>

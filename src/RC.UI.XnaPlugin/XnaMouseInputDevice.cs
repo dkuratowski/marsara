@@ -10,20 +10,20 @@ using RC.Common.Diagnostics;
 namespace RC.UI.XnaPlugin
 {
     /// <summary>
-    /// Source of mouse events.
+    /// Implements the mouse input device.
     /// </summary>
-    class XnaMouseEventSource : UIEventSourceBase
+    class XnaMouseInputDevice : IUIMouseAccess, IDisposable
     {
         /// <summary>
         /// Constructs an XnaMouseEventSource
         /// </summary>
-        public XnaMouseEventSource(XnaGraphicsPlatform platform)
-            : base("RC.UI.XnaPlugin.XnaMouseEventSource")
+        public XnaMouseInputDevice(XnaGraphicsPlatform platform)
         {
+            this.firstUpdateHappened = false;
             this.isFormActive = true;
             this.platform = platform;
-            this.prevPressedButtons = new HashSet<UIMouseButton>();
-            this.prevScrollWheelPos = 0;
+            this.pressedButtons = new HashSet<UIMouseButton>();
+            this.scrollWheelPos = 0;
         }
 
         /// <summary>
@@ -31,10 +31,17 @@ namespace RC.UI.XnaPlugin
         /// </summary>
         public void Update()
         {
-            if (this.IsActive && this.isFormActive)
+            if (!this.firstUpdateHappened)
+            {
+                this.platform.Window.GotFocus += this.OnFormActivated;
+                this.platform.Window.LostFocus += this.OnFormDeactivated;
+                this.firstUpdateHappened = true;
+            }
+
+            if (this.isFormActive)
             {
                 MouseState mouseState = Mouse.GetState();
-                RCIntVector delta = new RCIntVector(mouseState.X, mouseState.Y) - this.systemMousePos;
+                this.delta = new RCIntVector(mouseState.X, mouseState.Y) - this.systemMousePos;
 
                 HashSet<UIMouseButton> pressedButtons = new HashSet<UIMouseButton>();
                 if (mouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed) { pressedButtons.Add(UIMouseButton.Left); }
@@ -43,19 +50,46 @@ namespace RC.UI.XnaPlugin
                 if (mouseState.XButton1 == Microsoft.Xna.Framework.Input.ButtonState.Pressed) { pressedButtons.Add(UIMouseButton.X1); }
                 if (mouseState.XButton2 == Microsoft.Xna.Framework.Input.ButtonState.Pressed) { pressedButtons.Add(UIMouseButton.X2); }
 
-                if (delta.X != 0 || delta.Y != 0 ||
-                    !this.prevPressedButtons.SetEquals(pressedButtons) ||
-                    this.prevScrollWheelPos != mouseState.ScrollWheelValue)
+                if (this.delta.X != 0 || this.delta.Y != 0 ||
+                    !this.pressedButtons.SetEquals(pressedButtons) ||
+                    this.scrollWheelPos != mouseState.ScrollWheelValue)
                 {
                     /// Set back the system mouse and enqueue a mouse event.
                     Mouse.SetPosition(this.systemMousePos.X, this.systemMousePos.Y);
-                    UIMouseSystemEventArgs evtArgs = new UIMouseSystemEventArgs(delta, pressedButtons, mouseState.ScrollWheelValue);
-                    UIRoot.Instance.SystemEventQueue.EnqueueEvent<UIMouseSystemEventArgs>(evtArgs);
-                    this.prevPressedButtons = pressedButtons;
-                    this.prevScrollWheelPos = mouseState.ScrollWheelValue;
+                    this.pressedButtons = pressedButtons;
+                    this.scrollWheelPos = mouseState.ScrollWheelValue;
+
+                    if (this.StateChanged != null) { this.StateChanged(); }
                 }
             }
         }
+
+        #region IUIMouseAccess methods
+
+        /// <see cref="IUIMouseAccess.Delta"/>
+        public RCIntVector Delta { get { return this.delta; } }
+
+        /// <see cref="IUIMouseAccess.PressedButtons"/>
+        public HashSet<UIMouseButton> PressedButtons { get { return this.pressedButtons; } }
+
+        /// <see cref="IUIMouseAccess.ScrollWheelPos"/>
+        public int ScrollWheelPos { get { return this.scrollWheelPos; } }
+
+        /// <see cref="IUIMouseAccess.StateChanged"/>
+        public event Action StateChanged;
+
+        #endregion IUIMouseAccess methods
+
+        #region IDisposable methods
+
+        /// <see cref="IDisposable.Dispose"/>
+        public void Dispose()
+        {
+            platform.Window.GotFocus -= this.OnFormActivated;
+            platform.Window.LostFocus -= this.OnFormDeactivated;
+        }
+
+        #endregion IDisposable methods
 
         /// <summary>
         /// 
@@ -65,20 +99,6 @@ namespace RC.UI.XnaPlugin
         {
             this.systemMousePos = initialPos;
             Mouse.SetPosition(this.systemMousePos.X, this.systemMousePos.Y);
-        }
-
-        /// <see cref="UIEventSourceBase.Activate_i"/>
-        protected override void Activate_i()
-        {
-            platform.Window.GotFocus += this.OnFormActivated;
-            platform.Window.LostFocus += this.OnFormDeactivated;
-        }
-
-        /// <see cref="UIEventSourceBase.Deactivate_i"/>
-        protected override void Deactivate_i()
-        {
-            platform.Window.GotFocus -= this.OnFormActivated;
-            platform.Window.LostFocus -= this.OnFormDeactivated;
         }
 
         /// <summary>
@@ -109,6 +129,11 @@ namespace RC.UI.XnaPlugin
         private RCIntVector systemMousePos;
 
         /// <summary>
+        /// The difference between the previous and the current position of the mouse input device.
+        /// </summary>
+        private RCIntVector delta;
+
+        /// <summary>
         /// Reference to the platform.
         /// </summary>
         private XnaGraphicsPlatform platform;
@@ -116,11 +141,16 @@ namespace RC.UI.XnaPlugin
         /// <summary>
         /// Set of the pressed buttons in the previous update.
         /// </summary>
-        private HashSet<UIMouseButton> prevPressedButtons;
+        private HashSet<UIMouseButton> pressedButtons;
 
         /// <summary>
         /// The position of the mouse scroll wheel in the previous update.
         /// </summary>
-        private int prevScrollWheelPos;
+        private int scrollWheelPos;
+
+        /// <summary>
+        /// This flag is false until the first update.
+        /// </summary>
+        private bool firstUpdateHappened;
     }
 }

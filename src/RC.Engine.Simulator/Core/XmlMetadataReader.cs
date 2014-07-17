@@ -27,6 +27,7 @@ namespace RC.Engine.Simulator.Core
         {
             if (xmlStr == null) { throw new ArgumentNullException("xmlStr"); }
             if (imageDir == null) { throw new ArgumentNullException("imageDir"); }
+            if (metadata == null) { throw new ArgumentNullException("metadata"); }
 
             tmpImageDir = imageDir;
 

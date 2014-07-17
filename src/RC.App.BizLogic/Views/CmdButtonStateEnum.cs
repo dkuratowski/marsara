@@ -10,9 +10,9 @@ namespace RC.App.BizLogic.Views
     /// </summary>
     public enum CmdButtonStateEnum
     {
-        NotVisible = 0,     // The command button is not visible.
-        Enabled = 1,        // The command button is visible and enabled.
-        Disabled = 2,       // The command button is visible but disabled.
-        Highlighted = 3     // The command button is visible, enabled and highlighted.
+        None = 0,           // The command button doesn't exist.
+        Enabled = 1,        // The command button is enabled.
+        Disabled = 2,       // The command button is disabled.
+        Highlighted = 3     // The command button is enabled and highlighted.
     }
 }

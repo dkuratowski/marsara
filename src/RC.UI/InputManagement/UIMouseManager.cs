@@ -29,7 +29,7 @@ namespace RC.UI
             this.objectDisposed = false;
             this.raisingMouseEvents = false;
             this.targetObject = targetObj;
-            this.pointer = null;
+            this.defaultMousePointer = null;
 
             /// Attach this UIMouseManager to the parent of targetObject.
             this.targetObject.Parent.Attach(this);
@@ -65,12 +65,13 @@ namespace RC.UI
             this.AbsolutePixelScalingChanged += this.OnInvalidTreeOperation;
 
             /// Subscribe for system mouse events.
-            UIRoot.Instance.SystemEventQueue.Subscribe<UIMouseSystemEventArgs>(this.OnMouseEvent);
+            UIRoot.Instance.MouseAccess.StateChanged += this.OnMouseEvent;
 
             /// Set the initial position of the mouse pointer in the scaled range
             this.scale = 1.0f;
             this.scaledRange = this.Range * this.scale;
             this.scaledPosition = this.scaledRange.Location + (this.scaledRange.Size / 2);
+            this.pointerPosition = this.scaledPosition / this.scale;
 
             /// Set the initial state of the mouse wheel and buttons
             this.pressedButtons = new HashSet<UIMouseButton>();
@@ -99,6 +100,9 @@ namespace RC.UI
         public void Dispose()
         {
             if (this.objectDisposed) { throw new ObjectDisposedException("UIMouseManager"); }
+
+            /// Remove the default mouse pointer.
+            this.defaultMousePointer = null;
 
             /// Destroy every registered UIMouseSensor objects.
             this.allSensors.Clear();
@@ -141,11 +145,10 @@ namespace RC.UI
             this.AbsolutePixelScalingChanged -= this.OnInvalidTreeOperation;
 
             /// Unsubscribe from system mouse events.
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIMouseSystemEventArgs>(this.OnMouseEvent);
+            UIRoot.Instance.MouseAccess.StateChanged -= this.OnMouseEvent;
 
             /// Detach from the parent.
             this.Parent.Detach(this);
-            this.pointer = null;
             this.targetObject = null;
             this.raisingMouseEvents = false;
             this.objectDisposed = true;
@@ -154,33 +157,6 @@ namespace RC.UI
         #endregion IDisposable Members
 
         #region Public properties
-
-        /// <summary>
-        /// Gets or sets the current mouse pointer.
-        /// </summary>
-        public IUIMousePointer Pointer
-        {
-            get { return this.pointer; }
-            set
-            {
-                this.pointer = value;
-                if (this.pointer != null)
-                {
-                    if (this.pointer.Icon.PixelSize != this.AbsolutePixelScaling)
-                    {
-                        this.pointer.NewPixelSize(this.AbsolutePixelScaling);
-                    }
-                    this.pointer.Position = this.scaledPosition / this.scale;
-                }
-                else
-                {
-                    this.pressedButtons.Clear();
-                    this.touchedSensors.Clear();
-                    this.activeSensor = null;
-                    this.wheelPosition = 0;
-                }
-            }
-        }
 
         /// <summary>
         /// Gets or sets the sensitivity of the mouse pointer.
@@ -195,9 +171,15 @@ namespace RC.UI
                 this.scaledRange = this.Range * value;
                 this.scaledPosition = this.scaledPosition * (value / this.scale);
                 this.scale = value;
-                if (this.pointer != null) { this.pointer.Position = this.scaledPosition / this.scale; }
+                this.pointerPosition = this.scaledPosition / this.scale;
             }
         }
+
+        /// <summary>
+        /// Sets the default mouse pointer.
+        /// </summary>
+        /// <param name="defaultPointer">The default mouse pointer or null if no default pointer is defined.</param>
+        public void SetDefaultMousePointer(UIPointer defaultPointer) { this.defaultMousePointer = defaultPointer; }
 
         #endregion Public properties
 
@@ -206,10 +188,13 @@ namespace RC.UI
         /// <see cref="UIObject.Render_i"/>
         protected override void Render_i(IUIRenderContext renderContext)
         {
-            if (this.pointer != null)
+            UIMouseSensor sensor = this.activeSensor != null ? this.activeSensor : this.touchedSensors[this.touchedSensors.Count - 1];
+            UIPointer pointer = sensor.GetMousePointer(this.pointerPosition);
+            if (pointer == null) { pointer = this.defaultMousePointer; }
+            if (pointer != null)
             {
-                renderContext.RenderSprite(this.pointer.Icon,
-                                           this.pointer.Position - this.pointer.Offset);
+                renderContext.RenderSprite(pointer.Icon,
+                                           this.pointerPosition - pointer.Offset);
             }
         }
 
@@ -236,65 +221,66 @@ namespace RC.UI
         /// Called when a system mouse event arrived from the event queue.
         /// </summary>
         /// <param name="evt">The arguments of the mouse event.</param>
-        private void OnMouseEvent(UIMouseSystemEventArgs evt)
+        private void OnMouseEvent()
         {
-            this.scaledPosition += evt.Delta;
+            RCIntVector mouseDelta = UIRoot.Instance.MouseAccess.Delta;
+            HashSet<UIMouseButton> pressedButtons = UIRoot.Instance.MouseAccess.PressedButtons;
+            int scrollWheelPos = UIRoot.Instance.MouseAccess.ScrollWheelPos;
+
+            this.scaledPosition += mouseDelta;
             if (!this.scaledRange.Contains(this.scaledPosition))
             {
                 this.scaledPosition = new RCIntVector(Math.Min(this.scaledRange.Right - 1, Math.Max(this.scaledRange.Left, this.scaledPosition.X)),
                                                    Math.Min(this.scaledRange.Bottom - 1, Math.Max(this.scaledRange.Top, this.scaledPosition.Y)));
             }
 
-            if (this.pointer != null)
+            RCIntVector prevPointerPos = this.pointerPosition;
+            RCIntVector newPointerPos = this.scaledPosition / this.scale;
+
+            if (prevPointerPos != newPointerPos ||
+                !this.pressedButtons.SetEquals(pressedButtons) ||
+                this.wheelPosition != scrollWheelPos)
             {
-                RCIntVector prevPointerPos = this.pointer.Position;
-                RCIntVector newPointerPos = this.scaledPosition / this.scale;
+                this.raisingMouseEvents = true;
 
-                if (prevPointerPos != newPointerPos ||
-                    !this.pressedButtons.SetEquals(evt.PressedButtons) ||
-                    this.wheelPosition != evt.ScrollWheelPos)
+                /// Raise the appropriate mouse movement events on the sensors.
+                List<UIMouseSensor> visibleSensors = this.GetVisibleSensors(newPointerPos);
+                this.RaiseMovementEvents(visibleSensors, newPointerPos, newPointerPos != prevPointerPos);
+
+                /// Raise the appropriate mouse wheel events on the appropriate sensor
+                this.RaiseMouseWheelEvents(
+                    scrollWheelPos,
+                    newPointerPos,
+                    this.activeSensor != null ? this.activeSensor : visibleSensors[visibleSensors.Count - 1]);
+
+                /// Raise the appropriate mouse button events on the appropriate sensor
+                this.RaiseMouseButtonEvents(
+                    pressedButtons,
+                    newPointerPos,
+                    this.activeSensor != null ? this.activeSensor : visibleSensors[visibleSensors.Count - 1]);
+
+                /// Refresh the active sensor reference
+                if (this.activeSensor != null && this.activeSensor.ActivatorButton == UIMouseButton.Undefined)
                 {
-                    this.raisingMouseEvents = true;
-
-                    /// Raise the appropriate mouse movement events on the sensors.
-                    List<UIMouseSensor> visibleSensors = this.GetVisibleSensors(newPointerPos);
-                    this.RaiseMovementEvents(visibleSensors, newPointerPos, newPointerPos != prevPointerPos);
-
-                    /// Raise the appropriate mouse wheel events on the appropriate sensor
-                    this.RaiseMouseWheelEvents(
-                        evt.ScrollWheelPos,
-                        newPointerPos,
-                        this.activeSensor != null ? this.activeSensor : visibleSensors[visibleSensors.Count - 1]);
-
-                    /// Raise the appropriate mouse button events on the appropriate sensor
-                    this.RaiseMouseButtonEvents(
-                        evt.PressedButtons,
-                        newPointerPos,
-                        this.activeSensor != null ? this.activeSensor : visibleSensors[visibleSensors.Count - 1]);
-
-                    /// Refresh the active sensor reference
-                    if (this.activeSensor != null && this.activeSensor.ActivatorButton == UIMouseButton.Undefined)
-                    {
-                        this.activeSensor = null;
-                    }
-                    else if (this.activeSensor == null &&
-                             visibleSensors[visibleSensors.Count - 1].ActivatorButton != UIMouseButton.Undefined)
-                    {
-                        this.activeSensor = visibleSensors[visibleSensors.Count - 1];
-                    }
-
-                    /// Refresh the list of the touched sensors
-                    this.touchedSensors = visibleSensors;
-
-                    this.raisingMouseEvents = false;
-                    this.ExecuteSensorOperations();
+                    this.activeSensor = null;
+                }
+                else if (this.activeSensor == null &&
+                         visibleSensors[visibleSensors.Count - 1].ActivatorButton != UIMouseButton.Undefined)
+                {
+                    this.activeSensor = visibleSensors[visibleSensors.Count - 1];
                 }
 
-                /// Refresh the status data
-                this.pressedButtons = evt.PressedButtons;
-                this.wheelPosition = evt.ScrollWheelPos;
-                this.pointer.Position = newPointerPos;
+                /// Refresh the list of the touched sensors
+                this.touchedSensors = visibleSensors;
+
+                this.raisingMouseEvents = false;
+                this.ExecuteSensorOperations();
             }
+
+            /// Refresh the status data
+            this.pressedButtons = pressedButtons;
+            this.wheelPosition = scrollWheelPos;
+            this.pointerPosition = newPointerPos;
         }
 
         /// <summary>
@@ -564,14 +550,19 @@ namespace RC.UI
         #region Private fields
 
         /// <summary>
+        /// Reference to the default mouse pointer or null if no default pointer defined.
+        /// </summary>
+        private UIPointer defaultMousePointer;
+
+        /// <summary>
         /// Reference to the target object of this UIMouseManager.
         /// </summary>
         private UISensitiveObject targetObject;
 
         /// <summary>
-        /// Reference to the current mouse pointer.
+        /// The current position of the pointer.
         /// </summary>
-        private IUIMousePointer pointer;
+        private RCIntVector pointerPosition;
 
         /// <summary>
         /// The scaled range rectangle.

@@ -27,6 +27,7 @@ namespace RC.App.PresLogic.Controls
         {
             this.selectionIndicatorView = null;
             this.selectionBox = RCIntRectangle.Undefined;
+            this.selectionBoxPointer = UIResourceManager.GetResource<UIPointer>("RC.App.Pointers.SelectionBoxPointer");
 
             this.lightGreenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.greenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
@@ -46,6 +47,12 @@ namespace RC.App.PresLogic.Controls
         }
         
         #region Overrides
+
+        /// <see cref="RCMapDisplayExtension.GetMousePointer_i"/>
+        protected override UIPointer GetMousePointer_i(RCIntVector localPosition)
+        {
+            return this.selectionBox != RCIntRectangle.Undefined ? this.selectionBoxPointer : null;
+        }
 
         /// <see cref="RCMapDisplayExtension.MapView"/>
         protected override IMapView MapView { get { return this.selectionIndicatorView; } }
@@ -105,11 +112,12 @@ namespace RC.App.PresLogic.Controls
         private ISelectionIndicatorView selectionIndicatorView;
 
         /// <summary>
-        /// Brushes  for rendering.
+        /// Resources for rendering.
         /// </summary>
         private UISprite lightGreenBrush;
         private UISprite greenBrush;
         private UISprite yellowBrush;
         private UISprite redBrush;
+        private UIPointer selectionBoxPointer;
     }
 }

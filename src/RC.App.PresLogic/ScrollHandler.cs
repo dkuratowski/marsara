@@ -11,7 +11,7 @@ namespace RC.App.PresLogic
     /// <summary>
     /// Internal class that scrolls a given control when the appropriate input events are coming.
     /// </summary>
-    class ScrollHandler
+    class ScrollHandler : InputHandler
     {
         /// <summary>
         /// Constructs a ScrollHandler instance.
@@ -27,42 +27,25 @@ namespace RC.App.PresLogic
             this.timeSinceLastScroll = 0;
             this.eventSource = evtSource;
             this.scrolledControl = scrolledControl;
-            this.isMouseHandlingActive = false;
         }
 
-        /// <summary>
-        /// This event is raised when a mouse handling activity has been started on this scroll handler.
-        /// </summary>
-        public event EventHandler MouseActivityStarted;
+        #region Overrides from InputHandler
 
-        /// <summary>
-        /// This event is raised when a mouse handling activity has been finished on this scroll handler.
-        /// </summary>
-        public event EventHandler MouseActivityFinished;
-
-        /// <summary>
-        /// Activates the scroll handler. If it is currently active then this method has no effect.
-        /// </summary>
-        public void ActivateMouseHandling()
+        /// <see cref="InputHandler.StartImpl"/>
+        protected override void StartImpl()
         {
-            if (!this.isMouseHandlingActive)
-            {
-                this.eventSource.MouseSensor.Move += this.OnMouseMove;
-                this.isMouseHandlingActive = true;
-            }
+            this.eventSource.MouseSensor.Move += this.OnMouseMove;
         }
 
-        /// <summary>
-        /// Deactivates the scroll handler. If it is currently inactive then this method has no effect.
-        /// </summary>
-        public void DeactivateMouseHandling()
+        /// <see cref="InputHandler.StopImpl"/>
+        protected override void StopImpl()
         {
-            if (this.isMouseHandlingActive)
-            {
-                this.eventSource.MouseSensor.Move -= this.OnMouseMove;
-                this.isMouseHandlingActive = false;
-            }
+            this.eventSource.MouseSensor.Move -= this.OnMouseMove;
         }
+
+        #endregion Overrides from InputHandler
+
+        #region Event handling
 
         /// <summary>
         /// Called when the mouse cursor is moved over the area of the page.
@@ -91,10 +74,9 @@ namespace RC.App.PresLogic
         /// <summary>
         /// This method is called on every frame update.
         /// </summary>
-        /// <param name="evtArgs">Contains timing informations.</param>
-        private void OnFrameUpdate(UIUpdateSystemEventArgs evtArgs)
+        private void OnFrameUpdate()
         {
-            this.timeSinceLastScroll += evtArgs.TimeSinceLastUpdate;
+            this.timeSinceLastScroll += UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
             if (this.timeSinceLastScroll > TIME_BETWEEN_MAP_SCROLLS)
             {
                 this.timeSinceLastScroll = 0;
@@ -112,6 +94,10 @@ namespace RC.App.PresLogic
             }
         }
 
+        #endregion Event handling
+
+        #region Internal methods
+
         /// <summary>
         /// Gets or sets the current scroll direction.
         /// </summary>
@@ -122,21 +108,20 @@ namespace RC.App.PresLogic
             {
                 ScrollDirection oldScrollDir = this.currentScrollDir;
                 this.currentScrollDir = value;
-                if (this.currentScrollDir != oldScrollDir)
+                if (oldScrollDir == ScrollDirection.NoScroll && this.currentScrollDir != ScrollDirection.NoScroll)
                 {
-                    if (this.currentScrollDir != ScrollDirection.NoScroll)
-                    {
-                        UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
-                        if (this.MouseActivityStarted != null) { this.MouseActivityStarted(this, new EventArgs()); }
-                    }
-                    else
-                    {
-                        UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
-                        if (this.MouseActivityFinished != null) { this.MouseActivityFinished(this, new EventArgs()); }
-                    }
+                    UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
+                    this.OnProcessingStarted();
+                }
+                else if (oldScrollDir != ScrollDirection.NoScroll && this.currentScrollDir == ScrollDirection.NoScroll)
+                {
+                    UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
+                    this.OnProcessingFinished();
                 }
             }
         }
+
+        #endregion Internal methods
 
         /// <summary>
         /// The current scrolling direction.
@@ -157,11 +142,6 @@ namespace RC.App.PresLogic
         /// Reference to the scrolled control.
         /// </summary>
         private IScrollableControl scrolledControl;
-
-        /// <summary>
-        /// This flag indicates whether the mouse handling is currently active or not.
-        /// </summary>
-        private bool isMouseHandlingActive;
 
         /// <summary>
         /// The time between scrolling operations in milliseconds.

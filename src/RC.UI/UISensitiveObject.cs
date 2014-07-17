@@ -256,6 +256,18 @@ namespace RC.UI
         }
 
         /// <summary>
+        /// Gets the mouse pointer that shall be displayed at the given position if the mouse is over this sensitive object.
+        /// </summary>
+        /// <param name="localPosition">The position to test in the local coordinate system of this sensitive object.</param>
+        /// <returns>
+        /// The mouse pointer that shall be displayed at the given position if the mouse is over this sensitive object.
+        /// If this method returns null then the default mouse pointer will be displayed.
+        /// The default mouse pointer can be set using the UIWorkspace.SetDefaultMousePointer method.
+        /// </returns>
+        /// <remarks>Can be overriden in the derived classes. The default implementation doesn't display mouse pointer.</remarks>
+        public virtual UIPointer GetMousePointer(RCIntVector localPosition) { return null; }
+
+        /// <summary>
         /// This method is called automatically when this UISensitiveObject is being detached from the
         /// sensitive tree and it's internal state has to be reset. The default implementation doesn't
         /// do anything but the method can be overriden in the derived classes.

@@ -41,7 +41,7 @@ namespace RC.App.PresLogic
         {
             if (this.updateHandlers.Count == 0)
             {
-                UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.AdaptedUpdateHdl);
+                UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.AdaptedUpdateHdl;
             }
             this.updateHandlers.Add(handler);
         }
@@ -52,7 +52,7 @@ namespace RC.App.PresLogic
             this.updateHandlers.Remove(handler);
             if (this.updateHandlers.Count == 0)
             {
-                UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.AdaptedUpdateHdl);
+                UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.AdaptedUpdateHdl;
             }
         }
 
@@ -66,12 +66,14 @@ namespace RC.App.PresLogic
         /// Internal system update handler function.
         /// </summary>
         /// <param name="evtArgs">Timing informations about the system update.</param>
-        private void AdaptedUpdateHdl(UIUpdateSystemEventArgs evtArgs)
+        private void AdaptedUpdateHdl()
         {
+            int timeSinceLastUpdate = UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
+            int timeSinceStart = UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceStart;
             HashSet<SystemUpdateHdl> updateHandlersCopy = new HashSet<SystemUpdateHdl>(this.updateHandlers);
             foreach (SystemUpdateHdl updateHdl in updateHandlersCopy)
             {
-                updateHdl(evtArgs.TimeSinceLastUpdate, evtArgs.TimeSinceStart);
+                updateHdl(timeSinceLastUpdate, timeSinceStart);
             }
         }
 

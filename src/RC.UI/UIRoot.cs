@@ -29,10 +29,10 @@ namespace RC.UI
         public UIRoot()
         {
             if (theInstance != null) { throw new UIException("An instance of UIRoot already exists!"); }
-            this.defaultSystemEventQueue = new UIEventQueue();
             this.loadedPlugins = new Dictionary<string, IUIPlugin>();
-            this.eventSources = new Dictionary<string, UIEventSourceBase>();
             this.graphicsPlatform = null;
+            this.mouseAccess = null;
+            this.keyboardAccess = null;
             this.objectDisposed = false;
 
             theInstance = this;
@@ -54,30 +54,27 @@ namespace RC.UI
         }
 
         /// <summary>
-        /// Gets the active system event queue of the UIRoot. If there is no registered system event queue then
-        /// the default will be the active.
+        /// Gets an interface for accessing the current state of the mouse input device.
         /// </summary>
-        public IUIEventQueue SystemEventQueue
+        public IUIMouseAccess MouseAccess
         {
             get
             {
                 if (this.objectDisposed) { throw new ObjectDisposedException("UIRoot"); }
-                return this.customSystemEventQueue != null ? this.customSystemEventQueue
-                                                               : this.defaultSystemEventQueue;
+                return this.mouseAccess;
             }
         }
 
         /// <summary>
-        /// Gets the event source with the given name.
+        /// Gets an interface for accessing the current state of the keyboard input device.
         /// </summary>
-        /// <param name="name">The name of the event source to get.</param>
-        /// <returns>
-        /// The event source with the given name or null if there is no registered event source with that name.
-        /// </returns>
-        public IUIEventSource GetEventSource(string name)
+        public IUIKeyboardAccess KeyboardAccess
         {
-            if (this.objectDisposed) { throw new ObjectDisposedException("UIRoot"); }
-            return this.eventSources.ContainsKey(name) ? this.eventSources[name] : null;
+            get
+            {
+                if (this.objectDisposed) { throw new ObjectDisposedException("UIRoot"); }
+                return this.keyboardAccess;
+            }
         }
 
         #endregion Public methods and properties
@@ -221,58 +218,63 @@ namespace RC.UI
         }
 
         /// <summary>
-        /// Registers the given system event queue to the UIRoot. Use this function if you want to replace the default
-        /// system event queue.
+        /// Registers a mouse input device to the UIRoot object.
         /// </summary>
-        /// <param name="evtQueue">The new system event queue to register.</param>
-        public void RegisterSystemEventQueue(IUIEventQueue evtQueue)
+        /// <param name="mouseAccess">The mouse input device to register.</param>
+        /// <exception cref="UIException">If a mouse input device has already been registered.</exception>
+        /// <remarks>This method should be called by the plugin that implements the mouse input device.</remarks>
+        public void RegisterMouseInputDevice(IUIMouseAccess mouseAccess)
         {
             if (this.objectDisposed) { throw new ObjectDisposedException("UIRoot"); }
-            if (evtQueue == null) { throw new ArgumentNullException("evtQueue"); }
-            if (this.customSystemEventQueue != null) { throw new UIException("A system event queue already registered!"); }
-            if (this.customSystemEventQueue == this.defaultSystemEventQueue) { throw new UIException("Unable to register the default system event queue!"); }
+            if (mouseAccess == null) { throw new ArgumentNullException("mouseAccess"); }
+            if (this.mouseAccess != null) { throw new UIException("Mouse input device already registered!"); }
 
-            this.customSystemEventQueue = evtQueue;
-            TraceManager.WriteAllTrace("Custom system event queue registered", UITraceFilters.INFO);
+            this.mouseAccess = mouseAccess;
+            TraceManager.WriteAllTrace("Mouse input device registered", UITraceFilters.INFO);
         }
 
         /// <summary>
-        /// Unregisters the currently registered system event queue from the UIRoot. Use this function if you want
-        /// to use the default system event queue again.
+        /// Unregisters the currently active mouse input device from the UIRoot object.
         /// </summary>
-        public void UnregisterSystemEventQueue()
+        /// <exception cref="UIException">If there is no registered mouse input device.</exception>
+        /// <remarks>This method should be called by the plugin that implements the mouse input device.</remarks>
+        public void UnregisterMouseInputDevice()
         {
             if (this.objectDisposed) { throw new ObjectDisposedException("UIRoot"); }
-            if (this.customSystemEventQueue == null) { throw new UIException("There is no custom system event queue registered!"); }
+            if (this.mouseAccess == null) { throw new UIException("There is no registered mouse input device!"); }
 
-            this.customSystemEventQueue = null;
-            TraceManager.WriteAllTrace("Custom system event queue unregistered", UITraceFilters.INFO);
+            this.mouseAccess = null;
+            TraceManager.WriteAllTrace("Mouse input device unregistered", UITraceFilters.INFO);
         }
 
         /// <summary>
-        /// Registers the given event source.
+        /// Registers a keyboard input device to the UIRoot object.
         /// </summary>
-        /// <param name="evtSource">The event source to register.</param>
-        public void RegisterEventSource(UIEventSourceBase evtSource)
+        /// <param name="keyboardAccess">The keyboard input device to register.</param>
+        /// <exception cref="UIException">If a keyboard input device has already been registered.</exception>
+        /// <remarks>This method should be called by the plugin that implements the keyboard input device.</remarks>
+        public void RegisterKeyboardInputDevice(IUIKeyboardAccess keyboardAccess)
         {
             if (this.objectDisposed) { throw new ObjectDisposedException("UIRoot"); }
-            if (this.eventSources.ContainsKey(evtSource.Name)) { throw new UIException(string.Format("Event source with name {0} already registered!", evtSource.Name)); }
+            if (keyboardAccess == null) { throw new ArgumentNullException("keyboardAccess"); }
+            if (this.keyboardAccess != null) { throw new UIException("Keyboard input device already registered!"); }
 
-            this.eventSources.Add(evtSource.Name, evtSource);
-            TraceManager.WriteAllTrace(string.Format("Event source {0} registered successfully", evtSource.Name), UITraceFilters.INFO);
+            this.keyboardAccess = keyboardAccess;
+            TraceManager.WriteAllTrace("Keyboard input device registered", UITraceFilters.INFO);
         }
 
         /// <summary>
-        /// Unregisters the event source with the given name.
+        /// Unregisters the currently active keyboard input device from the UIRoot object.
         /// </summary>
-        /// <param name="name">The name of the event source to unregister.</param>
-        public void UnregisterEventSource(string name)
+        /// <exception cref="UIException">If there is no registered keyboard input device.</exception>
+        /// <remarks>This method should be called by the plugin that implements the keyboard input device.</remarks>
+        public void UnregisterKeyboardInputDevice()
         {
             if (this.objectDisposed) { throw new ObjectDisposedException("UIRoot"); }
-            if (!this.eventSources.ContainsKey(name)) { throw new UIException(string.Format("Event source with name {0} not registered!", name)); }
+            if (this.keyboardAccess == null) { throw new UIException("There is no registered keyboard input device!"); }
 
-            this.eventSources.Remove(name);
-            TraceManager.WriteAllTrace(string.Format("Event source {0} unregistered successfully", name), UITraceFilters.INFO);
+            this.keyboardAccess = null;
+            TraceManager.WriteAllTrace("Keyboard input device unregistered", UITraceFilters.INFO);
         }
 
         #endregion Methods for plugins
@@ -283,12 +285,6 @@ namespace RC.UI
         public void Dispose()
         {
             if (this.objectDisposed) { throw new ObjectDisposedException("UIRoot"); }
-
-            /// Deactivate all event sources
-            foreach (KeyValuePair<string, UIEventSourceBase> item in this.eventSources)
-            {
-                item.Value.Deactivate();
-            }
 
             /// Uninstall and unload all plugins
             UnloadAllPlugins();
@@ -306,24 +302,19 @@ namespace RC.UI
         private UIGraphicsPlatformBase graphicsPlatform;
 
         /// <summary>
-        /// Reference to the default system event queue.
-        /// </summary>
-        private UIEventQueue defaultSystemEventQueue;
-
-        /// <summary>
-        /// Reference to the custom system event queue or null if there is no custom system event queue registered.
-        /// </summary>
-        private IUIEventQueue customSystemEventQueue;
-
-        /// <summary>
         /// List of the loaded plugins mapped by their name.
         /// </summary>
         private Dictionary<string, IUIPlugin> loadedPlugins;
 
         /// <summary>
-        /// List of the registered event sources.
+        /// Reference to the interface for accessing the current state of the mouse input device.
         /// </summary>
-        private Dictionary<string, UIEventSourceBase> eventSources;
+        private IUIMouseAccess mouseAccess;
+
+        /// <summary>
+        /// Reference to the interface for accessing the current state of the keyboard input device.
+        /// </summary>
+        private IUIKeyboardAccess keyboardAccess;
 
         /// <summary>
         /// This flag indicates whether this UIRoot object is disposed or not.

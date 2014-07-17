@@ -167,7 +167,7 @@ namespace RC.UI
             this.highlightedIndex = this.selectedIndex;
             this.timeSinceLastScroll = 0;
             this.internalScrollBarValueChange = false;
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
             this.currentStatus = Status.Normal;
         }
 
@@ -230,7 +230,7 @@ namespace RC.UI
                                 this.scrollbar.SelectedValue = this.firstVisibleIndex;
                                 this.internalScrollBarValueChange = false;
                             }
-                            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
                         }
                     }
                     else if (evtArgs.Position.Y >= this.Range.Height)
@@ -247,7 +247,7 @@ namespace RC.UI
                                 this.scrollbar.SelectedValue = this.firstVisibleIndex;
                                 this.internalScrollBarValueChange = false;
                             }
-                            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
                         }
                     }
                     else
@@ -267,7 +267,7 @@ namespace RC.UI
                         this.highlightedIndex = this.totalItemCount > 0 ?
                                                 Math.Min((evtArgs.Position.Y / this.itemSize.Y) + this.firstVisibleIndex, this.totalItemCount - 1) :
                                                 -1;
-                        UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                        UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
                     }
                 }
             }
@@ -319,12 +319,11 @@ namespace RC.UI
         /// <summary>
         /// This method is called on every frame update.
         /// </summary>
-        /// <param name="evtArgs">Contains timing informations.</param>
-        private void OnFrameUpdate(UIUpdateSystemEventArgs evtArgs)
+        private void OnFrameUpdate()
         {
             if (this.IsEnabled)
             {
-                this.timeSinceLastScroll += evtArgs.TimeSinceLastUpdate;
+                this.timeSinceLastScroll += UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
                 if (this.timeSinceLastScroll > this.timeBetweenScrolls)
                 {
                     this.timeSinceLastScroll = 0;

@@ -17,31 +17,21 @@ namespace RC.App.PresLogic.Pages
     /// <summary>
     /// The Gameplay page of the RC application.
     /// </summary>
-    public class RCGameplayPage : RCAppPage
+    public class RCGameplayPage : RCAppPage, IGameConnector
     {
-        /// <summary>
-        /// Enumerates the possible connection statuses of the RCGameplayPage.
-        /// </summary>
-        public enum ConnectionStatus
-        {
-            Offline = 0,        /// The page is offline.
-            Connecting = 1,     /// The page is connecting to the currently active game.
-            Online = 2,         /// The page is online.
-            Disconnecting = 3   /// The page is disconnecting from the currently active game.
-        }
-
         /// <summary>
         /// Constructs a gameplay page.
         /// </summary>
         public RCGameplayPage() : base()
         {
-            this.mapDisplay = null;
-            this.mapDisplayBasic = null;
-            this.mapWalkabilityDisplay = null;
-            this.mapObjectDisplayEx = null;
-            this.selectionDisplayEx = null;
-            this.objectPlacementDisplayEx = null;
-            this.currentConnectionStatus = ConnectionStatus.Offline;
+            this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135));
+            //this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic);
+            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic);
+            this.selectionDisplayEx = new RCSelectionDisplay(this.mapObjectDisplayEx);
+            this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.selectionDisplayEx);
+            this.mapDisplay = this.objectPlacementDisplayEx;
+
+            this.inputManager = new GameplayInputManager();
 
             this.minimapPanel = new RCMinimapPanel(new RCIntRectangle(0, 120, 80, 80),
                                                    new RCIntRectangle(1, 1, 78, 78),
@@ -60,96 +50,63 @@ namespace RC.App.PresLogic.Pages
                                                  "RC.App.Sprites.ResourceBar");
             this.menuButtonPanel = new RCMenuButtonPanel(new RCIntRectangle(226, 140, 24, 8),
                                                          new RCIntRectangle(0, 0, 24, 8),
-                                                         "RC.App.Sprites.MenuButton");
+                                                         "RC.App.Sprites.MenuButton");            
             this.RegisterPanel(this.minimapPanel);
             this.RegisterPanel(this.detailsPanel);
             this.RegisterPanel(this.commandPanel);
             this.RegisterPanel(this.tooltipBar);
             this.RegisterPanel(this.resourceBar);
             this.RegisterPanel(this.menuButtonPanel);
+
+            this.gameConnection = new AggregateGameConnector(new HashSet<IGameConnector> { this.mapDisplay, this.commandPanel });
         }
 
-        #region Game connection management
+        #region IGameConnector methods
 
-        /// <summary>
-        /// Starts connecting this RCGameplayPage to the currently active game. The event RCGameplayPage.CurrentConnectionStatus will be raised
-        /// when the connection status has been changed.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">If there is no active game or if the page has already been connected.</exception>
+        /// <see cref="IGameConnector.Connect"/>
         public void Connect()
         {
-            if (this.currentConnectionStatus != ConnectionStatus.Offline) { throw new InvalidOperationException("The gameplay page is not offline!"); }
+            if (this.gameConnection.CurrentStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("The gameplay page is not offline!"); }
             
             /// TODO: A scenario shall be running at this point!
             ComponentManager.GetInterface<IMultiplayerService>().CreateNewGame(".\\maps\\testmap4.rcm", GameTypeEnum.Melee, GameSpeedEnum.Fastest);
 
             /// Create and start the map display control.
-            this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135));
-            //this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic);
-            this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic);
-            this.selectionDisplayEx = new RCSelectionDisplay(this.mapObjectDisplayEx);
-            this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.selectionDisplayEx);
-            this.mapDisplay = this.objectPlacementDisplayEx;
-            this.mapDisplay.ConnectorOperationFinished += this.OnMapDisplayConnected;
-            this.mapDisplay.Connect();
-
-            /// Set the connection status to ConnectionStatus.Connecting.
-            this.CurrentConnectionStatus = ConnectionStatus.Connecting;
+            this.gameConnection.ConnectorOperationFinished += this.OnConnected;
+            this.gameConnection.Connect();
         }
 
-        /// <summary>
-        /// Starts disconnecting this RCGameplayPage from the currently active game. The event RCGameplayPage.CurrentConnectionStatus will be raised
-        /// when the connection status has been changed.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">If the page was not connected.</exception>
+        /// <see cref="IGameConnector.Disconnect"/>
         public void Disconnect()
         {
-            if (this.currentConnectionStatus != ConnectionStatus.Online) { throw new InvalidOperationException("The gameplay page is not online!"); }
+            if (this.gameConnection.CurrentStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("The gameplay page is not online!"); }
 
             ComponentManager.GetInterface<IMultiplayerService>().LeaveCurrentGame();
 
-            /// TODO: deactivate mouse handling
+            /// Deactivate mouse handling.
             this.menuButtonPanel.MouseSensor.ButtonDown -= this.OnMenuButtonPressed;
-            this.mouseHandler.MouseActivityStarted -= this.OnMouseActivityStarted;
-            this.mouseHandler.MouseActivityFinished -= this.OnMouseActivityFinished;
-            this.scrollHandler.MouseActivityStarted -= this.OnMouseActivityStarted;
-            this.scrollHandler.MouseActivityFinished -= this.OnMouseActivityFinished;
-            this.mouseHandler.DeactivateMouseHandling();
-            this.scrollHandler.DeactivateMouseHandling();
+            this.inputManager.StopAndRemoveInputHandler("ScrollHandler");
+            this.inputManager.StopAndRemoveInputHandler("NormalInputModeHandler");
 
             /// Detach the map display control from this page.
             this.DetachSensitive(this.mapDisplay);
             this.Detach(this.mapDisplay);
 
             /// Stop the map display control.
-            this.mapDisplay.ConnectorOperationFinished += this.OnMapDisplayDisconnected;
-            this.mapDisplay.Disconnect();
-
-            /// Set the connection status to ConnectionStatus.Disconnecting.
-            this.CurrentConnectionStatus = ConnectionStatus.Disconnecting;
+            this.gameConnection.ConnectorOperationFinished += this.OnDisconnected;
+            this.gameConnection.Disconnect();
         }
 
-        /// <summary>
-        /// Gets the current connection status of the page.
-        /// </summary>
-        public ConnectionStatus CurrentConnectionStatus
+        /// <see cref="IGameConnector.CurrentStatus"/>
+        public ConnectionStatusEnum CurrentStatus
         {
-            get { return this.currentConnectionStatus; }
-
-            private set
-            {
-                bool valueChanged = this.currentConnectionStatus != value;
-                this.currentConnectionStatus = value;
-                if (valueChanged && this.CurrentConnectionStatusChanged != null) { this.CurrentConnectionStatusChanged(this, new EventArgs()); }
-            }
+            get { return this.gameConnection.CurrentStatus; }
         }
 
-        /// <summary>
-        /// This event is raised when the connection status of the page has been changed.
-        /// </summary>
-        public event EventHandler CurrentConnectionStatusChanged;
+        /// <see cref="IGameConnector.ConnectorOperationFinished"/>
+        public event Action<IGameConnector> ConnectorOperationFinished;
 
-        #endregion Game connection management
+        #endregion IGameConnector methods
 
         /// <see cref="RCAppPage.OnActivated"/>
         protected override void OnActivated()
@@ -174,9 +131,9 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// This method is called when the map display started successfully.
         /// </summary>
-        private void OnMapDisplayConnected(IGameConnector sender)
+        private void OnConnected(IGameConnector sender)
         {
-            this.mapDisplay.ConnectorOperationFinished -= this.OnMapDisplayConnected;
+            this.gameConnection.ConnectorOperationFinished -= this.OnConnected;
 
             /// Attach the map display control to this page.
             this.Attach(this.mapDisplay);
@@ -184,27 +141,20 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplay.SendToBottom();
 
             /// Create the mouse handlers for the map display.
-            this.scrollHandler = new ScrollHandler(this, this.mapDisplay);
-            this.mouseHandler = new MouseHandler(this.selectionDisplayEx, this.selectionDisplayEx);
-            this.scrollHandler.ActivateMouseHandling();
-            this.mouseHandler.ActivateMouseHandling();
-            this.scrollHandler.MouseActivityStarted += this.OnMouseActivityStarted;
-            this.scrollHandler.MouseActivityFinished += this.OnMouseActivityFinished;
-            this.mouseHandler.MouseActivityStarted += this.OnMouseActivityStarted;
-            this.mouseHandler.MouseActivityFinished += this.OnMouseActivityFinished;
+            this.inputManager.StartAndAddInputHandler("ScrollHandler", new ScrollHandler(this, this.mapDisplay));
+            this.inputManager.StartAndAddInputHandler("NormalInputModeHandler", new NormalInputModeHandler(this.selectionDisplayEx, this.selectionDisplayEx));
 
             this.menuButtonPanel.MouseSensor.ButtonDown += this.OnMenuButtonPressed;
 
-            /// The page is now online.
-            this.CurrentConnectionStatus = ConnectionStatus.Online;
+            if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
         }
         
         /// <summary>
         /// This method is called when the map display started successfully.
         /// </summary>
-        private void OnMapDisplayDisconnected(IGameConnector sender)
+        private void OnDisconnected(IGameConnector sender)
         {
-            this.mapDisplay.ConnectorOperationFinished -= this.OnMapDisplayDisconnected;
+            this.gameConnection.ConnectorOperationFinished -= this.OnDisconnected;
 
             /// Remove the map display control.
             this.mapDisplayBasic = null;
@@ -213,44 +163,11 @@ namespace RC.App.PresLogic.Pages
             this.selectionDisplayEx = null;
             this.objectPlacementDisplayEx = null;
             this.mapDisplay = null;
-            this.scrollHandler = null;
-            this.mouseHandler = null;
-
-            /// The page is now offline.
-            this.CurrentConnectionStatus = ConnectionStatus.Offline;
+            
+            if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
 
             /// TODO: later we don't need to stop the render loop here!
             UIRoot.Instance.GraphicsPlatform.RenderLoop.Stop();
-        }
-
-        /// <summary>
-        /// Called when a mouse activity has been started on the map object display.
-        /// </summary>
-        private void OnMouseActivityStarted(object sender, EventArgs evtArgs)
-        {
-            if (sender == this.mouseHandler)
-            {
-                this.scrollHandler.DeactivateMouseHandling();
-            }
-            else if (sender == this.scrollHandler)
-            {
-                this.mouseHandler.DeactivateMouseHandling();
-            }
-        }
-
-        /// <summary>
-        /// Called when a mouse activity has been finished on the map object display.
-        /// </summary>
-        private void OnMouseActivityFinished(object sender, EventArgs evtArgs)
-        {
-            if (sender == this.mouseHandler)
-            {
-                this.scrollHandler.ActivateMouseHandling();
-            }
-            else if (sender == this.scrollHandler)
-            {
-                this.mouseHandler.ActivateMouseHandling();
-            }
         }
 
         /// <summary>
@@ -324,18 +241,13 @@ namespace RC.App.PresLogic.Pages
         private RCObjectPlacementDisplay objectPlacementDisplayEx;
 
         /// <summary>
-        /// The current connection status of the page.
+        /// Reference to the game connector object.
         /// </summary>
-        private ConnectionStatus currentConnectionStatus;
+        private IGameConnector gameConnection;
 
         /// <summary>
-        /// Reference to the object that controls the scrolling of the map display.
+        /// Reference to the input manager.
         /// </summary>
-        private ScrollHandler scrollHandler;
-
-        /// <summary>
-        /// Reference to the mouse handler of the map display.
-        /// </summary>
-        private MouseHandler mouseHandler;
+        private GameplayInputManager inputManager;
     }
 }

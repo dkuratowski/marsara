@@ -5,6 +5,8 @@ using System.Text;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Reflection;
+using System.Globalization;
 
 namespace RC.Common.Configuration
 {
@@ -166,6 +168,48 @@ namespace RC.Common.Configuration
             int b = XmlHelper.LoadInt(colorStrings[2]);
             return new RCColor(r, g, b);
         }
+        
+        /// <summary>
+        /// Creates an instance of the given type defined in the given XML-load.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to be created.</typeparam>
+        /// <param name="sourceElem">The XML-node that contains informations about the instantiation.</param>
+        /// <returns>The created instance of type T.</returns>
+        public static T CreateInstance<T>(XElement sourceElem)
+        {
+            /// Get the name of the assembly that contains the class to be instantiated.
+            XAttribute assemblyAttr = sourceElem.Attribute(INSTANTIATION_ASSEMBLY_ATTR);
+            if (assemblyAttr == null) { throw new ConfigurationException(string.Format("'{0}' attribute not found!", INSTANTIATION_ASSEMBLY_ATTR)); }
+
+            /// Get the name of the class to be instantiated.
+            XAttribute classElem = sourceElem.Attribute(INSTANTIATION_CLASS_ATTR);
+            if (classElem == null) { throw new ConfigurationException(string.Format("'{0}' attribute not found!", INSTANTIATION_CLASS_ATTR)); }
+
+            /// Collect the parameters for the constructor.
+            List<object> ctorParams = new List<object>();
+            foreach (XElement paramElem in sourceElem.Elements(INSTANTIATION_CTORPARAM_ELEM))
+            {
+                XAttribute paramTypeAttr = paramElem.Attribute(INSTANTIATION_CTORPARAM_TYPE_ATTR);
+                if (paramTypeAttr == null) { throw new ConfigurationException("No type defined for trace constructor parameter!"); }
+
+                /// Try to parse the type attribute.
+                CtorParamType paramType;
+                if (!EnumMap<CtorParamType, string>.Demap(paramTypeAttr.Value, out paramType))
+                {
+                    throw new ConfigurationException(string.Format("Unexpected constructor parameter type '{0}' defined.", paramTypeAttr.Value));
+                }
+
+                object parameter = ParseParameterValue(paramElem.Value, paramType);
+                ctorParams.Add(parameter);
+            }
+
+            /// Load the assembly that contains the class and create an instance of that class.
+            Assembly asm = Assembly.Load(assemblyAttr.Value);
+            if (asm == null) { throw new ConfigurationException(string.Format("Unable to load assembly '{0}'!", assemblyAttr.Value)); }
+            Type objType = asm.GetType(classElem.Value);
+            if (objType == null) { throw new ConfigurationException(string.Format("Unable to load type '{0}' from assembly '{1}'!", classElem.Value, assemblyAttr.Value)); }
+            return (T)Activator.CreateInstance(objType, ctorParams.ToArray());
+        }
 
         /// <summary>
         /// Loads a single-variant sprite palette definition from the given XML node.
@@ -258,6 +302,49 @@ namespace RC.Common.Configuration
         }
 
         /// <summary>
+        /// Converts the parameter value string to the given type. 
+        /// </summary>
+        /// <param name="paramValue">The value string of the parameter.</param>
+        /// <param name="paramType">The type of the parameter.</param>
+        /// <returns>The value of the parameter in the given type.</returns>
+        private static object ParseParameterValue(string paramValue, CtorParamType paramType)
+        {
+            // TODO: extend this switch if necessary!
+            switch (paramType)
+            {
+                case CtorParamType.INT:
+                    return XmlHelper.LoadInt(paramValue);
+                case CtorParamType.FLOAT:
+                    return float.Parse(paramValue, NumberStyles.Float, CultureInfo.InvariantCulture);
+                case CtorParamType.BOOL:
+                    return XmlHelper.LoadBool(paramValue);
+                case CtorParamType.STRING:
+                    return paramValue;
+                default:
+                    throw new ConfigurationException(string.Format("Unable to convert parameter value '{0}' to type '{1}'!", paramValue, paramType.ToString()));
+            }
+        }
+
+        /// <summary>
+        /// Enumerates the possible types of constructor parameters.
+        /// TODO: extend this enumeration if necessary!
+        /// </summary>
+        private enum CtorParamType
+        {
+            [EnumMapping("INT")]
+            INT = 0,
+
+            [EnumMapping("FLOAT")]
+            FLOAT = 1,
+
+            [EnumMapping("BOOL")]
+            BOOL = 2,
+
+            [EnumMapping("STRING")]
+            STRING = 3
+        }
+
+        /// <summary>
         /// Regular expression for checking the syntax of the RCNumbers.
         /// </summary>
         private static readonly Regex RCNUMBER_SYNTAX = new Regex("^[+-]?[0-9]{1,5}" + Regex.Escape(".") + "[0-9]{1,3}$");
@@ -273,5 +360,10 @@ namespace RC.Common.Configuration
         public const string SPRITE_VARIANT_ATTR = "variant";
         public const string SPRITE_SOURCEREGION_ATTR = "sourceRegion";
         public const string SPRITE_OFFSET_ATTR = "offset";
+
+        public const string INSTANTIATION_ASSEMBLY_ATTR = "assembly";
+        public const string INSTANTIATION_CLASS_ATTR = "class";
+        public const string INSTANTIATION_CTORPARAM_ELEM = "ctorParam";
+        public const string INSTANTIATION_CTORPARAM_TYPE_ATTR = "type";
     }
 }

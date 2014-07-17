@@ -75,11 +75,12 @@
     <Compile Include="DefaultControls\UIScrollBar.cs" />
     <Compile Include="DefaultControls\UISlider.cs" />
     <Compile Include="DefaultRenderManager.cs" />
+    <Compile Include="InputManagement\IUIKeyboardAccess.cs" />
+    <Compile Include="InputManagement\IUIMouseAccess.cs" />
     <Compile Include="InputManagement\IUIMouseSensor.cs" />
     <Compile Include="InputManagement\UIMouseEventArgs.cs" />
+    <Compile Include="ResourceManagement\UIPointerLoader.cs" />
     <Compile Include="TaskManagement\IUIBackgroundTask.cs" />
-    <Compile Include="IUIEventSource.cs" />
-    <Compile Include="InputManagement\IUIMousePointer.cs" />
     <Compile Include="IUIRenderContext.cs" />
     <Compile Include="IUIRenderLoop.cs" />
     <Compile Include="IUIRenderManager.cs" />
@@ -87,9 +88,7 @@
     <Compile Include="IUISpriteManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DefaultRenderContext.cs" />
-    <Compile Include="InputManagement\UIKeyboardSystemEventArgs.cs" />
     <Compile Include="InputManagement\UIMouseManager.cs" />
-    <Compile Include="InputManagement\UIMouseSystemEventArgs.cs" />
     <Compile Include="ResourceManagement\UIAnimationLoader.cs" />
     <Compile Include="ResourceManagement\UIFontLoader.cs" />
     <Compile Include="ResourceManagement\UIResourceFileLoader.cs" />
@@ -99,10 +98,9 @@
     <Compile Include="TaskManagement\UITaskManager.cs" />
     <Compile Include="TaskManagement\UITimeSharingTask.cs" />
     <Compile Include="UIAnimation.cs" />
+    <Compile Include="UIPointer.cs" />
     <Compile Include="UIRenderManagerBase.cs" />
     <Compile Include="UIConstants.cs" />
-    <Compile Include="UIEventQueue.cs" />
-    <Compile Include="UIEvents.cs" />
     <Compile Include="UIException.cs" />
     <Compile Include="UIFont.cs" />
     <Compile Include="IUIGraphicsPlatform.cs" />
@@ -113,7 +111,6 @@
     <Compile Include="UISprite.cs" />
     <Compile Include="UIString.cs" />
     <Compile Include="UIStringFragment.cs" />
-    <Compile Include="UIUpdateSystemEventArgs.cs" />
     <Compile Include="WorkspaceManagement\UIContainer.cs" />
     <Compile Include="WorkspaceManagement\UIDialog.cs" />
     <Compile Include="WorkspaceManagement\UIPage.cs" />

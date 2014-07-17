@@ -18,6 +18,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         public static readonly string TILESET_DIR = ConstantsTable.Get<string>("RC.App.BizLogic.TileSetDir");
 
         /// <summary>
+        /// The directory of the command workflow definitions.
+        /// </summary>
+        public static readonly string COMMAND_WORKFLOW_DIR = ConstantsTable.Get<string>("RC.App.BizLogic.CommandWorkflowDir");
+
+        /// <summary>
         /// Number of pixels per cells in both horizontal and vertical direction.
         /// </summary>
         public const int PIXEL_PER_NAVCELL = 4;

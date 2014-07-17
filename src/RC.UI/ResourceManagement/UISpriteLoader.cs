@@ -60,6 +60,11 @@ namespace RC.UI
         #endregion UIResourceLoader methods
 
         /// <summary>
+        /// Gets the loaded UISprite or null if the sprite is not loaded.
+        /// </summary>
+        protected UISprite LoadedSprite { get { return this.loadedSprite; } }
+
+        /// <summary>
         /// The transparent color of the loaded UISprite or RCColor.Undefined if transparent color was
         /// not defined.
         /// </summary>

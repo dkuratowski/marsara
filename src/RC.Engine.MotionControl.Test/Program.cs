@@ -21,17 +21,14 @@ namespace RC.Engine.MotionControl.Test
             root.LoadPlugins(xnaPlugin);
             root.InstallPlugins();
 
-            /// Activate the event sources
-            root.GetEventSource("RC.UI.XnaPlugin.XnaMouseEventSource").Activate();
-            root.GetEventSource("RC.UI.XnaPlugin.XnaKeyboardEventSource").Activate();
-
             /// Create the UIWorkspace and set the mouse pointer
             UIWorkspace workspace = new UIWorkspace(new RCIntVector(1024, 768), new RCIntVector(1024, 768));
-            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("..\\..\\..\\..\\sprites\\pointers\\menu_pointer.png");
+
+            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("..\\..\\..\\..\\sprites\\pointers\\normal_pointer.png");
             mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             mouseIcon.Upload();
-            UIBasicPointer basicPtr = new UIBasicPointer(mouseIcon, new RCIntVector(0, 0));
-            UIWorkspace.Instance.SetMousePointer(basicPtr);
+            UIPointer pointer = new UIPointer(mouseIcon, new RCIntVector(0, 0));
+            UIWorkspace.Instance.SetDefaultMousePointer(pointer);
 
             /// Create and activate the test page
             RCMotionControlTestPage motionControlTestPage = new RCMotionControlTestPage();

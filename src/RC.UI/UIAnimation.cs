@@ -61,7 +61,7 @@ namespace RC.UI
         {
             if (!this.isPlaying)
             {
-                UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.Update);
+                UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.Update;
                 this.isPlaying = true;
             }
         }
@@ -73,7 +73,7 @@ namespace RC.UI
         {
             if (this.isPlaying)
             {
-                UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.Update);
+                UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.Update;
                 this.isPlaying = false;
             }
         }
@@ -148,9 +148,9 @@ namespace RC.UI
         /// Internal method called by the framework on every update while the animation is being played.
         /// </summary>
         /// <param name="evtArgs">The details of the update event.</param>
-        private void Update(UIUpdateSystemEventArgs evtArgs)
+        private void Update()
         {
-            this.currentTimepoint += evtArgs.TimeSinceLastUpdate;
+            this.currentTimepoint += UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
             if (this.isLooped)
             {
                 this.currentTimepoint %= this.phaseEndpoints[this.phaseEndpoints.Count - 1];

@@ -28,11 +28,8 @@ namespace RC.UI.Test
             obj1.LoadSprite(".\\test_scene_sprites\\background.png");
             //obj2.LoadSprite(".\\test_scene_sprites\\obj2.png");
 
-            root.GetEventSource("RC.UI.XnaPlugin.XnaMouseEventSource").Activate();
-            root.GetEventSource("RC.UI.XnaPlugin.XnaKeyboardEventSource").Activate();
-
-            root.SystemEventQueue.Subscribe<UIKeyboardSystemEventArgs>(OnKeyboardEvent);
-            root.SystemEventQueue.Subscribe<UIMouseSystemEventArgs>(OnMouseEvent);
+            root.KeyboardAccess.StateChanged += OnKeyboardEvent;
+            root.MouseAccess.StateChanged += OnMouseEvent;
 
             UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\test_scene_sprites\\pointer.png");
             mouseIcon.TransparentColor = new RCColor(255, 0, 255);
@@ -45,24 +42,24 @@ namespace RC.UI.Test
             root.Dispose();
         }
 
-        private static void OnKeyboardEvent(UIKeyboardSystemEventArgs evt)
+        private static void OnKeyboardEvent()
         {
             string s = string.Empty;
-            foreach (UIKey key in evt.PressedKeys)
+            foreach (UIKey key in UIRoot.Instance.KeyboardAccess.PressedKeys)
             {
                 s += " " + key;
             }
             TraceManager.WriteAllTrace(s, TraceManager.GetTraceFilterID("RC.UI.Test.Info"));
         }
 
-        private static void OnMouseEvent(UIMouseSystemEventArgs evt)
+        private static void OnMouseEvent()
         {
             string s = string.Empty;
-            foreach (UIMouseButton btn in evt.PressedButtons)
+            foreach (UIMouseButton btn in UIRoot.Instance.MouseAccess.PressedButtons)
             {
                 s += " " + btn;
             }
-            s += "; wheel(" + evt.ScrollWheelPos + ")";
+            s += "; wheel(" + UIRoot.Instance.MouseAccess.ScrollWheelPos + ")";
             TraceManager.WriteAllTrace(s, TraceManager.GetTraceFilterID("RC.UI.Test.Info"));
         }
 

@@ -104,7 +104,7 @@ namespace RC.App.PresLogic.Pages
             if (!this.hasBeenActivatedOnce)
             {
                 this.firstActivationTime = UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceStart;
-                UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.UpdateHdl);
+                UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.UpdateHdl;
                 this.hasBeenActivatedOnce = true;
             }
             else
@@ -116,8 +116,7 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// Called by the framework on updates.
         /// </summary>
-        /// <param name="evtArgs">The details of the event.</param>
-        private void UpdateHdl(UIUpdateSystemEventArgs evtArgs)
+        private void UpdateHdl()
         {
             if (this.currentPhase == ShowPhase.OnlyBackground)
             {
@@ -135,7 +134,7 @@ namespace RC.App.PresLogic.Pages
                 {
                     this.currentPhase = ShowPhase.Loading;
                     this.titleAnimation.Stop();
-                    UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.UpdateHdl);
+                    UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.UpdateHdl;
                     this.loadingTask = UIResourceManager.LoadResourceGroupAsync("RC.App.CommonResources");
                     this.loadingTask.Finished += this.LoadingFinished;
                     this.loadingTask.Failed += this.LoadingFailed;
@@ -155,6 +154,7 @@ namespace RC.App.PresLogic.Pages
 
             this.loadingTask = null;
             this.currentPhase = ShowPhase.Normal;
+            UIWorkspace.Instance.SetDefaultMousePointer(UIResourceManager.GetResource<UIPointer>("RC.App.Pointers.NormalPointer"));
 
             UIFont menuFont = UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font9B");
             string[] menuPoints = new string[3] { START_GAME_MENUPOINT, CREDITS_MENUPOINT, EXIT_MENUPOINT };
@@ -170,10 +170,6 @@ namespace RC.App.PresLogic.Pages
             this.menuPanel[EXIT_MENUPOINT].Pressed += this.OnMenupointPressed;
 
             this.menuPanel.Show();
-            /// TODO: this is only a temporary solution
-            UISprite mouseIcon = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.MenuPointerSprite");
-            UIBasicPointer basicPtr = new UIBasicPointer(mouseIcon, new RCIntVector(0, 0));
-            UIWorkspace.Instance.SetMousePointer(basicPtr);
         }
 
         /// <summary>

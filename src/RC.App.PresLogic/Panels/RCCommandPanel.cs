@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.App.BizLogic.Services;
+using RC.App.BizLogic.Views;
 using RC.App.PresLogic.Controls;
 using RC.Common;
+using RC.Common.ComponentModel;
 using RC.UI;
 
 namespace RC.App.PresLogic.Panels
@@ -24,15 +27,8 @@ namespace RC.App.PresLogic.Panels
         {
             this.isConnected = false;
             this.backgroundTask = null;
+            this.commandButtonSprites = new Dictionary<CmdButtonStateEnum, SpriteGroup>();
             this.buttonArray = new RCCommandButton[3, 3];
-            for (int row = 0; row < BUTTON_ARRAY_ROWS; row++)
-            {
-                for (int col = 0; col < BUTTON_ARRAY_COLS; col++)
-                {
-                    this.buttonArray[row, col] = new RCCommandButton(BUTTON_POSITIONS[row, col], new RCIntVector(row, col).ToString());
-                    this.AddControl(this.buttonArray[row, col]);
-                }
-            }
         }
 
         #region IGameConnector members
@@ -42,7 +38,12 @@ namespace RC.App.PresLogic.Panels
         {
             if (this.isConnected || this.backgroundTask != null) { throw new InvalidOperationException("The command panel has been connected or is currently being connected!"); }
 
-            /// TODO: implement UI-thread connection procedures here!
+            /// UI-thread connection procedure
+            IViewService viewService = ComponentManager.GetInterface<IViewService>();
+            ICommandPanelView commandPanelView = viewService.CreateView<ICommandPanelView>();
+            this.commandButtonSprites.Add(CmdButtonStateEnum.Disabled, new CmdButtonSpriteGroup(commandPanelView, CmdButtonStateEnum.Disabled));
+            this.commandButtonSprites.Add(CmdButtonStateEnum.Enabled, new CmdButtonSpriteGroup(commandPanelView, CmdButtonStateEnum.Enabled));
+            this.commandButtonSprites.Add(CmdButtonStateEnum.Highlighted, new CmdButtonSpriteGroup(commandPanelView, CmdButtonStateEnum.Highlighted));
 
             this.backgroundTask = UITaskManager.StartParallelTask(this.ConnectBackgroundProc, "RCCommandPanel.Connect");
             this.backgroundTask.Finished += this.OnBackgroundTaskFinished;
@@ -57,7 +58,15 @@ namespace RC.App.PresLogic.Panels
         {
             if (!this.isConnected || this.backgroundTask != null) { throw new InvalidOperationException("The command panel has been connected or is currently being connected!"); }
 
-            /// TODO: implement UI-thread disconnection procedures here!
+            /// Destroy the command buttons.
+            for (int row = 0; row < BUTTON_ARRAY_ROWS; row++)
+            {
+                for (int col = 0; col < BUTTON_ARRAY_COLS; col++)
+                {
+                    this.RemoveControl(this.buttonArray[row, col]);
+                    this.buttonArray[row, col] = null;
+                }
+            }
 
             this.backgroundTask = UITaskManager.StartParallelTask(this.DisconnectBackgroundProc, "RCCommandPanel.Disconnect");
             this.backgroundTask.Finished += this.OnBackgroundTaskFinished;
@@ -96,6 +105,16 @@ namespace RC.App.PresLogic.Panels
             this.backgroundTask = null;
             if (!this.isConnected)
             {
+                /// Create the command buttons.
+                for (int row = 0; row < BUTTON_ARRAY_ROWS; row++)
+                {
+                    for (int col = 0; col < BUTTON_ARRAY_COLS; col++)
+                    {
+                        this.buttonArray[row, col] = new RCCommandButton(new RCIntVector(row, col), this.commandButtonSprites);
+                        this.AddControl(this.buttonArray[row, col]);
+                    }
+                }
+
                 this.isConnected = true;
                 if (this.connectorOperationFinished != null) { this.connectorOperationFinished(this); }
             }
@@ -111,7 +130,7 @@ namespace RC.App.PresLogic.Panels
         /// </summary>
         private void ConnectBackgroundProc(object parameter)
         {
-            /// TODO: implement background connection procedures here!
+            foreach (SpriteGroup spriteGroup in this.commandButtonSprites.Values) { spriteGroup.Load(); }
         }
 
         /// <summary>
@@ -119,7 +138,8 @@ namespace RC.App.PresLogic.Panels
         /// </summary>
         private void DisconnectBackgroundProc(object parameter)
         {
-            /// TODO: implement background disconnection procedures here!
+            foreach (SpriteGroup spriteGroup in this.commandButtonSprites.Values) { spriteGroup.Unload(); }
+            this.commandButtonSprites.Clear();
         }
 
         #endregion Internal members
@@ -153,13 +173,8 @@ namespace RC.App.PresLogic.Panels
         private IUIBackgroundTask backgroundTask;
 
         /// <summary>
-        /// The size of a command button in pixels.
+        /// List of the command button sprite groups mapped by the appropriate button state.
         /// </summary>
-        private static readonly RCIntRectangle[,] BUTTON_POSITIONS = new RCIntRectangle[3, 3]
-        {
-            { new RCIntRectangle(1, 1, 20, 20), new RCIntRectangle(22, 1, 20, 20), new RCIntRectangle(43, 1, 20, 20) },
-            { new RCIntRectangle(1, 22, 20, 20), new RCIntRectangle(22, 22, 20, 20), new RCIntRectangle(43, 22, 20, 20) },
-            { new RCIntRectangle(1, 43, 20, 20), new RCIntRectangle(22, 43, 20, 20), new RCIntRectangle(43, 43, 20, 20) },
-        };
+        private Dictionary<CmdButtonStateEnum, SpriteGroup> commandButtonSprites;
     }
 }

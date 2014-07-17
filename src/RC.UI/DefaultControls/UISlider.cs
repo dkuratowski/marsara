@@ -213,7 +213,7 @@ namespace RC.UI
             this.sliderRectCache.Invalidate();
             this.currentStatus = Status.Normal;
             this.trackingDirection = TrackingDirection.Decreasing;
-            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
         }
 
         #region Status data
@@ -302,7 +302,7 @@ namespace RC.UI
                         this.ComputeTrackingDirection(evtArgs.Position) != this.trackingDirection)
                     {
                         this.currentStatus = Status.TrackingPaused;
-                        UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                        UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
                     }
                 }
                 else if (this.currentStatus == Status.TrackingPaused)
@@ -314,7 +314,7 @@ namespace RC.UI
                     {
                         this.timeSinceLastTracking = 0;
                         this.currentStatus = Status.Tracking;
-                        UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                        UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
                     }
                 }
             }
@@ -369,7 +369,7 @@ namespace RC.UI
                             this.ComputeTrackingDirection(evtArgs.Position) == this.trackingDirection)
                         {
                             this.currentStatus = Status.Tracking;
-                            UIRoot.Instance.SystemEventQueue.Subscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
                         }
                         else
                         {
@@ -403,7 +403,7 @@ namespace RC.UI
                         this.sliderRectCache.Invalidate();
                     }
                     this.currentStatus = Status.Normal;
-                    UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                    UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
                 }
             }
         }
@@ -532,14 +532,13 @@ namespace RC.UI
         /// <summary>
         /// This method is called on every frame update.
         /// </summary>
-        /// <param name="evtArgs">Contains timing informations.</param>
-        private void OnFrameUpdate(UIUpdateSystemEventArgs evtArgs)
+        private void OnFrameUpdate()
         {
             if (this.IsEnabled)
             {
                 if (this.currentStatus == Status.Tracking)
                 {
-                    this.timeSinceLastTracking += evtArgs.TimeSinceLastUpdate;
+                    this.timeSinceLastTracking += UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
                     if (this.timeSinceLastTracking > this.timeBetweenTrackings)
                     {
                         this.timeSinceLastTracking = 0;
@@ -561,7 +560,7 @@ namespace RC.UI
                             this.ComputeTrackingDirection(this.lastKnownMousePosition) != this.trackingDirection)
                         {
                             this.currentStatus = Status.TrackingPaused;
-                            UIRoot.Instance.SystemEventQueue.Unsubscribe<UIUpdateSystemEventArgs>(this.OnFrameUpdate);
+                            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
                         }
 
                         /// WARNING: UIMouseManager.RaiseMovementEvents doesn't raise the OnMove event for the

@@ -19,6 +19,19 @@ namespace RC.UI.Test
             root.LoadPlugins(xnaPlugin);
             root.InstallPlugins();
 
+            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("..\\..\\..\\..\\sprites\\pointers\\normal_pointer.png", new RCIntVector(2, 2));
+            mouseIcon.TransparentColor = new RCColor(255, 0, 255);
+            mouseIcon.Upload();
+            UIPointer pointer = new UIPointer(mouseIcon, new RCIntVector(0, 0));
+            
+            DynamicString.RegisterResolver("RC.UI.UIWorkspace.PixelScaling",
+                delegate()
+                {
+                    return "2;2";
+                });
+            UIResourceManager.LoadResourceGroup("RC.App.SplashScreen");
+            UIResourceManager.LoadResourceGroup("RC.App.CommonResources");
+
             display = new TestUIObject(new RCIntVector(2, 2), new RCIntVector(0, 0), new RCIntRectangle(0, 0, 400, 300));
             workspace = new MySensitiveObject(new RCIntVector(40, 50), new RCIntRectangle(0, 0, 320, 200),
                                               "Workspace", RCColor.Gray, RCColor.Gray);
@@ -53,17 +66,11 @@ namespace RC.UI.Test
             objC.AttachSensitive(objCA);
             objC.AttachSensitive(objCB);
 
-            root.GetEventSource("RC.UI.XnaPlugin.XnaMouseEventSource").Activate();
-            root.GetEventSource("RC.UI.XnaPlugin.XnaKeyboardEventSource").Activate();
-
             //root.SystemEventQueue.Subscribe<UIKeyboardEventArgs>(OnKeyboardEvent);
             //root.SystemEventQueue.Subscribe<UIMouseEventArgs>(OnMouseEvent);
 
-            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\testui_sprites\\pointer.png");
-            mouseIcon.TransparentColor = new RCColor(255, 0, 255);
-            mouseIcon.Upload();
             UIMouseManager mouseMgr = new UIMouseManager(workspace);
-            mouseMgr.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));
+            mouseMgr.SetDefaultMousePointer(pointer);
 
             root.GraphicsPlatform.RenderManager.Attach(display);
             root.GraphicsPlatform.RenderLoop.Start(new RCIntVector(800, 600));
@@ -196,7 +203,8 @@ namespace RC.UI.Test
                                  RCIntRectangle range,
                                  string name,
                                  RCColor basicColor,
-                                 RCColor highColor) : base(position, range, name, basicColor, highColor)
+                                 RCColor highColor)
+            : base(position, range, name, basicColor, highColor)
         {
             this.hookPosition = RCIntVector.Undefined;
 

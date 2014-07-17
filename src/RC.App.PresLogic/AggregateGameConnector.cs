@@ -67,7 +67,7 @@ namespace RC.App.PresLogic
             if (this.currentStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("The connector is not online!"); }
 
             this.currentStatus = ConnectionStatusEnum.Disconnecting;
-            foreach (IGameConnector connector in this.disconnectedConnectors) { connector.Connect(); }
+            foreach (IGameConnector connector in this.connectedConnectors) { connector.Disconnect(); }
         }
 
         /// <see cref="IGameConnector.CurrentStatus"/>
