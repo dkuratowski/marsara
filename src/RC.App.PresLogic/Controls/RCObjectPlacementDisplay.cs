@@ -24,43 +24,10 @@ namespace RC.App.PresLogic.Controls
             : base(extendedControl)
         {
             this.mapView = null;
-            this.objects = null;
-            this.objectPlacementView = null;
             this.objectPlacementMaskGreen = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ObjectPlacementMaskGreen");
             this.objectPlacementMaskRed = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ObjectPlacementMaskRed");
             this.lastKnownMousePosition = RCIntVector.Undefined;
         }
-
-        /// <summary>
-        /// Starts placing an object onto the screen.
-        /// </summary>
-        /// <param name="objPlacementView">The object placement view that will provide the object placement box to be displayed.</param>
-        /// <param name="objectGroup">The sprite-group indexed by the object placement view.</param>
-        /// <param name="scheduler">The scheduler that is used to animate the object placement box.</param>
-        public void StartPlacingObject(IObjectPlacementView objPlacementView, SpriteGroup objectGroup)
-        {
-            if (objPlacementView == null) { throw new ArgumentNullException("objPlacementView"); }
-            if (objectGroup == null) { throw new ArgumentNullException("objectGroup"); }
-            if (this.objectPlacementView != null) { throw new InvalidOperationException("Object placement has already been started!"); }
-
-            this.objectPlacementView = objPlacementView;
-            this.objects = objectGroup;
-        }
-
-        /// <summary>
-        /// Stops placing an object onto the screen. If object placing has already been stopped or has not yet started then this function has no effect.
-        /// </summary>
-        public void StopPlacingObject()
-        {
-            if (this.objectPlacementView != null) { this.objectPlacementView.Dispose(); }
-            this.objectPlacementView = null;
-            this.objects = null;
-        }
-
-        /// <summary>
-        /// Gets whether this map display extension is currently displaying object placement or not.
-        /// </summary>
-        public bool PlacingObject { get { return this.objectPlacementView != null; } }
 
         /// <see cref="RCMapDisplayExtension.MapView"/>
         protected override IMapView MapView { get { return this.mapView; } }
@@ -83,13 +50,17 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
-            if (this.DisplayedArea != RCIntRectangle.Undefined && this.objectPlacementView != null && this.lastKnownMousePosition != RCIntVector.Undefined)
+            if (this.DisplayedArea != RCIntRectangle.Undefined &&
+                this.MouseHandler != null &&
+                this.MouseHandler.ObjectPlacementInfo != null &&
+                this.lastKnownMousePosition != RCIntVector.Undefined)
             {
-                ObjectPlacementBox placementBox = this.objectPlacementView.GetObjectPlacementBox(this.DisplayedArea, this.lastKnownMousePosition);
+                ObjectPlacementBox placementBox =
+                    this.MouseHandler.ObjectPlacementInfo.View.GetObjectPlacementBox(this.DisplayedArea, this.lastKnownMousePosition);
 
                 foreach (SpriteInst spriteToDisplay in placementBox.Sprites)
                 {
-                    UISprite uiSpriteToDisplay = this.objects[spriteToDisplay.Index];
+                    UISprite uiSpriteToDisplay = this.MouseHandler.ObjectPlacementInfo.Sprites[spriteToDisplay.Index];
                     renderContext.RenderSprite(uiSpriteToDisplay, spriteToDisplay.DisplayCoords, spriteToDisplay.Section);
                 }
 
@@ -130,16 +101,6 @@ namespace RC.App.PresLogic.Controls
         /// Reference to a map view.
         /// </summary>
         private IMapView mapView;
-
-        /// <summary>
-        /// Reference to the object placement view or null if there is no object being placed.
-        /// </summary>
-        private IObjectPlacementView objectPlacementView;
-
-        /// <summary>
-        /// List of the objects.
-        /// </summary>
-        private SpriteGroup objects;
 
         /// <summary>
         /// The last known position of the mouse cursor in the coordinate system of the display.

@@ -15,7 +15,7 @@ namespace RC.App.PresLogic.Controls
     ///     - indicates the selected map objects
     ///     - displays the selection box if a selection is currently in progress
     /// </summary>
-    public class RCSelectionDisplay : RCMapDisplayExtension, IMapControl
+    public class RCSelectionDisplay : RCMapDisplayExtension
     {
         /// <summary>
         /// Constructs an RCSelectionDisplay extension for the given map display control.
@@ -26,8 +26,8 @@ namespace RC.App.PresLogic.Controls
             : base(extendedControl)
         {
             this.selectionIndicatorView = null;
-            this.selectionBox = RCIntRectangle.Undefined;
             this.selectionBoxPointer = UIResourceManager.GetResource<UIPointer>("RC.App.Pointers.SelectionBoxPointer");
+            this.crosshairsPointer = UIResourceManager.GetResource<UIPointer>("RC.App.Pointers.CrosshairsPointer");
 
             this.lightGreenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.greenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
@@ -38,20 +38,26 @@ namespace RC.App.PresLogic.Controls
             this.yellowBrush.Upload();
             this.redBrush.Upload();
         }
-
-        /// <see cref="IMapControl.SelectionBox"/>
-        public RCIntRectangle SelectionBox
-        {
-            get { return this.selectionBox; }
-            set { this.selectionBox = value; }
-        }
         
         #region Overrides
 
         /// <see cref="RCMapDisplayExtension.GetMousePointer_i"/>
         protected override UIPointer GetMousePointer_i(RCIntVector localPosition)
         {
-            return this.selectionBox != RCIntRectangle.Undefined ? this.selectionBoxPointer : null;
+            if (this.MouseHandler != null)
+            {
+                if (this.MouseHandler.SelectionBox != RCIntRectangle.Undefined)
+                {
+                    return this.selectionBoxPointer;
+                }
+                else if (this.MouseHandler.DisplayCrosshairs)
+                {
+                    return this.crosshairsPointer;
+                }
+                /// TODO: display scrolling pointers if scroll is in progress!
+            }
+
+            return null;
         }
 
         /// <see cref="RCMapDisplayExtension.MapView"/>
@@ -93,18 +99,13 @@ namespace RC.App.PresLogic.Controls
             }
 
             /// Render the selection box if necessary.
-            if (this.selectionBox != RCIntRectangle.Undefined)
+            if (this.MouseHandler != null && this.MouseHandler.SelectionBox != RCIntRectangle.Undefined)
             {
-                renderContext.RenderRectangle(this.lightGreenBrush, this.selectionBox);
+                renderContext.RenderRectangle(this.lightGreenBrush, this.MouseHandler.SelectionBox);
             }
         }
 
         #endregion Overrides
-
-        /// <summary>
-        /// The current selection box or RCIntRectangle.Undefined if selection box is currently turned off.
-        /// </summary>
-        private RCIntRectangle selectionBox;
 
         /// <summary>
         /// Reference to the selection indicator view.
@@ -119,5 +120,6 @@ namespace RC.App.PresLogic.Controls
         private UISprite yellowBrush;
         private UISprite redBrush;
         private UIPointer selectionBoxPointer;
+        private UIPointer crosshairsPointer;
     }
 }

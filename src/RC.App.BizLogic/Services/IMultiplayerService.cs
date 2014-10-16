@@ -57,5 +57,10 @@ namespace RC.App.BizLogic.Services
         /// </summary>
         /// <param name="cmd">The command to post.</param>
         void PostCommand(RCCommand cmd);
+
+        /// <summary>
+        /// This event is raised when the game that this peer is currently connected to has been updated.
+        /// </summary>
+        event Action GameUpdated;
     }
 }

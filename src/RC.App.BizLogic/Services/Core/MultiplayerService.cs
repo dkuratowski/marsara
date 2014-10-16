@@ -43,6 +43,7 @@ namespace RC.App.BizLogic.Services.Core
 
             this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
             this.selectionManager = ComponentManager.GetInterface<ISelectionManagerBC>();
+            this.commandManager = ComponentManager.GetInterface<ICommandManagerBC>();
             this.viewFactoryRegistry = ComponentManager.GetInterface<IViewFactoryRegistry>();
         }
 
@@ -75,6 +76,8 @@ namespace RC.App.BizLogic.Services.Core
             this.triggeredScheduler.AddScheduledFunction(this.ExecuteCommands);
             this.triggeredScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.UpdateState);
             this.triggeredScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.UpdateAnimations);
+            this.triggeredScheduler.AddScheduledFunction(this.commandManager.Update);
+            this.triggeredScheduler.AddScheduledFunction(() => { if (this.GameUpdated != null) { this.GameUpdated(); } });
             this.testDssTaskCanFinishEvt = new ManualResetEvent(false);
             this.dssTask = this.taskManager.StartTask(this.TestDssTaskMethod, "DssThread");
         }
@@ -92,6 +95,9 @@ namespace RC.App.BizLogic.Services.Core
         {
             this.commandDispatcher.PushOutgoingCommand(cmd);
         }
+
+        /// <see cref="IMultiplayerService.GameUpdated"/>
+        public event Action GameUpdated;
 
         #endregion IMultiplayerService methods
 
@@ -169,5 +175,10 @@ namespace RC.App.BizLogic.Services.Core
         /// Reference to the selection manager business component.
         /// </summary>
         private ISelectionManagerBC selectionManager;
+
+        /// <summary>
+        /// Reference to the command manager business component.
+        /// </summary>
+        private ICommandManagerBC commandManager;
     }
 }

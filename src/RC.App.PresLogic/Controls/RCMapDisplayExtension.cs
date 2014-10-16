@@ -37,14 +37,6 @@ namespace RC.App.PresLogic.Controls
             return pointer != null ? pointer : this.extendedControl.GetMousePointer(localPosition);
         }
 
-        /// <see cref="RCMapDisplay.ScrollTo_i"/>
-        protected sealed override void ScrollTo_i(RCIntVector where)
-        {
-            this.extendedControl.ScrollTo(where);
-            base.ScrollTo_i(where);
-            this.ScrollToEx_i(where);
-        }
-
         /// <see cref="RCMapDisplay.Connect_i"/>
         protected sealed override void Connect_i()
         {
@@ -81,6 +73,22 @@ namespace RC.App.PresLogic.Controls
             this.DisconnectExBackgroundProc_i();
         }
 
+        /// <see cref="RCMapDisplay.OnMouseHandlerAttached"/>
+        protected sealed override void OnMouseHandlerAttached(IMouseHandler handler)
+        {
+            this.extendedControl.AttachMouseHandler(handler);
+            base.OnMouseHandlerAttached(handler);
+            this.OnMouseHandlerAttachedEx_i(handler);
+        }
+
+        /// <see cref="RCMapDisplay.OnMouseHandlerDetaching"/>
+        protected sealed override void OnMouseHandlerDetaching()
+        {
+            this.extendedControl.DetachMouseHandler();
+            base.OnMouseHandlerDetaching();
+            this.OnMouseHandlerDetachingEx_i();
+        }
+
         /// <see cref="UIObject.Render_i"/>
         protected sealed override void Render_i(IUIRenderContext renderContext)
         {
@@ -103,13 +111,6 @@ namespace RC.App.PresLogic.Controls
         /// The default mouse pointer can be set using the UIWorkspace.SetDefaultMousePointer method.
         /// </returns>
         protected virtual UIPointer GetMousePointer_i(RCIntVector localPosition) { return null; }
-
-        /// <summary>
-        /// The internal implementation RCMapDisplayExtension.ScrollTo_i that can be overriden by the derived classes.
-        /// The default implementation does nothing.
-        /// </summary>
-        /// <param name="where">The top-left corner of the displayed area in pixels.</param>
-        protected virtual void ScrollToEx_i(RCIntVector where) { }
 
         /// <summary>
         /// The internal implementation of the connecting procedure of this extension that can be overriden by the derived classes.
@@ -138,6 +139,18 @@ namespace RC.App.PresLogic.Controls
         /// The default implementation does nothing.
         /// </summary>
         protected virtual void DisconnectExBackgroundProc_i() { }
+
+        /// <summary>
+        /// Derived classes can execute addition mouse handler attachment operations by overriding this method.
+        /// The default implementation does nothing.
+        /// </summary>
+        protected virtual void OnMouseHandlerAttachedEx_i(IMouseHandler handler) { }
+
+        /// <summary>
+        /// Derived classes can execute addition mouse handler detachment operations by overriding this method.
+        /// The default implementation does nothing.
+        /// </summary>
+        protected virtual void OnMouseHandlerDetachingEx_i() { }
 
         /// <summary>
         /// The internal implementation of the rendering operation of this extension that can be overriden by the derived classes.

@@ -44,7 +44,8 @@ realm = <repository-name>
 	* = rw
 
 7. Restart the subversion server, in order to load the changes in the configuration files:
- /mnt/HD_a2/fun_plug.d/start/svnserve.sh restart
+ chmod 755 /mnt/HD_a2/ffp/start/svnserve.sh
+ /mnt/HD_a2/ffp/start/svnserve.sh restart
 
 8. Now start you SVN client, on your machine and access svn server using:
 	svn://nas/

@@ -70,7 +70,7 @@
   <ItemGroup>
     <Compile Include="AggregateGameConnector.cs" />
     <Compile Include="CmdButtonSpriteGroup.cs" />
-    <Compile Include="Controls\IMapControl.cs" />
+    <Compile Include="Controls\IMapDisplay.cs" />
     <Compile Include="Controls\RCCommandButton.cs" />
     <Compile Include="Controls\RCIsoTileDisplay.cs" />
     <Compile Include="Controls\RCDropdownSelector.cs" />
@@ -83,22 +83,21 @@
     <Compile Include="Controls\RCResourceAmountDisplay.cs" />
     <Compile Include="Controls\RCSelectionDisplay.cs" />
     <Compile Include="IGameConnector.cs" />
-    <Compile Include="InputHandler.cs" />
-    <Compile Include="GameplayInputManager.cs" />
     <Compile Include="IsoTileSpriteGroup.cs" />
+    <Compile Include="MapEditorMouseHandler.cs" />
     <Compile Include="MapObjectSpriteGroup.cs" />
     <Compile Include="MaskedSpriteGroup.cs" />
-    <Compile Include="NormalInputModeHandler.cs" />
+    <Compile Include="NormalMouseHandler.cs" />
     <Compile Include="PresLogicConstants.cs" />
-    <Compile Include="ScrollHandler.cs" />
+    <Compile Include="MouseHandlerBase.cs" />
     <Compile Include="Panels\RCCommandPanel.cs" />
     <Compile Include="Panels\RCDetailsPanel.cs" />
     <Compile Include="Panels\RCMenuButtonPanel.cs" />
     <Compile Include="Panels\RCMinimapPanel.cs" />
     <Compile Include="Panels\RCResourceBar.cs" />
     <Compile Include="Panels\RCTooltipBar.cs" />
+    <Compile Include="SelectTargetMouseHandler.cs" />
     <Compile Include="SpriteGroup.cs" />
-    <Compile Include="ScrollDirection.cs" />
     <Compile Include="Controls\RCMapDisplay.cs" />
     <Compile Include="Controls\RCScrollBar.cs" />
     <Compile Include="Pages\RCMapEditorPage.cs" />

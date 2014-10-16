@@ -1,5 +1,6 @@
 ﻿using RC.Common.ComponentModel;
 using RC.Common;
+using System;
 
 namespace RC.App.BizLogic.Services
 {
@@ -38,6 +39,11 @@ namespace RC.App.BizLogic.Services
         /// Closes the currently opened map. If there is no opened map, then this function has no effect.
         /// </summary>
         void CloseMap();
+
+        /// <summary>
+        /// This event is raised when the animations of the currently opened map has been updated.
+        /// </summary>
+        event Action AnimationsUpdated;
 
         /// <summary>
         /// Draws the given terrain type on the isometric tile at the given position.

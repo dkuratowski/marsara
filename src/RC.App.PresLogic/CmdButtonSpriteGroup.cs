@@ -19,7 +19,7 @@ namespace RC.App.PresLogic
         /// </summary>
         /// <param name="cmdPanelView">Reference to the command panel view.</param>
         /// <param name="btnState">The button state for which this sprite group belongs to.</param>
-        public CmdButtonSpriteGroup(ICommandPanelView cmdPanelView, CmdButtonStateEnum btnState)
+        public CmdButtonSpriteGroup(ICommandView cmdPanelView, CommandButtonStateEnum btnState)
             : base()
         {
             if (cmdPanelView == null) { throw new ArgumentNullException("cmdPanelView"); }
@@ -41,21 +41,21 @@ namespace RC.App.PresLogic
         /// <summary>
         /// Reference to the command panel view.
         /// </summary>
-        private ICommandPanelView commandPanelView;
+        private ICommandView commandPanelView;
 
         /// <summary>
         /// The button state for which this sprite group belongs to.
         /// </summary>
-        private CmdButtonStateEnum buttonState;
+        private CommandButtonStateEnum buttonState;
 
         /// <summary>
         /// Defines the colors for the different button states.
         /// </summary>
-        private static readonly Dictionary<CmdButtonStateEnum, RCColor> BUTTONSTATE_COLOR_MAPPINGS = new Dictionary<CmdButtonStateEnum, RCColor>()
+        private static readonly Dictionary<CommandButtonStateEnum, RCColor> BUTTONSTATE_COLOR_MAPPINGS = new Dictionary<CommandButtonStateEnum, RCColor>()
         {
-            { CmdButtonStateEnum.Enabled, RCColor.Yellow },
-            { CmdButtonStateEnum.Disabled, RCColor.Gray },
-            { CmdButtonStateEnum.Highlighted, RCColor.WhiteHigh },
+            { CommandButtonStateEnum.Enabled, RCColor.Yellow },
+            { CommandButtonStateEnum.Disabled, RCColor.Gray },
+            { CommandButtonStateEnum.Highlighted, RCColor.WhiteHigh },
         };
     }
 }

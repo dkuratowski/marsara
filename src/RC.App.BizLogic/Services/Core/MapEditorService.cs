@@ -37,7 +37,6 @@ namespace RC.App.BizLogic.Services.Core
         {
             this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
             this.mapEditor = ComponentManager.GetInterface<IMapEditor>();
-            this.viewFactoryRegistry = ComponentManager.GetInterface<IViewFactoryRegistry>();
         }
 
         /// <see cref="IComponent.Stop"/>
@@ -56,8 +55,7 @@ namespace RC.App.BizLogic.Services.Core
             this.scenarioManager.NewScenario(mapName, tilesetName, defaultTerrain, mapSize);
             this.timeScheduler = new Scheduler(MAPEDITOR_MS_PER_FRAMES);
             this.timeScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.UpdateAnimations);
-
-            this.RegisterFactoryMethods();
+            this.timeScheduler.AddScheduledFunction(() => { if (this.AnimationsUpdated != null) { this.AnimationsUpdated(); } });
         }
 
         /// <see cref="IMapEditorService.NewMap"/>
@@ -66,8 +64,7 @@ namespace RC.App.BizLogic.Services.Core
             this.scenarioManager.OpenScenario(filename);
             this.timeScheduler = new Scheduler(MAPEDITOR_MS_PER_FRAMES);
             this.timeScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.UpdateAnimations);
-
-            this.RegisterFactoryMethods();
+            this.timeScheduler.AddScheduledFunction(() => { if (this.AnimationsUpdated != null) { this.AnimationsUpdated(); } });
         }
 
         /// <see cref="IMapEditorService.NewMap"/>
@@ -81,13 +78,14 @@ namespace RC.App.BizLogic.Services.Core
         {
             if (this.scenarioManager.ActiveScenario != null)
             {
-                this.UnregisterFactoryMethods();
-
                 this.timeScheduler.Dispose();
                 this.timeScheduler = null;
                 this.scenarioManager.CloseScenario();
             }
         }
+
+        /// <see cref="IMapEditorService.AnimationsUpdated"/>
+        public event Action AnimationsUpdated;
 
         /// <see cref="IMapEditorService.DrawTerrain"/>
         public void DrawTerrain(RCIntRectangle displayedArea, RCIntVector position, string terrainType)
@@ -319,47 +317,10 @@ namespace RC.App.BizLogic.Services.Core
 
         #endregion IMapEditorService methods
 
-        #region View factory methods (TODO: move to ScenarioManagerBC)
-
-        /// <summary>
-        /// Creates a view of type IMapObjectPlacementView.
-        /// </summary>
-        /// <returns>The created view.</returns>
-        private IMapObjectPlacementView CreateMapObjectPlacementView(string mapObjectTypeName)
-        {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
-            if (mapObjectTypeName == null) { throw new ArgumentNullException("mapObjectTypeName"); }
-
-            return new MapObjectPlacementView(mapObjectTypeName, this.timeScheduler);
-        }
-
-        /// <summary>
-        /// Registers the implemented factory methods to the view factory.
-        /// </summary>
-        private void RegisterFactoryMethods()
-        {
-            this.viewFactoryRegistry.RegisterViewFactory<IMapObjectPlacementView, string>(this.CreateMapObjectPlacementView);
-        }
-
-        /// <summary>
-        /// Unregisters the implemented factory methods from the view factory.
-        /// </summary>
-        private void UnregisterFactoryMethods()
-        {
-            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectPlacementView>();
-        }
-
-        #endregion View factory methods (TODO: move to ScenarioManagerBC)
-
         /// <summary>
         /// Reference to the RC.Engine.Maps.MapEditor component.
         /// </summary>
         private IMapEditor mapEditor;
-
-        /// <summary>
-        /// Reference to the registry interface of the RC.App.BizLogic.ViewFactory component.
-        /// </summary>
-        private IViewFactoryRegistry viewFactoryRegistry;
 
         /// <summary>
         /// Reference to the scenario manager business component.

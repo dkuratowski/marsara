@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-gb" lang="en-gb" >
+<head>
+
+<!--     Author: raduga http://mambasana.ru, http://joomlafabric.com, copyright: GNU/GPL     -->
+  <base href="http://bernaerts.dyndns.org/linux/178-dns323-funplug" />
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta name="keywords" content="dns 323 funplug script change disk" />
+  <meta name="author" content="Nicolas Bernaerts" />
+  <meta name="description" content="This article explains how to extend the DNS 323 NAS possibilities thru the use of funplug script." />
+  <meta name="generator" content="Joomla! - Open Source Content Management" />
+  <title>DNS 323 - Extend your NAS possibilities with Funplug 0.5</title>
+  <link href="/templates/bernaerts/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+  <link href="http://bernaerts.dyndns.org/component/search/?Itemid=62&amp;catid=178&amp;id=178&amp;format=opensearch" rel="search" title="Search Famille Bernaerts" type="application/opensearchdescription+xml" />
+  <link rel="stylesheet" href="/plugins/content/autotoc/autotoc.css" type="text/css" />
+  <script type="text/javascript">
+do_nothing( function() {
+				
+			});function do_nothing() { return; }
+  </script>
+
+
+<!--	Personnalised fonts	-->
+<link rel="stylesheet" href="/templates/bernaerts/fonts/handwriting.css" type="text/css" />
+
+<!--	Style sheets CSS	-->
+<link rel="stylesheet" href="/templates/system/css/general.css" type="text/css" />
+<link rel="stylesheet" href="/templates/system/css/system.css" type="text/css" />
+<link rel="stylesheet" href="/templates/bernaerts/css/template.css" type="text/css" />
+<link rel="stylesheet" href="/templates/bernaerts/css/fluid.css" type="text/css" />
+
+<!--	Site verification	-->
+<meta name="google-site-verification" content="TGaVqqYQbe-X0pDfSjOQqzArxu2jxX0dS545dcAu3xQ" />
+<meta name="msvalidate.01" content="3F0E1006B49E5FED9EDEE0DDEECC9815" />
+
+<!--	Audio.js script		-->
+<script language="javascript" type="text/javascript" src="/audiojs/audio.min.js"></script>
+<script language="javascript" type="text/javascript">audiojs.events.ready(function() { var as = audiojs.createAll(); });</script>
+
+<style type="text/css"><!--.jb_blackbox {}
+ .jb_bluebox {} .jb_warning {background: url(/media/jbtype/images/coquette/warning.png) no-repeat left center;padding: 20px 0 20px 60px;display:block;}  --></style></head>
+
+<body id="body_bg">
+
+	<table width="100%"  border="0" align="center" cellpadding="0" cellspacing="0">
+		<tr><td valign="bottom" class="header">
+			<div class="logo"><img src='/templates/bernaerts/images/header.png' /></div>
+<!--			<div class="date">07/09/2014</div>     	-->
+		</td></tr>
+	</table>
+
+<div class="inline-shadow">&nbsp;</div>
+		
+<div id="maincontainer">
+	<table width="100%" class="fw"  border="0" align="center" cellpadding="0" cellspacing="0">
+		<tr><td  class="topnav" valign="bottom">
+
+			<div>
+			
+<ul class="menu">
+<li class="item-77"><a href="/" title="Généalogie Famille Bernaerts" ><img src="/images/menu/menu-genealogy.png" alt="Généalogie" /><span class="image-title">Généalogie</span> </a></li><li class="item-62 current active"><a href="/linux" title="Articles about Linux" ><img src="/images/menu/menu-linux.png" alt="Linux" /><span class="image-title">Linux</span> </a></li><li class="item-61"><a href="/android" title="Articles about Android OS &amp; devices" ><img src="/images/menu/menu-android.png" alt="Android" /><span class="image-title">Android</span> </a></li><li class="item-199"><a href="/nas" title="Articles about DNS-323, DNS-325, ..." ><img src="/images/menu/menu-dns325.png" alt="NAS &amp; co" /><span class="image-title">NAS &amp; co</span> </a></li><li class="item-186"><a href="/misc" title="Articles on miscellaneous subjects" ><img src="/images/menu/menu-misc.png" alt="Misc" /><span class="image-title">Misc</span> </a></li></ul>
+<form action="/linux" method="post">
+	<div class="search">
+		<label for="mod-search-searchword">Search...</label><input name="searchword" id="mod-search-searchword" maxlength="20"  class="inputbox" type="text" size="20" value="Search..."  onblur="if (this.value=='') this.value='Search...';" onfocus="if (this.value=='Search...') this.value='';" /><input type="submit" value="Search" class="button" onclick="this.form.searchword.focus();"/>	<input type="hidden" name="task" value="search" />
+	<input type="hidden" name="option" value="com_search" />
+	<input type="hidden" name="Itemid" value="62" />
+	</div>
+</form>
+
+			
+			</div>
+
+		</td></tr>
+	</table> 
+
+
+
+
+<table class="maincontent"  border="0" align="center" cellpadding="0" cellspacing="0">
+	<tr>
+
+                    
+            
+		<td valign="top"  width="100%" >
+
+<table width="100%"  border="0" cellspacing="0" cellpadding="0">
+
+
+<div id="system-message-container">
+</div>
+
+
+
+	<tr align="left" valign="top"><td colspan="3" style="border-top: 3px solid #ffffff; padding: 3px;">
+		<div class="main">
+
+		<div class="item-page">
+
+	<h1><a href="/nas/73-dns323-ffp05/178-dns323-ffp5-install-funplug5">
+		DNS 323 - Extend your NAS possibilities with Funplug 0.5</a></h1>
+
+
+
+
+
+	<dl class="article-info">
+	<dt class="article-info-term"></dt>
+	<dd class="create">
+	Created on 15 Jul 2012,	</dd>
+	<dd class="modified">
+	updated on 7 Jun 2013,	</dd>
+	<dd class="createdby">
+				by <a href="https://plus.google.com/+NicolasBernaerts?rel=author">Nicolas Bernaerts</a>		</dd>
+	</dl>
+
+	<div class="autotoc" ><script type="text/javascript">
+            // <![CDATA[
+            function toc_toggle_visible(ob)
+            {
+              var ul = ob.parentNode.parentNode.getElementsByTagName("ul")[0];
+              var d = ul.style.display == "none";
+              ul.style.display = d ? "" : "none";
+              ob.innerHTML = d ? "Hide"
+                               : "Show";
+              return false;
+            }
+            // ]]>
+            </script><span>Contents</span><span>[<a href="#" onclick="return toc_toggle_visible(this);">Hide</a>]</span><ul><li><ul><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h1-install-fun-plug' class='toclink toclink-h1'>Install fun_plug</a></li><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h2-enable-root-login' class='toclink toclink-h1'>Enable root login</a></li><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h3-enable-ssh-server' class='toclink toclink-h1'>Enable SSH server</a></li><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h4-disable-telnet-access' class='toclink toclink-h1'>Disable Telnet access</a></li><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h5-enable-cleanboot' class='toclink toclink-h1'>Enable CleanBoot</a></li><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h6-declare-package-repositories' class='toclink toclink-h1'>Declare package repositories</a><ul><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h6-1-fonz-repository' class='toclink toclink-h2'>Fonz repository</a></li><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h6-2-uli-repository' class='toclink toclink-h2'>Uli repository</a></li></ul></li><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h7-update-existing-packages' class='toclink toclink-h1'>Update existing packages</a></li><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h8-install-nano-editor' class='toclink toclink-h1'>Install Nano editor</a></li><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h9-install-midnight-commander' class='toclink toclink-h1'>Install Midnight Commander</a></li><li><a href='http://bernaerts.dyndns.org/linux/178-dns323-funplug#h10-force-ipv4-for-rsync-daemon-3-0-9' class='toclink toclink-h1'>Force IPV4 for RSync Daemon 3.0.9 +</a></li></ul></li></ul></div>
+
+<p><img class="dropcap" src="/images/technoblog/dropcap/dropcap-dns323.png" alt="DNS-323" /></p>
+<p>DNS-323 is a fantastic little NAS storage, able to host 4 Tb of data thru 2 SATA hard disks up to 2 Tb each.</p>
+<p>It offers a lot of embedded possibilities (samba &amp; nfs shares, iTunes server, uPnp server, ...).</p>
+<p>Thanks to a very active community, its possibilities can be expanded even more thru a scripting method called <strong>ffp</strong>.</p>
+<p>It allows to start some more services, shaping the DNS-323 into a very versatile appliance.</p>
+<p>Most of the informations you will get in this article has been collected and consolidated from <a href="http://nas-tweaks.net/">http://nas-tweaks.net/</a> &amp;&nbsp;<a href="http://wiki.dns323.info/">http://wiki.dns323.info/</a></p>
+<p>So, this article will explain in an easy way how to transform your DNS-323 in a fantastic little home server with lots of open possibilities left.</p>
+<p>All following operations have been done on a DNS 323 (firmware 1.08) with one or two disks, but no RAID configured.</p>
+ 
+<p><span class="jb_warning">This guide is based on <strong>fun_plug 0.5</strong>.<br />You have to be aware that the operations described in this article are not supported by DLink and will void&nbsp; your warranty. <br />Even if everything should go fine, there is always a slight risk of loosing your hard disk data or even bricking your NAS.<br />You are the only one to be held responsible if something goes wrong for you.</span></p>
+<h2 id='h1-install-fun-plug'>1.&nbsp;Install fun_plug</h2>
+<p><strong>fun_plug</strong> is the name of a script that will run at the end of the DNS323 boot process.</p>
+<p>In fact, during the boot process, the <span style="font-family: courier new,courier;">/etc/rc.sh</span> script calls the <span style="font-family: courier new,courier;">/usr/sbin/chk_fun_plug</span> script.</p>
+<p>The <span style="font-family: courier new,courier;">/usr/sbin/chk_fun_plug</span> script checks if a file called <span style="font-family: courier new,courier;">fun_plug</span> is present at the root of the disk <span style="font-family: courier new,courier;">/mnt/HD_a2</span>.</p>
+<p>If it is there, it executes it. Here is the entry point of a world of extensions !</p>
+<p>A very popular implementation of fun_plug is available from <a href="http://www.inreto.de/dns323/fun-plug/">http://www.inreto.de/dns323/fun-plug/</a></p>
+<p>The first thing to do is to go to <a href="http://www.inreto.de/dns323/fun-plug/0.5/">http://www.inreto.de/dns323/fun-plug/0.5/</a> and to download :</p>
+<ul>
+<li><a href="http://www.inreto.de/dns323/fun-plug/0.5/fun_plug">fun_plug</a></li>
+<li><a href="http://www.inreto.de/dns323/fun-plug/0.5/fun_plug.tgz">fun_plug.tgz</a></li>
+</ul>
+<p>and to copy them at the root of <strong>Volume_1</strong> samba share.</p>
+<p>Next, you just need to reboot your NAS from the Web interface.</p>
+<p>If it is successful, on your Volume_1 share you should see that :</p>
+<ul>
+<li><strong>fun_plug.tgz</strong> has been unpacked to the <strong>ffp</strong> directory and has been deleted</li>
+<li><strong>ffp.log</strong> is present giving <em><strong>OK</strong></em> as its last line</li>
+</ul>
+<p>Few packages have been installed (busybox, mediatomb, ssh server, telnet server, ...), but only telnet server is started. It will allow you to log as root on the box.</p>
+<p>The firmware comes with a disabled root account that cannot login. This is why the fun_plug starts a telnet server that provides a root shell directly, not asking for any login and password.</p>
+<p>So from the telnet session, first thing to do is to enable the root login and the SSH server.</p>
+<h2 id='h2-enable-root-login'>2.&nbsp;Enable root login</h2>
+<p><span class="jb_warning">All the commands starting with <strong>$</strong> have to be executed from your desktop.<br />All the commands starting with <strong>#</strong> have to be executed from the DNS-323 console.<br /></span></p>
+<p>To enable the root account to login (thru ssh ...), you have to update <span style="font-family: courier new,courier;">/etc/shadow</span> &amp; to set a password for the root account.</p>
+<p>You just need to telnet to your NAS :</p>
+<p><p class="jb_blackbox">$ telnet ip.of.your.nas<br /><span style="color: #c0c0c0;">Trying 192.168.x.x...</span><br /><span style="color: #c0c0c0;">Connected to 192.168.x.x.</span><br /><span style="color: #c0c0c0;">Escape character is '^]'.</span><br /></p></p>
+<p>You then need to activate the root account, by setting the funplug shell as default.</p>
+<p>We also need to create and declare a home directory for the root account.</p>
+<p><p class="jb_blackbox"># usermod -s /ffp/bin/sh root<br /><span style="color: #c0c0c0;">usermod: no changes</span><br /># mkdir -p /ffp/home/root/<br /># sed -ie 's#:/home/root:#:/ffp/home/root:#g' /etc/passwd<br /></p></p>
+<p>Then, throw these commands from the telnet shell :</p>
+<p><p class="jb_blackbox"># pwconv<br /># passwd<br /><span style="color: #c0c0c0;">Changing password for root</span><br /><span style="color: #c0c0c0;">Enter the new password (minimum of 5, maximum of 8 characters)</span><br /><span style="color: #c0c0c0;">Please use a combination of upper and lower case letters and numbers.</span><br /><span style="color: #c0c0c0;">New password:</span><br /><span style="color: #c0c0c0;">Re-enter new password:</span><br /><span style="color: #c0c0c0;">Password changed.</span><br /></p></p>
+<p>Before you save the changes, you have to run additional checks on the password and group files. <br />Some firmware versions duplicate the ftp user, so we have to fix this.</p>
+<p><p class="jb_blackbox"># pwck<br /><span style="color: #c0c0c0;">user admin: directory /home/admin does not exist</span><br /><span style="color: #c0c0c0;">user nobody: directory /home/nobody does not exist</span><br /><span style="color: #c0c0c0;">pwck: no changes</span><br /># grpck<br /><span style="color: #c0c0c0;">grpck: no changes</span><br /></p></p>
+<p>You will get some warnings about missing home directories and invalid group names, just ignore them. <br />If asked to remove a duplicate user, say '<strong>yes</strong>' to remove one of them.<br />If that happens, re-run the commands to check that it's fixed.</p>
+<p>Then, test your changes with the login program using 'root' and your new password :</p>
+<p><p class="jb_blackbox"># login<br /><span style="color: #c0c0c0;">NAS login:</span> root<br /><span style="color: #c0c0c0;">Password:</span><br /><span style="color: #c0c0c0;">Last login: Sat Jul 14 22:52:33 +0100 2012 on pts/0.</span><br /><span style="color: #c0c0c0;">No mail.<br /></span></p></p>
+<p>If you logged-in succesfully, just save the password files to flash memory :</p>
+<p><p class="jb_blackbox"># store-passwd.sh<br /><span style="color: #c0c0c0;">Copying files to mtd1...</span><br /><span style="color: #c0c0c0;">Copying files to mtd2...</span><br /><span style="color: #c0c0c0;">Done.</span><br /></p></p>
+<p>You are now able to login with the root account thru telnet or SSH.</p>
+<h2 id='h3-enable-ssh-server'>3.&nbsp;Enable SSH server</h2>
+<p>You need to do the first start, where the script will generate the encription keys. This process may take some time.</p>
+<p><p class="jb_blackbox"># sh /ffp/start/sshd.sh start<br /><span style="color: #c0c0c0;">Generating public/private rsa1 key pair.</span><br /><span style="color: #c0c0c0;">Your identification has been saved in /ffp/etc/ssh/ssh_host_key.</span><br /><span style="color: #c0c0c0;">Your public key has been saved in /ffp/etc/ssh/ssh_host_key.pub.</span><br /><span style="color: #c0c0c0;">The key fingerprint is:</span><br /><span style="color: #c0c0c0;">... root@NAS</span><br /><span style="color: #c0c0c0;">The key's randomart image is:</span><br /><span style="color: #c0c0c0;">+--[RSA1 2048]----+</span><br /><span style="color: #c0c0c0;">...</span><br /><span style="color: #c0c0c0;">+-----------------+</span><br /><span style="color: #c0c0c0;">Generating public/private dsa key pair.</span><br /><span style="color: #c0c0c0;">Your identification has been saved in /ffp/etc/ssh/ssh_host_dsa_key.</span><br /><span style="color: #c0c0c0;">Your public key has been saved in /ffp/etc/ssh/ssh_host_dsa_key.pub.</span><br /><span style="color: #c0c0c0;">The key fingerprint is:</span><br /><span style="color: #c0c0c0;">... root@NAS</span><br /><span style="color: #c0c0c0;">The key's randomart image is:</span><br /><span style="color: #c0c0c0;">+--[ DSA 1024]----+</span><br /><span style="color: #c0c0c0;">...</span><br /><span style="color: #c0c0c0;">+-----------------+</span><br /><span style="color: #c0c0c0;">Generating public/private rsa key pair.</span><br /><span style="color: #c0c0c0;">Your identification has been saved in /ffp/etc/ssh/ssh_host_rsa_key.</span><br /><span style="color: #c0c0c0;">Your public key has been saved in /ffp/etc/ssh/ssh_host_rsa_key.pub.</span><br /><span style="color: #c0c0c0;">The key fingerprint is:</span><br /><span style="color: #c0c0c0;">... root@NAS</span><br /><span style="color: #c0c0c0;">The key's randomart image is:</span><br /><span style="color: #c0c0c0;">+--[ RSA 2048]----+</span><br /><span style="color: #c0c0c0;">...</span><br /><span style="color: #c0c0c0;">+-----------------+</span><br /><span style="color: #c0c0c0;">Starting /ffp/sbin/sshd</span><br /></p></p>
+<p>You should now be able to log to your DNS-323 box with a SSH client on port 22.</p>
+<p><p class="jb_blackbox">$ ssh <span id="cloak32054">This email address is being protected from spambots. You need JavaScript enabled to view it.</span><script type='text/javascript'>
+ <!--
+ document.getElementById('cloak32054').innerHTML = '';
+ var prefix = '&#109;a' + 'i&#108;' + '&#116;o';
+ var path = 'hr' + 'ef' + '=';
+ var addy32054 = 'r&#111;&#111;t' + '&#64;';
+ addy32054 = addy32054 + '192' + '&#46;' + '168';
+ document.getElementById('cloak32054').innerHTML += '<a ' + path + '\'' + prefix + ':' + addy32054 + '\'>' + addy32054+'<\/a>';
+ //-->\n </script>.x.x<br /><span style="color: #c0c0c0;">The authenticity of host '192.168.x.x (192.168.x.x)' can't be established.</span><br /><span style="color: #c0c0c0;">RSA key fingerprint is ....</span><br /><span style="color: #c0c0c0;">Are you sure you want to continue connecting (yes/no)?</span> yes<br /><span style="color: #c0c0c0;">Warning: Permanently added '192.168.x.x' (RSA) to the list of known hosts.</span><br /><span style="color: #c0c0c0;">root @192.168.x.x's password:</span><br />root@NAS:/mnt/HD_a2/ffp/home/root #<br /></p></p>
+<p>You are now connected thru SSH !</p>
+<p>To enable automatic start of SSH server at boot, you need to set the execute rights on the script.</p>
+<p><p class="jb_blackbox"># chmod a+x /ffp/start/sshd.sh</p></p>
+<p>The SSH server will start automatically after every NAS reboot.</p>
+<h2 id='h4-disable-telnet-access'>4.&nbsp;Disable Telnet access</h2>
+<p><span class="jb_warning">You have to be sure that you can sucessfully login to your NAS thru your SSH server before disabling telnet server.<br />... or you will have lost console access to your NAS.<br /></span></p>
+<p>Your Telnet server is still running in parallel to your SSH server. For security reasons you can disable the Telnet server.</p>
+<p>To do so, you just need to remove the execute rights of the telnet server script.</p>
+<p><p class="jb_blackbox"># chmod -x /ffp/start/telnetd.sh</p></p>
+<h2 id='h5-enable-cleanboot'>5.&nbsp;Enable CleanBoot</h2>
+<p>When you install <strong>fun_plug</strong> on a DNS-323, it runs the added programs from the mounted hard disk, so it prevents it from being unmounted cleanly.</p>
+<p>You have this problem if your <span style="font-family: courier new,courier;">dmesg</span> shows the following line:</p>
+<p><p class="jb_blackbox"># dmesg<br /><span style="color: #c0c0c0;">...</span><br /><span style="color: #c0c0c0;">EXT2-fs warning: mounting unchecked fs, running e2fsck is recommended</span><br /><span style="color: #c0c0c0;">...</span></p></p>
+<p>Cleanboot will modify the reboot &amp; shutdown process to overcome this issue, allowing you to cleanly reboot or shutdown your NAS.</p>
+<p>To install cleanboot, you need to type the following commands:</p>
+<p><p class="jb_blackbox"># wget http://pof.eslack.org/dns323/cleanboot-2.1-ffp05.tgz<br /><span style="color: #c0c0c0;">Connecting to pof.eslack.org (178.79.145.151:80)</span><br /><span style="color: #c0c0c0;">cleanboot-2.1-ffp05. 100% |*****************| 60076 00:00:00 ETA</span><br /># funpkg -i cleanboot-2.1-ffp05.tgz<br /><span style="color: #c0c0c0;">Installing package cleanboot-2.1-ffp05 ...</span><br /># chmod a+x /ffp/start/cleanboot.sh<br /># /ffp/start/cleanboot.sh start<br /><span style="color: #c0c0c0;">Setting up cleanboot...</span><br /></p></p>
+<p>Your NAS should now cleanly unmount the hard disks if you type the following commands : <span style="font-family: courier new,courier;">halt</span>, <span style="font-family: courier new,courier;">shutdown</span> or <span style="font-family: courier new,courier;">reboot</span> from the command line.</p>
+<h2 id='h6-declare-package-repositories'>6.&nbsp;Declare package repositories</h2>
+<p>You can now install easily some additionnal packages from some specific repository.</p>
+<h3 id='h6-1-fonz-repository'>6.1.&nbsp;Fonz repository</h3>
+<p>First repository is provided by Fonz. You can install it with these commands :</p>
+<p><p class="jb_blackbox"># mkdir -p /ffp/pkg/<br /># cd /ffp/pkg/<br /># /ffp/bin/rsync -av --delete inreto.de::dns323/fun-plug/0.5/packages .<br /></p></p>
+<p>Note that :</p>
+<ul>
+<li>the <strong>"."</strong> at the end of the line is very important</li>
+<li>the packages are together over 120 MBytes, so it can take a while.</li>
+</ul>
+<p>After the last file you get some statistics and return to the command prompt.</p>
+<p>This step results in roughly 100 packages being copied (as tarballs) to the folder<strong> /ffp/pkg/packages/</strong>.</p>
+<h3 id='h6-2-uli-repository'>6.2.&nbsp;Uli repository</h3>
+<p>Next, you can download additional packages provided by <strong>Uli</strong> repository.</p>
+<p><p class="jb_blackbox"># /ffp/bin/rsync -av --delete ffp.wolf-u.li::ffp/additional .<br /></p></p>
+<p>After the last file you also get some statistics and return to the command prompt.</p>
+<p>This step results in a few packages being copied (as tarballs) to the folder <strong>/ffp/pkg/additional/</strong> and its subdirectories.</p>
+<h2 id='h7-update-existing-packages'>7.&nbsp;Update existing packages</h2>
+<p><span class="jb_warning">This procedure has to be followed from begin to end in one step.<br />If you don't follow all the steps, you met get an instable NAS, and worse, you can even be locked out of your NAS without telnet and SSH access.</span></p>
+<p>To be on the safe side, it's better to enable Telnet … just in case.</p>
+<p><p class="jb_blackbox"># chmod a+x /ffp/start/telnetd.sh</p></p>
+<p>Then, you can start the package upgrade procedure</p>
+<p><p class="jb_blackbox"># funpkg -u /ffp/pkg/packages/funpkg*.tgz<br /># funpkg -u /ffp/pkg/packages/*.tgz<br /># funpkg -u /ffp/pkg/additional/*/*.tgz<br /></p></p>
+<p>Finally, re-enable SSH daemon, in case it has been updated and it has lost the execute right</p>
+<p><p class="jb_blackbox"># chmod a+x /ffp/start/sshd.sh</p></p>
+<p>If you check, you should see Telnet and SSH allowed to automatically start during next reboot</p>
+<p><p class="jb_blackbox"># ls -l /ffp/start/*.sh<br /><span style="color: #c0c0c0;">...<br />-rwxr-xr-x 1 root root&nbsp; 971 Jul 29 16:30 sshd.sh<br />...</span><span style="color: #00ff00;"><span style="color: #c0c0c0;"><br />-rwxr-xr-x 1 root root&nbsp; 169 Aug 12 22:17 telnetd.sh</span><br /> </span></p><span style="color: #00ff00;">&nbsp;</span></p>
+<p>You can now reboot</p>
+<p><p class="jb_blackbox"># reboot</p></p>
+<p>If you can connect thru SSH without problem, you can now disable Telnet access</p>
+<p><p class="jb_blackbox"># chmod a-x /ffp/start/telnetd.sh</p></p>
+<h2 id='h8-install-nano-editor'>8.&nbsp;Install Nano editor</h2>
+<p>Install the packages <strong>aspell</strong> &amp; <strong>nano</strong> :</p>
+<p><p class="jb_blackbox"># funpkg -i /ffp/pkg/additional/*/aspell*.tgz<br /># funpkg -i /ffp/pkg/additional/*/nano*.tgz<br /><span style="color: #888888;">Installing package nano-2.0.9-2 ...<br />...<br />[pkgsrc]<br />Executing install script for nano-2.0.9-2 ...</span><br /></p></p>
+<p>Copy the configuration file and edit it.</p>
+<p><p class="jb_blackbox"># cp /ffp/etc/examples/nanorc /ffp/etc/<br /># nano /ffp/etc/nanorc</p></p>
+<p>By uncommenting some lines, you can enable the syntax highlight according to your needs.</p>
+<p>In my case, I just need the shell scripts highlighting.</p>
+<p><p class="jb_bluebox"><strong>/ffp/etc/nanorc<br /><br /></strong>...<br />## Bourne shell scripts<br />include "/ffp/share/nano/sh.nanorc"<br />...<br /></p></p>
+<h2 id='h9-install-midnight-commander'>9.&nbsp;Install Midnight Commander</h2>
+<p>Install the package :</p>
+<p><p class="jb_blackbox"># funpkg -i /ffp/pkg/additional/*/mc-*.tgz<br /><span style="color: #c0c0c0;">Installing package mc-4.1.40-pre9-1 ...</span><br /></p></p>
+<h2 id='h10-force-ipv4-for-rsync-daemon-3-0-9'>10.&nbsp;Force IPV4 for RSync Daemon 3.0.9 +</h2>
+<p>As we have updated all the packages, RSYNC has been updated to V3.0.9 +.</p>
+<p>From version 3.0.9 onward, RSync expects IPV6 to be available on the host device.</p>
+<p>As it is obviously not the case on our fun_plugged DNS-323, RSync will refuse to start in daemon mode as IPV6 is not available.</p>
+<p>So we need to change the start options of the daemon to force IPV4 only.</p>
+<p><p class="jb_blackbox"># mc -e /ffp/start/rsyncd.sh</p></p>
+<p><p class="jb_bluebox"><strong>/ffp/start/rsyncd.sh<br /></strong><br />#!/ffp/bin/sh<br /><br /># PROVIDE: rsyncd<br /># REQUIRE: LOGIN<br /><br /># This script assumes that the rsync configuration includes<br /># pid file = /ffp/var/run/rsyncd.pid<br /><br />conf_file=/ffp/etc/rsyncd.conf<br />pid_file=/ffp/var/run/rsyncd.pid<br /><br />rsync_flags="--daemon <span style="color: #ff0000;"><strong>--ipv4</strong></span> --config=$conf_file"<br /><br />rsyncd_start()<br />{<br />&nbsp; if [ ! -r "$conf_file" ]; then<br />&nbsp;&nbsp;&nbsp; echo "Error: Missing config file $conf_file"<br />&nbsp;&nbsp;&nbsp; exit 1<br />&nbsp; fi<br /><br />&nbsp; x=$(grep '^pid file' $conf_file | cut -d= -f2)<br />&nbsp; if [ ${x} != ${pid_file} ]; then<br />&nbsp;&nbsp;&nbsp; echo "Error: Missing or wrong pid file in $conf_file (expected: $pid_file)"<br />&nbsp;&nbsp;&nbsp; exit 1<br />&nbsp; fi<br /><br />&nbsp; echo "Starting /ffp/bin/rsync $rsync_flags"<br />&nbsp; rm $pid_file<br />&nbsp; /ffp/bin/rsync $rsync_flags<br />}<br /><br />rsyncd_stop()<br />{<br />&nbsp; if [ -r "$pid_file" ]; then<br />&nbsp;&nbsp;&nbsp; kill $(cat $pid_file) 2&gt;/dev/null<br />&nbsp; fi<br />}<br /><br />rsyncd_status()<br />{<br />&nbsp; if [ -r $pid_file ]; then<br />&nbsp;&nbsp;&nbsp; rsync_pid=$(cat $pid_file)<br />&nbsp;&nbsp;&nbsp; if pidof rsync | grep -wq $rsync_pid; then<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; echo "rsyncd running: $rsync_pid"<br />&nbsp;&nbsp;&nbsp; else<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; echo "rsync not running ($pid_file stale)"<br />&nbsp;&nbsp;&nbsp; fi<br />&nbsp; else<br />&nbsp;&nbsp;&nbsp; echo "rsyncd not running"<br />&nbsp; fi<br />}<br /></p></p>
+<p>Your DNS 323 is now ready to serve you in a lot of useful ways.</p>
+<p>Hope it helps.</p>
+<p><div class="sectionlist">
+<ol>
+<li><a href="/nas/73-dns323-ffp05/178-dns323-ffp5-install-funplug5">DNS 323 - Extend your NAS possibilities with Funplug 0.5</a></li>
+<li><a href="/nas/73-dns323-ffp05/204-dns323-ffp5-twonkymedia7">DNS 323 - Funplug 0.5 : Install Twonkymedia Server 7</a></li>
+<li><a href="/nas/73-dns323-ffp05/237-dns323-twonkymedia-xbmc-thumbnail">DNS 323 - Funplug : Generate Twonky video thumbnails from XBMC  .tbn</a></li>
+<li><a href="/nas/73-dns323-ffp05/241-dns323-ffp5-move-usb-key">DNS 323 - Funplug 0.5 : Move Fun plug to a USB key</a></li>
+</div>
+</p>
+	
+</div>
+
+
+		</div>
+	</td></tr>
+
+	<tr><td colspan="3" valign="top" style="padding-top: 3px;"> 
+		<div>	<table cellpadding="0" cellspacing="0" class="moduletable">
+			<tr>
+			<td>
+				
+
+<div class="custom"  >
+	<p style="text-align: center;">This article is published "as is", without any warranty that it will work for your specific need.<br />If you think this article needs some complement, or simply if you think it saved you lots of time &amp; trouble,<br />just let me know at <span id="cloak29287">This email address is being protected from spambots. You need JavaScript enabled to view it.</span><script type='text/javascript'>
+ <!--
+ document.getElementById('cloak29287').innerHTML = '';
+ var prefix = '&#109;a' + 'i&#108;' + '&#116;o';
+ var path = 'hr' + 'ef' + '=';
+ var addy29287 = 'n&#105;c&#111;l&#97;s.b&#101;rn&#97;&#101;rts' + '&#64;';
+ addy29287 = addy29287 + 'l&#97;p&#111;st&#101;' + '&#46;' + 'n&#101;t';
+ var addy_text29287 = 'n&#105;c&#111;l&#97;s.b&#101;rn&#97;&#101;rts' + '&#64;' + 'l&#97;p&#111;st&#101;' + '&#46;' + 'n&#101;t';
+ document.getElementById('cloak29287').innerHTML += '<a ' + path + '\'' + prefix + ':' + addy29287 + '\'>'+addy_text29287+'<\/a>';
+ //-->\n </script>. Cheers !</p>
+<p style="text-align: center;"><a href="https://www.kernel.org/"><img src="/images/technoblog/footer/icon_linux.png" alt="icon linux" width="80" height="15" /></a>&nbsp;<a href="http://www.debian.org/"><img src="/images/technoblog/footer/icon_debian.png" alt="icon debian" width="80" height="15" /></a>&nbsp;<a href="http://www.apache.org/"><img src="/images/technoblog/footer/icon_apache.png" alt="icon apache" width="80" height="15" /></a>&nbsp;<a href="http://www.mysql.com/"><img src="/images/technoblog/footer/icon_mysql.png" alt="icon mysql" width="80" height="15" /></a>&nbsp;<a href="http://php.net/"><img src="/images/technoblog/footer/icon_php.png" alt="icon php" width="80" height="15" /></a>&nbsp;<a href="http://piwik.org/"><img src="/images/technoblog/footer/icon_piwik.png" alt="icon piwik" width="80" height="15" /></a>&nbsp;<a href="https://plus.google.com/+NicolasBernaerts" rel="publisher"><img src="/images/technoblog/footer/icon_googleplus.png" alt="icon googleplus" width="80" height="15" /></a></p></div>
+			</td>
+		</tr>
+		</table>
+	</div>
+	</td></tr>
+ 
+
+
+</table>
+  
+		</td>
+
+ 
+
+	</tr>
+</table> 
+
+
+</div>
+	<table class="foot" align="center" border="0" cellspacing="0" cellpadding="0" width="100%">
+
+</table>    
+  
+
+			<!-- Piwik --> 
+			<script type="text/javascript">
+			var pkBaseURL = (("https:" == document.location.protocol) ? "https://www.fto-company.com/stats/" : "http://www.fto-company.com/stats/");
+			document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+			</script><script type="text/javascript">
+			try {
+			var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+			piwikTracker.setDocumentTitle("");
+			piwikTracker.trackPageView();
+			piwikTracker.enableLinkTracking();
+			} catch( err ) {}
+			</script><noscript><p><img src="http://www.fto-company.com/stats/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
+			<!-- End Piwik Tracking Tag -->
+			</body>
+</html>

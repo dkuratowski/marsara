@@ -20,7 +20,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// The directory of the command workflow definitions.
         /// </summary>
-        public static readonly string COMMAND_WORKFLOW_DIR = ConstantsTable.Get<string>("RC.App.BizLogic.CommandWorkflowDir");
+        public static readonly string COMMAND_DIR = ConstantsTable.Get<string>("RC.App.BizLogic.CommandDir");
 
         /// <summary>
         /// Number of pixels per cells in both horizontal and vertical direction.

@@ -17,5 +17,10 @@ namespace RC.App.BizLogic.Views
         /// <param name="displayedArea">The area of the map currently being displayed in pixels.</param>
         /// <returns>The list of display informations of the visible selection indicators.</returns>
         List<SelIndicatorInst> GetVisibleSelIndicators(RCIntRectangle displayedArea);
+
+        /// <summary>
+        /// Gets the index of the local player or PlayerEnum.Neutral if there is no active local player.
+        /// </summary>
+        PlayerEnum LocalPlayer { get; }
     }
 }

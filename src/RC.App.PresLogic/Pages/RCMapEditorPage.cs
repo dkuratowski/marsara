@@ -56,7 +56,7 @@ namespace RC.App.PresLogic.Pages
             this.mapEditorBE = ComponentManager.GetInterface<IMapEditorService>();
             this.viewService = ComponentManager.GetInterface<IViewService>();
             this.activatorBtn = UIMouseButton.Undefined;
-            this.scrollHandler = null;
+            this.mouseHandler = null;
         }
 
         #region RCMapEditorPage state handling
@@ -114,9 +114,6 @@ namespace RC.App.PresLogic.Pages
             /// Create the necessary views.
             this.mapTerrainView = this.viewService.CreateView<IMapTerrainView>();
             this.mapObjectView = this.viewService.CreateView<IMapObjectView>();
-
-            /// Create the scroll handler for the map display.
-            this.scrollHandler = new ScrollHandler(this, this.mapDisplay);
         }
 
         /// <summary>
@@ -130,8 +127,8 @@ namespace RC.App.PresLogic.Pages
             this.Attach(this.mapDisplay);
             this.AttachSensitive(this.mapDisplay);
 
-            /// Subscribe to the events of the appropriate mouse sensors.
-            this.scrollHandler.Start();
+            /// Subscribe to the events of the appropriate mouse sensors & create the mouse handler.
+            this.mouseHandler = new MapEditorMouseHandler(this, this.mapDisplay);
             this.mapDisplay.MouseSensor.Move += this.OnMouseMoveOverDisplay;
             this.mapDisplay.MouseSensor.ButtonDown += this.OnMouseDown;
             this.mapDisplay.MouseSensor.ButtonUp += this.OnMouseUp;
@@ -199,28 +196,25 @@ namespace RC.App.PresLogic.Pages
             
             if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
             {
-                this.objectPlacementDisplayEx.StopPlacingObject();
-                this.objectPlacementDisplayEx.StartPlacingObject(
+                this.mouseHandler.StartPlacingObject(
                     this.viewService.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                     this.mapDisplayBasic.TerrainObjectSprites);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
-                this.objectPlacementDisplayEx.StopPlacingObject();
-                this.objectPlacementDisplayEx.StartPlacingObject(
+                this.mouseHandler.StartPlacingObject(
                     this.viewService.CreateView<IMapObjectPlacementView, string>(STARTLOCATION_NAME),
                     this.mapObjectDisplayEx.GetMapObjectSprites((PlayerEnum)(this.mapEditorPanel.SelectedIndex)));
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
-                this.objectPlacementDisplayEx.StopPlacingObject();
-                this.objectPlacementDisplayEx.StartPlacingObject(
+                this.mouseHandler.StartPlacingObject(
                     this.viewService.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                     this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral));
             }
             else
             {
-                this.objectPlacementDisplayEx.StopPlacingObject();
+                this.mouseHandler.StopPlacingObject();
             }
         }
 
@@ -231,22 +225,19 @@ namespace RC.App.PresLogic.Pages
         {
             if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
             {
-                this.objectPlacementDisplayEx.StopPlacingObject();
-                this.objectPlacementDisplayEx.StartPlacingObject(
+                this.mouseHandler.StartPlacingObject(
                     this.viewService.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                     this.mapDisplayBasic.TerrainObjectSprites);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
-                this.objectPlacementDisplayEx.StopPlacingObject();
-                this.objectPlacementDisplayEx.StartPlacingObject(
+                this.mouseHandler.StartPlacingObject(
                     this.viewService.CreateView<IMapObjectPlacementView, string>(STARTLOCATION_NAME),
                     this.mapObjectDisplayEx.GetMapObjectSprites((PlayerEnum)(this.mapEditorPanel.SelectedIndex)));
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
-                this.objectPlacementDisplayEx.StopPlacingObject();
-                this.objectPlacementDisplayEx.StartPlacingObject(
+                this.mouseHandler.StartPlacingObject(
                     this.viewService.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                     this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral));
             }
@@ -308,7 +299,7 @@ namespace RC.App.PresLogic.Pages
         /// <param name="sender">Reference to the button.</param>
         private void OnExitPressed(UISensitiveObject sender)
         {
-            this.scrollHandler.Stop();
+            this.mouseHandler.Inactivate();
             this.mapDisplay.MouseSensor.Wheel -= this.OnMouseWheel;
             this.mapDisplay.MouseSensor.ButtonDown -= this.OnMouseDown;
             this.mapDisplay.MouseSensor.ButtonUp -= this.OnMouseUp;
@@ -336,13 +327,13 @@ namespace RC.App.PresLogic.Pages
             {
                 if (this.mapTerrainView.GetTerrainObjectDisplayCoords(this.mapDisplay.DisplayedArea, evtArgs.Position) != RCIntVector.Undefined)
                 {
-                    this.objectPlacementDisplayEx.StopPlacingObject();
+                    this.mouseHandler.StopPlacingObject();
                 }
                 else
                 {
-                    if (!this.objectPlacementDisplayEx.PlacingObject)
+                    if (!this.mouseHandler.IsPlacingObject)
                     {
-                        this.objectPlacementDisplayEx.StartPlacingObject(
+                        this.mouseHandler.StartPlacingObject(
                             this.viewService.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                             this.mapDisplayBasic.TerrainObjectSprites);
                     }
@@ -353,7 +344,7 @@ namespace RC.App.PresLogic.Pages
                 int objectID = this.mapObjectView.GetMapObjectID(this.mapDisplay.DisplayedArea, evtArgs.Position);
                 if (objectID != -1)
                 {
-                    this.objectPlacementDisplayEx.StopPlacingObject();
+                    this.mouseHandler.StopPlacingObject();
                     if (objectID != this.resourceAmountDisplayEx.MapObjectID)
                     {
                         this.resourceAmountDisplayEx.StopReadingMapObject();
@@ -363,9 +354,9 @@ namespace RC.App.PresLogic.Pages
                 else
                 {
                     this.resourceAmountDisplayEx.StopReadingMapObject();
-                    if (!this.objectPlacementDisplayEx.PlacingObject)
+                    if (!this.mouseHandler.IsPlacingObject)
                     {
-                        this.objectPlacementDisplayEx.StartPlacingObject(
+                        this.mouseHandler.StartPlacingObject(
                             this.viewService.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                             this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral));
                     }
@@ -544,9 +535,9 @@ namespace RC.App.PresLogic.Pages
         private UIMouseButton activatorBtn;
 
         /// <summary>
-        /// Reference to the object that controls the scrolling of the map display.
+        /// Reference to the object that handles the mouse events.
         /// </summary>
-        private ScrollHandler scrollHandler;
+        private MapEditorMouseHandler mouseHandler;
 
         /// <summary>
         /// Name of the scenario element types that can be placed on the scenario.

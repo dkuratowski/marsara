@@ -27,8 +27,8 @@ namespace RC.App.PresLogic.Panels
         {
             this.isConnected = false;
             this.backgroundTask = null;
-            this.commandButtonSprites = new Dictionary<CmdButtonStateEnum, SpriteGroup>();
-            this.buttonArray = new RCCommandButton[3, 3];
+            this.commandButtonSprites = new Dictionary<CommandButtonStateEnum, SpriteGroup>();
+            this.buttonArray = new RCCommandButton[BUTTON_ARRAY_ROWS, BUTTON_ARRAY_COLS];
         }
 
         #region IGameConnector members
@@ -40,10 +40,10 @@ namespace RC.App.PresLogic.Panels
 
             /// UI-thread connection procedure
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
-            ICommandPanelView commandPanelView = viewService.CreateView<ICommandPanelView>();
-            this.commandButtonSprites.Add(CmdButtonStateEnum.Disabled, new CmdButtonSpriteGroup(commandPanelView, CmdButtonStateEnum.Disabled));
-            this.commandButtonSprites.Add(CmdButtonStateEnum.Enabled, new CmdButtonSpriteGroup(commandPanelView, CmdButtonStateEnum.Enabled));
-            this.commandButtonSprites.Add(CmdButtonStateEnum.Highlighted, new CmdButtonSpriteGroup(commandPanelView, CmdButtonStateEnum.Highlighted));
+            ICommandView commandPanelView = viewService.CreateView<ICommandView>();
+            this.commandButtonSprites.Add(CommandButtonStateEnum.Disabled, new CmdButtonSpriteGroup(commandPanelView, CommandButtonStateEnum.Disabled));
+            this.commandButtonSprites.Add(CommandButtonStateEnum.Enabled, new CmdButtonSpriteGroup(commandPanelView, CommandButtonStateEnum.Enabled));
+            this.commandButtonSprites.Add(CommandButtonStateEnum.Highlighted, new CmdButtonSpriteGroup(commandPanelView, CommandButtonStateEnum.Highlighted));
 
             this.backgroundTask = UITaskManager.StartParallelTask(this.ConnectBackgroundProc, "RCCommandPanel.Connect");
             this.backgroundTask.Finished += this.OnBackgroundTaskFinished;
@@ -64,6 +64,7 @@ namespace RC.App.PresLogic.Panels
                 for (int col = 0; col < BUTTON_ARRAY_COLS; col++)
                 {
                     this.RemoveControl(this.buttonArray[row, col]);
+                    this.buttonArray[row, col].Dispose();
                     this.buttonArray[row, col] = null;
                 }
             }
@@ -102,6 +103,7 @@ namespace RC.App.PresLogic.Panels
         /// </summary>
         private void OnBackgroundTaskFinished(IUIBackgroundTask sender, object message)
         {
+            this.backgroundTask.Finished -= this.OnBackgroundTaskFinished;
             this.backgroundTask = null;
             if (!this.isConnected)
             {
@@ -175,6 +177,6 @@ namespace RC.App.PresLogic.Panels
         /// <summary>
         /// List of the command button sprite groups mapped by the appropriate button state.
         /// </summary>
-        private Dictionary<CmdButtonStateEnum, SpriteGroup> commandButtonSprites;
+        private Dictionary<CommandButtonStateEnum, SpriteGroup> commandButtonSprites;
     }
 }

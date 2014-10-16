@@ -24,6 +24,6 @@ namespace RC.Engine.Simulator.Terran.Buildings
         /// <summary>
         /// The name of the Command Center element type.
         /// </summary>
-        private const string COMMANDCENTER_TYPE_NAME = "CommandCenter";
+        public const string COMMANDCENTER_TYPE_NAME = "CommandCenter";
     }
 }

@@ -13,7 +13,7 @@ namespace RC.App.PresLogic.Controls
     /// <summary>
     /// Defines the interface of a map display control.
     /// </summary>
-    public abstract class RCMapDisplay : UISensitiveObject, IScrollableControl, IGameConnector
+    public abstract class RCMapDisplay : UISensitiveObject, IMapDisplay, IGameConnector
     {
         /// <summary>
         /// Constructs a map display control at the given position with the given size.
@@ -26,23 +26,36 @@ namespace RC.App.PresLogic.Controls
             this.isConnected = false;
             this.backgroundTask = null;
             this.displayedArea = RCIntRectangle.Undefined;
+            this.attachedMouseHandler = null;
         }
 
-        #region IScrollableControl methods
+        #region IMapDisplay methods
 
-        /// <see cref="IScrollableControl.ScrollTo"/>
-        public void ScrollTo(RCIntVector where)
-        {
-            if (!this.isConnected || this.backgroundTask != null) { throw new InvalidOperationException("The map display has been stopped or is currently being stopped!"); }
-            if (where == RCIntVector.Undefined) { throw new ArgumentNullException("where"); }
-
-            this.ScrollTo_i(where);
-        }
-
-        /// <see cref="IScrollableControl.DisplayedArea"/>
+        /// <see cref="IMapDisplay.DisplayedArea"/>
         public RCIntRectangle DisplayedArea { get { return this.displayedArea; } }
 
-        #endregion IScrollableControl methods
+        /// <see cref="IMapDisplay.AttachMouseHandler"/>
+        public void AttachMouseHandler(IMouseHandler handler)
+        {
+            if (handler == null) { throw new ArgumentNullException("handler"); }
+            if (this.attachedMouseHandler != null) { throw new InvalidOperationException("Mouse handler already attached!"); }
+
+            this.attachedMouseHandler = handler;
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
+            this.OnMouseHandlerAttached(handler);
+        }
+
+        /// <see cref="IMapDisplay.DetachMouseHandler"/>
+        public void DetachMouseHandler()
+        {
+            if (this.attachedMouseHandler == null) { throw new InvalidOperationException("Mouse handler not attached!"); }
+
+            this.OnMouseHandlerDetaching();
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
+            this.attachedMouseHandler = null;
+        }
+
+        #endregion IMapDisplay methods
 
         #region IGameConnector members
 
@@ -93,6 +106,15 @@ namespace RC.App.PresLogic.Controls
 
         #endregion IGameConnector members
 
+        #region Protected methods
+
+        /// <summary>
+        /// Gets the currently attached mouse handler or null if no mouse handler currently attached.
+        /// </summary>
+        protected IMouseHandler MouseHandler { get { return this.attachedMouseHandler; } }
+
+        #endregion Protected methods
+
         #region Overridables
 
         /// <summary>
@@ -101,17 +123,17 @@ namespace RC.App.PresLogic.Controls
         protected abstract IMapView MapView { get; }
 
         /// <summary>
-        /// The internal implementation RCMapDisplay.ScrollTo that can be overriden by the derived classes.
-        /// The default implementation maintains the RCMapDisplay.DisplayedArea property.
+        /// This method is called when the given mouse handler has been attached to this map display.
         /// </summary>
-        /// <param name="where">The top-left corner of the displayed area in pixels.</param>
-        protected virtual void ScrollTo_i(RCIntVector where)
-        {
-            RCIntVector location =
-               new RCIntVector(Math.Max(0, Math.Min(this.MapView.MapSize.X - this.Range.Width, where.X)),
-                               Math.Max(0, Math.Min(this.MapView.MapSize.Y - this.Range.Height, where.Y)));
-            this.displayedArea = new RCIntRectangle(location, this.Range.Size);
-        }
+        /// <param name="handler">The attached handler.</param>
+        /// <remarks>Can be overriden in the derived classes. The default implementation does nothing.</remarks>
+        protected virtual void OnMouseHandlerAttached(IMouseHandler handler) { }
+
+        /// <summary>
+        /// This method is called when the currently attached mouse handler is being detached from this map display.
+        /// </summary>
+        /// <remarks>Can be overriden in the derived classes. The default implementation does nothing.</remarks>
+        protected virtual void OnMouseHandlerDetaching() { }
 
         /// <summary>
         /// The internal implementation of the connecting procedure that can be overriden by the derived classes.
@@ -171,7 +193,45 @@ namespace RC.App.PresLogic.Controls
         private void OnConnected(IGameConnector sender)
         {
             this.ConnectorOperationFinished -= this.OnConnected;
-            this.ScrollTo(new RCIntVector(0, 0));
+            this.OnScroll(new RCIntVector(0, 0));
+        }
+
+        /// <summary>
+        /// This method is called on every frame update.
+        /// </summary>
+        private void OnFrameUpdate()
+        {
+            if (this.attachedMouseHandler == null || this.attachedMouseHandler.CurrentScrollDirection == ScrollDirection.NoScroll)
+            {
+                this.timeSinceLastScroll = 0;
+                return;
+            }
+
+            this.timeSinceLastScroll += UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
+            if (this.timeSinceLastScroll > TIME_BETWEEN_MAP_SCROLLS)
+            {
+                this.timeSinceLastScroll = 0;
+                if (this.attachedMouseHandler.CurrentScrollDirection == ScrollDirection.North) { this.OnScroll(this.displayedArea.Location + new RCIntVector(0, -PIXELS_PER_SCROLLS)); }
+                if (this.attachedMouseHandler.CurrentScrollDirection == ScrollDirection.NorthEast) { this.OnScroll(this.displayedArea.Location + new RCIntVector(PIXELS_PER_SCROLLS, -PIXELS_PER_SCROLLS)); }
+                if (this.attachedMouseHandler.CurrentScrollDirection == ScrollDirection.East) { this.OnScroll(this.displayedArea.Location + new RCIntVector(PIXELS_PER_SCROLLS, 0)); }
+                if (this.attachedMouseHandler.CurrentScrollDirection == ScrollDirection.SouthEast) { this.OnScroll(this.displayedArea.Location + new RCIntVector(PIXELS_PER_SCROLLS, PIXELS_PER_SCROLLS)); }
+                if (this.attachedMouseHandler.CurrentScrollDirection == ScrollDirection.South) { this.OnScroll(this.displayedArea.Location + new RCIntVector(0, PIXELS_PER_SCROLLS)); }
+                if (this.attachedMouseHandler.CurrentScrollDirection == ScrollDirection.SouthWest) { this.OnScroll(this.displayedArea.Location + new RCIntVector(-PIXELS_PER_SCROLLS, PIXELS_PER_SCROLLS)); }
+                if (this.attachedMouseHandler.CurrentScrollDirection == ScrollDirection.West) { this.OnScroll(this.displayedArea.Location + new RCIntVector(-PIXELS_PER_SCROLLS, 0)); }
+                if (this.attachedMouseHandler.CurrentScrollDirection == ScrollDirection.NorthWest) { this.OnScroll(this.displayedArea.Location + new RCIntVector(-PIXELS_PER_SCROLLS, -PIXELS_PER_SCROLLS)); }
+            }
+        }
+
+        /// <summary>
+        /// Scrolls this map display.
+        /// </summary>
+        /// <param name="where">The top-left corner of the new displayed area in pixels.</param>
+        private void OnScroll(RCIntVector where)
+        {
+            RCIntVector location =
+               new RCIntVector(Math.Max(0, Math.Min(this.MapView.MapSize.X - this.Range.Width, where.X)),
+                               Math.Max(0, Math.Min(this.MapView.MapSize.Y - this.Range.Height, where.Y)));
+            this.displayedArea = new RCIntRectangle(location, this.Range.Size);
         }
 
         #endregion Event handlers
@@ -190,5 +250,25 @@ namespace RC.App.PresLogic.Controls
         /// The displayed area of the map in pixels.
         /// </summary>
         private RCIntRectangle displayedArea;
+
+        /// <summary>
+        /// Reference to the currently attached mouse handler or null if no handler is currently attached.
+        /// </summary>
+        private IMouseHandler attachedMouseHandler;
+
+        /// <summary>
+        /// Elapsed time since last scroll in milliseconds.
+        /// </summary>
+        private int timeSinceLastScroll;
+
+        /// <summary>
+        /// The time between scrolling operations in milliseconds.
+        /// </summary>
+        private const int TIME_BETWEEN_MAP_SCROLLS = 20;
+
+        /// <summary>
+        /// The number of pixels to scroll per scrolling operations.
+        /// </summary>
+        private const int PIXELS_PER_SCROLLS = 5;
     }
 }

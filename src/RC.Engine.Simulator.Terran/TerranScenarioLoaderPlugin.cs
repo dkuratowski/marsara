@@ -32,6 +32,10 @@ namespace RC.Engine.Simulator.Terran
         {
             /// TODO: Write installation code here!
             extendedComponent.RegisterPlayerInitializer(RaceEnum.Terran, this.TerranInitializer);
+            extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new BuildableAreaConstraint());
+            extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<ResourceObject>(new RCIntVector(3, 3)));
+            extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<StartLocation>(new RCIntVector(3, 3)));
+            extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<CommandCenter>(new RCIntVector(3, 3)));
         }
 
         /// <see cref="IPlugin<T>.Uninstall"/>

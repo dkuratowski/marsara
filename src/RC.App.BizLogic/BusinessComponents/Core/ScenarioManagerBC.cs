@@ -182,6 +182,18 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
+        /// Creates a view of type IMapObjectPlacementView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IMapObjectPlacementView CreateMapObjectPlacementView(string mapObjectTypeName)
+        {
+            if (this.activeScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (mapObjectTypeName == null) { throw new ArgumentNullException("mapObjectTypeName"); }
+
+            return new MapObjectPlacementView(mapObjectTypeName);
+        }
+
+        /// <summary>
         /// Creates a view of type ISelectionIndicatorView.
         /// </summary>
         /// <returns>The created view.</returns>
@@ -191,12 +203,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
-        /// Creates a view of type ICommandPanelView.
+        /// Creates a view of type ICommandView.
         /// </summary>
         /// <returns>The created view.</returns>
-        private ICommandPanelView CreateCommandPanelView()
+        private ICommandView CreateCommandView()
         {
-            return new CommandPanelView();
+            return new CommandView();
         }
 
         /// <summary>
@@ -209,9 +221,10 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMetadataView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateSelIndicatorView);
-            this.viewFactoryRegistry.RegisterViewFactory(this.CreateCommandPanelView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateCommandView);
             this.viewFactoryRegistry.RegisterViewFactory<IMapObjectDataView, int>(this.CreateMapObjectDataView);
             this.viewFactoryRegistry.RegisterViewFactory<ITerrainObjectPlacementView, string>(this.CreateTerrainObjectPlacementView);
+            this.viewFactoryRegistry.RegisterViewFactory<IMapObjectPlacementView, string>(this.CreateMapObjectPlacementView);
         }
 
         /// <summary>
@@ -224,9 +237,10 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.UnregisterViewFactory<IMetadataView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ISelectionIndicatorView>();
-            this.viewFactoryRegistry.UnregisterViewFactory<ICommandPanelView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<ICommandView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectDataView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ITerrainObjectPlacementView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectPlacementView>();
         }
 
         #endregion View factory methods

@@ -11,6 +11,7 @@ using System.Threading;
 using RC.Common.Diagnostics;
 using System.Diagnostics;
 using RC.App.BizLogic.Services;
+using RC.App.BizLogic.Views;
 
 namespace RC.App.PresLogic.Pages
 {
@@ -31,7 +32,7 @@ namespace RC.App.PresLogic.Pages
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.selectionDisplayEx);
             this.mapDisplay = this.objectPlacementDisplayEx;
 
-            this.inputManager = new GameplayInputManager();
+            this.mouseHandler = null;
 
             this.minimapPanel = new RCMinimapPanel(new RCIntRectangle(0, 120, 80, 80),
                                                    new RCIntRectangle(1, 1, 78, 78),
@@ -81,12 +82,14 @@ namespace RC.App.PresLogic.Pages
         {
             if (this.gameConnection.CurrentStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("The gameplay page is not online!"); }
 
+            this.commandView = null;
+            this.selectionIndicatorView = null;
             ComponentManager.GetInterface<IMultiplayerService>().LeaveCurrentGame();
 
             /// Deactivate mouse handling.
             this.menuButtonPanel.MouseSensor.ButtonDown -= this.OnMenuButtonPressed;
-            this.inputManager.StopAndRemoveInputHandler("ScrollHandler");
-            this.inputManager.StopAndRemoveInputHandler("NormalInputModeHandler");
+            this.mouseHandler.Inactivated -= this.CreateMouseHandler;
+            this.mouseHandler.Inactivate();
 
             /// Detach the map display control from this page.
             this.DetachSensitive(this.mapDisplay);
@@ -133,6 +136,8 @@ namespace RC.App.PresLogic.Pages
         /// </summary>
         private void OnConnected(IGameConnector sender)
         {
+            this.commandView = ComponentManager.GetInterface<IViewService>().CreateView<ICommandView>();
+            this.selectionIndicatorView = ComponentManager.GetInterface<IViewService>().CreateView<ISelectionIndicatorView>();
             this.gameConnection.ConnectorOperationFinished -= this.OnConnected;
 
             /// Attach the map display control to this page.
@@ -140,9 +145,8 @@ namespace RC.App.PresLogic.Pages
             this.AttachSensitive(this.mapDisplay);
             this.mapDisplay.SendToBottom();
 
-            /// Create the mouse handlers for the map display.
-            this.inputManager.StartAndAddInputHandler("ScrollHandler", new ScrollHandler(this, this.mapDisplay));
-            this.inputManager.StartAndAddInputHandler("NormalInputModeHandler", new NormalInputModeHandler(this.selectionDisplayEx, this.selectionDisplayEx));
+            /// Create the mouse handler for the map display.
+            this.CreateMouseHandler();
 
             this.menuButtonPanel.MouseSensor.ButtonDown += this.OnMenuButtonPressed;
 
@@ -177,6 +181,27 @@ namespace RC.App.PresLogic.Pages
         private void OnMenuButtonPressed(UISensitiveObject sender, UIMouseEventArgs evtArgs)
         {
             this.Deactivate();
+        }
+
+        /// <summary>
+        /// Creates a new mouse handler based on the current state available from the command view.
+        /// </summary>
+        private void CreateMouseHandler()
+        {
+            if (this.mouseHandler != null) { this.mouseHandler.Inactivated -= this.CreateMouseHandler; }
+            if (!this.commandView.IsWaitingForTargetPosition)
+            {
+                this.mouseHandler = new NormalMouseHandler(this, this.mapDisplay, this.selectionDisplayEx);
+            }
+            else
+            {
+                this.mouseHandler = new SelectTargetMouseHandler(
+                    this,
+                    this.mapDisplay,
+                    this.selectionDisplayEx,
+                    this.mapObjectDisplayEx.GetMapObjectSprites(this.selectionIndicatorView.LocalPlayer));
+            }
+            this.mouseHandler.Inactivated += this.CreateMouseHandler;
         }
 
         /// <summary>
@@ -246,8 +271,18 @@ namespace RC.App.PresLogic.Pages
         private IGameConnector gameConnection;
 
         /// <summary>
-        /// Reference to the input manager.
+        /// Reference to the currently active mouse handler.
         /// </summary>
-        private GameplayInputManager inputManager;
+        private MouseHandlerBase mouseHandler;
+
+        /// <summary>
+        /// Reference to a command view.
+        /// </summary>
+        private ICommandView commandView;
+
+        /// <summary>
+        /// Reference to a selection indicator view.
+        /// </summary>
+        private ISelectionIndicatorView selectionIndicatorView;
     }
 }

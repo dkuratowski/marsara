@@ -21,6 +21,13 @@ namespace RC.App.BizLogic.BusinessComponents
         void Reset(PlayerEnum localPlayer);
 
         /// <summary>
+        /// Gets the ID of the entity at the given position.
+        /// </summary>
+        /// <param name="position">The position at which to search for an entity (in map coordinates).</param>
+        /// <returns>The ID of the entity at the given position or -1 if there is no entity at the given position.</returns>
+        int GetEntity(RCNumVector position);
+
+        /// <summary>
         /// Select entities inside the given selection box.
         /// </summary>
         /// <param name="selectionBox">The selection box in which to select the entities (in map coordinates).</param>
@@ -35,7 +42,7 @@ namespace RC.App.BizLogic.BusinessComponents
         ///     - One of the other entities inside the box.
         /// If there are no entities inside the selection box then the current selection will remain.
         /// </remarks>
-        void Select(RCNumRectangle selectionBox);
+        void SelectEntities(RCNumRectangle selectionBox);
 
         /// <summary>
         /// Select the entity at the given position.
@@ -52,7 +59,7 @@ namespace RC.App.BizLogic.BusinessComponents
         ///     - One of the other entity at the given position.
         /// If there is no entity at the given position then calling this function has no effect.
         /// </remarks>
-        void Select(RCNumVector position);
+        void SelectEntity(RCNumVector position);
 
         /// <summary>
         /// Adds or remove the entity at the given position to or from the current selection.
@@ -101,7 +108,7 @@ namespace RC.App.BizLogic.BusinessComponents
         /// If the current selection contains an entity of another player then an empty selection will be saved.
         /// If another selection has already been saved with the given index then it will be overwritten.
         /// </remarks>
-        void SaveSelection(int index);
+        void SaveCurrentSelection(int index);
 
         /// <summary>
         /// Gets the IDs of the currently selected entities.

@@ -13,7 +13,7 @@ namespace RC.App.PresLogic.Controls
     /// <summary>
     /// Represents a button on the command panel of the gameplay page.
     /// </summary>
-    public class RCCommandButton : UIButton
+    public class RCCommandButton : UIButton, IDisposable
     {
         /// <summary>
         /// Constructs a command button at the given rectangular area inside the command panel.
@@ -22,7 +22,7 @@ namespace RC.App.PresLogic.Controls
         /// <param name="commandButtonSprites">
         /// List of the command button sprite groups mapped by the appropriate button state.
         /// </param>
-        public RCCommandButton(RCIntVector slotCoords, Dictionary<CmdButtonStateEnum, SpriteGroup> cmdButtonSprites)
+        public RCCommandButton(RCIntVector slotCoords, Dictionary<CommandButtonStateEnum, SpriteGroup> cmdButtonSprites)
             : base(BUTTON_POSITIONS[slotCoords.X, slotCoords.Y].Location, BUTTON_POSITIONS[slotCoords.X, slotCoords.Y].Size)
         {
             if (slotCoords == RCIntVector.Undefined) { throw new ArgumentNullException("slotCoords"); }
@@ -31,26 +31,55 @@ namespace RC.App.PresLogic.Controls
             this.slotCoords = slotCoords;
             this.commandButtonSprites = cmdButtonSprites;
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
-            this.commandPanelView = viewService.CreateView<ICommandPanelView>();
+            this.commandPanelView = viewService.CreateView<ICommandView>();
+            this.commandService = ComponentManager.GetInterface<ICommandService>();
+            this.Pressed += this.OnButtonPressed;
         }
+
+        #region IDisposable members
+
+        /// <see cref="IDisposable.Dispose"/>
+        public void Dispose()
+        {
+            this.Pressed -= this.OnButtonPressed;
+        }
+
+        #endregion IDisposable members
 
         /// <see cref="UIObject.Render_i"/>
         protected override void Render_i(IUIRenderContext renderContext)
         {
-            CmdButtonStateEnum buttonState = this.commandPanelView.GetCmdButtonState(this.slotCoords.X, this.slotCoords.Y);
-            if (buttonState == CmdButtonStateEnum.None) { return; }
+            CommandButtonStateEnum buttonState = this.commandPanelView.GetCmdButtonState(this.slotCoords);
+            if (buttonState == CommandButtonStateEnum.Invisible) { return; }
             if (!this.commandButtonSprites.ContainsKey(buttonState)) { return; }
 
-            SpriteInst renderedSprite = this.commandPanelView.GetCmdButtonSprite(this.slotCoords.X, this.slotCoords.Y);
+            SpriteInst renderedSprite = this.commandPanelView.GetCmdButtonSprite(this.slotCoords);
             renderContext.RenderSprite(this.commandButtonSprites[buttonState][renderedSprite.Index],
                                        renderedSprite.DisplayCoords,
                                        renderedSprite.Section);
         }
 
         /// <summary>
+        /// This method is called when this RCCommandButton has been pressed.
+        /// </summary>
+        private void OnButtonPressed(UISensitiveObject sender)
+        {
+            if (sender != this) { throw new InvalidOperationException("Unexpected sender!"); }
+
+            CommandButtonStateEnum buttonState = this.commandPanelView.GetCmdButtonState(this.slotCoords);
+            if (buttonState == CommandButtonStateEnum.Invisible || buttonState == CommandButtonStateEnum.Disabled) { return; }
+            this.commandService.PressCommandButton(this.slotCoords);
+        }
+
+        /// <summary>
         /// Reference to the command panel view.
         /// </summary>
-        private ICommandPanelView commandPanelView;
+        private ICommandView commandPanelView;
+
+        /// <summary>
+        /// Reference to the command service.
+        /// </summary>
+        private ICommandService commandService;
 
         /// <summary>
         /// The coordinates of the slot of this button on the command panel (row; col).
@@ -60,7 +89,7 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// List of the command button sprite groups mapped by the appropriate button state.
         /// </summary>
-        private Dictionary<CmdButtonStateEnum, SpriteGroup> commandButtonSprites;
+        private Dictionary<CommandButtonStateEnum, SpriteGroup> commandButtonSprites;
 
         /// <summary>
         /// The position of the command buttons inside the command panel based on their position.

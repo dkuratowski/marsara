@@ -13,48 +13,59 @@ using RC.UI;
 namespace RC.App.PresLogic
 {
     /// <summary>
-    /// Internal class for handling mouse events in MouseInputModeEnum.NormalInputMode.
+    /// Internal class for handling mouse events in normal input mode.
     /// </summary>
-    class NormalInputModeHandler : InputHandler
+    class NormalMouseHandler : MouseHandlerBase
     {
         /// <summary>
-        /// Constructs a MouseHandler instance.
+        /// Constructs a NormalMouseHandler instance.
         /// </summary>
-        /// <param name="evtSource">The UISensitiveObject that will raise the input events.</param>
-        /// <param name="targetControl">Reference to the target control.</param>
-        public NormalInputModeHandler(UISensitiveObject evtSource, IMapControl targetControl)
+        /// <param name="scrollEventSource">The UISensitiveObject that will raise the events for scrolling.</param>
+        /// <param name="mapDisplay">Reference to the target map display.</param>
+        /// <param name="normalMouseEventSource">The UISensitiveObject that will raise the additional mouse events.</param>
+        public NormalMouseHandler(UISensitiveObject scrollEventSource, IMapDisplay mapDisplay,
+                                  UISensitiveObject normalMouseEventSource)
+            : base(scrollEventSource, mapDisplay)
         {
-            if (evtSource == null) { throw new ArgumentNullException("evtSource"); }
-            if (targetControl == null) { throw new ArgumentNullException("targetControl"); }
+            if (normalMouseEventSource == null) { throw new ArgumentNullException("normalMouseEventSource"); }
+            if (this.CommandView.IsWaitingForTargetPosition) { throw new InvalidOperationException("Normal mouse input is not possible currently!"); }
 
-            this.eventSource = evtSource;
-            this.targetControl = targetControl;
-            this.commandService = ComponentManager.GetInterface<ICommandService>();
-            this.eventSource.MouseSensor.StateReset += this.OnStateReset;
+            this.multiplayerService = ComponentManager.GetInterface<IMultiplayerService>();
+            this.normalMouseEventSource = normalMouseEventSource;
+
+            this.currentMouseStatus = MouseStatus.None;
+            this.selectionBoxStartPosition = RCIntVector.Undefined;
+            this.selectionBoxCurrPosition = RCIntVector.Undefined;
+            this.selectionBox = RCIntRectangle.Undefined;
+
+            this.normalMouseEventSource.MouseSensor.StateReset += this.OnStateReset;
+            this.normalMouseEventSource.MouseSensor.ButtonDown += this.OnMouseDown;
+            this.normalMouseEventSource.MouseSensor.Move += this.OnMouseMove;
+            this.normalMouseEventSource.MouseSensor.ButtonUp += this.OnMouseUp;
+            this.normalMouseEventSource.MouseSensor.DoubleClick += this.OnMouseDoubleClick;
+
+            this.multiplayerService.GameUpdated += this.OnGameUpdate;
         }
 
-        #region Overrides from InputHandler
+        #region Overrides from MouseHandlerBase
 
-        /// <see cref="InputHandler.StartImpl"/>
-        protected override void StartImpl()
+        /// <see cref="IMouseHandler.SelectionBox"/>
+        public override RCIntRectangle SelectionBox { get { return this.selectionBox; } }
+
+        /// <see cref="MouseHandlerBase.Inactivate_i"/>
+        protected override void Inactivate_i()
         {
-            this.eventSource.MouseSensor.ButtonDown += this.OnMouseDown;
-            this.eventSource.MouseSensor.Move += this.OnMouseMove;
-            this.eventSource.MouseSensor.ButtonUp += this.OnMouseUp;
-            this.eventSource.MouseSensor.DoubleClick += this.OnMouseDoubleClick;
+            this.multiplayerService.GameUpdated -= this.OnGameUpdate;
+
+            this.normalMouseEventSource.MouseSensor.StateReset -= this.OnStateReset;
+            this.normalMouseEventSource.MouseSensor.ButtonDown -= this.OnMouseDown;
+            this.normalMouseEventSource.MouseSensor.Move -= this.OnMouseMove;
+            this.normalMouseEventSource.MouseSensor.ButtonUp -= this.OnMouseUp;
+            this.normalMouseEventSource.MouseSensor.DoubleClick -= this.OnMouseDoubleClick;
+            this.selectionBox = RCIntRectangle.Undefined;
         }
 
-        /// <see cref="InputHandler.StopImpl"/>
-        protected override void StopImpl()
-        {
-            this.eventSource.MouseSensor.ButtonDown -= this.OnMouseDown;
-            this.eventSource.MouseSensor.Move -= this.OnMouseMove;
-            this.eventSource.MouseSensor.ButtonUp -= this.OnMouseUp;
-            this.eventSource.MouseSensor.DoubleClick -= this.OnMouseDoubleClick;
-            this.targetControl.SelectionBox = RCIntRectangle.Undefined;
-        }
-
-        #endregion Overrides from InputHandler
+        #endregion Overrides from MouseHandlerBase
 
         #region Mouse sensor event handling
 
@@ -69,7 +80,7 @@ namespace RC.App.PresLogic
                 {
                     /// Handle the mouse event.
                     TraceManager.WriteAllTrace(string.Format("RIGHT_CLICK {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                    this.commandService.FastCommand(this.targetControl.DisplayedArea, evtArgs.Position);
+                    this.CommandService.SendFastCommand(this.MapDisplay.DisplayedArea, evtArgs.Position);
                     this.CurrentMouseStatus = MouseStatus.RightDown;
                 }
                 else if (evtArgs.Button == UIMouseButton.Left)
@@ -107,13 +118,13 @@ namespace RC.App.PresLogic
 
                 /// Actualize the selection box
                 this.selectionBoxCurrPosition = evtArgs.Position;
-                this.targetControl.SelectionBox = this.CalculateSelectionBox();
+                this.selectionBox = this.CalculateSelectionBox();
             }
             else if (this.CurrentMouseStatus == MouseStatus.Selecting)
             {
                 /// Actualize the selection box
                 this.selectionBoxCurrPosition = evtArgs.Position;
-                this.targetControl.SelectionBox = this.CalculateSelectionBox();
+                this.selectionBox = this.CalculateSelectionBox();
             }
             else if (this.CurrentMouseStatus == MouseStatus.DoubleClicked)
             {
@@ -121,7 +132,7 @@ namespace RC.App.PresLogic
 
                 /// Actualize the selection box
                 this.selectionBoxCurrPosition = evtArgs.Position;
-                this.targetControl.SelectionBox = this.CalculateSelectionBox();
+                this.selectionBox = this.CalculateSelectionBox();
             }
         }
 
@@ -136,25 +147,25 @@ namespace RC.App.PresLogic
 
                 /// Handle the mouse event.
                 TraceManager.WriteAllTrace(string.Format("LEFT_CLICK {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                this.commandService.Select(this.targetControl.DisplayedArea, evtArgs.Position);
+                this.CommandService.Select(this.MapDisplay.DisplayedArea, evtArgs.Position);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
                 this.selectionBoxCurrPosition = RCIntVector.Undefined;
-                this.targetControl.SelectionBox = this.CalculateSelectionBox();
+                this.selectionBox = this.CalculateSelectionBox();
             }
             else if (this.CurrentMouseStatus == MouseStatus.Selecting && evtArgs.Button == UIMouseButton.Left)
             {
                 this.CurrentMouseStatus = MouseStatus.None;
 
                 /// Handle the mouse event.
-                TraceManager.WriteAllTrace(string.Format("SELECTION {0}", this.targetControl.SelectionBox), PresLogicTraceFilters.INFO);
-                this.commandService.Select(this.targetControl.DisplayedArea, this.targetControl.SelectionBox);
+                TraceManager.WriteAllTrace(string.Format("SELECTION {0}", this.selectionBox), PresLogicTraceFilters.INFO);
+                this.CommandService.Select(this.MapDisplay.DisplayedArea, this.selectionBox);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
                 this.selectionBoxCurrPosition = RCIntVector.Undefined;
-                this.targetControl.SelectionBox = this.CalculateSelectionBox();
+                this.selectionBox = this.CalculateSelectionBox();
             }
             else if (this.CurrentMouseStatus == MouseStatus.RightDown && evtArgs.Button == UIMouseButton.Right)
             {
@@ -164,7 +175,7 @@ namespace RC.App.PresLogic
             {
                 /// Handle the mouse event.
                 TraceManager.WriteAllTrace(string.Format("DOUBLE_CLICK {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                this.commandService.SelectType(this.targetControl.DisplayedArea, evtArgs.Position);
+                this.CommandService.SelectType(this.MapDisplay.DisplayedArea, evtArgs.Position);
 
                 this.CurrentMouseStatus = MouseStatus.None;
             }
@@ -178,11 +189,20 @@ namespace RC.App.PresLogic
             this.CurrentMouseStatus = MouseStatus.None;
             this.selectionBoxStartPosition = RCIntVector.Undefined;
             this.selectionBoxCurrPosition = RCIntVector.Undefined;
+            this.selectionBox = RCIntRectangle.Undefined;
         }
 
         #endregion Mouse sensor event handling
 
         #region Internal methods
+
+        /// <summary>
+        /// This method is called on every game updates and invalidates this mouse handler if necessary.
+        /// </summary>
+        private void OnGameUpdate()
+        {
+            if (this.CommandView.IsWaitingForTargetPosition) { this.Inactivate(); }
+        }
 
         /// <summary>
         /// Calculates the current selection box in the coordinate-system of the map control.
@@ -221,11 +241,11 @@ namespace RC.App.PresLogic
                 this.currentMouseStatus = value;
                 if (oldValue == MouseStatus.None && this.currentMouseStatus != MouseStatus.None)
                 {
-                    this.OnProcessingStarted();
+                    this.DisableScrolling();
                 }
                 else if (oldValue != MouseStatus.None && this.currentMouseStatus == MouseStatus.None)
                 {
-                    this.OnProcessingFinished();
+                    this.EnableScrolling();
                 }
             }
         }
@@ -262,18 +282,18 @@ namespace RC.App.PresLogic
         private RCIntVector selectionBoxCurrPosition;
 
         /// <summary>
-        /// The event source for the scrolling.
+        /// The current selection box.
         /// </summary>
-        private UISensitiveObject eventSource;
+        private RCIntRectangle selectionBox;
 
         /// <summary>
-        /// Reference to the target control.
+        /// The event source for additional mouse events.
         /// </summary>
-        private IMapControl targetControl;
+        private UISensitiveObject normalMouseEventSource;
 
         /// <summary>
-        /// Reference to the command service.
+        /// Reference to the multiplayer service.
         /// </summary>
-        private ICommandService commandService;
+        private IMultiplayerService multiplayerService;
     }
 }

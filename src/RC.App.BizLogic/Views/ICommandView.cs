@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 
 namespace RC.App.BizLogic.Views
 {
     /// <summary>
     /// Interface of views of the command panel.
     /// </summary>
-    public interface ICommandPanelView
+    public interface ICommandView
     {
         /// <summary>
         /// Gets the sprite definitions for displaying the buttons on the command panel.
@@ -19,33 +20,31 @@ namespace RC.App.BizLogic.Views
         /// <summary>
         /// Gets the sprite to be displayed for the given command button.
         /// </summary>
-        /// <param name="row">The row in which the command button is located on the command panel.</param>
-        /// <param name="col">The column in which the command button is located on the command panel.</param>
+        /// <param name="panelPosition">The position of the command button on the command panel (row; column).</param>
         /// <returns>The sprite to be displayed for a given command button.</returns>
         /// <exception cref="InvalidOperationException">
         /// If there is no command button at the given position on the command panel.
         /// </exception>
-        SpriteInst GetCmdButtonSprite(int row, int col);
+        SpriteInst GetCmdButtonSprite(RCIntVector panelPosition);
 
         /// <summary>
         /// Gets the state of the given command button.
         /// </summary>
-        /// <param name="row">The row in which the command button is located on the command panel.</param>
-        /// <param name="col">The column in which the command button is located on the command panel.</param>
+        /// <param name="panelPosition">The position of the command button on the command panel (row; column).</param>
         /// <returns>
-        /// The state of the given command button or CmdButtonStateEnum.None if there is no command button at the
+        /// The state of the given command button or CommandButtonStateEnum.Invisible if there is no command button at the
         /// given position on the command panel.
         /// </returns>
-        CmdButtonStateEnum GetCmdButtonState(int row, int col);
+        CommandButtonStateEnum GetCmdButtonState(RCIntVector panelPosition);
 
         /// <summary>
-        /// Gets the currently active mouse input mode.
+        /// Gets whether the command service is waiting for a target position.
         /// </summary>
-        MouseInputModeEnum InputMode { get; }
+        bool IsWaitingForTargetPosition { get; }
 
         /// <summary>
-        /// The name of the currently selected building type if ICommandPanelView.InputMode is MouseInputModeEnum.BuildPositionInputMode;
-        /// otherwise null.
+        /// The name of the currently selected building type if the ICommandView.IsWaitingForTargetPosition flag is true and
+        /// the command service is waiting for a target position for a build command; otherwise null.
         /// </summary>
         string SelectedBuildingType { get; }
     }

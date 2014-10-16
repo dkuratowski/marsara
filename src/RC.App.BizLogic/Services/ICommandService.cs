@@ -47,7 +47,7 @@ namespace RC.App.BizLogic.Services
         /// <exception cref="InvalidOperationException">
         /// If fast command cannot be sent in the current state.
         /// </exception>
-        void FastCommand(RCIntRectangle displayedArea, RCIntVector position);
+        void SendFastCommand(RCIntRectangle displayedArea, RCIntVector position);
 
         /// <summary>
         /// Notifies the backend that the given command button has been pressed on the command panel.
@@ -56,7 +56,7 @@ namespace RC.App.BizLogic.Services
         /// <exception cref="InvalidOperationException">
         /// If there is no command button at the given position in the current state.
         /// </exception>
-        void CommandBtnPressed(RCIntVector panelPosition);
+        void PressCommandButton(RCIntVector panelPosition);
 
         /// <summary>
         /// Notifies the backend that a target position has been selected on the map.
@@ -66,16 +66,14 @@ namespace RC.App.BizLogic.Services
         /// <exception cref="InvalidOperationException">
         /// If target position cannot be selected in the current state.
         /// </exception>
-        void PositionSelected(RCIntRectangle displayedArea, RCIntVector position);
+        void SelectTargetPosition(RCIntRectangle displayedArea, RCIntVector position);
 
         /// <summary>
-        /// Notifies the backend that a build position has been selected on the map.
+        /// Notifies the backend that the user cancelled selecting a target position.
         /// </summary>
-        /// <param name="displayedArea">The area of the map currently being displayed in pixels.</param>
-        /// <param name="position">The position inside the map displayed area in pixels.</param>
         /// <exception cref="InvalidOperationException">
-        /// If build position cannot be selected in the current state.
+        /// If target position cannot be selected in the current state.
         /// </exception>
-        void BuildPositionSelected(RCIntRectangle displayedArea, RCIntVector position);
+        void CancelSelectingTargetPosition();
     }
 }

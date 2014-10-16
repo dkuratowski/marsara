@@ -49,19 +49,19 @@
       <path name="imageFile">../sprites/pointers/normal_pointer.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
-	  <parameter name="offset">0;0</parameter>
+	    <parameter name="offset">0;0</parameter>
     </resource>
     <resource namespace="RC.App.Pointers" name="SelectionBoxPointer" loader="PointerLoader">
       <path name="imageFile">../sprites/pointers/selection_box_pointer.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
-	  <parameter name="offset">3;3</parameter>
+	    <parameter name="offset">3;3</parameter>
     </resource>
-    <resource namespace="RC.App.Pointers" name="SelectTargetPointer" loader="PointerLoader">
-      <path name="imageFile">../sprites/pointers/select_target_pointer.png</path>
+    <resource namespace="RC.App.Pointers" name="CrosshairsPointer" loader="PointerLoader">
+      <path name="imageFile">../sprites/pointers/crosshairs_pointer.png</path>
       <parameter name="transparentColor">255;0;255</parameter>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
-	  <parameter name="offset">3;3</parameter>
+	    <parameter name="offset">3;3</parameter>
     </resource>
     <resource namespace="RC.App.Sprites" name="CancelBtnPanel" loader="SpriteLoader">
       <path name="imageFile">../sprites/menusprites/cancel_btn_panel.png</path>

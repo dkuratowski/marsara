@@ -54,8 +54,23 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
         }
 
-        /// <see cref="ISelectionManagerBC.Select"/>
-        public void Select(RCNumRectangle selectionBox)
+        /// <see cref="ISelectionManagerBC.GetEntity"/>
+        public int GetEntity(RCNumVector position)
+        {
+            if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
+
+            this.Update();
+
+            HashSet<Entity> entitiesAtPos = this.scenarioManager.ActiveScenario.VisibleEntities.GetContents(position);
+            if (entitiesAtPos.Count == 0) { return -1; }
+
+            Entity entityAtPos = null;
+            foreach (Entity e in entitiesAtPos) { entityAtPos = e; break; }
+            return entityAtPos.ID.Read();
+        }
+
+        /// <see cref="ISelectionManagerBC.SelectEntities"/>
+        public void SelectEntities(RCNumRectangle selectionBox)
         {
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
@@ -130,8 +145,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (other != null) { this.currentSelection.Add(other.ID.Read()); return; }
         }
 
-        /// <see cref="ISelectionManagerBC.Select"/>
-        public void Select(RCNumVector position)
+        /// <see cref="ISelectionManagerBC.SelectEntity"/>
+        public void SelectEntity(RCNumVector position)
         {
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
@@ -173,8 +188,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             throw new NotImplementedException();
         }
 
-        /// <see cref="ISelectionManagerBC.SaveSelection"/>
-        public void SaveSelection(int index)
+        /// <see cref="ISelectionManagerBC.SaveCurrentSelection"/>
+        public void SaveCurrentSelection(int index)
         {
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 

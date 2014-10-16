@@ -66,6 +66,9 @@ namespace RC.App.BizLogic.Views.Core
             return retList;
         }
 
+        /// <see cref="ISelectionIndicatorView.LocalPlayer"/>
+        public PlayerEnum LocalPlayer { get { return this.selectionManager.LocalPlayer; } }
+
         #endregion ISelectionIndicatorView
 
         /// <summary>

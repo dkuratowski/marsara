@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<commands>
+  <spritePalette image="basic_commands.png" transparentColor="255;0;255" maskColor="0;255;255">
+    <sprite name="MoveBtn" sourceRegion="1;1;20;20" />
+    <sprite name="StopBtn" sourceRegion="22;1;20;20" />
+    <sprite name="AttackBtn" sourceRegion="43;1;20;20" />
+    <sprite name="PatrolBtn" sourceRegion="1;22;20;20" />
+    <sprite name="HoldBtn" sourceRegion="22;22;20;20" />
+    <sprite name="CancelBtn" sourceRegion="43;22;20;20" />
+  </spritePalette>
+  <commandButton command="Move" sprite="MoveBtn" panelPosition="0;0">
+	<selectTargetPosition />
+	<cancelButton sprite="CancelBtn" panelPosition="2;2" />
+  </commandButton>
+  <commandButton command="Stop" sprite="StopBtn" panelPosition="0;1" />
+  <commandButton command="Attack" sprite="AttackBtn" panelPosition="0;2">
+	<selectTargetPosition />
+	<cancelButton sprite="CancelBtn" panelPosition="2;2" />
+  </commandButton>
+  <commandButton command="Patrol" sprite="PatrolBtn" panelPosition="1;0">
+	<selectTargetPosition />
+	<cancelButton sprite="CancelBtn" panelPosition="2;2" />
+  </commandButton>
+  <commandButton command="Hold" sprite="HoldBtn" panelPosition="1;1" />
+</commands>

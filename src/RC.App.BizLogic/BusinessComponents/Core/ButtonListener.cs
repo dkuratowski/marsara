@@ -1,0 +1,78 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Xml.Linq;
+using RC.App.BizLogic.Views;
+using RC.Common;
+using RC.Common.Configuration;
+
+namespace RC.App.BizLogic.BusinessComponents.Core
+{
+    /// <summary>
+    /// Represents a command input listener that is waiting for trigger from the command panel.
+    /// </summary>
+    abstract class ButtonListener : CommandInputListener, ICommandButtonListener
+    {
+        #region ICommandButtonListener members
+
+        /// <see cref="ICommandButtonListener.CommandPanelSlot"/>
+        public RCIntVector CommandPanelSlot { get { return this.panelPosition; } }
+
+        /// <see cref="ICommandButtonListener.ButtonSprite"/>
+        public SpriteInst ButtonSprite
+        {
+            get
+            {
+                return new SpriteInst
+                {
+                    Index = this.SpritePalette.Index,
+                    Section = this.spriteSection,
+                    DisplayCoords = new RCIntVector(0, 0)
+                };
+            }
+        }
+
+        /// <see cref="ICommandButtonListener.ButtonState"/>
+        /// TODO: implement this property!
+        public CommandButtonStateEnum ButtonState { get { return CommandButtonStateEnum.Enabled; } }
+
+        #endregion ICommandButtonListener members
+
+        /// <see cref="CommandInputListener.Init"/>
+        protected override void Init(XElement listenerElem)
+        {
+            XAttribute spriteNameAttr = listenerElem.Attribute(SPRITENAME_ATTR);
+            if (spriteNameAttr == null) { throw new InvalidOperationException("Sprite name not defined for a button listener!"); }
+
+            XAttribute panelPosAttr = listenerElem.Attribute(PANELPOSITION_ATTR);
+            if (panelPosAttr == null) { throw new InvalidOperationException("Panel position not defined for a button listener!"); }
+
+            int spriteIndex = this.SpritePalette.GetSpriteIndex(spriteNameAttr.Value);
+            this.spriteSection = this.SpritePalette.GetSection(spriteIndex);
+            this.spriteOffset = this.SpritePalette.GetOffset(spriteIndex);
+            this.panelPosition = XmlHelper.LoadIntVector(panelPosAttr.Value);
+        }
+
+        /// <summary>
+        /// The position of the button on the command panel that this listener is attached.
+        /// </summary>
+        private RCIntVector panelPosition;
+
+        /// <summary>
+        /// The section of the sprite of this button listener inside the sprite palette.
+        /// </summary>
+        private RCIntRectangle spriteSection;
+
+        /// <summary>
+        /// The offset of the sprite of this button listener.
+        /// </summary>
+        private RCIntVector spriteOffset;
+
+        /// <summary>
+        /// The supported XML-nodes and attributes.
+        /// </summary>
+        private const string SPRITENAME_ATTR = "sprite";
+        private const string PANELPOSITION_ATTR = "panelPosition";
+    }
+}
