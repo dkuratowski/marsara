@@ -66,6 +66,12 @@ namespace RC.UI
         public abstract void Save(string fileName);
 
         /// <summary>
+        /// Saves this UISprite to a byte array.
+        /// </summary>
+        /// <returns>The byte array that contains the image data from the sprite.</returns>
+        public abstract byte[] Save();
+
+        /// <summary>
         /// Uploads this UISprite to the graphics device.
         /// </summary>
         public void Upload()

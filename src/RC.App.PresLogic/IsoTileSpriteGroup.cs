@@ -32,7 +32,7 @@ namespace RC.App.PresLogic
             foreach (SpriteDef tileType in this.tilesetView.GetIsoTileTypes())
             {
                 UISprite tile = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(tileType.ImageData, UIWorkspace.Instance.PixelScaling);
-                tile.TransparentColor = tileType.TransparentColor != RCColor.Undefined ? tileType.TransparentColor : RCMapDisplayBasic.DEFAULT_TILE_TRANSPARENT_COLOR;
+                tile.TransparentColor = tileType.TransparentColor != RCColor.Undefined ? tileType.TransparentColor : PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
                 tile.Upload();
                 retList.Add(tile);
             }

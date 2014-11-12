@@ -9,6 +9,9 @@ using RC.Common;
 
 namespace RC.App.PresLogic
 {
+    /// <summary>
+    /// The sprite-group of the terrain objects.
+    /// </summary>
     class TerrainObjectSpriteGroup : SpriteGroup
     {
         /// <summary>
@@ -31,7 +34,7 @@ namespace RC.App.PresLogic
                 UISprite terrainObject = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(terrainObjectType.ImageData, UIWorkspace.Instance.PixelScaling);
                 terrainObject.TransparentColor = terrainObjectType.TransparentColor != RCColor.Undefined
                                                ? terrainObjectType.TransparentColor
-                                               : RCMapDisplayBasic.DEFAULT_TILE_TRANSPARENT_COLOR;
+                                               : PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
                 terrainObject.Upload();
                 retList.Add(terrainObject);
             }

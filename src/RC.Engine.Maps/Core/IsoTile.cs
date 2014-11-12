@@ -31,6 +31,8 @@ namespace RC.Engine.Maps.Core
             this.neighbours = new IsoTile[8];
             this.detachedNeighbours = new List<Tuple<IsoTile, MapDirection>>();
             this.detachedCells = new List<Cell>();
+            this.cuttingQuadTiles = new HashSet<QuadTile>();
+            this.detachedCuttingQuadTiles = new HashSet<QuadTile>();
 
             this.cells = new Cell[MapStructure.QUAD_PER_ISO_VERT * MapStructure.NAVCELL_PER_QUAD,
                                         MapStructure.QUAD_PER_ISO_HORZ * MapStructure.NAVCELL_PER_QUAD];
@@ -63,12 +65,22 @@ namespace RC.Engine.Maps.Core
         {
             get
             {
-                List<IsoTile> retList = new List<IsoTile>();
                 for (int i = 0; i < this.neighbours.Length; i++)
                 {
-                    if (this.neighbours[i] != null) { retList.Add(this.neighbours[i]); }
+                    if (this.neighbours[i] != null) { yield return this.neighbours[i]; }
                 }
-                return retList;
+            }
+        }
+
+        /// <see cref="IIsoTile.CuttingQuadTiles"/>
+        public IEnumerable<IQuadTile> CuttingQuadTiles
+        {
+            get
+            {
+                foreach (QuadTile cuttingQuadTile in this.cuttingQuadTiles)
+                {
+                    if (!this.detachedCuttingQuadTiles.Contains(cuttingQuadTile)) { yield return cuttingQuadTile; }
+                }
             }
         }
 
@@ -162,6 +174,16 @@ namespace RC.Engine.Maps.Core
             if (this.referenceCell == null) { this.referenceCell = cell; }
         }
 
+        /// <summary>
+        /// Sets the given quadratic tile as a cutting quadratic tile for this isometric tile.
+        /// </summary>
+        /// <param name="quadTile">The quadratic tile to set.</param>
+        public void SetCuttingQuadTile(QuadTile quadTile)
+        {
+            if (quadTile == null) { throw new ArgumentNullException("quadTile"); }
+            this.cuttingQuadTiles.Add(quadTile);
+        }
+
         #endregion Internal map structure buildup methods
 
         #region Internal attach and detach methods
@@ -205,6 +227,15 @@ namespace RC.Engine.Maps.Core
                     }
                 }
             }
+
+            /// Detach the appropriate cutting quadratic tiles.
+            foreach (QuadTile cuttingQuadTile in this.cuttingQuadTiles)
+            {
+                if (cuttingQuadTile.MapCoords.X >= this.parentMap.Size.X || cuttingQuadTile.MapCoords.Y >= this.parentMap.Size.Y)
+                {
+                    this.detachedCuttingQuadTiles.Add(cuttingQuadTile);
+                }
+            }
         }
 
         /// <summary>
@@ -227,6 +258,9 @@ namespace RC.Engine.Maps.Core
                 this.cells[cell.IsoIndices.X, cell.IsoIndices.Y] = cell;
             }
             this.detachedCells.Clear();
+
+            /// Attach the detached cutting quadratic tiles.
+            this.detachedCuttingQuadTiles.Clear();
         }
 
         #endregion Internal attach and detach methods
@@ -462,6 +496,16 @@ namespace RC.Engine.Maps.Core
         /// List of the neighbours of this isometric tile.
         /// </summary>
         private IsoTile[] neighbours;
+
+        /// <summary>
+        /// List of all quadratic tiles that cuts this isometric tile.
+        /// </summary>
+        private HashSet<QuadTile> cuttingQuadTiles;
+
+        /// <summary>
+        /// List of the detached quadratic tiles that cuts this isometric tile.
+        /// </summary>
+        private HashSet<QuadTile> detachedCuttingQuadTiles;
 
         /// <summary>
         /// List of the detached neighbours and their direction.

@@ -44,6 +44,11 @@ namespace RC.Engine.Maps.PublicInterfaces
         IEnumerable<IIsoTile> Neighbours { get; }
 
         /// <summary>
+        /// Gets the list of the quadratic tiles that cuts this isometric tile.
+        /// </summary>
+        IEnumerable<IQuadTile> CuttingQuadTiles { get; }
+
+        /// <summary>
         /// Exchanges the type of this isometric tile.
         /// </summary>
         /// <param name="newType">The new type.</param>

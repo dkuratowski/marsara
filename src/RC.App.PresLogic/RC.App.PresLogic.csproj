@@ -82,6 +82,7 @@
     <Compile Include="Controls\RCObjectPlacementDisplay.cs" />
     <Compile Include="Controls\RCResourceAmountDisplay.cs" />
     <Compile Include="Controls\RCSelectionDisplay.cs" />
+    <Compile Include="FOWSpriteGroup.cs" />
     <Compile Include="IGameConnector.cs" />
     <Compile Include="IsoTileSpriteGroup.cs" />
     <Compile Include="MapEditorMouseHandler.cs" />

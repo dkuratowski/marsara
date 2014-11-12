@@ -306,7 +306,7 @@ namespace RC.Engine.Maps.Core
             {
                 for (int column = 0; column < map.Size.X; column++)
                 {
-                    IIsoTile currIsoTile = map.GetQuadTile(new RCIntVector(column, row)).IsoTile;
+                    IIsoTile currIsoTile = map.GetQuadTile(new RCIntVector(column, row)).PrimaryIsoTile;
                     if (!processedIsoTiles.Contains(currIsoTile))
                     {
                         RCPackage isotilePackage = RCPackage.CreateCustomDataPackage(MapFileFormat.ISOTILE);

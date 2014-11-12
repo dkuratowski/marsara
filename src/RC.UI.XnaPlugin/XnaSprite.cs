@@ -147,6 +147,19 @@ namespace RC.UI.XnaPlugin
             bmpToSave.Save(fileName, ImageFormat.Png);
         }
 
+        /// <see cref="UISprite.Save"/>
+        public override byte[] Save()
+        {
+            if (this.isLocked) { throw new UIException("Sprite is locked"); }
+
+            Bitmap bmpToSave = this.transparentBitmap == null ? this.rawBitmap : this.transparentBitmap;
+            using (MemoryStream outputStream = new MemoryStream())
+            {
+                bmpToSave.Save(outputStream, ImageFormat.Png);
+                return outputStream.ToArray();
+            }
+        }
+
         #endregion UISprite overrides
 
         #region IDisposable Members

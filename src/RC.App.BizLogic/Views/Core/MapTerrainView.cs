@@ -5,6 +5,8 @@ using System.Text;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Common;
 using RC.App.BizLogic.BusinessComponents.Core;
+using RC.Common.ComponentModel;
+using RC.App.BizLogic.BusinessComponents;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -18,6 +20,7 @@ namespace RC.App.BizLogic.Views.Core
         /// </summary>
         public MapTerrainView()
         {
+            this.fogOfWarBC = ComponentManager.GetInterface<IFogOfWarBC>();
         }
 
         #region IMapTerrainView methods
@@ -28,83 +31,35 @@ namespace RC.App.BizLogic.Views.Core
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
 
+            /// Calculate the currently visible window of cells.
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
             CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
-            List<SpriteInst> retList = new List<SpriteInst>();
-            HashSet<IIsoTile> tmpIsoTileList = new HashSet<IIsoTile>();
-
+            /// Calculate the currently visible window of quadratic tiles.
             RCIntVector topLeftNavCellCoords = new RCIntVector(Math.Max(0, cellWindow.Left), Math.Max(0, cellWindow.Top));
             RCIntVector bottomRightNavCellCoords = new RCIntVector(Math.Min(this.Map.CellSize.X - 1, cellWindow.Right - 1), Math.Min(this.Map.CellSize.Y - 1, cellWindow.Bottom - 1));
             IQuadTile topLeftQuadTile = this.Map.GetCell(topLeftNavCellCoords).ParentQuadTile;
             IQuadTile bottomRightQuadTile = this.Map.GetCell(bottomRightNavCellCoords).ParentQuadTile;
+            RCIntRectangle quadTileWindow = new RCIntRectangle(
+                topLeftQuadTile.MapCoords.X,
+                topLeftQuadTile.MapCoords.Y,
+                bottomRightQuadTile.MapCoords.X - topLeftQuadTile.MapCoords.X + 1,
+                bottomRightQuadTile.MapCoords.Y - topLeftQuadTile.MapCoords.Y + 1);
 
-            for (int x = topLeftQuadTile.MapCoords.X; x <= bottomRightQuadTile.MapCoords.X; x++)
+            /// Collect the currently visible isometric tiles.
+            List<SpriteInst> retList = new List<SpriteInst>();
+            foreach (IIsoTile isoTile in this.fogOfWarBC.GetIsoTilesToUpdate(quadTileWindow))
             {
-                for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
-                {
-                    IIsoTile isotile = this.Map.GetQuadTile(new RCIntVector(x, y)).IsoTile;
-                    if (tmpIsoTileList.Contains(isotile)) { continue; }
-
-                    tmpIsoTileList.Add(isotile);
-                    retList.Add(
-                        new SpriteInst()
-                        {
-                            Index = isotile.Variant.Index,
-                            DisplayCoords = (isotile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
-                                          * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                          - displayOffset,
-                            Section = RCIntRectangle.Undefined
-                        });
-                }
-
-                if (x == topLeftQuadTile.MapCoords.X)
-                {
-                    for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
+                retList.Add(
+                    new SpriteInst()
                     {
-                        IQuadTile quadTile = this.Map.GetQuadTile(new RCIntVector(x, y));
-                        for (int row = 0; row < quadTile.CellSize.Y; row++)
-                        {
-                            IIsoTile isotile = quadTile.GetCell(new RCIntVector(0, row)).ParentIsoTile;
-                            if (tmpIsoTileList.Contains(isotile)) { continue; }
-
-                            tmpIsoTileList.Add(isotile);
-                            retList.Add(
-                                new SpriteInst()
-                                {
-                                    Index = isotile.Variant.Index,
-                                    DisplayCoords = (isotile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
-                                                  * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                                  - displayOffset,
-                                    Section = RCIntRectangle.Undefined
-                                });
-                        }
-                    }
-                }
-                else if (x == bottomRightQuadTile.MapCoords.X)
-                {
-                    for (int y = topLeftQuadTile.MapCoords.Y; y <= bottomRightQuadTile.MapCoords.Y; y++)
-                    {
-                        IQuadTile quadTile = this.Map.GetQuadTile(new RCIntVector(x, y));
-                        for (int row = 0; row < quadTile.CellSize.Y; row++)
-                        {
-                            IIsoTile isotile = quadTile.GetCell(new RCIntVector(quadTile.CellSize.X - 1, row)).ParentIsoTile;
-                            if (tmpIsoTileList.Contains(isotile)) { continue; }
-
-                            tmpIsoTileList.Add(isotile);
-                            retList.Add(
-                                new SpriteInst()
-                                {
-                                    Index = isotile.Variant.Index,
-                                    DisplayCoords = (isotile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
-                                                  * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                                  - displayOffset,
-                                    Section = RCIntRectangle.Undefined
-                                });
-                        }
-                    }
-                }
+                        Index = isoTile.Variant.Index,
+                        DisplayCoords = (isoTile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
+                                      * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
+                                      - displayOffset,
+                        Section = RCIntRectangle.Undefined
+                    });
             }
 
             return retList;
@@ -140,13 +95,19 @@ namespace RC.App.BizLogic.Views.Core
             RCIntVector displayOffset;
             CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
 
+            /// Calculate the currently visible window of quadratic tiles.
+            RCIntVector topLeftNavCellCoords = new RCIntVector(Math.Max(0, cellWindow.Left), Math.Max(0, cellWindow.Top));
+            RCIntVector bottomRightNavCellCoords = new RCIntVector(Math.Min(this.Map.CellSize.X - 1, cellWindow.Right - 1), Math.Min(this.Map.CellSize.Y - 1, cellWindow.Bottom - 1));
+            IQuadTile topLeftQuadTile = this.Map.GetCell(topLeftNavCellCoords).ParentQuadTile;
+            IQuadTile bottomRightQuadTile = this.Map.GetCell(bottomRightNavCellCoords).ParentQuadTile;
+            RCIntRectangle quadTileWindow = new RCIntRectangle(
+                topLeftQuadTile.MapCoords.X,
+                topLeftQuadTile.MapCoords.Y,
+                bottomRightQuadTile.MapCoords.X - topLeftQuadTile.MapCoords.X + 1,
+                bottomRightQuadTile.MapCoords.Y - topLeftQuadTile.MapCoords.Y + 1);
+
             List<SpriteInst> retList = new List<SpriteInst>();
-            HashSet<ITerrainObject> visibleTerrainObjects = this.Map.TerrainObjects.GetContents(
-                new RCNumRectangle(cellWindow.X - (RCNumber)1/(RCNumber)2,
-                                   cellWindow.Y - (RCNumber)1/(RCNumber)2,
-                                   cellWindow.Width,
-                                   cellWindow.Height));
-            foreach (ITerrainObject terrainObj in visibleTerrainObjects)
+            foreach (ITerrainObject terrainObj in this.fogOfWarBC.GetTerrainObjectsToUpdate(quadTileWindow))
             {
                 retList.Add(new SpriteInst()
                 {
@@ -177,7 +138,7 @@ namespace RC.App.BizLogic.Views.Core
             IQuadTile quadTileAtPos = this.Map.GetCell(navCellCoords).ParentQuadTile;
             foreach (ITerrainObject objToCheck in this.Map.TerrainObjects.GetContents(navCellCoords))
             {
-                if (!objToCheck.Type.IsExcluded(quadTileAtPos.MapCoords - objToCheck.MapCoords))
+                if (objToCheck.GetQuadTile(quadTileAtPos.MapCoords - objToCheck.MapCoords) != null)
                 {
                     return (this.Map.QuadToCellRect(new RCIntRectangle(objToCheck.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
                          * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
@@ -215,5 +176,10 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         #endregion IMapTerrainView methods
+
+        /// <summary>
+        /// Reference to the Fog Of War business component.
+        /// </summary>
+        private IFogOfWarBC fogOfWarBC;
     }
 }

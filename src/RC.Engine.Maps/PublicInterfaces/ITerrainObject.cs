@@ -12,6 +12,13 @@ namespace RC.Engine.Maps.PublicInterfaces
     public interface ITerrainObject : ISearchTreeContent, ICellDataChangeSetTarget
     {
         /// <summary>
+        /// Gets the quadratic tile of this terrain object at the given index.
+        /// </summary>
+        /// <param name="index">The index of the quadratic tile to get.</param>
+        /// <returns>The quadratic at the given index or null if the given index is outside of this terrain object.</returns>
+        IQuadTile GetQuadTile(RCIntVector index);
+
+        /// <summary>
         /// Gets the type of this terrain object as it is defined in the tileset.
         /// </summary>
         ITerrainObjectType Type { get; }

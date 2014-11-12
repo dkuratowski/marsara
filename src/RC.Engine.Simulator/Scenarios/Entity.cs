@@ -87,6 +87,28 @@ namespace RC.Engine.Simulator.Scenarios
         public Scenario Scenario { get { return this.scenario.Read(); } }
 
         /// <summary>
+        /// Gets the coordinates of the quadratic tiles that are currently visible by this entity.
+        /// </summary>
+        /// TODO: later the sight range will depend on the upgrades of the players!
+        public IEnumerable<RCIntVector> VisibleQuadCoords
+        {
+            get
+            {
+                /// TODO: Take ground levels into account!
+                RCIntVector quadCoord = this.Scenario.Map.GetCell(this.position.Read().Round()).ParentQuadTile.MapCoords;
+                foreach (RCIntVector relativeQuadCoord in this.elementType.RelativeQuadCoordsInSight)
+                {
+                    RCIntVector absoluteQuadCoord = quadCoord + relativeQuadCoord;
+                    if (absoluteQuadCoord.X >= 0 && absoluteQuadCoord.X < this.Scenario.Map.Size.X &&
+                        absoluteQuadCoord.Y >= 0 && absoluteQuadCoord.Y < this.Scenario.Map.Size.Y)
+                    {
+                        yield return quadCoord + relativeQuadCoord;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Adds this entity to the map into the given position.
         /// </summary>
         /// <param name="position">The position of this entity on the map.</param>

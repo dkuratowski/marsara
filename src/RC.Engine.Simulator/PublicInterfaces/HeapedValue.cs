@@ -31,7 +31,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <summary>
         /// Raises the ValueChanged event if anybody is subscribed to it.
         /// </summary>
-        protected internal void RaiseValueChangedEvt()
+        protected void RaiseValueChangedEvt()
         {
             if (this.ValueChanged != null) { this.ValueChanged(this, null); }
         }

@@ -16,17 +16,19 @@ namespace RC.Engine.Maps.Core
         /// Constructs a quadratic tile.
         /// </summary>
         /// <param name="map">The map that this quadratic tile belongs to.</param>
-        /// <param name="isoTile">Parent isometric tile.</param>
+        /// <param name="primaryIsoTile">Primary isometric tile.</param>
+        /// <param name="secondaryIsoTile">Secondary isometric tile or null if doesn't exist.</param>
         /// <param name="mapCoords">The map coordinates of this quadratic tile.</param>
-        public QuadTile(MapStructure map, IsoTile isoTile, RCIntVector mapCoords)
+        public QuadTile(MapStructure map, IsoTile primaryIsoTile, IsoTile secondaryIsoTile, RCIntVector mapCoords)
         {
             if (map == null) { throw new ArgumentNullException("map"); }
-            if (isoTile == null) { throw new ArgumentNullException("isoTile"); }
+            if (primaryIsoTile == null) { throw new ArgumentNullException("isoTile"); }
             if (mapCoords == RCIntVector.Undefined) { throw new ArgumentNullException("mapCoords"); }
             if (mapCoords.X < 0 || mapCoords.X >= MapStructure.MAX_MAPSIZE || mapCoords.Y < 0 || mapCoords.Y >= MapStructure.MAX_MAPSIZE) { throw new ArgumentOutOfRangeException("mapCoords"); }
 
             this.parentMap = map;
-            this.parentIsoTile = isoTile;
+            this.primaryIsoTile = primaryIsoTile;
+            this.secondaryIsoTile = secondaryIsoTile;
             this.mapCoords = mapCoords;
             this.neighbours = new QuadTile[8];
             this.detachedNeighbours = new List<Tuple<QuadTile, MapDirection>>();
@@ -39,12 +41,18 @@ namespace RC.Engine.Maps.Core
                     this.cells[col, row] = new Cell(this.parentMap, this, new RCIntVector(col, row));
                 }
             }
+
+            this.primaryIsoTile.SetCuttingQuadTile(this);
+            if (this.secondaryIsoTile != null) { this.secondaryIsoTile.SetCuttingQuadTile(this); }
         }
 
         #region IQuadTile methods
 
         /// <see cref="IQuadTile.ParentIsoTile"/>
-        public IIsoTile IsoTile { get { return this.GetIsoTile(); } }
+        public IIsoTile PrimaryIsoTile { get { return this.GetPrimaryIsoTile(); } }
+
+        /// <see cref="IQuadTile.SecondaryIsoTile"/>
+        public IIsoTile SecondaryIsoTile { get { return this.GetSecondaryIsoTile(); } }
 
         /// <see cref="IQuadTile.MapCoords"/>
         public RCIntVector MapCoords { get { return this.mapCoords; } }
@@ -150,9 +158,14 @@ namespace RC.Engine.Maps.Core
         #endregion Internal attach and detach methods
 
         /// <summary>
-        /// Gets the reference to the parent isometric tile.
+        /// Gets the reference to the primary isometric tile.
         /// </summary>
-        public IsoTile GetIsoTile() { return this.parentIsoTile; }
+        public IsoTile GetPrimaryIsoTile() { return this.primaryIsoTile; }
+
+        /// <summary>
+        /// Gets the reference to the secondary isometric tile or null if this quadratic tile has no secondary isometric tile.
+        /// </summary>
+        public IsoTile GetSecondaryIsoTile() { return this.secondaryIsoTile; }
 
         /// <summary>
         /// The 2D array of the cells of this quadratic tile.
@@ -160,9 +173,14 @@ namespace RC.Engine.Maps.Core
         private Cell[,] cells;
 
         /// <summary>
-        /// Reference to the parent isometric tile.
+        /// Reference to the primary isometric tile.
         /// </summary>
-        private IsoTile parentIsoTile;
+        private IsoTile primaryIsoTile;
+
+        /// <summary>
+        /// Reference to the secondary isometric tile or null if this quadratic tile has no secondary isometric tile.
+        /// </summary>
+        private IsoTile secondaryIsoTile;
 
         /// <summary>
         /// The map coordinates of this quadratic tile.

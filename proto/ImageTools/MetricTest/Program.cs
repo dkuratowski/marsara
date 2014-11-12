@@ -12,7 +12,7 @@ namespace MetricTest
     {
         static void Main(string[] args)
         {
-            int range = 5;
+            int range = 9;
 
             int width = range * 2 + 20;
             int height = width;

@@ -277,7 +277,7 @@ namespace RC.UI.XnaPlugin
                 XnaSprite spriteToDestroy = (XnaSprite)sprite;
 
                 /// Remove the sprite from the list and destroy it.
-                this.sprites.Remove(spriteToDestroy);
+                if (!this.sprites.Remove(spriteToDestroy)) { throw new UIException("The given sprite has already been disposed or has not been created by this sprite manager!"); }
                 spriteToDestroy.Dispose();
                 TraceManager.WriteAllTrace("XnaSpriteManager.DestroySprite: Sprite destroyed", XnaTraceFilters.INFO);
             }

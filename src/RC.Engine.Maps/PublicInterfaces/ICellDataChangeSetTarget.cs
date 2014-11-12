@@ -11,7 +11,9 @@ namespace RC.Engine.Maps.PublicInterfaces
     /// </summary>
     public interface ICellDataChangeSetTarget
     {
-        /// <summary>Gets the cell of this changeset target at the given index.</summary>
+        /// <summary>
+        /// Gets the cell of this changeset target at the given index.
+        /// </summary>
         /// <param name="index">The index of the cell to get.</param>
         /// <returns>The cell at the given index or null if the given index is outside of the changeset target.</returns>
         ICell GetCell(RCIntVector index);

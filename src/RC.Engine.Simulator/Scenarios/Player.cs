@@ -88,6 +88,23 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         public StartLocation StartLocation { get { return this.startLocation.Read(); } }
 
+        /// <summary>
+        /// Gets the scenario that this player belongs to.
+        /// </summary>
+        public Scenario Scenario { get { return this.startLocation.Read().Scenario; } }
+
+        /// <summary>
+        /// Gets the entities of this player.
+        /// </summary>
+        public IEnumerable<Entity> Entities
+        {
+            get
+            {
+                foreach (Building building in this.buildings) { yield return building; }
+                foreach (Unit unit in this.units) { yield return unit; }
+            }
+        }
+
         #region IDisposable methods
 
         /// <see cref="IDisposable.Dispose"/>

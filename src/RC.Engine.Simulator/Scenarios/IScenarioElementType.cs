@@ -119,6 +119,12 @@ namespace RC.Engine.Simulator.Scenarios
         IWeaponData AirWeapon { get; }
 
         /// <summary>
+        /// Gets the quadratic coordinates relative to the origin that are inside the sight range or null if this element type has no sight range defined.
+        /// </summary>
+        /// TODO: later the sight range will depend on the upgrades of the players!
+        IEnumerable<RCIntVector> RelativeQuadCoordsInSight { get; }
+
+        /// <summary>
         /// Checks whether the constraints of this entity type allows placing an entity of this type to the given scenario at the given
         /// quadratic position and collects all the violating quadratic coordinates relative to the top-left corner of the
         /// entity.

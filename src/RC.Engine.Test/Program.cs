@@ -98,7 +98,7 @@ namespace RC.Engine.Test
             //watch.Stop();
             //Console.WriteLine("Creating new map: " + watch.ElapsedMilliseconds);
 
-            //IIsoTile tile = map.GetQuadTile(new RCIntVector(1, 0)).IsoTile;
+            //IIsoTile tile = map.GetQuadTile(new RCIntVector(1, 0)).PrimaryIsoTile;
             //map.DrawTerrain(tile, map.Tileset.GetTerrainType("Structure"));
 
             Console.WriteLine("Ready!");

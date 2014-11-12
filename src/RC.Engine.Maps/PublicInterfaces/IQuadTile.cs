@@ -29,8 +29,14 @@ namespace RC.Engine.Maps.PublicInterfaces
         IEnumerable<IQuadTile> Neighbours { get; }
 
         /// <summary>
-        /// Gets the reference to the parent isometric tile.
+        /// Gets the reference to the isometric tile that contains the center of this quadratic tile.
         /// </summary>
-        IIsoTile IsoTile { get; }
+        IIsoTile PrimaryIsoTile { get; }
+
+        /// <summary>
+        /// Gets the reference to the isometric tile that is different from the PrimaryIsoTile and contains the center of at least 1 cell of
+        /// this quadratic tile. If no such isometric tile exists then this property is null.
+        /// </summary>
+        IIsoTile SecondaryIsoTile { get; }
     }
 }

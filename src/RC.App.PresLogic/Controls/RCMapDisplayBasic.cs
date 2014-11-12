@@ -104,10 +104,5 @@ namespace RC.App.PresLogic.Controls
         /// Reference to the map view.
         /// </summary>
         private IMapTerrainView mapView;
-
-        /// <summary>
-        /// The default color of the transparent parts of the tiles.
-        /// </summary>
-        public static readonly RCColor DEFAULT_TILE_TRANSPARENT_COLOR = new RCColor(255, 0, 255);
     }
 }

@@ -40,6 +40,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="ICommandService.Select"/>
         public void Select(RCIntRectangle displayedArea, RCIntVector position)
         {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
 
             RCIntVector mapSize = this.scenarioManager.ActiveScenario.Map.CellSize * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT;
@@ -57,6 +58,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="ICommandService.Select"/>
         public void Select(RCIntRectangle displayedArea, RCIntRectangle selectionBox)
         {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
 
             RCIntVector mapSize = this.scenarioManager.ActiveScenario.Map.CellSize * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT;
@@ -78,6 +80,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="ICommandService.SelectType"/>
         public void SelectType(RCIntRectangle displayedArea, RCIntVector position)
         {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             /// TODO: implement!
         }
 
@@ -85,6 +88,7 @@ namespace RC.App.BizLogic.Services.Core
         public void SendFastCommand(RCIntRectangle displayedArea, RCIntVector position)
         {
             /// TODO: This is a PROTOTYPE CODE!
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
 
             RCIntVector mapSize = this.scenarioManager.ActiveScenario.Map.CellSize * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT;
@@ -110,12 +114,14 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="ICommandService.PressCommandButton"/>
         public void PressCommandButton(RCIntVector panelPosition)
         {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             this.commandManager.PressCommandButton(panelPosition);
         }
 
         /// <see cref="ICommandService.SelectTargetPosition"/>
         public void SelectTargetPosition(RCIntRectangle displayedArea, RCIntVector position)
         {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
@@ -134,6 +140,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="ICommandService.CancelSelectingTargetPosition"/>
         public void CancelSelectingTargetPosition()
         {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             this.commandManager.CancelSelectingTargetPosition();
         }
 

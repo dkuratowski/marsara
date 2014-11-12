@@ -231,6 +231,7 @@ namespace RC.App.Starter
                                                     "RC.App.BizLogic.ScenarioManagerBC",
                                                     "RC.App.BizLogic.SelectionManagerBC",
                                                     "RC.App.BizLogic.CommandManagerBC",
+                                                    "RC.App.BizLogic.FogOfWarBC",
                                                     "RC.App.BizLogic.MultiplayerService",
                                                     "RC.App.BizLogic.CommandService",
                                                     "RC.App.BizLogic.MapEditorService",

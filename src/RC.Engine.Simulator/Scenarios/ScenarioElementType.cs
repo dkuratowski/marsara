@@ -31,6 +31,7 @@ namespace RC.Engine.Simulator.Scenarios
             this.metadata = metadata;
             this.spritePalette = null;
             this.animationPalette = null;
+            this.relativeQuadCoordsInSight = null; /// TODO: later the sight range will depend on the upgrades of the players!
             this.placementConstraints = new List<EntityConstraint>();
             this.requirements = new List<Requirement>();
         }
@@ -51,6 +52,10 @@ namespace RC.Engine.Simulator.Scenarios
 
         /// <see cref="IScenarioElementType.AnimationPalette"/>
         public IAnimationPalette AnimationPalette { get { return this.animationPalette; } }
+
+        /// <see cref="IScenarioElementType.RelativeQuadCoordsInSight"/>
+        /// TODO: later the sight range will depend on the upgrades of the players!
+        public IEnumerable<RCIntVector> RelativeQuadCoordsInSight { get { return this.relativeQuadCoordsInSight; } }
 
         #region Costs data properties
 
@@ -315,6 +320,21 @@ namespace RC.Engine.Simulator.Scenarios
         {
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             this.sightRange = new ConstValue<int>(sightRange);
+
+            /// TODO: later the sight range will depend on the upgrades of the players!
+            RCIntVector nullVector = new RCIntVector(0, 0);
+            this.relativeQuadCoordsInSight = new HashSet<RCIntVector>();
+            for (int x = -this.sightRange.Read(); x <= this.sightRange.Read(); x++)
+            {
+                for (int y = -this.sightRange.Read(); y <= this.sightRange.Read(); y++)
+                {
+                    RCIntVector quadCoord = new RCIntVector(x, y);
+                    if (MapUtils.ComputeDistance(nullVector, quadCoord) <= this.sightRange.Read())
+                    {
+                        this.relativeQuadCoordsInSight.Add(quadCoord);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -460,5 +480,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// Reference to the metadata object that this type belongs to.
         /// </summary>
         private ScenarioMetadata metadata;
+
+        /// <summary>
+        /// The quadratic coordinates relative to the origin that are inside the sight range or null if this element type has no sight range defined.
+        /// </summary>
+        /// TODO: later the sight range will depend on the upgrades of the players!
+        private HashSet<RCIntVector> relativeQuadCoordsInSight;
     }
 }

@@ -8,7 +8,7 @@ namespace RC.Common.ComponentModel
     /// <summary>
     /// This interface can be implemented by the components optionally. If a component implements this interface,
     /// the Start method will automatically be called by the ComponentManager after the instantiation of the
-    /// registered components has been finished and all references between the components has been set.
+    /// registered components has been finished.
     /// </summary>
     public interface IComponent
     {

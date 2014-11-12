@@ -90,7 +90,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.DrawTerrain"/>
         public void DrawTerrain(RCIntRectangle displayedArea, RCIntVector position, string terrainType)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
             if (terrainType == null) { throw new ArgumentNullException("terrainType"); }
@@ -125,7 +125,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.PlaceTerrainObject"/>
         public bool PlaceTerrainObject(RCIntRectangle displayedArea, RCIntVector position, string terrainObject)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
             if (terrainObject == null) { throw new ArgumentNullException("terrainObject"); }
@@ -168,7 +168,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.RemoveTerrainObject"/>
         public bool RemoveTerrainObject(RCIntRectangle displayedArea, RCIntVector position)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
@@ -177,7 +177,7 @@ namespace RC.App.BizLogic.Services.Core
             IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
             foreach (ITerrainObject objToCheck in this.scenarioManager.ActiveScenario.Map.TerrainObjects.GetContents(navCellCoords))
             {
-                if (!objToCheck.Type.IsExcluded(quadTileAtPos.MapCoords - objToCheck.MapCoords))
+                if (objToCheck.GetQuadTile(quadTileAtPos.MapCoords - objToCheck.MapCoords) != null)
                 {
                     this.mapEditor.RemoveTerrainObject(this.scenarioManager.ActiveScenario.Map, objToCheck);
                     return true;
@@ -189,7 +189,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.PlaceStartLocation"/>
         public bool PlaceStartLocation(RCIntRectangle displayedArea, RCIntVector position, int playerIndex)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
@@ -232,7 +232,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.PlaceMineralField"/>
         public bool PlaceMineralField(RCIntRectangle displayedArea, RCIntVector position)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
@@ -254,7 +254,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.PlaceVespeneGeyser"/>
         public bool PlaceVespeneGeyser(RCIntRectangle displayedArea, RCIntVector position)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
@@ -276,7 +276,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.RemoveEntity"/>
         public bool RemoveEntity(RCIntRectangle displayedArea, RCIntVector position)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
@@ -295,7 +295,7 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="IMapEditorService.RemoveEntity"/>
         public bool ChangeResourceAmount(int objectID, int delta)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
 
             MineralField mineralField = this.scenarioManager.ActiveScenario.GetEntity<MineralField>(objectID);

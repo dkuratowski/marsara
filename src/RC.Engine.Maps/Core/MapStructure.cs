@@ -53,28 +53,53 @@ namespace RC.Engine.Maps.Core
             if (this.status != MapStatus.Initializing) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
 
             /// Create the quadratic and isometric tiles.
+            RCIntVector navCellPerQuadVect = new RCIntVector(NAVCELL_PER_QUAD, NAVCELL_PER_QUAD);
             for (int col = 0; col < MAX_MAPSIZE; col++)
             {
                 for (int row = 0; row < MAX_MAPSIZE; row++)
                 {
-                    RCIntVector coords = new RCIntVector(col, row);
-                    RCNumVector isoCoords = MapStructure.QuadIsoTransform.TransformAB(coords);
-                    RCIntVector isoCoordsInt = isoCoords.Round();
-                    if (this.isometricTiles.ContainsKey(isoCoordsInt))
+                    /// Calculate the coordinates of the isometric tiles that contain the corner cells of the current quadratic tile.
+                    /// Order of the cornerIsoCoords array: NorthWest, NorthEast, SouthEast, SouthWest.
+                    RCIntVector quadTileCoords = new RCIntVector(col, row);
+                    RCIntVector[] cornerIsoCoords = new RCIntVector[4]
                     {
-                        /// Just create the quadratic tile.
-                        QuadTile quadTile = new QuadTile(this, this.isometricTiles[isoCoordsInt], coords);
-                        this.quadTiles[coords.X, coords.Y] = quadTile;
-                    }
-                    else
+                        MapStructure.NavCellIsoTransform.TransformAB(quadTileCoords * navCellPerQuadVect + new RCIntVector(0, 0)).Round(),
+                        MapStructure.NavCellIsoTransform.TransformAB(quadTileCoords * navCellPerQuadVect + new RCIntVector(NAVCELL_PER_QUAD - 1, 0)).Round(),
+                        MapStructure.NavCellIsoTransform.TransformAB(quadTileCoords * navCellPerQuadVect + new RCIntVector(NAVCELL_PER_QUAD - 1, NAVCELL_PER_QUAD - 1)).Round(),
+                        MapStructure.NavCellIsoTransform.TransformAB(quadTileCoords * navCellPerQuadVect + new RCIntVector(0, NAVCELL_PER_QUAD - 1)).Round()
+                    };
+
+                    /// Create the isometric tiles.
+                    int isoTileACount = 0, isoTileBCount = 0;
+                    IsoTile isoTileA = null, isoTileB = null;
+                    for (int cornerIdx = 0; cornerIdx < 4; cornerIdx++)
                     {
-                        /// Create the quadratic tile and the corresponding isometric tile as well.
-                        /// Variant will be selected randomly as it is a new map.
-                        IsoTile isoTile = new IsoTile(this, isoCoordsInt);
-                        QuadTile quadTile = new QuadTile(this, isoTile, coords);
-                        this.quadTiles[coords.X, coords.Y] = quadTile;
-                        this.isometricTiles.Add(isoCoordsInt, isoTile);
+                        if (isoTileA == null)
+                        {
+                            isoTileA = this.isometricTiles.ContainsKey(cornerIsoCoords[cornerIdx])
+                                     ? this.isometricTiles[cornerIsoCoords[cornerIdx]]
+                                     : new IsoTile(this, cornerIsoCoords[cornerIdx]);
+                            this.isometricTiles[cornerIsoCoords[cornerIdx]] = isoTileA;
+                            isoTileACount++;
+                        }
+                        else if (cornerIsoCoords[cornerIdx] == isoTileA.MapCoords) { isoTileACount++; }
+                        else if (isoTileB == null)
+                        {
+                            isoTileB = this.isometricTiles.ContainsKey(cornerIsoCoords[cornerIdx])
+                                     ? this.isometricTiles[cornerIsoCoords[cornerIdx]]
+                                     : new IsoTile(this, cornerIsoCoords[cornerIdx]);
+                            this.isometricTiles[cornerIsoCoords[cornerIdx]] = isoTileB;
+                            isoTileBCount++;
+                        }
+                        else if (cornerIsoCoords[cornerIdx] == isoTileB.MapCoords) { isoTileBCount++; }
+                        else { throw new InvalidOperationException("Unexpected case!"); }
                     }
+
+                    QuadTile quadTile = new QuadTile(this,
+                                                     isoTileACount >= isoTileBCount ? isoTileA : isoTileB,
+                                                     isoTileACount < isoTileBCount ? isoTileA : isoTileB,
+                                                     quadTileCoords);
+                    this.quadTiles[quadTileCoords.X, quadTileCoords.Y] = quadTile;
                 }
             }
 
@@ -140,7 +165,7 @@ namespace RC.Engine.Maps.Core
             if (quadCoords == RCIntVector.Undefined) { throw new ArgumentNullException("quadCoords"); }
             if (quadCoords.X < 0 || quadCoords.Y < 0 || quadCoords.X >= this.size.X || quadCoords.Y >= this.size.Y) { throw new ArgumentOutOfRangeException("quadCoords"); }
 
-            this.quadTiles[quadCoords.X, quadCoords.Y].GetIsoTile().SetTileType(tileType, variantIdx);
+            this.quadTiles[quadCoords.X, quadCoords.Y].GetPrimaryIsoTile().SetTileType(tileType, variantIdx);
         }
 
         /// <summary>
@@ -155,7 +180,7 @@ namespace RC.Engine.Maps.Core
             {
                 for (int row = 0; row < this.size.Y; row++)
                 {
-                    this.quadTiles[col, row].GetIsoTile().SetDefaultTileType();
+                    this.quadTiles[col, row].GetPrimaryIsoTile().SetDefaultTileType();
                 }
             }
 
@@ -171,7 +196,7 @@ namespace RC.Engine.Maps.Core
             {
                 for (int row = 0; row < this.size.Y; row++)
                 {
-                    this.quadTiles[col, row].GetIsoTile().CheckAndFinalize();
+                    this.quadTiles[col, row].GetPrimaryIsoTile().CheckAndFinalize();
                 }
             }
 
@@ -196,7 +221,7 @@ namespace RC.Engine.Maps.Core
             {
                 for (int row = 0; row < this.size.Y; row++)
                 {
-                    this.quadTiles[col, row].GetIsoTile().Cleanup();
+                    this.quadTiles[col, row].GetPrimaryIsoTile().Cleanup();
                 }
             }
 

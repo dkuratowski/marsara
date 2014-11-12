@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fowSpritePalette image="fow.png" transparentColor="255;0;255">
+  <!-- Full Fog Of War -->
+  <sprite name="Corner_NorthEast" variant="Full" sourceRegion="0;0;16;16" />
+  <sprite name="Corner_SouthEast" variant="Full" sourceRegion="16;0;16;16" />
+  <sprite name="Corner_SouthWest" variant="Full" sourceRegion="32;0;16;16" />
+  <sprite name="Corner_NorthWest" variant="Full" sourceRegion="0;16;16;16" />
+  <sprite name="Side_North" variant="Full" sourceRegion="16;16;16;16" />
+  <sprite name="Side_East" variant="Full" sourceRegion="32;16;16;16" />
+  <sprite name="Side_South" variant="Full" sourceRegion="0;32;16;16" />
+  <sprite name="Side_West" variant="Full" sourceRegion="16;32;16;16" />
+  <sprite name="Filled" variant="Full" sourceRegion="32;32;16;16" />
+  
+  <!-- Partial Fog Of War -->
+  <sprite name="Corner_NorthEast" variant="Partial" sourceRegion="0;48;16;16" />
+  <sprite name="Corner_SouthEast" variant="Partial" sourceRegion="16;48;16;16" />
+  <sprite name="Corner_SouthWest" variant="Partial" sourceRegion="32;48;16;16" />
+  <sprite name="Corner_NorthWest" variant="Partial" sourceRegion="0;64;16;16" />
+  <sprite name="Side_North" variant="Partial" sourceRegion="16;64;16;16" />
+  <sprite name="Side_East" variant="Partial" sourceRegion="32;64;16;16" />
+  <sprite name="Side_South" variant="Partial" sourceRegion="0;80;16;16" />
+  <sprite name="Side_West" variant="Partial" sourceRegion="16;80;16;16" />
+  <sprite name="Filled" variant="Partial" sourceRegion="32;80;16;16" />
+</fowSpritePalette>

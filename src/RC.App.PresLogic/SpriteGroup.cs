@@ -39,9 +39,15 @@ namespace RC.App.PresLogic
         {
             if (!this.isLoaded) { throw new InvalidOperationException("The sprite-group is not loaded!"); }
 
+            /// Destroy the sprites of this sprite group (be aware of duplicated sprites).
+            HashSet<UISprite> destroyedSprites = new HashSet<UISprite>();
             foreach (UISprite sprite in this.spriteList)
             {
-                if (sprite != null) { UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(sprite); }
+                if (sprite != null && !destroyedSprites.Contains(sprite))
+                {
+                    UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(sprite);
+                    destroyedSprites.Add(sprite);
+                }
             }
             this.spriteList.Clear();
             this.isLoaded = false;

@@ -44,6 +44,7 @@ namespace RC.App.BizLogic.Services.Core
             this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
             this.selectionManager = ComponentManager.GetInterface<ISelectionManagerBC>();
             this.commandManager = ComponentManager.GetInterface<ICommandManagerBC>();
+            this.fogOfWarBC = ComponentManager.GetInterface<IFogOfWarBC>();
             this.viewFactoryRegistry = ComponentManager.GetInterface<IViewFactoryRegistry>();
         }
 
@@ -62,7 +63,6 @@ namespace RC.App.BizLogic.Services.Core
             /// TODO: this is only a PROTOTYPE implementation!
             this.scenarioManager.OpenScenario(mapFile);
 
-            byte[] mapBytes = File.ReadAllBytes(mapFile);
             this.playerManager = new PlayerManager(this.scenarioManager.ActiveScenario);
             this.playerManager[0].ConnectRandomPlayer(RaceEnum.Terran);
             this.playerManager[1].ConnectRandomPlayer(RaceEnum.Terran);
@@ -70,6 +70,7 @@ namespace RC.App.BizLogic.Services.Core
             this.playerManager[3].ConnectRandomPlayer(RaceEnum.Terran);
             this.playerManager.Lock();
             this.selectionManager.Reset(this.playerManager[0].Player);
+            this.fogOfWarBC.StartFogOfWar(this.playerManager[0].Player);
             this.commandDispatcher = new CommandDispatcher();
             this.triggeredScheduler = new TriggeredScheduler(1000 / (int)gameSpeed);
             this.triggeredScheduler.AddScheduledFunction(this.pathFinder.Flush);
@@ -77,6 +78,7 @@ namespace RC.App.BizLogic.Services.Core
             this.triggeredScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.UpdateState);
             this.triggeredScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.UpdateAnimations);
             this.triggeredScheduler.AddScheduledFunction(this.commandManager.Update);
+            this.triggeredScheduler.AddScheduledFunction(this.fogOfWarBC.ExecuteUpdateIteration);
             this.triggeredScheduler.AddScheduledFunction(() => { if (this.GameUpdated != null) { this.GameUpdated(); } });
             this.testDssTaskCanFinishEvt = new ManualResetEvent(false);
             this.dssTask = this.taskManager.StartTask(this.TestDssTaskMethod, "DssThread");
@@ -133,12 +135,14 @@ namespace RC.App.BizLogic.Services.Core
         private void OnDssTaskFinished(ITask sender, object message)
         {
             this.dssTask.Finished -= this.OnDssTaskFinished;
+            this.dssTask = null;
             this.testDssTaskCanFinishEvt.Close();
             this.testDssTaskCanFinishEvt = null;
             this.triggeredScheduler.Dispose();
-            this.dssTask = null;
             this.triggeredScheduler = null;
+            this.fogOfWarBC.StopFogOfWar(this.playerManager[0].Player);
             this.commandDispatcher = null;
+            this.playerManager = null;
             this.scenarioManager.CloseScenario();
         }
 
@@ -180,5 +184,10 @@ namespace RC.App.BizLogic.Services.Core
         /// Reference to the command manager business component.
         /// </summary>
         private ICommandManagerBC commandManager;
+
+        /// <summary>
+        /// Reference to the Fog Of War business component.
+        /// </summary>
+        private IFogOfWarBC fogOfWarBC;
     }
 }

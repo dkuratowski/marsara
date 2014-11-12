@@ -92,7 +92,7 @@ namespace RC.Engine.Maps.Core
                 absQuadCoords.Y >= 0 && absQuadCoords.Y < map.Size.Y)
             {
                 IQuadTile checkedQuadTile = map.GetQuadTile(absQuadCoords);
-                IIsoTile checkedIsoTile = checkedQuadTile.IsoTile;
+                IIsoTile checkedIsoTile = checkedQuadTile.PrimaryIsoTile;
                 if (checkedIsoTile.Type.TerrainA != this.terrainA ||
                     checkedIsoTile.Type.TerrainB != this.terrainB ||
                     !this.allowedCombinations.Contains(checkedIsoTile.Type.Combination))
@@ -100,7 +100,7 @@ namespace RC.Engine.Maps.Core
                     retList.Add(this.quadCoords);
                     foreach (IQuadTile neighbour in checkedQuadTile.Neighbours)
                     {
-                        if (neighbour.IsoTile == checkedIsoTile)
+                        if (neighbour.PrimaryIsoTile == checkedIsoTile)
                         {
                             retList.Add(neighbour.MapCoords - position);
                         }
