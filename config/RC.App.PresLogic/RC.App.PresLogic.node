@@ -1,5 +1,13 @@
 <configNode>
   <configObjects>
+    <configObject namespace="RC.App.PresLogic" name="Constants">
+      <loader>
+        <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>
+        <class>RC.Common.Configuration.ConstantsLoader</class>
+      </loader>
+      <contents>RC.App.PresLogic.ConstantsConfig.xml</contents>
+    </configObject>
+    
     <configObject namespace="RC.App.PresLogic" name="TraceConfig">
       <loader>
         <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>

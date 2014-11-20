@@ -1,0 +1,4 @@
+<constantsConfig>
+  <constant namespace="RC.App.PresLogic" name="FowSpritePaletteDir" type="STRING">./sprites/fow</constant>
+  <constant namespace="RC.App.PresLogic" name="FowSpritePaletteFile" type="STRING">fow.xml</constant>
+</constantsConfig>

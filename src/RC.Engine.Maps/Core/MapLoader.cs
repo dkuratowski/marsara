@@ -216,6 +216,10 @@ namespace RC.Engine.Maps.Core
         /// <param name="map">Reference to the map.</param>
         private void LoadTerrainObjects(RCPackage terrainObjListPackage, IMapAccess map)
         {
+            /// TODO: Avoid this downcast!
+            MapAccess mapObj = map as MapAccess;
+            if (mapObj == null) { throw new ArgumentException("The given map cannot be handled by the MapEditor!", "map"); }
+
             string[] terrainObjIndexTable = terrainObjListPackage.ReadStringArray(0);
             byte[] terrainObjInfoBytes = terrainObjListPackage.ReadByteArray(1);
 
@@ -237,17 +241,18 @@ namespace RC.Engine.Maps.Core
                     {
                         changeset.Apply(newObj);
                     }
-                    map.TerrainObjects.AttachContent(newObj);
+                    mapObj.AttachTerrainObject(newObj);
                 }
             }
 
             /// Check the constraints of the terrain objects.
-            foreach (ITerrainObject terrainObj in map.TerrainObjects.GetContents())
+            List<ITerrainObject> terrainObjects = new List<ITerrainObject>(map.TerrainObjects);
+            foreach (ITerrainObject terrainObj in terrainObjects)
             {
-                map.TerrainObjects.DetachContent(terrainObj);
+                mapObj.DetachTerrainObject(terrainObj);
                 if (terrainObj.Type.CheckConstraints(map, terrainObj.MapCoords).Count != 0) { throw new MapException(string.Format("Terrain object at {0} is voilating the tileset constraints!", terrainObj.MapCoords)); }
                 if (terrainObj.Type.CheckTerrainObjectIntersections(map, terrainObj.MapCoords).Count != 0) { throw new MapException(string.Format("Terrain object at {0} intersects other terrain objects!", terrainObj.MapCoords)); }
-                map.TerrainObjects.AttachContent(terrainObj);
+                mapObj.AttachTerrainObject(terrainObj);
             }
         }
 
@@ -362,7 +367,7 @@ namespace RC.Engine.Maps.Core
             /// Create the packages of the terrain objects.
             List<RCPackage> terrainObjPackages = new List<RCPackage>();
             int terrainObjInfoLength = 0;
-            foreach (ITerrainObject terrainObj in map.TerrainObjects.GetContents())
+            foreach (ITerrainObject terrainObj in map.TerrainObjects)
             {
                 RCPackage terrainObjPackage = RCPackage.CreateCustomDataPackage(MapFileFormat.TERRAINOBJ);
                 terrainObjPackage.WriteShort(0, (short)terrainObj.MapCoords.X);

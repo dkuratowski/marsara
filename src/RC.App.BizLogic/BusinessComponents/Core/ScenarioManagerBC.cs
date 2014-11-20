@@ -128,6 +128,16 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
+        /// Creates a view of type IFogOfWarView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IFogOfWarView CreateFogOfWarView()
+        {
+            if (this.activeScenario == null) { throw new InvalidOperationException("There is no active scenario!"); }
+            return new FogOfWarView();
+        }
+
+        /// <summary>
         /// Creates a view of type ITileSetView.
         /// </summary>
         /// <returns>The created view.</returns>
@@ -217,6 +227,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private void RegisterFactoryMethods()
         {
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapTerrainView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateFogOfWarView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateTileSetView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMetadataView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectView);
@@ -233,6 +244,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private void UnregisterFactoryMethods()
         {
             this.viewFactoryRegistry.UnregisterViewFactory<IMapTerrainView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IFogOfWarView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ITileSetView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMetadataView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectView>();

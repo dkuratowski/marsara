@@ -462,10 +462,10 @@
         <dataChangesetRect field="IsBuildable" rect="3;4;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsBuildable" rect="5;5;2;2">false</dataChangesetRect>
         <dataChangesetRect field="IsBuildable" rect="7;6;2;2">false</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
+        <!--dataChangesetRect field="GroundLevel" rect="1;3;2;2">1</dataChangesetRect>
         <dataChangesetRect field="GroundLevel" rect="3;4;2;2">1</dataChangesetRect>
         <dataChangesetRect field="GroundLevel" rect="5;5;2;2">1</dataChangesetRect>
-        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect>
+        <dataChangesetRect field="GroundLevel" rect="7;6;2;2">1</dataChangesetRect-->
       </variant>
     </mixedTile>
     <mixedTile terrainA="Asphalt" terrainB="Structure" combination="BAAB">

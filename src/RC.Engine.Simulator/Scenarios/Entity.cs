@@ -37,6 +37,7 @@ namespace RC.Engine.Simulator.Scenarios
             this.currentAnimations = new List<AnimationPlayer>();
             this.entityActuator = null;
             this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
+            this.sightRangeCache = null;
 
             this.position.Write(RCNumVector.Undefined);
             this.velocity.Write(new RCNumVector(0, 0));
@@ -94,17 +95,13 @@ namespace RC.Engine.Simulator.Scenarios
         {
             get
             {
-                /// TODO: Take ground levels into account!
-                RCIntVector quadCoord = this.Scenario.Map.GetCell(this.position.Read().Round()).ParentQuadTile.MapCoords;
-                foreach (RCIntVector relativeQuadCoord in this.elementType.RelativeQuadCoordsInSight)
+                IQuadTile currentQuadTile = this.Scenario.Map.GetCell(this.position.Read().Round()).ParentQuadTile;
+                if (this.sightRangeCache == null || this.sightRangeCache.Item1 != currentQuadTile)
                 {
-                    RCIntVector absoluteQuadCoord = quadCoord + relativeQuadCoord;
-                    if (absoluteQuadCoord.X >= 0 && absoluteQuadCoord.X < this.Scenario.Map.Size.X &&
-                        absoluteQuadCoord.Y >= 0 && absoluteQuadCoord.Y < this.Scenario.Map.Size.Y)
-                    {
-                        yield return quadCoord + relativeQuadCoord;
-                    }
+                    this.sightRangeCache = new Tuple<IQuadTile, List<RCIntVector>>(currentQuadTile, this.CalculateVisibleQuadCoords());
                 }
+
+                return new List<RCIntVector>(this.sightRangeCache.Item2);
             }
         }
 
@@ -379,6 +376,33 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <summary>
+        /// Calculates the quadratic coordinates currently visible by this entity.
+        /// </summary>
+        /// <returns>The quadratic coordinates currently visible by this entity.</returns>
+        /// <remarks>
+        /// Can be overriden in the derived classes. The default implementation can be used by ground units.
+        /// </remarks>
+        protected virtual List<RCIntVector> CalculateVisibleQuadCoords()
+        {
+            IQuadTile currentQuadTile = this.Scenario.Map.GetCell(this.position.Read().Round()).ParentQuadTile;
+            List<RCIntVector> retList = new List<RCIntVector>();
+            foreach (RCIntVector relativeQuadCoord in this.elementType.RelativeQuadCoordsInSight)
+            {
+                RCIntVector otherQuadCoords = currentQuadTile.MapCoords + relativeQuadCoord;
+                if (otherQuadCoords.X >= 0 && otherQuadCoords.X < this.Scenario.Map.Size.X &&
+                    otherQuadCoords.Y >= 0 && otherQuadCoords.Y < this.Scenario.Map.Size.Y)
+                {
+                    IQuadTile otherQuadTile = this.Scenario.Map.GetQuadTile(otherQuadCoords);
+                    if (currentQuadTile.GroundLevel >= otherQuadTile.GroundLevel)
+                    {
+                        retList.Add(otherQuadTile.MapCoords);
+                    }
+                }
+            }
+            return retList;
+        }
+
+        /// <summary>
         /// This method is called when this entity has been added to a scenario. Can be overriden in the derived classes.
         /// </summary>
         protected virtual void OnAddedToScenarioImpl() { }
@@ -462,5 +486,10 @@ namespace RC.Engine.Simulator.Scenarios
         /// Reference to the RC.Engine.Simulator.PathFinder component.
         /// </summary>
         private IPathFinder pathFinder;
+
+        /// <summary>
+        /// Data structure to store the calculated sight range of this entity for the last known quadratic tile.
+        /// </summary>
+        private Tuple<IQuadTile, List<RCIntVector>> sightRangeCache;
     }
 }

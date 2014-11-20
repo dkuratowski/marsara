@@ -62,6 +62,7 @@ namespace RC.App.BizLogic.Services.Core
         {
             /// TODO: this is only a PROTOTYPE implementation!
             this.scenarioManager.OpenScenario(mapFile);
+            this.scenarioManager.ActiveScenario.Map.FinalizeMap();
 
             this.playerManager = new PlayerManager(this.scenarioManager.ActiveScenario);
             this.playerManager[0].ConnectRandomPlayer(RaceEnum.Terran);

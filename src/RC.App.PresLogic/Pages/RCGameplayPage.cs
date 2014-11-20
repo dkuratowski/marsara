@@ -29,8 +29,10 @@ namespace RC.App.PresLogic.Pages
             //this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic);
             this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic);
             this.selectionDisplayEx = new RCSelectionDisplay(this.mapObjectDisplayEx);
-            this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.selectionDisplayEx);
-            this.mapDisplay = this.objectPlacementDisplayEx;
+            this.fogOfWarDisplayEx = new RCFogOfWarDisplay(this.selectionDisplayEx);
+            this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.fogOfWarDisplayEx);
+            this.selectionBoxDisplayEx = new RCSelectionBoxDisplay(this.objectPlacementDisplayEx);
+            this.mapDisplay = this.selectionBoxDisplayEx;
 
             this.mouseHandler = null;
 
@@ -154,20 +156,11 @@ namespace RC.App.PresLogic.Pages
         }
         
         /// <summary>
-        /// This method is called when the map display started successfully.
+        /// This method is called when the map display stopped successfully.
         /// </summary>
         private void OnDisconnected(IGameConnector sender)
         {
             this.gameConnection.ConnectorOperationFinished -= this.OnDisconnected;
-
-            /// Remove the map display control.
-            this.mapDisplayBasic = null;
-            this.mapWalkabilityDisplay = null;
-            this.mapObjectDisplayEx = null;
-            this.selectionDisplayEx = null;
-            this.objectPlacementDisplayEx = null;
-            this.mapDisplay = null;
-            
             if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
 
             /// TODO: later we don't need to stop the render loop here!
@@ -191,14 +184,14 @@ namespace RC.App.PresLogic.Pages
             if (this.mouseHandler != null) { this.mouseHandler.Inactivated -= this.CreateMouseHandler; }
             if (!this.commandView.IsWaitingForTargetPosition)
             {
-                this.mouseHandler = new NormalMouseHandler(this, this.mapDisplay, this.selectionDisplayEx);
+                this.mouseHandler = new NormalMouseHandler(this, this.mapDisplay, this.selectionBoxDisplayEx);
             }
             else
             {
                 this.mouseHandler = new SelectTargetMouseHandler(
                     this,
                     this.mapDisplay,
-                    this.selectionDisplayEx,
+                    this.selectionBoxDisplayEx,
                     this.mapObjectDisplayEx.GetMapObjectSprites(this.selectionIndicatorView.LocalPlayer));
             }
             this.mouseHandler.Inactivated += this.CreateMouseHandler;
@@ -255,15 +248,24 @@ namespace RC.App.PresLogic.Pages
         private RCMapObjectDisplay mapObjectDisplayEx;
 
         /// <summary>
-        /// Extension of the map display that displays the selection box and the selection indicators of the selected
-        /// map objects.
+        /// Extension of the map display that displays the selection indicators of the selected map objects.
         /// </summary>
         private RCSelectionDisplay selectionDisplayEx;
+
+        /// <summary>
+        /// Extenation of the map display that displays the actual Fog Of War state of the quadratic tiles.
+        /// </summary>
+        private RCFogOfWarDisplay fogOfWarDisplayEx;
 
         /// <summary>
         /// Extension of the map display that displays the object placement boxes.
         /// </summary>
         private RCObjectPlacementDisplay objectPlacementDisplayEx;
+
+        /// <summary>
+        /// Extension of the map display that displays the selection box.
+        /// </summary>
+        private RCSelectionBoxDisplay selectionBoxDisplayEx;
 
         /// <summary>
         /// Reference to the game connector object.

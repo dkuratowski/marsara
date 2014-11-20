@@ -212,7 +212,7 @@ namespace RC.Engine.Maps.Core
         /// </summary>
         public void Close()
         {
-            if (this.status != MapStatus.Opening && this.status != MapStatus.Opened) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
+            if (this.status != MapStatus.Opening && this.status != MapStatus.Opened && this.status != MapStatus.Finalized) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
 
             this.status = MapStatus.Closing;
             TraceManager.WriteAllTrace("Closing map", TraceFilters.INFO);
@@ -222,14 +222,7 @@ namespace RC.Engine.Maps.Core
                 for (int row = 0; row < this.size.Y; row++)
                 {
                     this.quadTiles[col, row].GetPrimaryIsoTile().Cleanup();
-                }
-            }
-
-            for (int col = 0; col < this.size.X * MapStructure.NAVCELL_PER_QUAD; col++)
-            {
-                for (int row = 0; row < this.size.Y * MapStructure.NAVCELL_PER_QUAD; row++)
-                {
-                    this.cells[col, row].UninitializeFields();
+                    this.quadTiles[col, row].Cleanup();
                 }
             }
 
@@ -260,9 +253,16 @@ namespace RC.Engine.Maps.Core
         public void FinalizeMap()
         {
             if (this.status != MapStatus.Opened) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
-            
-            /// TODO: Implement this method!
-            throw new NotImplementedException();
+
+            for (int col = 0; col < this.size.X; col++)
+            {
+                for (int row = 0; row < this.size.Y; row++)
+                {
+                    this.quadTiles[col, row].FinalizeTile();
+                }
+            }
+
+            this.status = MapStatus.Finalized;
         }
 
         #endregion Methods at MapStatus.Opened
@@ -338,7 +338,7 @@ namespace RC.Engine.Maps.Core
         /// <returns>The quadratic tile at the given coordinates.</returns>
         public QuadTile GetQuadTile(RCIntVector coords)
         {
-            if (this.status != MapStatus.Opened) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
+            if (this.status != MapStatus.Opened && this.status != MapStatus.Finalized) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
             if (coords == RCIntVector.Undefined) { throw new ArgumentNullException("coords"); }
             if (coords.X < 0 || coords.X >= this.size.X || coords.Y < 0 || coords.Y >= this.size.Y) { throw new ArgumentOutOfRangeException("coords"); }
 
@@ -352,7 +352,7 @@ namespace RC.Engine.Maps.Core
         /// <returns>The isometric tile at the given coordinates.</returns>
         public IsoTile GetIsoTile(RCIntVector coords)
         {
-            if (this.status != MapStatus.Opened && this.status != MapStatus.ExchangingTiles) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
+            if (this.status != MapStatus.Opened && this.status != MapStatus.ExchangingTiles && this.status != MapStatus.Finalized) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
             if (coords == RCIntVector.Undefined) { throw new ArgumentNullException("coords"); }
 
             return this.isometricTiles.ContainsKey(coords) && !this.isometricTiles[coords].IsDetached ?
@@ -365,7 +365,7 @@ namespace RC.Engine.Maps.Core
         /// <returns>The cell at the given index.</returns>
         public Cell GetCell(RCIntVector index)
         {
-            if (this.status != MapStatus.Opened) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
+            if (this.status != MapStatus.Opened && this.status != MapStatus.Finalized) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
             if (index == RCIntVector.Undefined) { throw new ArgumentNullException("index"); }
             if (index.X < 0 || index.X >= this.size.X * NAVCELL_PER_QUAD || index.Y < 0 || index.Y >= this.size.Y * NAVCELL_PER_QUAD) { throw new ArgumentOutOfRangeException("coords"); }
 

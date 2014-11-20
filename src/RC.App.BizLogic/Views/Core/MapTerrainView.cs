@@ -135,15 +135,12 @@ namespace RC.App.BizLogic.Views.Core
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            IQuadTile quadTileAtPos = this.Map.GetCell(navCellCoords).ParentQuadTile;
-            foreach (ITerrainObject objToCheck in this.Map.TerrainObjects.GetContents(navCellCoords))
+            ITerrainObject objToCheck = this.Map.GetCell(navCellCoords).ParentQuadTile.TerrainObject;
+            if (objToCheck != null)
             {
-                if (objToCheck.GetQuadTile(quadTileAtPos.MapCoords - objToCheck.MapCoords) != null)
-                {
-                    return (this.Map.QuadToCellRect(new RCIntRectangle(objToCheck.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
-                         * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                         - displayOffset;
-                }
+                return (this.Map.QuadToCellRect(new RCIntRectangle(objToCheck.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
+                     * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
+                     - displayOffset;
             }
 
             return RCIntVector.Undefined;

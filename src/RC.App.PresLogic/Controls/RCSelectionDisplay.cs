@@ -21,44 +21,20 @@ namespace RC.App.PresLogic.Controls
         /// Constructs an RCSelectionDisplay extension for the given map display control.
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
-        /// <param name="selIndicatorView">Reference to a selection indicator view.</param>
         public RCSelectionDisplay(RCMapDisplay extendedControl)
             : base(extendedControl)
         {
             this.selectionIndicatorView = null;
-            this.selectionBoxPointer = UIResourceManager.GetResource<UIPointer>("RC.App.Pointers.SelectionBoxPointer");
-            this.crosshairsPointer = UIResourceManager.GetResource<UIPointer>("RC.App.Pointers.CrosshairsPointer");
 
-            this.lightGreenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.greenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.yellowBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Yellow, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.redBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Red, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
-            this.lightGreenBrush.Upload();
             this.greenBrush.Upload();
             this.yellowBrush.Upload();
             this.redBrush.Upload();
         }
         
         #region Overrides
-
-        /// <see cref="RCMapDisplayExtension.GetMousePointer_i"/>
-        protected override UIPointer GetMousePointer_i(RCIntVector localPosition)
-        {
-            if (this.MouseHandler != null)
-            {
-                if (this.MouseHandler.SelectionBox != RCIntRectangle.Undefined)
-                {
-                    return this.selectionBoxPointer;
-                }
-                else if (this.MouseHandler.DisplayCrosshairs)
-                {
-                    return this.crosshairsPointer;
-                }
-                /// TODO: display scrolling pointers if scroll is in progress!
-            }
-
-            return null;
-        }
 
         /// <see cref="RCMapDisplayExtension.MapView"/>
         protected override IMapView MapView { get { return this.selectionIndicatorView; } }
@@ -97,12 +73,6 @@ namespace RC.App.PresLogic.Controls
                 }
                 /// TODO: render the HP, energy & shield values under the selection indicator
             }
-
-            /// Render the selection box if necessary.
-            if (this.MouseHandler != null && this.MouseHandler.SelectionBox != RCIntRectangle.Undefined)
-            {
-                renderContext.RenderRectangle(this.lightGreenBrush, this.MouseHandler.SelectionBox);
-            }
         }
 
         #endregion Overrides
@@ -115,11 +85,8 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// Resources for rendering.
         /// </summary>
-        private UISprite lightGreenBrush;
         private UISprite greenBrush;
         private UISprite yellowBrush;
         private UISprite redBrush;
-        private UIPointer selectionBoxPointer;
-        private UIPointer crosshairsPointer;
     }
 }

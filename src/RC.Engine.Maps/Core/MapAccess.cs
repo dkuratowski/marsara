@@ -25,7 +25,7 @@ namespace RC.Engine.Maps.Core
 
             this.mapName = mapName;
             this.mapStructure = mapStructure;
-            this.terrainObjects = null; // Will be created later, when the map structure is opened
+            this.terrainObjects = new HashSet<ITerrainObject>();
         }
 
         #region IMapAccess methods
@@ -41,6 +41,9 @@ namespace RC.Engine.Maps.Core
 
         /// <see cref="IMapAccess.Tileset"/>
         public ITileSet Tileset { get { return this.mapStructure.Tileset; } }
+
+        /// <see cref="IMapAccess.IsFinalized"/>
+        public bool IsFinalized { get { return this.mapStructure.Status == MapStructure.MapStatus.Finalized; } }
 
         /// <see cref="IMapAccess.GetQuadTile"/>
         public IQuadTile GetQuadTile(RCIntVector coords) { return this.mapStructure.GetQuadTile(coords); }
@@ -63,6 +66,9 @@ namespace RC.Engine.Maps.Core
         /// <see cref="IMapAccess.EndExchangingTiles"/>
         public IEnumerable<IIsoTile> EndExchangingTiles() { return this.mapStructure.EndExchangingTiles(); }
 
+        /// <see cref="IMapAccess.FinalizeMap"/>
+        public void FinalizeMap() { this.mapStructure.FinalizeMap(); }
+
         /// <see cref="IMapAccess.Close"/>
         public void Close() { this.mapStructure.Close(); }
 
@@ -70,25 +76,53 @@ namespace RC.Engine.Maps.Core
         public IEnumerable<IIsoTile> IsometricTiles { get { return this.mapStructure.IsometricTiles; } }
 
         /// <see cref="IMapAccess.TerrainObjects"/>
-        public ISearchTree<ITerrainObject> TerrainObjects
+        public IEnumerable<ITerrainObject> TerrainObjects { get { return this.terrainObjects; } }
+
+        #endregion IMapAccess methods
+
+        /// <summary>
+        /// Attaches the given terrain object to the map structure.
+        /// </summary>
+        /// <param name="terrainObj">The terrain object to be attached.</param>
+        /// <exception cref="InvalidOperationException">If the given terrain object has already been attached to this map.</exception>
+        public void AttachTerrainObject(ITerrainObject terrainObj)
         {
-            get
+            if (!this.terrainObjects.Add(terrainObj)) { throw new InvalidOperationException("The given terrain object has already been attached to this map!"); }
+            for (int x = 0; x < terrainObj.Type.QuadraticSize.X; x++)
             {
-                if (this.terrainObjects == null)
+                for (int y = 0; y < terrainObj.Type.QuadraticSize.Y; y++)
                 {
-                    this.terrainObjects = new BspSearchTree<ITerrainObject>(
-                        new RCNumRectangle(-(RCNumber)1 / (RCNumber)2,
-                                           -(RCNumber)1 / (RCNumber)2,
-                                           this.CellSize.X,
-                                           this.CellSize.Y),
-                                           ConstantsTable.Get<int>("RC.Engine.Maps.BspNodeCapacity"),
-                                           ConstantsTable.Get<int>("RC.Engine.Maps.BspMinNodeSize"));
+                    IQuadTile quadTile = terrainObj.GetQuadTile(new RCIntVector(x, y));
+                    if (quadTile != null)
+                    {
+                        QuadTile quadTileObj = this.mapStructure.GetQuadTile(quadTile.MapCoords);
+                        quadTileObj.AttachTerrainObject(terrainObj);
+                    }
                 }
-                return this.terrainObjects;
             }
         }
 
-        #endregion IMapAccess methods
+        /// <summary>
+        /// Detaches the given terrain object from the map structure.
+        /// </summary>
+        /// <param name="terrainObj">The terrain object to be detached.</param>
+        /// <exception cref="InvalidOperationException">If the given terrain object was not attached to this map.</exception>
+        public void DetachTerrainObject(ITerrainObject terrainObj)
+        {
+            if (!this.terrainObjects.Remove(terrainObj)) { throw new InvalidOperationException("The given terrain object was not attached to this map!"); }
+            for (int x = 0; x < terrainObj.Type.QuadraticSize.X; x++)
+            {
+                for (int y = 0; y < terrainObj.Type.QuadraticSize.Y; y++)
+                {
+                    IQuadTile quadTile = terrainObj.GetQuadTile(new RCIntVector(x, y));
+                    if (quadTile != null)
+                    {
+                        QuadTile quadTileObj = this.mapStructure.GetQuadTile(quadTile.MapCoords);
+                        quadTileObj.DetachTerrainObject();
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// The name of the map.
@@ -101,8 +135,8 @@ namespace RC.Engine.Maps.Core
         private MapStructure mapStructure;
 
         /// <summary>
-        /// The map content manager that contains the terrain objects of this map.
+        /// The list of the terrain objects attached to this map.
         /// </summary>
-        private ISearchTree<ITerrainObject> terrainObjects;
+        private HashSet<ITerrainObject> terrainObjects;
     }
 }

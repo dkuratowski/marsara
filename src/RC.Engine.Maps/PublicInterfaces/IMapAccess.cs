@@ -31,6 +31,11 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// </summary>
         ITileSet Tileset { get; }
 
+        /// <summary>
+        /// Gets whether the terrain of this map has been finalized or not.
+        /// </summary>
+        bool IsFinalized { get; }
+
         /// <summary>Gets the quadratic tile at the given coordinates.</summary>
         /// <param name="coords">The coordinates of the quadratic tile to get.</param>
         /// <returns>The quadratic tile at the given coordinates.</returns>
@@ -75,6 +80,11 @@ namespace RC.Engine.Maps.PublicInterfaces
         IEnumerable<IIsoTile> EndExchangingTiles();
 
         /// <summary>
+        /// Finalizes this map.
+        /// </summary>
+        void FinalizeMap();
+
+        /// <summary>
         /// Closes this map.
         /// </summary>
         void Close();
@@ -83,8 +93,8 @@ namespace RC.Engine.Maps.PublicInterfaces
         IEnumerable<IIsoTile> IsometricTiles { get; }
 
         /// <summary>
-        /// Gets the map content manager that contains the terrain objects of this map.
+        /// Gets the list of the terrain objects attached to this map.
         /// </summary>
-        ISearchTree<ITerrainObject> TerrainObjects { get; }
+        IEnumerable<ITerrainObject> TerrainObjects { get; }
     }
 }

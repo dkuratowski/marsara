@@ -329,7 +329,7 @@ namespace RC.Engine.Simulator.Scenarios
                 for (int y = -this.sightRange.Read(); y <= this.sightRange.Read(); y++)
                 {
                     RCIntVector quadCoord = new RCIntVector(x, y);
-                    if (MapUtils.ComputeDistance(nullVector, quadCoord) <= this.sightRange.Read())
+                    if (MapUtils.ComputeDistance(nullVector, quadCoord) < this.sightRange.Read())
                     {
                         this.relativeQuadCoordsInSight.Add(quadCoord);
                     }

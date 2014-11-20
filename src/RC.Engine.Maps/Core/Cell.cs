@@ -58,7 +58,7 @@ namespace RC.Engine.Maps.Core
         /// <see cref="ICell.GroundLevel"/>
         public int GroundLevel { get { return this.groundLevel.Peek(); } }
 
-        /// <see cref="ICell.GroundLevel"/>
+        /// <see cref="ICell.Lock"/>
         public void Lock()
         {
             if (this.parentMap.Status != MapStructure.MapStatus.Opened) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.parentMap.Status)); }

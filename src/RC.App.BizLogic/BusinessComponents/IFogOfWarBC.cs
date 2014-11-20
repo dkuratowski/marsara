@@ -49,6 +49,20 @@ namespace RC.App.BizLogic.BusinessComponents
         IEnumerable<IQuadTile> GetQuadTilesToUpdate(RCIntRectangle quadTileWindow);
 
         /// <summary>
+        /// Gets the full FOW-flags at the given quadratic tile.
+        /// </summary>
+        /// <param name="quadCoords">The quadratic coordinates of the tile.</param>
+        /// <returns>The full FOW-flags at the given quadratic tile.</returns>
+        FOWTileFlagsEnum GetFullFowTileFlags(RCIntVector quadCoords);
+
+        /// <summary>
+        /// Gets the partial FOW-flags at the given quadratic tile.
+        /// </summary>
+        /// <param name="quadCoords">The quadratic coordinates of the tile.</param>
+        /// <returns>The partial FOW-flags at the given quadratic tile.</returns>
+        FOWTileFlagsEnum GetPartialFowTileFlags(RCIntVector quadCoords);
+
+        /// <summary>
         /// Executes the next Fog Of War update iteration.
         /// </summary>
         void ExecuteUpdateIteration();

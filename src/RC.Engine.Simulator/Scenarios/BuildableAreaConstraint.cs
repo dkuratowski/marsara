@@ -25,23 +25,8 @@ namespace RC.Engine.Simulator.Scenarios
                     if (absQuadCoords.X >= 0 && absQuadCoords.X < scenario.Map.Size.X &&
                         absQuadCoords.Y >= 0 && absQuadCoords.Y < scenario.Map.Size.Y)
                     {
-                        /// TODO: Implement IsBuildable flag at quadratic tile level!
                         IQuadTile checkedQuadTile = scenario.Map.GetQuadTile(absQuadCoords);
-                        bool isBuildable = true;
-                        for (int row = 0; row < checkedQuadTile.CellSize.Y; row++)
-                        {
-                            for (int col = 0; col < checkedQuadTile.CellSize.X; col++)
-                            {
-                                ICell checkedCell = checkedQuadTile.GetCell(new RCIntVector(col, row));
-                                if (!checkedCell.IsBuildable)
-                                {
-                                    isBuildable = false;
-                                    break;
-                                }
-                            }
-                            if (!isBuildable) { break; }
-                        }
-                        if (!isBuildable) { retList.Add(absQuadCoords - position); }
+                        if (!checkedQuadTile.IsBuildable) { retList.Add(absQuadCoords - position); }
                     }
                 }
             }

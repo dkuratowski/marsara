@@ -21,10 +21,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// </summary>
         public FogOfWarBC()
         {
-            this.cache = new CachedValue<FowVisibilityInfo>(this.CalculateVisibility);
+            this.cache = new CachedValue<FowVisibilityInfo>(this.CalculateVisibilityWithoutFow);
             this.quadTileWindow = RCIntRectangle.Undefined;
             this.runningFows = new FogOfWar[Player.MAX_PLAYERS];
             this.runningFowsCount = 0;
+            this.fowCacheMatrix = null;
             this.targetScenario = null;
             this.currentIterationIndex = 0;
             this.fowIndex = 0;
@@ -61,8 +62,16 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.runningFows[(int)owner] = new FogOfWar(ownerPlayer);
             this.runningFowsCount++;
 
-            if (this.targetScenario == null) { this.targetScenario = this.scenarioManager.ActiveScenario; }
-            this.cache.Invalidate();
+            if (this.targetScenario == null)
+            {
+                this.targetScenario = this.scenarioManager.ActiveScenario;
+                this.fowCacheMatrix = new FowCacheMatrix(this.runningFows, this.targetScenario);
+                this.cache = new CachedValue<FowVisibilityInfo>(this.CalculateVisibilityWithFow);
+            }
+            else
+            {
+                this.cache.Invalidate();
+            }
         }
 
         /// <see cref="IFogOfWarBC.StopFogOfWar"/>
@@ -79,10 +88,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             {
                 this.quadTileWindow = RCIntRectangle.Undefined;
                 this.targetScenario = null;
+                this.fowCacheMatrix = null;
                 this.currentIterationIndex = 0;
                 this.fowIndex = 0;
+                this.cache = new CachedValue<FowVisibilityInfo>(this.CalculateVisibilityWithoutFow);
             }
-            this.cache.Invalidate();
+            else
+            {
+                this.cache.Invalidate();
+            }
         }
 
         /// <see cref="IFogOfWarBC.GetIsoTilesToUpdate"/>
@@ -113,6 +127,24 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             this.UpdateQuadTileWindow(quadTileWindow);
             return this.cache.Value.QuadTilesToUpdate;
+        }
+
+        /// <see cref="IFogOfWarBC.GetFullFowTileFlags"/>
+        public FOWTileFlagsEnum GetFullFowTileFlags(RCIntVector quadCoords)
+        {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+
+            return this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(quadCoords);
+        }
+
+        /// <see cref="IFogOfWarBC.GetPartialFowTileFlags"/>
+        public FOWTileFlagsEnum GetPartialFowTileFlags(RCIntVector quadCoords)
+        {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+
+            return this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadCoords);
         }
 
         /// <see cref="IFogOfWarBC.ExecuteUpdateIteration"/>
@@ -162,17 +194,21 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         #region Internal methods
 
         /// <summary>
-        /// Implements visibility calculations.
+        /// Implements visibility calculations when at least 1 FogOfWar is running.
         /// </summary>
         /// <returns>The results of the visibility calculations.</returns>
-        private FowVisibilityInfo CalculateVisibility()
+        private FowVisibilityInfo CalculateVisibilityWithFow()
         {
             if (this.quadTileWindow == RCIntRectangle.Undefined) { throw new InvalidOperationException("Visibility window not defined!"); }
+            
+            /// If there are no running Fog Of Wars then use another calculator method.
+            //if (this.runningFowsCount == 0) { return this.CalculateVisibilityWithoutFow(); }
 
             /// Collect the isometric & quadratic tiles that need to be updated.
             IMapAccess map = this.scenarioManager.ActiveScenario.Map;
             HashSet<IIsoTile> isoTilesToUpdate = new HashSet<IIsoTile>();
             HashSet<IQuadTile> quadTilesToUpdate = new HashSet<IQuadTile>();
+            HashSet<ITerrainObject> terrainObjectsToUpdate = new HashSet<ITerrainObject>();
             for (int column = this.quadTileWindow.Left; column < this.quadTileWindow.Right; column++)
             {
                 for (int row = this.quadTileWindow.Top; row < this.quadTileWindow.Bottom; row++)
@@ -180,35 +216,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                     RCIntVector quadCoords = new RCIntVector(column, row);
 
                     /// If the FOW is full at the current quadratic tile -> continue with the next.
-                    FOWTypeEnum fowAtQuadTile = this.GetFowAtQuadTile(quadCoords);
+                    FOWTypeEnum fowAtQuadTile = this.fowCacheMatrix.GetFowStateAtQuadTile(quadCoords);
                     if (fowAtQuadTile == FOWTypeEnum.Full) { continue; }
 
                     /// Add the primary & secondary isometric tiles and all of their cutting quadratic tiles into the update lists.
                     IQuadTile quadTileToUpdate = map.GetQuadTile(quadCoords);
                     this.AddIsoTileToUpdate(quadTileToUpdate.PrimaryIsoTile, isoTilesToUpdate, quadTilesToUpdate);
                     this.AddIsoTileToUpdate(quadTileToUpdate.SecondaryIsoTile, isoTilesToUpdate, quadTilesToUpdate);
-                }
-            }
-
-            /// Collect the terrain objects that need to be updated.
-            HashSet<ITerrainObject> terrainObjectsToUpdate = new HashSet<ITerrainObject>();
-            foreach (ITerrainObject terrainObj in map.TerrainObjects.GetContents((RCNumRectangle)map.QuadToCellRect(this.quadTileWindow) - HALF_VECTOR))
-            {
-                for (int col = 0; col < terrainObj.Type.QuadraticSize.X; col++)
-                {
-                    for (int row = 0; row < terrainObj.Type.QuadraticSize.Y; row++)
-                    {
-                        /// If the current quadratic position is excluded from the terrain object -> continue with the next.
-                        IQuadTile quadTileToUpdate = terrainObj.GetQuadTile(new RCIntVector(col, row));
-                        if (quadTileToUpdate == null) { continue; }
-
-                        /// If the FOW is full at the current quadratic position -> continue with the next.
-                        FOWTypeEnum fowAtQuadTile = this.GetFowAtQuadTile(quadTileToUpdate.MapCoords);
-                        if (fowAtQuadTile == FOWTypeEnum.Full) { continue; }
-
-                        /// Add the terrain object and all of its cutting quadratic tiles into the update lists.
-                        this.AddTerrainObjectToUpdate(terrainObj, terrainObjectsToUpdate, quadTilesToUpdate);
-                    }
+                    this.AddTerrainObjectToUpdate(quadTileToUpdate.TerrainObject, terrainObjectsToUpdate, quadTilesToUpdate);
                 }
             }
 
@@ -222,6 +237,37 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
+        /// Implements visibility calculations when there is no running FogOfWars.
+        /// </summary>
+        /// <returns>The results of the visibility calculations.</returns>
+        private FowVisibilityInfo CalculateVisibilityWithoutFow()
+        {
+            /// Collect the isometric & quadratic tiles that need to be updated.
+            IMapAccess map = this.scenarioManager.ActiveScenario.Map;
+            HashSet<IIsoTile> isoTilesToUpdate = new HashSet<IIsoTile>();
+            HashSet<ITerrainObject> terrainObjectsToUpdate = new HashSet<ITerrainObject>();
+            for (int column = this.quadTileWindow.Left; column < this.quadTileWindow.Right; column++)
+            {
+                for (int row = this.quadTileWindow.Top; row < this.quadTileWindow.Bottom; row++)
+                {
+                    /// Add the primary & secondary isometric tiles into the update lists.
+                    IQuadTile quadTileToUpdate = map.GetQuadTile(new RCIntVector(column, row));
+                    if (quadTileToUpdate.PrimaryIsoTile != null) { isoTilesToUpdate.Add(quadTileToUpdate.PrimaryIsoTile); }
+                    if (quadTileToUpdate.SecondaryIsoTile != null) { isoTilesToUpdate.Add(quadTileToUpdate.SecondaryIsoTile); }
+                    if (quadTileToUpdate.TerrainObject != null) { terrainObjectsToUpdate.Add(quadTileToUpdate.TerrainObject); }
+                }
+            }
+
+            /// Create the calculated visibility info.
+            return new FowVisibilityInfo
+            {
+                IsoTilesToUpdate = isoTilesToUpdate,
+                TerrainObjectsToUpdate = terrainObjectsToUpdate,
+                QuadTilesToUpdate = new List<IQuadTile>()
+            };
+        }
+
+        /// <summary>
         /// Adds the given isometric tile and all of its cutting quadratic tiles into the update lists.
         /// </summary>
         /// <param name="isoTile">The isometric tile to add.</param>
@@ -231,7 +277,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             if (isoTile != null && isoTileUpdateList.Add(isoTile))
             {
-                foreach (IQuadTile cuttingQuadTile in isoTile.CuttingQuadTiles) { quadTileUpdateList.Add(cuttingQuadTile); }
+                foreach (IQuadTile cuttingQuadTile in isoTile.CuttingQuadTiles)
+                {
+                    if (cuttingQuadTile != null &&
+                        (this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(cuttingQuadTile.MapCoords) != FOWTileFlagsEnum.None ||
+                        this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(cuttingQuadTile.MapCoords) != FOWTileFlagsEnum.None))
+                    {
+                        quadTileUpdateList.Add(cuttingQuadTile);
+                    }
+                }
             }
         }
 
@@ -243,14 +297,19 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <param name="quadTileUpdateList">The quadratic update list.</param>
         private void AddTerrainObjectToUpdate(ITerrainObject terrainObj, HashSet<ITerrainObject> terrainObjUpdateList, HashSet<IQuadTile> quadTileUpdateList)
         {
-            if (terrainObjUpdateList.Add(terrainObj))
+            if (terrainObj != null && terrainObjUpdateList.Add(terrainObj))
             {
                 for (int col = 0; col < terrainObj.Type.QuadraticSize.X; col++)
                 {
                     for (int row = 0; row < terrainObj.Type.QuadraticSize.Y; row++)
                     {
                         IQuadTile quadTileToUpdate = terrainObj.GetQuadTile(new RCIntVector(col, row));
-                        if (quadTileToUpdate != null) { quadTileUpdateList.Add(quadTileToUpdate); }
+                        if (quadTileToUpdate != null &&
+                            (this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None ||
+                            this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None))
+                        {
+                            quadTileUpdateList.Add(quadTileToUpdate);
+                        }
                     }
                 }
             }
@@ -263,31 +322,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private void UpdateQuadTileWindow(RCIntRectangle quadTileWindow)
         {
             if (quadTileWindow == RCIntRectangle.Undefined) { throw new ArgumentNullException("quadTileWindow"); }
-            if (quadTileWindow != this.quadTileWindow)
+            if (!this.scenarioManager.ActiveScenario.Map.IsFinalized || quadTileWindow != this.quadTileWindow)
             {
                 this.quadTileWindow = quadTileWindow;
                 this.cache.Invalidate();
             }
-        }
-
-        /// <summary>
-        /// Gets the current Fog Of War at the given quadratic tile.
-        /// </summary>
-        /// <param name="quadCoords">The quadratic coordinates of the tile.</param>
-        /// <returns>The current Fog Of War at the given quadratic tile.</returns>
-        private FOWTypeEnum GetFowAtQuadTile(RCIntVector quadCoords)
-        {
-            if (this.runningFowsCount == 0) { return FOWTypeEnum.None; }
-
-            FOWTypeEnum minimumFow = FOWTypeEnum.Full;
-            for (int idx = 0; idx < Player.MAX_PLAYERS; idx++)
-            {
-                if (this.runningFows[idx] == null) { continue; }
-                FOWTypeEnum fowAtQuadTile = this.runningFows[idx].GetFogOfWar(quadCoords);
-                if (fowAtQuadTile < minimumFow) { minimumFow = fowAtQuadTile; }
-            }
-
-            return minimumFow;
         }
 
         #endregion Internal methods
@@ -307,6 +346,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// The number of running Fog Of Wars.
         /// </summary>
         private int runningFowsCount;
+
+        /// <summary>
+        /// Reference to the cache matrix that is used to lazy calculation and caching the Fog Of War state and FOW-flags for the quadratic tiles.
+        /// </summary>
+        private FowCacheMatrix fowCacheMatrix;
 
         /// <summary>
         /// Reference to the target scenario for which the running Fog Of Wars are being calculated.
@@ -341,7 +385,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// The minimum number of iterations per FOW updates.
         /// </summary>
-        private const int MIN_ITERATIONS_PER_UPDATE = 40;
+        private const int MIN_ITERATIONS_PER_UPDATE = 24;
 
         /// <summary>
         /// The maximum number of entities processed per FOW update-iterations.

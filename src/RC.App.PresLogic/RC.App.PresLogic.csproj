@@ -72,6 +72,7 @@
     <Compile Include="CmdButtonSpriteGroup.cs" />
     <Compile Include="Controls\IMapDisplay.cs" />
     <Compile Include="Controls\RCCommandButton.cs" />
+    <Compile Include="Controls\RCFogOfWarDisplay.cs" />
     <Compile Include="Controls\RCIsoTileDisplay.cs" />
     <Compile Include="Controls\RCDropdownSelector.cs" />
     <Compile Include="Controls\RCListBox.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Controls\RCMapWalkabilityDisplay.cs" />
     <Compile Include="Controls\RCObjectPlacementDisplay.cs" />
     <Compile Include="Controls\RCResourceAmountDisplay.cs" />
+    <Compile Include="Controls\RCSelectionBoxDisplay.cs" />
     <Compile Include="Controls\RCSelectionDisplay.cs" />
     <Compile Include="FOWSpriteGroup.cs" />
     <Compile Include="IGameConnector.cs" />

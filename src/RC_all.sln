@@ -139,6 +139,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.App.BizLogic", "RC.App.B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.App.PresLogic", "RC.App.PresLogic", "{0B4470F4-CC2A-4A36-906C-44218826BE83}"
 	ProjectSection(SolutionItems) = preProject
+		..\config\RC.App.PresLogic\RC.App.PresLogic.ConstantsConfig.xml = ..\config\RC.App.PresLogic\RC.App.PresLogic.ConstantsConfig.xml
 		..\config\RC.App.PresLogic\RC.App.PresLogic.node = ..\config\RC.App.PresLogic\RC.App.PresLogic.node
 		..\config\RC.App.PresLogic\RC.App.PresLogic.TraceConfig.xml = ..\config\RC.App.PresLogic\RC.App.PresLogic.TraceConfig.xml
 	EndProjectSection

@@ -29,9 +29,12 @@ namespace RC.Engine.Maps.Core
             this.parentMap = map;
             this.primaryIsoTile = primaryIsoTile;
             this.secondaryIsoTile = secondaryIsoTile;
+            this.terrainObject = null;
             this.mapCoords = mapCoords;
             this.neighbours = new QuadTile[8];
             this.detachedNeighbours = new List<Tuple<QuadTile, MapDirection>>();
+            this.isBuildableCache = new CachedValue<bool>(this.CalculateBuildabilityFlag);
+            this.groundLevelCache = new CachedValue<int>(this.CalculateGroundLevel);
 
             this.cells = new Cell[MapStructure.NAVCELL_PER_QUAD, MapStructure.NAVCELL_PER_QUAD];
             for (int col = 0; col < MapStructure.NAVCELL_PER_QUAD; col++)
@@ -52,7 +55,10 @@ namespace RC.Engine.Maps.Core
         public IIsoTile PrimaryIsoTile { get { return this.GetPrimaryIsoTile(); } }
 
         /// <see cref="IQuadTile.SecondaryIsoTile"/>
-        public IIsoTile SecondaryIsoTile { get { return this.GetSecondaryIsoTile(); } }
+        public IIsoTile SecondaryIsoTile { get { return this.secondaryIsoTile; } }
+
+        /// <see cref="IQuadTile.TerrainObject"/>
+        public ITerrainObject TerrainObject { get { return this.terrainObject; } }
 
         /// <see cref="IQuadTile.MapCoords"/>
         public RCIntVector MapCoords { get { return this.mapCoords; } }
@@ -77,6 +83,12 @@ namespace RC.Engine.Maps.Core
             }
         }
 
+        /// <see cref="IQuadTile.IsBuildable"/>
+        public bool IsBuildable { get { return this.parentMap.Status == MapStructure.MapStatus.Finalized ? this.isBuildableCache.Value : this.CalculateBuildabilityFlag(); } }
+
+        /// <see cref="IQuadTile.GroundLevel"/>
+        public int GroundLevel { get { return this.parentMap.Status == MapStructure.MapStatus.Finalized ? this.groundLevelCache.Value : this.CalculateGroundLevel(); } }
+
         #endregion IQuadTile methods
 
         #region ICellDataChangeSetTarget methods
@@ -88,6 +100,8 @@ namespace RC.Engine.Maps.Core
         public ICell GetCell(RCIntVector index) { return this.GetCellImpl(index); }
 
         #endregion ICellDataChangeSetTarget methods
+
+        #region Internal public methods
 
         /// <summary>
         /// Internal implementation of IQuadTile.GetCell
@@ -102,7 +116,42 @@ namespace RC.Engine.Maps.Core
             return this.neighbours[(int)dir];
         }
 
-        #region Internal map structure buildup methods
+        /// <summary>
+        /// Gets the reference to the primary isometric tile.
+        /// </summary>
+        public IsoTile GetPrimaryIsoTile() { return this.primaryIsoTile; }
+
+        /// <summary>
+        /// Finalizes this quadratic tile.
+        /// </summary>
+        public void FinalizeTile()
+        {
+            for (int col = 0; col < MapStructure.NAVCELL_PER_QUAD; col++)
+            {
+                for (int row = 0; row < MapStructure.NAVCELL_PER_QUAD; row++)
+                {
+                    this.cells[col, row].Lock();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Cleans up the caches of this quadratic tile.
+        /// </summary>
+        public void Cleanup()
+        {
+            for (int col = 0; col < MapStructure.NAVCELL_PER_QUAD; col++)
+            {
+                for (int row = 0; row < MapStructure.NAVCELL_PER_QUAD; row++)
+                {
+                    this.cells[col, row].UninitializeFields();
+                }
+            }
+
+            this.isBuildableCache.Invalidate();
+            this.groundLevelCache.Invalidate();
+            this.terrainObject = null;
+        }
 
         /// <summary>
         /// Sets the given quadratic tile as a neighbour of this quadratic tile in the given direction.
@@ -118,7 +167,30 @@ namespace RC.Engine.Maps.Core
 
             this.neighbours[(int)direction] = neighbour;
         }
-        #endregion Internal map structure buildup methods
+
+        /// <summary>
+        /// Attaches the given terrain object to this quadratic tile.
+        /// </summary>
+        /// <param name="terrainObj">The terrain object to attach.</param>
+        /// <exception cref="InvalidOperationException">If a terrain object has already been attached to this quadratic tile.</exception>
+        public void AttachTerrainObject(ITerrainObject terrainObj)
+        {
+            if (terrainObj == null) { throw new ArgumentNullException("terrainObj"); }
+            if (this.terrainObject != null) { throw new InvalidOperationException("A terrain object has already been attached to this quadratic tile!"); }
+            this.terrainObject = terrainObj;
+        }
+
+        /// <summary>
+        /// Detaches the currently attached terrain object from this quadratic tile.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">If there is no terrain object attached to this quadratic tile.</exception>
+        public void DetachTerrainObject()
+        {
+            if (this.terrainObject == null) { throw new InvalidOperationException("No terrain object attached to this quadratic tile!"); }
+            this.terrainObject = null;
+        }
+
+        #endregion Internal public methods
 
         #region Internal attach and detach methods
 
@@ -156,16 +228,50 @@ namespace RC.Engine.Maps.Core
         }
 
         #endregion Internal attach and detach methods
+        
+        #region Private methods
 
         /// <summary>
-        /// Gets the reference to the primary isometric tile.
+        /// Internal method for calculating the buildability flag for this quadratic tile.
         /// </summary>
-        public IsoTile GetPrimaryIsoTile() { return this.primaryIsoTile; }
+        /// <returns>The calculated buildability flag.</returns>
+        private bool CalculateBuildabilityFlag()
+        {
+            bool isBuildable = true;
+            for (int row = 0; row < MapStructure.NAVCELL_PER_QUAD; row++)
+            {
+                for (int col = 0; col < MapStructure.NAVCELL_PER_QUAD; col++)
+                {
+                    ICell checkedCell = this.cells[col, row];
+                    if (!checkedCell.IsBuildable)
+                    {
+                        isBuildable = false;
+                        break;
+                    }
+                }
+                if (!isBuildable) { break; }
+            }
+            return isBuildable;
+        }
 
         /// <summary>
-        /// Gets the reference to the secondary isometric tile or null if this quadratic tile has no secondary isometric tile.
+        /// Internal method for calculating the ground level for this quadratic tile.
         /// </summary>
-        public IsoTile GetSecondaryIsoTile() { return this.secondaryIsoTile; }
+        /// <returns>The calculated ground level.</returns>
+        private int CalculateGroundLevel()
+        {
+            RCNumber groundLevelSum = 0;
+            for (int row = 0; row < MapStructure.NAVCELL_PER_QUAD; row++)
+            {
+                for (int col = 0; col < MapStructure.NAVCELL_PER_QUAD; col++)
+                {
+                    groundLevelSum += this.cells[col, row].GroundLevel;
+                }
+            }
+            return (groundLevelSum / (MapStructure.NAVCELL_PER_QUAD * MapStructure.NAVCELL_PER_QUAD)).Round();
+        }
+
+        #endregion Private methods
 
         /// <summary>
         /// The 2D array of the cells of this quadratic tile.
@@ -183,6 +289,11 @@ namespace RC.Engine.Maps.Core
         private IsoTile secondaryIsoTile;
 
         /// <summary>
+        /// Reference to the terrain object that is present in this quadratic tile or null if there is no terrain object in this quadratic tile.
+        /// </summary>
+        private ITerrainObject terrainObject;
+
+        /// <summary>
         /// The map coordinates of this quadratic tile.
         /// </summary>
         private RCIntVector mapCoords;
@@ -191,6 +302,16 @@ namespace RC.Engine.Maps.Core
         /// List of the neighbours of this quadratic tile.
         /// </summary>
         private QuadTile[] neighbours;
+
+        /// <summary>
+        /// The cache that stores the buildability flag of this quadratic tile.
+        /// </summary>
+        private CachedValue<bool> isBuildableCache;
+
+        /// <summary>
+        /// The cache that stores the calculated ground level of this quadratic tile.
+        /// </summary>
+        private CachedValue<int> groundLevelCache;
 
         /// <summary>
         /// List of the detached neighbours and their direction.

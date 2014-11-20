@@ -174,14 +174,11 @@ namespace RC.App.BizLogic.Services.Core
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
-            foreach (ITerrainObject objToCheck in this.scenarioManager.ActiveScenario.Map.TerrainObjects.GetContents(navCellCoords))
+            ITerrainObject objToCheck = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile.TerrainObject;
+            if (objToCheck != null)
             {
-                if (objToCheck.GetQuadTile(quadTileAtPos.MapCoords - objToCheck.MapCoords) != null)
-                {
-                    this.mapEditor.RemoveTerrainObject(this.scenarioManager.ActiveScenario.Map, objToCheck);
-                    return true;
-                }
+                this.mapEditor.RemoveTerrainObject(this.scenarioManager.ActiveScenario.Map, objToCheck);
+                return true;
             }
             return false;
         }

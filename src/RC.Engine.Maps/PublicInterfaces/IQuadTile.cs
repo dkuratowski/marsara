@@ -38,5 +38,23 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// this quadratic tile. If no such isometric tile exists then this property is null.
         /// </summary>
         IIsoTile SecondaryIsoTile { get; }
+
+        /// <summary>
+        /// Gets the terrain object that is present on this quadratic tile or null if there is no terrain object on this quadratic tile.
+        /// </summary>
+        ITerrainObject TerrainObject { get; }
+
+        /// <summary>
+        /// Gets the buildability flag of this quadratic tile. A quadratic tile is buildable if all the contained cells are buildables.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">If the map is not finalized.</exception>
+        bool IsBuildable { get; }
+
+        /// <summary>
+        /// Gets the ground level of this quadratic tile. The ground level of a quadratic tile is the average of the ground levels
+        /// of the contained cells rounded to the neares integer value.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">If the map is not finalized.</exception>
+        int GroundLevel { get; }
     }
 }

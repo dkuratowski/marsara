@@ -185,16 +185,11 @@ namespace RC.Engine.Maps.Core
                     if (absQuadCoords.X >= 0 && absQuadCoords.X < map.Size.X &&
                         absQuadCoords.Y >= 0 && absQuadCoords.Y < map.Size.Y)
                     {
-                        /// Check intersection with other terrain objects on the map.
-                        RCNumRectangle quadTileRect = ((RCNumRectangle)map.QuadToCellRect(new RCIntRectangle(absQuadCoords, new RCIntVector(1, 1))))
-                                                    - new RCNumVector(1, 1) / 2;
-                        foreach (ITerrainObject objToCheck in map.TerrainObjects.GetContents(quadTileRect))
+                        /// Check intersection with other terrain object at the current quadratic tile.
+                        ITerrainObject objToCheck = map.GetQuadTile(absQuadCoords).TerrainObject;
+                        if (objToCheck != null && !this.IsExcluded(relQuadCoords) && objToCheck.GetQuadTile(absQuadCoords - objToCheck.MapCoords) != null)
                         {
-                            if (!this.IsExcluded(relQuadCoords) && !objToCheck.Type.IsExcluded(absQuadCoords - objToCheck.MapCoords))
-                            {
-                                retList.Add(relQuadCoords);
-                                break;
-                            }
+                            retList.Add(relQuadCoords);
                         }
                     }
                 }

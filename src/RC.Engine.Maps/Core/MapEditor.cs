@@ -58,11 +58,10 @@ namespace RC.Engine.Maps.Core
             IEnumerable<IIsoTile> affectedIsoTiles = targetMap.EndExchangingTiles();
             foreach (IIsoTile affectedIsoTile in affectedIsoTiles)
             {
-                RCNumRectangle isoTileRect = new RCNumRectangle(affectedIsoTile.GetCellMapCoords(new RCIntVector(0, 0)), affectedIsoTile.CellSize)
-                                           - new RCNumVector(1, 1) / 2;
-                foreach (ITerrainObject affectedTerrainObj in targetMap.TerrainObjects.GetContents(isoTileRect))
+                foreach (IQuadTile cuttingQuadTile in affectedIsoTile.CuttingQuadTiles)
                 {
-                    if (affectedTerrainObj.Type.CheckConstraints(targetMap, affectedTerrainObj.MapCoords).Count != 0)
+                    ITerrainObject affectedTerrainObj = cuttingQuadTile.TerrainObject;
+                    if (affectedTerrainObj != null && affectedTerrainObj.Type.CheckConstraints(targetMap, affectedTerrainObj.MapCoords).Count != 0)
                     {
                         this.RemoveTerrainObject(targetMap, affectedTerrainObj);
                     }
@@ -78,7 +77,11 @@ namespace RC.Engine.Maps.Core
             if (targetTile == null) { throw new ArgumentNullException("targetTile"); }
             if (type == null) { throw new ArgumentNullException("type"); }
             if (targetMap.Tileset != type.Tileset) { throw new InvalidOperationException("The tileset of the terrain object type must be the same as the tileset of the map!"); }
-            
+
+            /// TODO: Avoid this downcast!
+            MapAccess targetMapObj = targetMap as MapAccess;
+            if (targetMapObj == null) { throw new ArgumentException("The given map cannot be handled by the MapEditor!", "targetMap"); }
+
             if (type.CheckConstraints(targetMap, targetTile.MapCoords).Count != 0) { return null; }
             if (type.CheckTerrainObjectIntersections(targetMap, targetTile.MapCoords).Count != 0) { return null; }
 
@@ -88,7 +91,7 @@ namespace RC.Engine.Maps.Core
             {
                 changeset.Apply(newObj);
             }
-            targetMap.TerrainObjects.AttachContent(newObj);
+            targetMapObj.AttachTerrainObject(newObj);
             return newObj;
         }
 
@@ -99,12 +102,16 @@ namespace RC.Engine.Maps.Core
             if (terrainObject == null) { throw new ArgumentNullException("terrainObject"); }
             if (targetMap != terrainObject.ParentMap) { throw new InvalidOperationException("The map of the terrain object must equal with the target map!"); }
 
+            /// TODO: Avoid this downcast!
+            MapAccess targetMapObj = targetMap as MapAccess;
+            if (targetMapObj == null) { throw new ArgumentException("The given map cannot be handled by the MapEditor!", "targetMap"); }
+
             /// Undo the cell data changesets of the removed terrain object.
             foreach (ICellDataChangeSet changeset in terrainObject.Type.CellDataChangesets)
             {
                 changeset.Undo(terrainObject);
             }
-            targetMap.TerrainObjects.DetachContent(terrainObject);
+            targetMapObj.DetachTerrainObject(terrainObject);
         }
 
         #endregion IMapEditor methods
