@@ -23,7 +23,9 @@ namespace RC.Engine.Simulator.Scenarios
             : base(elementTypeName)
         {
             this.lastKnownQuadCoords = this.ConstructField<RCIntVector>("lastKnownQuadCoords");
+            this.isBoundToGrid = this.ConstructField<byte>("isBoundToGrid");
             this.lastKnownQuadCoords.Write(RCIntVector.Undefined);
+            this.isBoundToGrid.Write(0x00);
         }
 
         /// <summary>
@@ -33,16 +35,17 @@ namespace RC.Engine.Simulator.Scenarios
         public RCIntVector LastKnownQuadCoords { get { return this.lastKnownQuadCoords.Read(); } }
 
         /// <summary>
-        /// Binds this QuadEntity to the given quadratic tile on the map.
+        /// Gets whether this QuadEntity is currently bound to the quadratic grid or not.
+        /// </summary>
+        public bool IsBoundToGrid { get { return this.isBoundToGrid.Read() != 0x00; } }
+        
+        /// <summary>
+        /// This method is called when this QuadEntity is being added to the map.
         /// </summary>
         /// <param name="topLeftTile">The quadratic tile at the top-left corner of this QuadEntity.</param>
-        /// <returns>True if this QuadEntity was successfully bound to the map; otherwise false.</returns>
-        public bool AddToMap(IQuadTile topLeftTile)
+        /// <returns>True if the given position is valid for this QuadEntity; otherwise false.</returns>
+        internal bool OnAttachingToMap(IQuadTile topLeftTile)
         {
-            if (topLeftTile == null) { throw new ArgumentNullException("topLeftTile"); }
-            if (this.Scenario == null) { throw new InvalidOperationException("The entity has not yet been added to a scenario!"); }
-            if (this.PositionValue.Read() != RCNumVector.Undefined) { throw new InvalidOperationException("The entity has already been added to the map!"); }
-
             ICell topLeftCell = topLeftTile.GetCell(new RCIntVector(0, 0));
             RCNumVector position = topLeftCell.MapCoords - new RCNumVector(1, 1) / 2 + this.ElementType.Area.Read() / 2;
 
@@ -51,8 +54,8 @@ namespace RC.Engine.Simulator.Scenarios
             {
                 this.lastKnownQuadCoords.Write(topLeftTile.MapCoords);
                 this.SetPosition(position);
-                this.Scenario.VisibleEntities.AttachContent(this);
                 this.PositionValue.ValueChanged += this.OnPositionChanged;
+                this.isBoundToGrid.Write(0x01);
             }
             return isValidPosition;
         }
@@ -67,15 +70,21 @@ namespace RC.Engine.Simulator.Scenarios
 
             /// Position became RCNumVector.Undefined -> entity removed from the map so we have to unsubscribe.
             this.PositionValue.ValueChanged -= this.OnPositionChanged;
+            this.isBoundToGrid.Write(0x00);
         }
 
         #region Heaped members
 
         /// <summary>
-        /// The last known quadratic coordinates of this QuadEntity or RCIntVectorUndefined if this QuadEntity
+        /// The last known quadratic coordinates of this QuadEntity or RCIntVector.Undefined if this QuadEntity
         /// has not yet been bound to the quadratic grid of the map.
         /// </summary>
         private readonly HeapedValue<RCIntVector> lastKnownQuadCoords;
+
+        /// <summary>
+        /// This flag indicates whether this QuadEntity is currently bound to the quadratic grid (any value other than 0x00) or not (0x00).
+        /// </summary>
+        private readonly HeapedValue<byte> isBoundToGrid;
 
         #endregion Heaped members
     }

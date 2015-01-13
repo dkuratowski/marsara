@@ -69,34 +69,34 @@ namespace RC.Engine.Simulator.Scenarios
                     IQuadTile quadTile = map.GetQuadTile(new RCIntVector(package.ReadShort(0), package.ReadShort(1)));
                     MineralField mineralField = new MineralField();
                     mineralField.ResourceAmount.Write(package.ReadInt(2));
-                    scenario.AddEntity(mineralField);
-                    mineralField.AddToMap(quadTile);
+                    scenario.AddEntityToScenario(mineralField);
+                    scenario.AttachEntityToMap(mineralField, quadTile);
                 }
                 else if (package.PackageFormat.ID == ScenarioFileFormat.VESPENE_GEYSER)
                 {
                     IQuadTile quadTile = map.GetQuadTile(new RCIntVector(package.ReadShort(0), package.ReadShort(1)));
                     VespeneGeyser vespeneGeyser = new VespeneGeyser();
                     vespeneGeyser.ResourceAmount.Write(package.ReadInt(2));
-                    scenario.AddEntity(vespeneGeyser);
-                    vespeneGeyser.AddToMap(quadTile);
+                    scenario.AddEntityToScenario(vespeneGeyser);
+                    scenario.AttachEntityToMap(vespeneGeyser, quadTile);
                 }
                 else if (package.PackageFormat.ID == ScenarioFileFormat.START_LOCATION)
                 {
                     StartLocation startLocation = new StartLocation(package.ReadByte(2));
-                    scenario.AddEntity(startLocation);
-                    startLocation.AddToMap(scenario.Map.GetQuadTile(new RCIntVector(package.ReadShort(0), package.ReadShort(1))));
+                    scenario.AddEntityToScenario(startLocation);
+                    scenario.AttachEntityToMap(startLocation, scenario.Map.GetQuadTile(new RCIntVector(package.ReadShort(0), package.ReadShort(1))));
                 }
             }
 
             /// Check the constraints of the visible entities.
-            foreach (Entity entity in scenario.VisibleEntities.GetContents())
+            foreach (Entity entity in scenario.GetEntitiesOnMap<Entity>())
             {
                 QuadEntity quadEntity = entity as QuadEntity;
                 if (quadEntity != null)
                 {
-                    quadEntity.RemoveFromMap();
+                    scenario.DetachEntityFromMap(quadEntity);
                     if (quadEntity.ElementType.CheckConstraints(scenario, quadEntity.LastKnownQuadCoords).Count != 0) { throw new MapException(string.Format("Entity at {0} is voilating its placement constraints!", quadEntity.LastKnownQuadCoords)); }
-                    quadEntity.AddToMap(scenario.Map.GetQuadTile(quadEntity.LastKnownQuadCoords));
+                    scenario.AttachEntityToMap(quadEntity, scenario.Map.GetQuadTile(quadEntity.LastKnownQuadCoords));
                 }
             }
             return scenario;

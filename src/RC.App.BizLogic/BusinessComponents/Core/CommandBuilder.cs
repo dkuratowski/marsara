@@ -88,7 +88,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 if (!this.isEnabled) { throw new InvalidOperationException("CommandBuilder disabled!"); }
                 if (this.targetPosition != RCNumVector.Undefined) { throw new InvalidOperationException("TargetPosition already defined!"); }
                 this.targetPosition = value;
-                this.targetEntity = this.selectionManager.GetEntity(targetPosition);
+                this.targetEntity = this.selectionManager.GetEntity(this.targetPosition);
             }
         }
 

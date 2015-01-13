@@ -327,7 +327,7 @@ namespace RC.Engine.Maps.Core
         public RCIntVector Size { get { return this.size; } }
 
         /// <summary>
-        /// Gets the size of this changeset target in cells.
+        /// Gets the size of this map in cells.
         /// </summary>
         public RCIntVector CellSize { get { return this.size * NAVCELL_PER_QUAD; } }
 
@@ -381,6 +381,27 @@ namespace RC.Engine.Maps.Core
         {
             if (quadRect == RCIntRectangle.Undefined) { throw new ArgumentNullException("quadRect"); }
             return quadRect * new RCIntVector(MapStructure.NAVCELL_PER_QUAD, MapStructure.NAVCELL_PER_QUAD);
+        }
+
+        /// <summary>
+        /// Converts a rectangle of cells to a rectangle of quadratic tiles.
+        /// </summary>
+        /// <param name="cellRect">The cell rectangle to convert.</param>
+        /// <returns>The quadratic rectangle.</returns>
+        public RCIntRectangle CellToQuadRect(RCIntRectangle cellRect)
+        {
+            if (cellRect == RCIntRectangle.Undefined) { throw new ArgumentNullException("cellRect"); }
+
+            RCIntVector topLeftNavCellCoords = new RCIntVector(Math.Min(this.CellSize.X - 1, Math.Max(0, cellRect.Left)), Math.Min(this.CellSize.Y - 1, Math.Max(0, cellRect.Top)));
+            RCIntVector bottomRightNavCellCoords = new RCIntVector(Math.Min(this.CellSize.X - 1, Math.Max(0, cellRect.Right - 1)), Math.Min(this.CellSize.Y - 1, Math.Max(0, cellRect.Bottom - 1)));
+            IQuadTile topLeftQuadTile = this.GetCell(topLeftNavCellCoords).ParentQuadTile;
+            IQuadTile bottomRightQuadTile = this.GetCell(bottomRightNavCellCoords).ParentQuadTile;
+            RCIntRectangle quadTileWindow = new RCIntRectangle(
+                topLeftQuadTile.MapCoords.X,
+                topLeftQuadTile.MapCoords.Y,
+                bottomRightQuadTile.MapCoords.X - topLeftQuadTile.MapCoords.X + 1,
+                bottomRightQuadTile.MapCoords.Y - topLeftQuadTile.MapCoords.Y + 1);
+            return quadTileWindow;
         }
 
         /// <summary>

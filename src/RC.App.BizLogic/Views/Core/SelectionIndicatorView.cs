@@ -22,6 +22,7 @@ namespace RC.App.BizLogic.Views.Core
         public SelectionIndicatorView()
         {
             this.selectionManager = ComponentManager.GetInterface<ISelectionManagerBC>();
+            this.fogOfWarBC = ComponentManager.GetInterface<IFogOfWarBC>();
         }
 
         #region ISelectionIndicatorView
@@ -35,17 +36,20 @@ namespace RC.App.BizLogic.Views.Core
             HashSet<int> currentSelection = this.selectionManager.CurrentSelection;
             if (currentSelection.Count == 0) { return new List<SelIndicatorInst>(); }
 
+            /// Calculate the currently visible window of cells and quadratic tiles.
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
             CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
+            RCIntRectangle quadTileWindow = this.Map.CellToQuadRect(cellWindow);
 
+            /// Display the selection indicators of the currently visible entities inside the currently visible window of quadratic tiles.
             List<SelIndicatorInst> retList = new List<SelIndicatorInst>();
-            HashSet<Entity> visibleEntities = this.Scenario.VisibleEntities.GetContents(
+            HashSet<Entity> entitiesOnMap = this.Scenario.GetEntitiesOnMap<Entity>(
                 new RCNumRectangle(cellWindow.X - CoordTransformationHelper.HALF_VECT.X,
                                    cellWindow.Y - CoordTransformationHelper.HALF_VECT.Y,
                                    cellWindow.Width,
                                    cellWindow.Height));
-            foreach (Entity entity in visibleEntities)
+            foreach (Entity entity in this.fogOfWarBC.GetEntitiesToUpdate(quadTileWindow))
             {
                 if (currentSelection.Contains(entity.ID.Read()))
                 {
@@ -75,5 +79,10 @@ namespace RC.App.BizLogic.Views.Core
         /// Reference to the selection manager business component.
         /// </summary>
         private ISelectionManagerBC selectionManager;
+
+        /// <summary>
+        /// Reference to the Fog Of War business component.
+        /// </summary>
+        private IFogOfWarBC fogOfWarBC;
     }
 }

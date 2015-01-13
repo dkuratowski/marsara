@@ -129,13 +129,43 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             return this.cache.Value.QuadTilesToUpdate;
         }
 
+        /// <see cref="IFogOfWarBC.GetEntitySnapshotsToUpdate"/>
+        public IEnumerable<EntitySnapshot> GetEntitySnapshotsToUpdate(RCIntRectangle quadTileWindow)
+        {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+
+            this.UpdateQuadTileWindow(quadTileWindow);
+            return this.cache.Value.EntitySnapshotsToUpdate;
+        }
+
+        /// <see cref="IFogOfWarBC.GetEntitiesToUpdate"/>
+        public IEnumerable<Entity> GetEntitiesToUpdate(RCIntRectangle quadTileWindow)
+        {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+
+            this.UpdateQuadTileWindow(quadTileWindow);
+            return this.cache.Value.EntitiesToUpdate;
+        }
+
+        /// <see cref="IFogOfWarBC.IsEntityVisible"/>
+        public bool IsEntityVisible(RCIntRectangle quadTileWindow, Entity entity)
+        {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+
+            this.UpdateQuadTileWindow(quadTileWindow);
+            return this.cache.Value.EntitiesToUpdate.Contains(entity);
+        }
+
         /// <see cref="IFogOfWarBC.GetFullFowTileFlags"/>
         public FOWTileFlagsEnum GetFullFowTileFlags(RCIntVector quadCoords)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
-
-            return this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(quadCoords);
+                        
+            return this.runningFowsCount > 0 ? this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(quadCoords) : FOWTileFlagsEnum.None;
         }
 
         /// <see cref="IFogOfWarBC.GetPartialFowTileFlags"/>
@@ -144,7 +174,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
 
-            return this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadCoords);
+            return this.runningFowsCount > 0 ? this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadCoords) : FOWTileFlagsEnum.None;
         }
 
         /// <see cref="IFogOfWarBC.ExecuteUpdateIteration"/>
@@ -200,15 +230,13 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private FowVisibilityInfo CalculateVisibilityWithFow()
         {
             if (this.quadTileWindow == RCIntRectangle.Undefined) { throw new InvalidOperationException("Visibility window not defined!"); }
-            
-            /// If there are no running Fog Of Wars then use another calculator method.
-            //if (this.runningFowsCount == 0) { return this.CalculateVisibilityWithoutFow(); }
 
             /// Collect the isometric & quadratic tiles that need to be updated.
             IMapAccess map = this.scenarioManager.ActiveScenario.Map;
             HashSet<IIsoTile> isoTilesToUpdate = new HashSet<IIsoTile>();
             HashSet<IQuadTile> quadTilesToUpdate = new HashSet<IQuadTile>();
             HashSet<ITerrainObject> terrainObjectsToUpdate = new HashSet<ITerrainObject>();
+            HashSet<EntitySnapshot> entitySnapshotsToUpdate = new HashSet<EntitySnapshot>();
             for (int column = this.quadTileWindow.Left; column < this.quadTileWindow.Right; column++)
             {
                 for (int row = this.quadTileWindow.Top; row < this.quadTileWindow.Bottom; row++)
@@ -223,7 +251,37 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                     IQuadTile quadTileToUpdate = map.GetQuadTile(quadCoords);
                     this.AddIsoTileToUpdate(quadTileToUpdate.PrimaryIsoTile, isoTilesToUpdate, quadTilesToUpdate);
                     this.AddIsoTileToUpdate(quadTileToUpdate.SecondaryIsoTile, isoTilesToUpdate, quadTilesToUpdate);
+
+                    /// Add the terrain object and all of its cutting quadratic tiles into the update lists.
                     this.AddTerrainObjectToUpdate(quadTileToUpdate.TerrainObject, terrainObjectsToUpdate, quadTilesToUpdate);
+
+                    /// Add the entity snapshot and all of its cutting quadratic tiles into the update lists.
+                    EntitySnapshot entitySnapshotAtQuadTile = this.fowCacheMatrix.GetEntitySnapshotAtQuadTile(quadCoords);
+                    this.AddEntitySnapshotToUpdate(entitySnapshotAtQuadTile, entitySnapshotsToUpdate, quadTilesToUpdate);
+                }
+            }
+
+            /// Collect the currently visible entities.
+            RCIntRectangle cellWindow = map.QuadToCellRect(this.quadTileWindow);
+            HashSet<Entity> entitiesOnMap = this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(
+                new RCNumRectangle(cellWindow.X - CoordTransformationHelper.HALF_VECT.X,
+                                   cellWindow.Y - CoordTransformationHelper.HALF_VECT.Y,
+                                   cellWindow.Width,
+                                   cellWindow.Height));
+            HashSet<Entity> entitiesToUpdate = new HashSet<Entity>();
+            foreach (Entity entity in entitiesOnMap)
+            {
+                for (int col = entity.QuadraticPosition.Left; col < entity.QuadraticPosition.Right; col++)
+                {
+                    for (int row = entity.QuadraticPosition.Top; row < entity.QuadraticPosition.Bottom; row++)
+                    {
+                        if (this.fowCacheMatrix.GetFowStateAtQuadTile(new RCIntVector(col, row)) == FOWTypeEnum.None)
+                        {
+                            /// Found at least 1 quadratic tile where the entity is visible.
+                            this.AddEntityToUpdate(entity, entitiesToUpdate, quadTilesToUpdate);
+                            break;
+                        }
+                    }
                 }
             }
 
@@ -232,7 +290,9 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             {
                 IsoTilesToUpdate = isoTilesToUpdate,
                 TerrainObjectsToUpdate = terrainObjectsToUpdate,
-                QuadTilesToUpdate = quadTilesToUpdate
+                QuadTilesToUpdate = quadTilesToUpdate,
+                EntitySnapshotsToUpdate = entitySnapshotsToUpdate,
+                EntitiesToUpdate = entitiesToUpdate
             };
         }
 
@@ -258,12 +318,22 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 }
             }
 
+            /// Collect the currently visible entities.
+            RCIntRectangle cellWindow = map.QuadToCellRect(this.quadTileWindow);
+            HashSet<Entity> entitiesToUpdate = this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(
+                new RCNumRectangle(cellWindow.X - CoordTransformationHelper.HALF_VECT.X,
+                                   cellWindow.Y - CoordTransformationHelper.HALF_VECT.Y,
+                                   cellWindow.Width,
+                                   cellWindow.Height));
+
             /// Create the calculated visibility info.
             return new FowVisibilityInfo
             {
                 IsoTilesToUpdate = isoTilesToUpdate,
                 TerrainObjectsToUpdate = terrainObjectsToUpdate,
-                QuadTilesToUpdate = new List<IQuadTile>()
+                QuadTilesToUpdate = new List<IQuadTile>(),
+                EntitySnapshotsToUpdate = new List<EntitySnapshot>(),
+                EntitiesToUpdate = entitiesToUpdate
             };
         }
 
@@ -281,7 +351,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 {
                     if (cuttingQuadTile != null &&
                         (this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(cuttingQuadTile.MapCoords) != FOWTileFlagsEnum.None ||
-                        this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(cuttingQuadTile.MapCoords) != FOWTileFlagsEnum.None))
+                         this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(cuttingQuadTile.MapCoords) != FOWTileFlagsEnum.None))
                     {
                         quadTileUpdateList.Add(cuttingQuadTile);
                     }
@@ -306,7 +376,59 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                         IQuadTile quadTileToUpdate = terrainObj.GetQuadTile(new RCIntVector(col, row));
                         if (quadTileToUpdate != null &&
                             (this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None ||
-                            this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None))
+                             this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None))
+                        {
+                            quadTileUpdateList.Add(quadTileToUpdate);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds the given entity snapshot and all of its cutting quadratic tiles into the update lists.
+        /// </summary>
+        /// <param name="snapshot">The entity snapshot to add.</param>
+        /// <param name="snapshotUpdateList">The snapshot update list.</param>
+        /// <param name="quadTileUpdateList">The quadratic update list.</param>
+        private void AddEntitySnapshotToUpdate(EntitySnapshot snapshot, HashSet<EntitySnapshot> snapshotUpdateList, HashSet<IQuadTile> quadTileUpdateList)
+        {
+            if (snapshot != null && snapshotUpdateList.Add(snapshot))
+            {
+                for (int col = snapshot.QuadraticPosition.Left; col < snapshot.QuadraticPosition.Right; col++)
+                {
+                    for (int row = snapshot.QuadraticPosition.Top; row < snapshot.QuadraticPosition.Bottom; row++)
+                    {
+                        IQuadTile quadTileToUpdate = this.targetScenario.Map.GetQuadTile(new RCIntVector(col, row));
+                        if (quadTileToUpdate != null &&
+                            (this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None ||
+                             this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None))
+                        {
+                            quadTileUpdateList.Add(quadTileToUpdate);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds the given entity and all of its cutting quadratic tiles into the update lists.
+        /// </summary>
+        /// <param name="entity">The entity to add.</param>
+        /// <param name="entityUpdateList">The entity update list.</param>
+        /// <param name="quadTileUpdateList">The quadratic update list.</param>
+        private void AddEntityToUpdate(Entity entity, HashSet<Entity> entityUpdateList, HashSet<IQuadTile> quadTileUpdateList)
+        {
+            if (entity != null && entityUpdateList.Add(entity))
+            {
+                for (int col = entity.QuadraticPosition.Left; col < entity.QuadraticPosition.Right; col++)
+                {
+                    for (int row = entity.QuadraticPosition.Top; row < entity.QuadraticPosition.Bottom; row++)
+                    {
+                        IQuadTile quadTileToUpdate = this.targetScenario.Map.GetQuadTile(new RCIntVector(col, row));
+                        if (quadTileToUpdate != null &&
+                            (this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None ||
+                             this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None))
                         {
                             quadTileUpdateList.Add(quadTileToUpdate);
                         }

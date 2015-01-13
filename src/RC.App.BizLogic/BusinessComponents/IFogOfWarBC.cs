@@ -6,6 +6,7 @@ using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Scenarios;
 
 namespace RC.App.BizLogic.BusinessComponents
 {
@@ -47,6 +48,28 @@ namespace RC.App.BizLogic.BusinessComponents
         /// <param name="quadTileWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
         /// <returns>All the quadratic tiles on which the Fog Of War shall be updated inside the given area.</returns>
         IEnumerable<IQuadTile> GetQuadTilesToUpdate(RCIntRectangle quadTileWindow);
+
+        /// <summary>
+        /// Gets all the entity snapshots that are not entirely hidden by the Fog Of War inside the given area.
+        /// </summary>
+        /// <param name="quadTileWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
+        /// <returns>All the entity snapshots that are not entirely hidden by the Fog Of War inside the given area.</returns>
+        IEnumerable<EntitySnapshot> GetEntitySnapshotsToUpdate(RCIntRectangle quadTileWindow);
+
+        /// <summary>
+        /// Gets all the entities that are not entirely hidden by the Fog Of War inside the given area.
+        /// </summary>
+        /// <param name="quadTileWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
+        /// <returns>All the entities that are not entirely hidden by the Fog Of War inside the given area.</returns>
+        IEnumerable<Entity> GetEntitiesToUpdate(RCIntRectangle quadTileWindow);
+
+        /// <summary>
+        /// Checks whether the given entity is not entirely hidden by the Fog Of War inside the given area.
+        /// </summary>
+        /// <param name="quadTileWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
+        /// <param name="entity">The entity to check.</param>
+        /// <returns>True if the given entity is not entirely hidden by the Fog Of War inside the given area; otherwise false.</returns>
+        bool IsEntityVisible(RCIntRectangle quadTileWindow, Entity entity);
 
         /// <summary>
         /// Gets the full FOW-flags at the given quadratic tile.

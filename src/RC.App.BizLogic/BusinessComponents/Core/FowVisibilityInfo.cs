@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Scenarios;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -52,6 +53,32 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
+        /// Gets the entity snapshots that are not entirely hidden by the Fog Of War.
+        /// </summary>
+        public IEnumerable<EntitySnapshot> EntitySnapshotsToUpdate
+        {
+            get { return this.entitySnapshotsToUpdate; }
+            set
+            {
+                if (this.entitySnapshotsToUpdate != null) { throw new InvalidOperationException("FogOfWarBCCache.EntitySnapshotsToUpdate has already been set!"); }
+                this.entitySnapshotsToUpdate = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the entities that are not entirely hidden by the Fog Of War.
+        /// </summary>
+        public HashSet<Entity> EntitiesToUpdate
+        {
+            get { return this.entitiesToUpdate; }
+            set
+            {
+                if (this.entitiesToUpdate != null) { throw new InvalidOperationException("FogOfWarBCCache.VisibleEntities has already been set!"); }
+                this.entitiesToUpdate = value;
+            }
+        }
+
+        /// <summary>
         /// The isometric tiles that are not entirely hidden by the Fog Of War.
         /// </summary>
         private IEnumerable<IIsoTile> isoTilesToUpdate;
@@ -65,5 +92,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// The quadratic tiles on which the Fog Of War shall be updated.
         /// </summary>
         private IEnumerable<IQuadTile> quadTilesToUpdate;
+
+        /// <summary>
+        /// The entity snapshots that are not entirely hidden by the Fog Of War.
+        /// </summary>
+        private IEnumerable<EntitySnapshot> entitySnapshotsToUpdate;
+
+        /// <summary>
+        /// The entities that are not entirely hidden by the Fog Of War.
+        /// </summary>
+        private HashSet<Entity> entitiesToUpdate;
     }
 }

@@ -23,19 +23,13 @@ namespace RC.Engine.Simulator.Scenarios
             if (playerIndex < 0 || playerIndex >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("playerIndex"); }
             this.playerIndex = this.ConstructField<int>("playerIndex");
             this.playerIndex.Write(playerIndex);
+            this.SetCurrentAnimation(ANIMATION_NAME);
         }
 
         /// <summary>
         /// Gets the index of the player that this start location belongs to.
         /// </summary>
         public int PlayerIndex { get { return this.playerIndex.Read(); } }
-
-        /// <see cref="Entity.OnAddedToScenarioImpl"/>
-        protected override void OnAddedToScenarioImpl()
-        {
-            base.OnAddedToScenarioImpl();
-            this.SetCurrentAnimation(ANIMATION_NAME);
-        }
 
         #region Heaped members
 

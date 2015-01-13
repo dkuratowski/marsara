@@ -31,21 +31,11 @@ namespace RC.App.BizLogic.Views.Core
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
 
-            /// Calculate the currently visible window of cells.
+            /// Calculate the currently visible window of cells and quadratic tiles.
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
             CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-
-            /// Calculate the currently visible window of quadratic tiles.
-            RCIntVector topLeftNavCellCoords = new RCIntVector(Math.Max(0, cellWindow.Left), Math.Max(0, cellWindow.Top));
-            RCIntVector bottomRightNavCellCoords = new RCIntVector(Math.Min(this.Map.CellSize.X - 1, cellWindow.Right - 1), Math.Min(this.Map.CellSize.Y - 1, cellWindow.Bottom - 1));
-            IQuadTile topLeftQuadTile = this.Map.GetCell(topLeftNavCellCoords).ParentQuadTile;
-            IQuadTile bottomRightQuadTile = this.Map.GetCell(bottomRightNavCellCoords).ParentQuadTile;
-            RCIntRectangle quadTileWindow = new RCIntRectangle(
-                topLeftQuadTile.MapCoords.X,
-                topLeftQuadTile.MapCoords.Y,
-                bottomRightQuadTile.MapCoords.X - topLeftQuadTile.MapCoords.X + 1,
-                bottomRightQuadTile.MapCoords.Y - topLeftQuadTile.MapCoords.Y + 1);
+            RCIntRectangle quadTileWindow = this.Map.CellToQuadRect(cellWindow);
 
             /// Collect the currently visible isometric tiles.
             List<SpriteInst> retList = new List<SpriteInst>();
@@ -91,20 +81,11 @@ namespace RC.App.BizLogic.Views.Core
             if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
 
+            /// Calculate the currently visible window of cells and quadratic tiles.
             RCIntRectangle cellWindow;
             RCIntVector displayOffset;
             CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-
-            /// Calculate the currently visible window of quadratic tiles.
-            RCIntVector topLeftNavCellCoords = new RCIntVector(Math.Max(0, cellWindow.Left), Math.Max(0, cellWindow.Top));
-            RCIntVector bottomRightNavCellCoords = new RCIntVector(Math.Min(this.Map.CellSize.X - 1, cellWindow.Right - 1), Math.Min(this.Map.CellSize.Y - 1, cellWindow.Bottom - 1));
-            IQuadTile topLeftQuadTile = this.Map.GetCell(topLeftNavCellCoords).ParentQuadTile;
-            IQuadTile bottomRightQuadTile = this.Map.GetCell(bottomRightNavCellCoords).ParentQuadTile;
-            RCIntRectangle quadTileWindow = new RCIntRectangle(
-                topLeftQuadTile.MapCoords.X,
-                topLeftQuadTile.MapCoords.Y,
-                bottomRightQuadTile.MapCoords.X - topLeftQuadTile.MapCoords.X + 1,
-                bottomRightQuadTile.MapCoords.Y - topLeftQuadTile.MapCoords.Y + 1);
+            RCIntRectangle quadTileWindow = this.Map.CellToQuadRect(cellWindow);
 
             List<SpriteInst> retList = new List<SpriteInst>();
             foreach (ITerrainObject terrainObj in this.fogOfWarBC.GetTerrainObjectsToUpdate(quadTileWindow))

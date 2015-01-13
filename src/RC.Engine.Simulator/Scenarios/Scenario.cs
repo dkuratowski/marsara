@@ -38,9 +38,10 @@ namespace RC.Engine.Simulator.Scenarios
             this.playersFinalized.Write(0x00);
             this.players.New(Player.MAX_PLAYERS);
 
+            /// Initialize the non-heaped members.
             this.map = map;
             this.playerInitializer = ComponentManager.GetInterface<IPlayerInitializer>();
-            this.visibleEntities = new BspSearchTree<Entity>(
+            this.entitiesOnMap = new BspSearchTree<Entity>(
                         new RCNumRectangle(-(RCNumber)1 / (RCNumber)2,
                                            -(RCNumber)1 / (RCNumber)2,
                                            this.map.CellSize.X,
@@ -48,95 +49,8 @@ namespace RC.Engine.Simulator.Scenarios
                                            ConstantsTable.Get<int>("RC.Engine.Maps.BspNodeCapacity"),
                                            ConstantsTable.Get<int>("RC.Engine.Maps.BspMinNodeSize"));
             this.entitySet = new Dictionary<int, Entity>();
+            this.boundQuadEntities = new QuadEntity[this.map.Size.X, this.map.Size.Y];
         }
-
-        #region Public members: Entity management
-        
-        /// <summary>
-        /// Gets all of the entities of the given type added to this scenario.
-        /// </summary>
-        /// <typeparam name="T">The type of the entities to get.</typeparam>
-        /// <returns>A list that contains all of the entities of the given type added to this scenario.</returns>
-        public List<T> GetAllEntities<T>() where T : Entity
-        {
-            List<T> retList = new List<T>();
-            foreach (Entity entity in this.entitySet.Values)
-            {
-                T entityAsT = entity as T;
-                if (entityAsT != null) { retList.Add(entityAsT); }
-            }
-            return retList;
-        }
-
-        /// <summary>
-        /// Gets the visible entities of the given type from the whole map.
-        /// </summary>
-        /// <typeparam name="T">The type of the entities to get.</typeparam>
-        /// <returns>A list that contains the visible entities of the given type from the whole map.</returns>
-        public List<T> GetVisibleEntities<T>() where T : Entity
-        {
-            return GetVisibleEntities<T>(RCNumRectangle.Undefined);
-        }
-
-        /// <summary>
-        /// Gets the visible entities of the given type from the given area of the map.
-        /// </summary>
-        /// <typeparam name="T">The type of the entities to get.</typeparam>
-        /// <param name="area">
-        /// The area to search. Call this function with RCNumRectangle.Undefined to search on the whole map.
-        /// </param>
-        /// <returns>A list that contains the visible entities of the given type from the given area of the map.</returns>
-        public List<T> GetVisibleEntities<T>(RCNumRectangle area) where T : Entity
-        {
-            List<T> retList = new List<T>();
-            foreach (Entity entity in area != RCNumRectangle.Undefined ? this.visibleEntities.GetContents(area) : this.visibleEntities.GetContents())
-            {
-                T entityAsT = entity as T;
-                if (entityAsT != null) { retList.Add(entityAsT); }
-            }
-            return retList;
-        }
-
-        /// <summary>
-        /// Gets the entity of the given type with the given ID.
-        /// </summary>
-        /// <param name="id">The ID of the entity.</param>
-        /// <typeparam name="T">The type of the entity.</typeparam>
-        /// <returns>
-        /// The entity with the given ID or null if no entity of the given type with the given ID is added to this scenario.
-        /// </returns>
-        public T GetEntity<T>(int id) where T : Entity
-        {
-            return this.entitySet.ContainsKey(id) ? this.entitySet[id] as T : null;
-        }
-
-        /// <summary>
-        /// Adds the given entity to this scenario.
-        /// </summary>
-        /// <param name="entity">The entity to be added.</param>
-        public void AddEntity(Entity entity)
-        {
-            if (entity == null) { throw new ArgumentNullException("entity"); }
-
-            int id = this.nextID.Read();
-            this.nextID.Write(id + 1);
-            this.entitySet.Add(id, entity);
-            entity.OnAddedToScenario(this, id);
-        }
-
-        /// <summary>
-        /// Remove the given entity from this scenario.
-        /// </summary>
-        /// <param name="entity">The entity to be removed.</param>
-        public void RemoveEntity(Entity entity)
-        {
-            if (entity == null) { throw new ArgumentNullException("entity"); }
-
-            this.entitySet.Remove(entity.ID.Read());
-            entity.OnRemovedFromScenario();
-        }
-
-        #endregion Public members: Entity management
 
         #region Public members: Player management
 
@@ -155,7 +69,7 @@ namespace RC.Engine.Simulator.Scenarios
             if (this.players[index].Read() != null) { throw new SimulatorException(string.Format("Player with index {0} already exists!", index)); }
 
             Player newPlayer = new Player(index, startLocation);
-            startLocation.RemoveFromMap();
+            this.DetachEntityFromMap(startLocation);
             this.players[index].Write(newPlayer);
             this.playerInitializer.Initialize(newPlayer, race);
         }
@@ -171,7 +85,7 @@ namespace RC.Engine.Simulator.Scenarios
             if (this.players[index].Read() == null) { throw new SimulatorException(string.Format("Player with index {0} doesn't exist!", index)); }
 
             StartLocation startLoc = this.players[index].Read().StartLocation;
-            startLoc.AddToMap(this.map.GetQuadTile(startLoc.LastKnownQuadCoords));
+            this.AttachEntityToMap(startLoc, this.map.GetQuadTile(startLoc.LastKnownQuadCoords));
             this.players[index].Read().Dispose();
             this.players[index].Write(null);
         }
@@ -184,9 +98,9 @@ namespace RC.Engine.Simulator.Scenarios
         {
             if (this.playersFinalized.Read() != 0x00) { throw new InvalidOperationException("Players already finalized!"); }
 
-            foreach (StartLocation startLocation in this.GetVisibleEntities<StartLocation>())
+            foreach (StartLocation startLocation in this.GetEntitiesOnMap<StartLocation>())
             {
-                startLocation.RemoveFromMap();
+                this.DetachEntityFromMap(startLocation);
             }
             this.playersFinalized.Write(0x01);
         }
@@ -209,12 +123,242 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         public bool HasPlayers { get { return this.players.Any(player => player.Read() != null); } }
 
-        /// <summary>
-        /// Gets the entities of the scenario that are visible on the map.
-        /// </summary>
-        public ISearchTree<Entity> VisibleEntities { get { return this.visibleEntities; } }
-
         #endregion Public members: Player management
+
+        #region Public members: Entity management
+
+        /// <summary>
+        /// Gets the entity of the given type with the given ID.
+        /// </summary>
+        /// <param name="id">The ID of the entity.</param>
+        /// <typeparam name="T">The type of the entity.</typeparam>
+        /// <returns>
+        /// The entity with the given ID or null if no entity of the given type with the given ID is added to this scenario.
+        /// </returns>
+        public T GetEntity<T>(int id) where T : Entity
+        {
+            return this.entitySet.ContainsKey(id) ? this.entitySet[id] as T : null;
+        }
+        
+        /// <summary>
+        /// Gets all of the entities of the given type added to this scenario.
+        /// </summary>
+        /// <typeparam name="T">The type of the entities to get.</typeparam>
+        /// <returns>A list that contains all of the entities of the given type added to this scenario.</returns>
+        public HashSet<T> GetAllEntities<T>() where T : Entity
+        {
+            HashSet<T> retList = new HashSet<T>();
+            foreach (Entity entity in this.entitySet.Values)
+            {
+                T entityAsT = entity as T;
+                if (entityAsT != null) { retList.Add(entityAsT); }
+            }
+            return retList;
+        }
+
+        /// <summary>
+        /// Adds the given entity to this scenario.
+        /// </summary>
+        /// <param name="entity">The entity to be added.</param>
+        public void AddEntityToScenario(Entity entity)
+        {
+            if (entity == null) { throw new ArgumentNullException("entity"); }
+
+            int id = this.nextID.Read();
+            this.nextID.Write(id + 1);
+            this.entitySet.Add(id, entity);
+            entity.OnAddedToScenario(this, id);
+        }
+
+        /// <summary>
+        /// Remove the given entity from this scenario.
+        /// </summary>
+        /// <param name="entity">The entity to be removed.</param>
+        public void RemoveEntityFromScenario(Entity entity)
+        {
+            if (entity == null) { throw new ArgumentNullException("entity"); }
+
+            this.entitySet.Remove(entity.ID.Read());
+            entity.OnRemovedFromScenario();
+        }
+
+        #endregion Public members: Entity management
+
+        #region Public members: Map management
+
+        /// <summary>
+        /// Gets the map of the scenario.
+        /// </summary>
+        public IMapAccess Map { get { return this.map; } }
+
+        /// <summary>
+        /// Gets the entity of the given type with the given ID that is attached to the map.
+        /// </summary>
+        /// <param name="id">The ID of the entity.</param>
+        /// <typeparam name="T">The type of the entity.</typeparam>
+        /// <returns>
+        /// The entity with the given ID or null if no entity of the given type with the given ID is attached to the map.
+        /// </returns>
+        public T GetEntityOnMap<T>(int id) where T : Entity
+        {
+            if (this.entitySet.ContainsKey(id))
+            {
+                T retEntity = this.entitySet[id] as T;
+                return this.entitiesOnMap.HasContent(retEntity) ? retEntity : null;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the entities of the given type that are attached to the map.
+        /// </summary>
+        /// <typeparam name="T">The type of the entities to get.</typeparam>
+        /// <returns>A list that contains the entities of the given type that are attached to the map.</returns>
+        public HashSet<T> GetEntitiesOnMap<T>() where T : Entity
+        {
+            HashSet<T> retList = new HashSet<T>();
+            foreach (Entity entity in this.entitiesOnMap.GetContents())
+            {
+                T entityAsT = entity as T;
+                if (entityAsT != null) { retList.Add(entityAsT); }
+            }
+            return retList;
+        }
+
+        /// <summary>
+        /// Gets the entities of the given type that are attached to the map at the given position.
+        /// </summary>
+        /// <typeparam name="T">The type of the entities to get.</typeparam>
+        /// <param name="position">
+        /// The position to search.
+        /// </param>
+        /// <returns>A list that contains the entities of the given type that are attached to the map at the given position.</returns>
+        public HashSet<T> GetEntitiesOnMap<T>(RCNumVector position) where T : Entity
+        {
+            if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            HashSet<T> retList = new HashSet<T>();
+            foreach (Entity entity in this.entitiesOnMap.GetContents(position))
+            {
+                T entityAsT = entity as T;
+                if (entityAsT != null) { retList.Add(entityAsT); }
+            }
+            return retList;
+        }
+
+        /// <summary>
+        /// Gets the entities of the given type that are attached to the map inside the given area.
+        /// </summary>
+        /// <typeparam name="T">The type of the entities to get.</typeparam>
+        /// <param name="area">
+        /// The area to search.
+        /// </param>
+        /// <returns>A list that contains the entities of the given type that are attached to the map inside the given area.</returns>
+        public HashSet<T> GetEntitiesOnMap<T>(RCNumRectangle area) where T : Entity
+        {
+            if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
+
+            HashSet<T> retList = new HashSet<T>();
+            foreach (Entity entity in this.entitiesOnMap.GetContents(area))
+            {
+                T entityAsT = entity as T;
+                if (entityAsT != null) { retList.Add(entityAsT); }
+            }
+            return retList;
+        }
+
+        /// <summary>
+        /// Gets the QuadEntity that is bound to the quadratic grid at the given position.
+        /// </summary>
+        /// <param name="quadCoords">The quadratic position on the map.</param>
+        /// <returns>
+        /// The QuadEntity that is bound to the quadratic grid at the given position or null if there is no QuadEntity bound to the map at the given position.
+        /// </returns>
+        public QuadEntity GetBoundQuadEntity(RCIntVector quadCoords)
+        {
+            if (quadCoords == RCIntVector.Undefined) { throw new ArgumentNullException("quadCoords"); }
+            return this.boundQuadEntities[quadCoords.X, quadCoords.Y];
+        }
+
+        /// <summary>
+        /// Attaches the given entity to the map into the given position.
+        /// </summary>
+        /// <param name="entity">The entity to be attached.</param>
+        /// <param name="position">The position of the entity on the map.</param>
+        /// <returns>True if the entity has been attached to the map successfully; otherwise false.</returns>
+        public bool AttachEntityToMap(Entity entity, RCNumVector position)
+        {
+            if (entity == null) { throw new ArgumentNullException("entity"); }
+            if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
+            if (!this.entitySet.ContainsKey(entity.ID.Read())) { throw new InvalidOperationException("The entity has not yet been added to this scenario!"); }
+            if (entity.PositionValue.Read() != RCNumVector.Undefined) { throw new InvalidOperationException("The entity has already been attached to the map!"); }
+
+            bool isValidPosition = entity.OnAttachingToMap(position);
+            if (isValidPosition)
+            {
+                this.entitiesOnMap.AttachContent(entity);
+            }
+            return isValidPosition;
+        }
+
+        /// <summary>
+        /// Attaches the given QuadEntity to the given quadratic tile on the map.
+        /// </summary>
+        /// <param name="entity">The QuadEntity to be attached.</param>
+        /// <param name="topLeftTile">The quadratic tile at the top-left corner of the QuadEntity.</param>
+        /// <returns>True if the given QuadEntity was successfully attached to the map; otherwise false.</returns>
+        public bool AttachEntityToMap(QuadEntity entity, IQuadTile topLeftTile)
+        {
+            if (entity == null) { throw new ArgumentNullException("entity"); }
+            if (topLeftTile == null) { throw new ArgumentNullException("topLeftTile"); }
+            if (!this.entitySet.ContainsKey(entity.ID.Read())) { throw new InvalidOperationException("The entity has not yet been added to a scenario!"); }
+            if (entity.PositionValue.Read() != RCNumVector.Undefined) { throw new InvalidOperationException("The entity has already been attached to the map!"); }
+
+            bool isValidPosition = entity.OnAttachingToMap(topLeftTile);
+            if (isValidPosition)
+            {
+                this.entitiesOnMap.AttachContent(entity);
+                for (int col = entity.QuadraticPosition.Left; col < entity.QuadraticPosition.Right; col++)
+                {
+                    for (int row = entity.QuadraticPosition.Top; row < entity.QuadraticPosition.Bottom; row++)
+                    {
+                        if (this.boundQuadEntities[col, row] != null) { throw new InvalidOperationException(string.Format("Another QuadEntity is already bound to quadratic tile at ({0};{1})!", col, row)); }
+                        this.boundQuadEntities[col, row] = entity;
+                    }
+                }
+            }
+            return isValidPosition;
+        }
+
+        /// <summary>
+        /// Detaches this entity from the map.
+        /// </summary>
+        /// <param name="entity">The entity to be detached.</param>
+        public RCNumVector DetachEntityFromMap(Entity entity)
+        {
+            if (!this.entitySet.ContainsKey(entity.ID.Read())) { throw new InvalidOperationException("The entity has not yet been added to this scenario!"); }
+            if (entity.PositionValue.Read() == RCNumVector.Undefined) { throw new InvalidOperationException("The entity has already been detached from the map!"); }
+
+            QuadEntity entityAsQuadEntity = entity as QuadEntity;
+            if (entityAsQuadEntity != null && entityAsQuadEntity.IsBoundToGrid)
+            {
+                for (int col = entityAsQuadEntity.QuadraticPosition.Left; col < entityAsQuadEntity.QuadraticPosition.Right; col++)
+                {
+                    for (int row = entityAsQuadEntity.QuadraticPosition.Top; row < entityAsQuadEntity.QuadraticPosition.Bottom; row++)
+                    {
+                        if (this.boundQuadEntities[col, row] != entityAsQuadEntity) { throw new InvalidOperationException(string.Format("QuadEntity is not bound to quadratic tile at ({0};{1})!", col, row)); }
+                        this.boundQuadEntities[col, row] = null;
+                    }
+                }
+            }
+
+            RCNumVector currentPosition = entity.PositionValue.Read();
+            this.entitiesOnMap.DetachContent(entity);
+            entity.OnDetachedFromMap();
+            return currentPosition;
+        }
+
+        #endregion Public members: Map management
 
         #region Public members: Simulation management
 
@@ -244,15 +388,6 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         #endregion Public members: Simulation management
-
-        #region Public members: Map management
-
-        /// <summary>
-        /// Gets the map of the scenario.
-        /// </summary>
-        public IMapAccess Map { get { return this.map; } }
-
-        #endregion Public members: Map management
 
         #region Heaped members
 
@@ -284,16 +419,22 @@ namespace RC.Engine.Simulator.Scenarios
         private IMapAccess map;
 
         /// <summary>
-        /// The entities of the scenario that are visible on the map.
+        /// The entities of the scenario that are attached to the map.
         /// </summary>
-        /// TODO: store the visible entities also in a HeapedArray!
-        private ISearchTree<Entity> visibleEntities;
+        /// TODO: store these entities also in a HeapedArray!
+        private ISearchTree<Entity> entitiesOnMap;
 
         /// <summary>
         /// The entities of the scenario mapped by their IDs.
         /// </summary>
-        /// TODO: store the entities also in a HeapedArray!
+        /// TODO: store these entities also in a HeapedArray!
         private Dictionary<int, Entity> entitySet;
+
+        /// <summary>
+        /// This array stores for all quadratic tile the QuadEntity that is bound to that QuadTile.
+        /// </summary>
+        /// TODO: store these entities also in a HeapedArray!
+        private QuadEntity[,] boundQuadEntities;
 
         /// <summary>
         /// Reference to the player initializer component.

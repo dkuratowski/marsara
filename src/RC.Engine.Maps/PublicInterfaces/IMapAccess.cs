@@ -63,6 +63,13 @@ namespace RC.Engine.Maps.PublicInterfaces
         RCIntRectangle QuadToCellRect(RCIntRectangle quadRect);
 
         /// <summary>
+        /// Converts a rectangle of cells to a rectangle of quadratic tiles.
+        /// </summary>
+        /// <param name="cellRect">The cell rectangle to convert.</param>
+        /// <returns>The quadratic rectangle.</returns>
+        RCIntRectangle CellToQuadRect(RCIntRectangle cellRect);
+
+        /// <summary>
         /// Computes the minimum size of a quadratic rectangle that can cover an area on the map with the given size.
         /// </summary>
         /// <param name="cellSize">The size of the area in cells.</param>

@@ -38,8 +38,17 @@ namespace RC.Engine.Simulator.Scenarios
             this.entityActuator = null;
             this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
             this.sightRangeCache = null;
+            this.quadraticPositionCache = new CachedValue<RCIntRectangle>(() =>
+                {
+                    if (this.position.Read() == RCNumVector.Undefined) { return RCIntRectangle.Undefined; }
+                    RCIntVector topLeft = this.Position.Location.Round();
+                    RCIntVector bottomRight = (this.Position.Location + this.Position.Size).Round();
+                    RCIntRectangle cellRect = new RCIntRectangle(topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y);
+                    return this.Scenario.Map.CellToQuadRect(cellRect);
+                });
 
             this.position.Write(RCNumVector.Undefined);
+            this.position.ValueChanged += (sender, args) => this.quadraticPositionCache.Invalidate();
             this.velocity.Write(new RCNumVector(0, 0));
             this.id.Write(-1);
             this.typeID.Write(this.elementType.ID);
@@ -78,6 +87,11 @@ namespace RC.Engine.Simulator.Scenarios
         public IEnumerable<AnimationPlayer> CurrentAnimations { get { return this.currentAnimations; } }
 
         /// <summary>
+        /// Gets the quadratic position of this Entity or RCIntRectangle.Undefined if this entity is not attached to the map.
+        /// </summary>
+        public RCIntRectangle QuadraticPosition { get { return this.quadraticPositionCache.Value; } }
+
+        /// <summary>
         /// Gets the owner of this entity or null if this entity is neutral or is a start location.
         /// </summary>
         public Player Owner { get { return this.owner.Read(); } }
@@ -103,39 +117,6 @@ namespace RC.Engine.Simulator.Scenarios
 
                 return new List<RCIntVector>(this.sightRangeCache.Item2);
             }
-        }
-
-        /// <summary>
-        /// Adds this entity to the map into the given position.
-        /// </summary>
-        /// <param name="position">The position of this entity on the map.</param>
-        /// <returns>True if the entity was successfully added to the map; otherwise false.</returns>
-        public bool AddToMap(RCNumVector position)
-        {
-            if (this.scenario.Read() == null) { throw new InvalidOperationException("The entity has not yet been added to a scenario!"); }
-            if (this.position.Read() != RCNumVector.Undefined) { throw new InvalidOperationException("The entity has already been added to the map!"); }
-
-            bool isValidPosition = this.ValidatePosition(position);
-            if (isValidPosition)
-            {
-                this.SetPosition(position);
-                this.Scenario.VisibleEntities.AttachContent(this);
-            }
-            return isValidPosition;
-        }
-
-        /// <summary>
-        /// Removes this unit from the map.
-        /// </summary>
-        public RCNumVector RemoveFromMap()
-        {
-            if (this.scenario.Read() == null) { throw new InvalidOperationException("The entity has not yet been added to a scenario!"); }
-            if (this.position.Read() == RCNumVector.Undefined) { throw new InvalidOperationException("The entity has already been removed from the map!"); }
-
-            RCNumVector currentPosition = this.position.Read();
-            this.Scenario.VisibleEntities.DetachContent(this);
-            this.position.Write(RCNumVector.Undefined);
-            return currentPosition;
         }
 
         #endregion Public interface
@@ -271,7 +252,6 @@ namespace RC.Engine.Simulator.Scenarios
             if (this.scenario.Read() != null) { throw new InvalidOperationException("The entity is already added to a scenario!"); }
             this.scenario.Write(scenario);
             this.id.Write(id);
-            this.OnAddedToScenarioImpl();
         }
 
         /// <summary>
@@ -284,7 +264,6 @@ namespace RC.Engine.Simulator.Scenarios
 
             this.scenario.Write(null);
             this.id.Write(-1);
-            this.OnRemovedFromScenarioImpl();
         }
 
         /// <summary>
@@ -309,13 +288,36 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <summary>
+        /// This method is called when this entity is being added to the map.
+        /// </summary>
+        /// <param name="position">The position of this entity on the map.</param>
+        /// <returns>True if the given position is valid for this entity; otherwise false.</returns>
+        internal bool OnAttachingToMap(RCNumVector position)
+        {
+            bool isValidPosition = this.ValidatePosition(position);
+            if (isValidPosition)
+            {
+                this.SetPosition(position);
+            }
+            return isValidPosition;
+        }
+
+        /// <summary>
+        /// This method is called when this entity has been removed from the map.
+        /// </summary>
+        internal void OnDetachedFromMap()
+        {
+            this.position.Write(RCNumVector.Undefined);
+        }
+
+        /// <summary>
         /// Updates the state of this entity.
         /// </summary>
         internal void UpdateState()
         {
             /// Update the velocity and position of this entity only if it's visible on the map, has
             /// an actuator and a path-tracker and the path-tracker is active.
-            if (this.scenario.Read().VisibleEntities.HasContent(this) &&
+            if (this.scenario.Read().GetEntityOnMap<Entity>(this.ID.Read()) != null &&
                 this.entityActuator != null &&
                 this.pathTracker.Read() != null &&
                 this.pathTracker.Read().IsActive)
@@ -342,9 +344,6 @@ namespace RC.Engine.Simulator.Scenarios
                     else { this.velocity.Write(new RCNumVector(0, 0)); }
                 }
             }
-
-            /// Execute additional update procedures of the derived classes.
-            this.UpdateStateImpl();
         }
 
         /// <summary>
@@ -366,7 +365,7 @@ namespace RC.Engine.Simulator.Scenarios
             RCNumRectangle newEntityArea =
                 new RCNumRectangle(position - this.ElementType.Area.Read() / 2, this.elementType.Area.Read());
             bool collision = false;
-            foreach (Entity collidingEntity in this.scenario.Read().GetVisibleEntities<Entity>(newEntityArea))
+            foreach (Entity collidingEntity in this.scenario.Read().GetEntitiesOnMap<Entity>(newEntityArea))
             {
                 if (collidingEntity != this) { collision = true; break; }
             }
@@ -401,22 +400,6 @@ namespace RC.Engine.Simulator.Scenarios
             }
             return retList;
         }
-
-        /// <summary>
-        /// This method is called when this entity has been added to a scenario. Can be overriden in the derived classes.
-        /// </summary>
-        protected virtual void OnAddedToScenarioImpl() { }
-
-        /// <summary>
-        /// This method is called when this entity has been removed from it's scenario. Can be overriden in the derived classes.
-        /// </summary>
-        protected virtual void OnRemovedFromScenarioImpl() { }
-
-        /// <summary>
-        /// Derived classes can execute additional update procedures by overriding this method.
-        /// The default implementation does nothing.
-        /// </summary>
-        protected virtual void UpdateStateImpl() { }
 
         /// <see cref="HeapedObject.DisposeImpl"/>
         protected override void DisposeImpl()
@@ -486,6 +469,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// Reference to the RC.Engine.Simulator.PathFinder component.
         /// </summary>
         private IPathFinder pathFinder;
+
+        /// <summary>
+        /// The cached value of the quadratic position of this Entity.
+        /// </summary>
+        private CachedValue<RCIntRectangle> quadraticPositionCache;
 
         /// <summary>
         /// Data structure to store the calculated sight range of this entity for the last known quadratic tile.

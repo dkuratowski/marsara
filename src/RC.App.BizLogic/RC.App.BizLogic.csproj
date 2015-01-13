@@ -84,6 +84,7 @@
     <Compile Include="BusinessComponents\Core\FowVisibilityInfo.cs" />
     <Compile Include="BusinessComponents\Core\ICommandBuilder.cs" />
     <Compile Include="BusinessComponents\Core\TargetPositionListener.cs" />
+    <Compile Include="BusinessComponents\EntitySnapshot.cs" />
     <Compile Include="BusinessComponents\ICommandManagerBC.cs" />
     <Compile Include="BusinessComponents\IFogOfWarBC.cs" />
     <Compile Include="BusinessComponents\ISelectionManagerBC.cs" />

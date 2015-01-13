@@ -29,6 +29,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         public void Start()
         {
             this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
+            this.fogOfWarBC = ComponentManager.GetInterface<IFogOfWarBC>();
         }
 
         /// <see cref="IComponent.Stop"/>
@@ -63,11 +64,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             this.Update();
 
-            HashSet<Entity> entitiesAtPos = this.scenarioManager.ActiveScenario.VisibleEntities.GetContents(position);
-            if (entitiesAtPos.Count == 0) { return -1; }
-
-            Entity entityAtPos = null;
-            foreach (Entity e in entitiesAtPos) { entityAtPos = e; break; }
+            Entity entityAtPos = this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(position).FirstOrDefault();
+            if (entityAtPos == null) { return -1; }
             return entityAtPos.ID.Read();
         }
 
@@ -86,7 +84,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             Entity otherPlayerBuilding = null;
             Entity otherPlayerAddon = null;
             Entity other = null;
-            foreach (Entity entity in this.scenarioManager.ActiveScenario.VisibleEntities.GetContents(selectionBox))
+            foreach (Entity entity in this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(selectionBox))
             {
                 if (entity is Unit)
                 {
@@ -156,11 +154,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             this.Update();
 
-            HashSet<Entity> entitiesAtPos = this.scenarioManager.ActiveScenario.VisibleEntities.GetContents(position);
-            if (entitiesAtPos.Count == 0) { return; }
-
-            Entity entityAtPos = null;
-            foreach (Entity e in entitiesAtPos) { entityAtPos = e; break; }
+            Entity entityAtPos = this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(position).FirstOrDefault();
+            if (entityAtPos == null) { return; }
             this.currentSelection.Clear();
             this.currentSelection.Add(entityAtPos.ID.Read());
         }
@@ -264,6 +259,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// Reference to the scenario manager business component.
         /// </summary>
         private IScenarioManagerBC scenarioManager;
+
+        /// <summary>
+        /// Reference to the Fog Of War business component.
+        /// </summary>
+        private IFogOfWarBC fogOfWarBC;
 
         /// <summary>
         /// The index of the player that owns this EntitySelector.

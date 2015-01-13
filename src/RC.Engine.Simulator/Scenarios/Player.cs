@@ -22,7 +22,7 @@ namespace RC.Engine.Simulator.Scenarios
             if (playerIndex < 0 || playerIndex >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("playerIndex"); }
             if (startLocation == null) { throw new ArgumentNullException("startLocation"); }
             if (startLocation.Scenario == null) { throw new SimulatorException("The given start location doesn't belong to a scenario!"); }
-            if (!startLocation.Scenario.VisibleEntities.HasContent(startLocation)) { throw new SimulatorException("The given start location has already been initialized!"); }
+            if (startLocation.Scenario.GetEntityOnMap<StartLocation>(startLocation.ID.Read()) == null) { throw new SimulatorException("The given start location has already been initialized!"); }
 
             this.playerIndex = this.ConstructField<int>("playerIndex");
             this.startLocation = this.ConstructField<StartLocation>("startLocation");
@@ -112,14 +112,14 @@ namespace RC.Engine.Simulator.Scenarios
         {
             foreach (Unit unit in this.units)
             {
-                if (unit.PositionValue.Read() != RCNumVector.Undefined) { unit.RemoveFromMap(); }
-                this.startLocation.Read().Scenario.RemoveEntity(unit);
+                if (unit.PositionValue.Read() != RCNumVector.Undefined) { this.Scenario.DetachEntityFromMap(unit); }
+                this.startLocation.Read().Scenario.RemoveEntityFromScenario(unit);
                 unit.Dispose();
             }
             foreach (Building building in this.buildings)
             {
-                if (building.PositionValue.Read() != RCNumVector.Undefined) { building.RemoveFromMap(); }
-                this.startLocation.Read().Scenario.RemoveEntity(building);
+                if (building.PositionValue.Read() != RCNumVector.Undefined) { this.Scenario.DetachEntityFromMap(building); }
+                this.startLocation.Read().Scenario.RemoveEntityFromScenario(building);
                 building.Dispose();
             }
             this.units.Clear();

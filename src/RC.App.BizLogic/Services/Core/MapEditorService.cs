@@ -106,17 +106,17 @@ namespace RC.App.BizLogic.Services.Core
             {
                 RCNumRectangle isoTileRect = new RCNumRectangle(affectedIsoTile.GetCellMapCoords(new RCIntVector(0, 0)), affectedIsoTile.CellSize)
                                            - new RCNumVector(1, 1) / 2;
-                foreach (QuadEntity affectedEntity in this.scenarioManager.ActiveScenario.GetVisibleEntities<QuadEntity>(isoTileRect))
+                foreach (QuadEntity affectedEntity in this.scenarioManager.ActiveScenario.GetEntitiesOnMap<QuadEntity>(isoTileRect))
                 {
-                    affectedEntity.RemoveFromMap();
+                    this.scenarioManager.ActiveScenario.DetachEntityFromMap(affectedEntity);
                     if (affectedEntity.ElementType.CheckConstraints(this.scenarioManager.ActiveScenario, affectedEntity.LastKnownQuadCoords).Count != 0)
                     {
-                        this.scenarioManager.ActiveScenario.RemoveEntity(affectedEntity);
+                        this.scenarioManager.ActiveScenario.RemoveEntityFromScenario(affectedEntity);
                         affectedEntity.Dispose();
                     }
                     else
                     {
-                        affectedEntity.AddToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(affectedEntity.LastKnownQuadCoords));
+                        this.scenarioManager.ActiveScenario.AttachEntityToMap(affectedEntity, this.scenarioManager.ActiveScenario.Map.GetQuadTile(affectedEntity.LastKnownQuadCoords));
                     }
                 }
             }
@@ -148,17 +148,17 @@ namespace RC.App.BizLogic.Services.Core
             {
                 RCNumRectangle terrObjRect = new RCNumRectangle(this.scenarioManager.ActiveScenario.Map.GetQuadTile(placedTerrainObject.MapCoords).GetCell(new RCIntVector(0, 0)).MapCoords, placedTerrainObject.CellSize)
                                            - new RCNumVector(1, 1) / 2;
-                foreach (QuadEntity affectedEntity in this.scenarioManager.ActiveScenario.GetVisibleEntities<QuadEntity>(terrObjRect))
+                foreach (QuadEntity affectedEntity in this.scenarioManager.ActiveScenario.GetEntitiesOnMap<QuadEntity>(terrObjRect))
                 {
-                    affectedEntity.RemoveFromMap();
+                    this.scenarioManager.ActiveScenario.DetachEntityFromMap(affectedEntity);
                     if (affectedEntity.ElementType.CheckConstraints(this.scenarioManager.ActiveScenario, affectedEntity.LastKnownQuadCoords).Count != 0)
                     {
-                        this.scenarioManager.ActiveScenario.RemoveEntity(affectedEntity);
+                        this.scenarioManager.ActiveScenario.RemoveEntityFromScenario(affectedEntity);
                         affectedEntity.Dispose();
                     }
                     else
                     {
-                        affectedEntity.AddToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(affectedEntity.LastKnownQuadCoords));
+                        this.scenarioManager.ActiveScenario.AttachEntityToMap(affectedEntity, this.scenarioManager.ActiveScenario.Map.GetQuadTile(affectedEntity.LastKnownQuadCoords));
                     }
                 }
             }
@@ -200,7 +200,7 @@ namespace RC.App.BizLogic.Services.Core
             if (objectType.CheckConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords).Count != 0) { return false; }
 
             /// Check if a start location with the given player index already exists.
-            List<StartLocation> startLocations = this.scenarioManager.ActiveScenario.GetAllEntities<StartLocation>();
+            HashSet<StartLocation> startLocations = this.scenarioManager.ActiveScenario.GetAllEntities<StartLocation>();
             StartLocation startLocation = null;
             foreach (StartLocation sl in startLocations)
             {
@@ -215,14 +215,14 @@ namespace RC.App.BizLogic.Services.Core
             /// otherwise create a new start location.
             if (startLocation != null)
             {
-                startLocation.RemoveFromMap();
+                this.scenarioManager.ActiveScenario.DetachEntityFromMap(startLocation);
             }
             else
             {
                 startLocation = new StartLocation(playerIndex);
-                this.scenarioManager.ActiveScenario.AddEntity(startLocation);
+                this.scenarioManager.ActiveScenario.AddEntityToScenario(startLocation);
             }
-            startLocation.AddToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(topLeftQuadCoords));
+            this.scenarioManager.ActiveScenario.AttachEntityToMap(startLocation, this.scenarioManager.ActiveScenario.Map.GetQuadTile(topLeftQuadCoords));
             return true;
         }
 
@@ -243,8 +243,8 @@ namespace RC.App.BizLogic.Services.Core
             if (objectType.CheckConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords).Count != 0) { return false; }
 
             MineralField placedMineralField = new MineralField();
-            this.scenarioManager.ActiveScenario.AddEntity(placedMineralField);
-            placedMineralField.AddToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(topLeftQuadCoords));
+            this.scenarioManager.ActiveScenario.AddEntityToScenario(placedMineralField);
+            this.scenarioManager.ActiveScenario.AttachEntityToMap(placedMineralField, this.scenarioManager.ActiveScenario.Map.GetQuadTile(topLeftQuadCoords));
             return true;
         }
 
@@ -265,8 +265,8 @@ namespace RC.App.BizLogic.Services.Core
             if (objectType.CheckConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords).Count != 0) { return false; }
 
             VespeneGeyser placedVespeneGeyser = new VespeneGeyser();
-            this.scenarioManager.ActiveScenario.AddEntity(placedVespeneGeyser);
-            placedVespeneGeyser.AddToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(topLeftQuadCoords));
+            this.scenarioManager.ActiveScenario.AddEntityToScenario(placedVespeneGeyser);
+            this.scenarioManager.ActiveScenario.AttachEntityToMap(placedVespeneGeyser, this.scenarioManager.ActiveScenario.Map.GetQuadTile(topLeftQuadCoords));
             return true;
         }
 
@@ -279,10 +279,10 @@ namespace RC.App.BizLogic.Services.Core
 
             RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
                                                         (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            foreach (Entity entity in this.scenarioManager.ActiveScenario.VisibleEntities.GetContents(navCellCoords))
+            foreach (Entity entity in this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(navCellCoords))
             {
-                entity.RemoveFromMap();
-                this.scenarioManager.ActiveScenario.RemoveEntity(entity);
+                this.scenarioManager.ActiveScenario.DetachEntityFromMap(entity);
+                this.scenarioManager.ActiveScenario.RemoveEntityFromScenario(entity);
                 entity.Dispose();
                 return true;
             }

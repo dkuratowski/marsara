@@ -35,7 +35,7 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new BuildableAreaConstraint());
             extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<ResourceObject>(new RCIntVector(3, 3)));
             extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<StartLocation>(new RCIntVector(3, 3)));
-            extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<CommandCenter>(new RCIntVector(3, 3)));
+            extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<Entity>(new RCIntVector(0, 0)));
         }
 
         /// <see cref="IPlugin<T>.Uninstall"/>
@@ -52,9 +52,9 @@ namespace RC.Engine.Simulator.Terran
             /// Add a Terran Command Center to the position of the start location.
             Scenario scenario = player.StartLocation.Scenario;
             CommandCenter commandCenter = new CommandCenter();
-            scenario.AddEntity(commandCenter);
+            scenario.AddEntityToScenario(commandCenter);
             player.AddBuilding(commandCenter);
-            commandCenter.AddToMap(scenario.Map.GetQuadTile(player.StartLocation.LastKnownQuadCoords));
+            scenario.AttachEntityToMap(commandCenter, scenario.Map.GetQuadTile(player.StartLocation.LastKnownQuadCoords));
 
             /// Find place for the given number of SCVs using an EntityNeighbourhoodIterator.
             EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(commandCenter);
@@ -63,14 +63,14 @@ namespace RC.Engine.Simulator.Terran
             {
                 /// Create the next SCV
                 SCV scv = new SCV();
-                scenario.AddEntity(scv);
+                scenario.AddEntityToScenario(scv);
                 player.AddUnit(scv);
 
                 /// Search a place for the new SCV on the map.
                 bool scvPlacedSuccessfully = false;
                 while (cellEnumerator.MoveNext())
                 {
-                    if (scv.AddToMap(cellEnumerator.Current.MapCoords))
+                    if (scenario.AttachEntityToMap(scv, cellEnumerator.Current.MapCoords))
                     {
                         scvPlacedSuccessfully = true;
                         break;
@@ -81,7 +81,7 @@ namespace RC.Engine.Simulator.Terran
                 if (!scvPlacedSuccessfully)
                 {
                     player.RemoveUnit(scv);
-                    scenario.RemoveEntity(scv);
+                    scenario.RemoveEntityFromScenario(scv);
                     scv.Dispose();
                     break;
                 }

@@ -113,6 +113,23 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
+        /// Gets the entity snapshot at the given quadratic tile or null if there is no entity snapshot at the given quadratic tile.
+        /// </summary>
+        /// <param name="quadCoords">The quadratic coordinates of the tile.</param>
+        /// <returns>The entity snapshot at the given quadratic tile or null if there is no entity snapshot at the given quadratic tile.</returns>
+        public EntitySnapshot GetEntitySnapshotAtQuadTile(RCIntVector quadCoords)
+        {
+            /// If the entity snapshots at the given tile has not yet been cached or is invalid, then calculate and save it to the cache.
+            if (this.scenario.CurrentFrameIndex != this.fowCacheMatrix[quadCoords.X, quadCoords.Y].LastEntitySnapshotUpdate)
+            {
+                this.CalculateEntitySnapshot(quadCoords);
+            }
+
+            /// Return with the cached value.
+            return this.fowCacheMatrix[quadCoords.X, quadCoords.Y].EntitySnapshot;
+        }
+
+        /// <summary>
         /// Represents an item in the FOW-cache matrix.
         /// </summary>
         private struct Item
@@ -128,6 +145,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             public int LastFowFlagsUpdate;
 
             /// <summary>
+            /// The frame index when the entity snapshot of this item has been updated last time.
+            /// </summary>
+            public int LastEntitySnapshotUpdate;
+
+            /// <summary>
             /// The last known FOW-state of this item.
             /// </summary>
             public FOWTypeEnum FowState;
@@ -141,6 +163,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             /// The last known partial FOW-flags of this item.
             /// </summary>
             public FOWTileFlagsEnum PartialFowFlags;
+
+            /// <summary>
+            /// The last known entity snapshot of this item.
+            /// </summary>
+            public EntitySnapshot EntitySnapshot;
         }
 
         /// <summary>
@@ -196,6 +223,33 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 if (this.GetFowStateAtQuadTile(quadCoords + new RCIntVector(-1, -1)) != FOWTypeEnum.None) { partialFowFlags |= FOWTileFlagsEnum.NorthWest; }
                 this.fowCacheMatrix[quadCoords.X, quadCoords.Y].PartialFowFlags = partialFowFlags;
             }
+        }
+                
+        /// <summary>
+        /// Calculates the entity snapshot for the given quadratic tile.
+        /// </summary>
+        /// <param name="quadCoords">The quadratic coordinates of the tile.</param>
+        private void CalculateEntitySnapshot(RCIntVector quadCoords)
+        {
+            bool isFowRunning = false;
+            EntitySnapshot entitySnapshot = null;
+            int greatestExpirationTime = -1;
+            for (int idx = 0; idx < Player.MAX_PLAYERS; idx++)
+            {
+                if (this.runningFows[idx] != null)
+                {
+                    int expirationTime = this.runningFows[idx].GetExpirationTime(quadCoords);
+                    if (expirationTime > greatestExpirationTime)
+                    {
+                        entitySnapshot = this.runningFows[idx].GetEntitySnapshot(quadCoords);
+                        greatestExpirationTime = expirationTime;
+                    }
+                    isFowRunning = true;
+                }
+            }
+
+            this.fowCacheMatrix[quadCoords.X, quadCoords.Y].LastEntitySnapshotUpdate = this.scenario.CurrentFrameIndex;
+            this.fowCacheMatrix[quadCoords.X, quadCoords.Y].EntitySnapshot = isFowRunning ? entitySnapshot : null;
         }
 
         /// <summary>

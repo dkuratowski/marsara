@@ -26,7 +26,7 @@ namespace RC.Engine.Simulator.MotionControl
         {
             /// TODO: change this method to return only ground units as dynamic obstacles!
             List<DynamicObstacleInfo> retList = new List<DynamicObstacleInfo>();
-            List<Entity> entitiesInRange = this.ControlledEntity.Scenario.GetVisibleEntities<Entity>(
+            HashSet<Entity> entitiesInRange = this.ControlledEntity.Scenario.GetEntitiesOnMap<Entity>(
                 new RCNumRectangle(this.ControlledEntity.PositionValue.Read() - new RCNumVector(ENVIRONMENT_SIGHT_RANGE, ENVIRONMENT_SIGHT_RANGE),
                                    new RCNumVector(ENVIRONMENT_SIGHT_RANGE, ENVIRONMENT_SIGHT_RANGE) * 2));
             foreach (Entity entityInRange in entitiesInRange)

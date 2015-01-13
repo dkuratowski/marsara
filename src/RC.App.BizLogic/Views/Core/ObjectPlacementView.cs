@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.App.BizLogic.BusinessComponents.Core;
+using RC.App.BizLogic.BusinessComponents;
+using RC.Common.ComponentModel;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -18,6 +20,7 @@ namespace RC.App.BizLogic.Views.Core
         /// </summary>
         public ObjectPlacementView()
         {
+            this.fogOfWarBC = ComponentManager.GetInterface<IFogOfWarBC>();
         }
 
         #region IObjectPlacementView members
@@ -72,7 +75,7 @@ namespace RC.App.BizLogic.Views.Core
                     RCIntRectangle partRect = (this.Map.QuadToCellRect(new RCIntRectangle(absQuadCoords, new RCIntVector(1, 1))) - cellWindow.Location)
                                             * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
                                             - displayOffset;
-                    if (violatingQuadCoords.Contains(relativeQuadCoords))
+                    if (violatingQuadCoords.Contains(relativeQuadCoords) || this.fogOfWarBC.GetFullFowTileFlags(absQuadCoords).HasFlag(FOWTileFlagsEnum.Current))
                     {
                         placementBox.IllegalParts.Add(partRect);
                     }
@@ -115,5 +118,10 @@ namespace RC.App.BizLogic.Views.Core
         /// A list of sprites with coordinates relative to the top left corner of the area of the object.
         /// </returns>
         protected abstract List<SpriteInst> GetObjectSprites();
+
+        /// <summary>
+        /// Reference to the Fog Of War business component.
+        /// </summary>
+        private IFogOfWarBC fogOfWarBC;
     }
 }

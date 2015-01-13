@@ -23,12 +23,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             this.owner = owner;
             this.processedEntities = new HashSet<int>();
+            this.monitoredEntities = new HashSet<int>();
             this.fowExpirationTimes = new int[owner.Scenario.Map.Size.X, owner.Scenario.Map.Size.Y];
+            this.entitySnapshots = new EntitySnapshot[owner.Scenario.Map.Size.X, owner.Scenario.Map.Size.Y];
             for (int col = 0; col < this.owner.Scenario.Map.Size.X; col++)
             {
                 for (int row = 0; row < this.owner.Scenario.Map.Size.Y; row++)
                 {
                     this.fowExpirationTimes[col, row] = -1;
+                    this.entitySnapshots[col, row] = null;
                 }
             }
         }
@@ -54,7 +57,41 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
-        /// Restarts to update the Fog Of War expiration times based on the current positions of the owner's entities.
+        /// Gets the expiration time of the given quadratic tile.
+        /// </summary>
+        /// <param name="quadCoords">The coordinates of the quadratic tile.</param>
+        /// <returns>The expiration time of the given quadratic tile.</returns>
+        public int GetExpirationTime(RCIntVector quadCoords)
+        {
+            if (quadCoords == RCIntVector.Undefined) { throw new ArgumentNullException("quadCoords"); }
+            if (quadCoords.X < 0 || quadCoords.X >= this.owner.Scenario.Map.Size.X ||
+                quadCoords.Y < 0 || quadCoords.Y >= this.owner.Scenario.Map.Size.Y)
+            {
+                throw new ArgumentOutOfRangeException("quadCoords");
+            }
+
+            return this.fowExpirationTimes[quadCoords.X, quadCoords.Y];
+        }
+
+        /// <summary>
+        /// Gets the entity snapshot at the given quadratic tile or null if there is no entity snapshot at the given tile.
+        /// </summary>
+        /// <param name="quadCoords">The coordinates of the quadratic tile.</param>
+        /// <returns>The entity snapshot at the given quadratic tile or null if there is no entity snapshot at the given tile.</returns>
+        public EntitySnapshot GetEntitySnapshot(RCIntVector quadCoords)
+        {
+            if (quadCoords == RCIntVector.Undefined) { throw new ArgumentNullException("quadCoords"); }
+            if (quadCoords.X < 0 || quadCoords.X >= this.owner.Scenario.Map.Size.X ||
+                quadCoords.Y < 0 || quadCoords.Y >= this.owner.Scenario.Map.Size.Y)
+            {
+                throw new ArgumentOutOfRangeException("quadCoords");
+            }
+
+            return this.entitySnapshots[quadCoords.X, quadCoords.Y];
+        }
+
+        /// <summary>
+        /// Restarts to update the Fog Of War informations based on the current positions of the owner's entities.
         /// </summary>
         /// <param name="maxEntities">The maximum number of entities to be processed.</param>
         /// <returns>The actual number of processed entities.</returns>
@@ -68,7 +105,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
-        /// Continues to update the Fog Of War expiration times based on the current positions of the owner's entities.
+        /// Continues to update the Fog Of War informations based on the current positions of the owner's entities.
         /// </summary>
         /// <param name="maxEntities">The maximum number of entities to be processed.</param>
         /// <returns>The actual number of processed entities.</returns>
@@ -79,6 +116,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             if (maxEntities < 0) { throw new ArgumentOutOfRangeException("maxEntities", "maxEntities shall be non-negative!"); }
 
+            /// Update every quadratic tiles that are visible by the friendly entities.
             int processedEntitiesCount = 0;
             using (IEnumerator<Entity> entitiesIterator = this.owner.Entities.GetEnumerator())
             {
@@ -89,15 +127,90 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                     {
                         foreach (RCIntVector visibleQuadCoord in entity.VisibleQuadCoords)
                         {
+                            /// Update the expiration time of the quadratic tile.
                             this.fowExpirationTimes[visibleQuadCoord.X, visibleQuadCoord.Y] =
                                 this.owner.Scenario.CurrentFrameIndex + PARTIAL_FOW_EXPIRATION_TIME;
+
+                            /// If there was a snapshot at the given quadratic tile -> remove it.
+                            this.RemoveEntitySnapshot(visibleQuadCoord);
+
+                            /// If there is a non-friendly QuadEntity at the given quadratic tile -> start monitoring.
+                            QuadEntity entityAtQuadTile = this.owner.Scenario.GetBoundQuadEntity(visibleQuadCoord);
+                            if (entityAtQuadTile != null && entityAtQuadTile.Owner != this.owner)
+                            {
+                                this.monitoredEntities.Add(entityAtQuadTile.ID.Read());
+                            }
                         }
                         this.processedEntities.Add(entity.ID.Read());
                         processedEntitiesCount++;
                     }
                 }
             }
+
+            /// Check the monitored entities if we still need to monitor them.
+            List<int> monitoredEntitiesCopy = new List<int>(this.monitoredEntities);
+            foreach (int monitoredEntityId in monitoredEntitiesCopy)
+            {
+                QuadEntity monitoredEntity = this.owner.Scenario.GetEntityOnMap<QuadEntity>(monitoredEntityId);
+                if (monitoredEntity != null && monitoredEntity.Owner != this.owner && monitoredEntity.IsBoundToGrid)
+                {
+                    /// Check if the monitored entity is still visible.
+                    bool isStillVisible = false;
+                    for (int col = monitoredEntity.QuadraticPosition.Left; col < monitoredEntity.QuadraticPosition.Right; col++)
+                    {
+                        for (int row = monitoredEntity.QuadraticPosition.Top; row < monitoredEntity.QuadraticPosition.Bottom; row++)
+                        {
+                            if (this.GetFogOfWar(new RCIntVector(col, row)) == FOWTypeEnum.None)
+                            {
+                                /// Found at least 1 quadratic tile where the monitored entity is still visible.
+                                isStillVisible = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!isStillVisible)
+                    {
+                        /// Take a snapshot...
+                        EntitySnapshot snapshot = new EntitySnapshot(monitoredEntity);
+                        for (int col = snapshot.QuadraticPosition.Left; col < snapshot.QuadraticPosition.Right; col++)
+                        {
+                            for (int row = snapshot.QuadraticPosition.Top; row < snapshot.QuadraticPosition.Bottom; row++)
+                            {
+                                this.entitySnapshots[col, row] = snapshot;
+                            }
+                        }
+
+                        /// ...and stop monitoring.
+                        this.monitoredEntities.Remove(monitoredEntityId);
+                    }
+                }
+                else
+                {
+                    /// The monitored entity is not bound to the quadratic grid or became friendly -> stop monitoring.
+                    this.monitoredEntities.Remove(monitoredEntityId);
+                }
+            }
+
             return processedEntitiesCount;
+        }
+
+        /// <summary>
+        /// Removes the entity snapshot refered from the given quadratic coordinates.
+        /// </summary>
+        /// <param name="quadCoord">The quadratic coordinates of the entity snapshot to remove.</param>
+        private void RemoveEntitySnapshot(RCIntVector quadCoord)
+        {
+            EntitySnapshot snapshotToRemove = this.entitySnapshots[quadCoord.X, quadCoord.Y];
+            if (snapshotToRemove == null) { return; }
+
+            for (int col = snapshotToRemove.QuadraticPosition.Left; col < snapshotToRemove.QuadraticPosition.Right; col++)
+            {
+                for (int row = snapshotToRemove.QuadraticPosition.Top; row < snapshotToRemove.QuadraticPosition.Bottom; row++)
+                {
+                    this.entitySnapshots[col, row] = null;
+                }
+            }
         }
 
         /// <summary>
@@ -110,9 +223,19 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private readonly int[,] fowExpirationTimes;
 
         /// <summary>
+        /// An array of references that refer to the entity snapshots at the corresponding quadratic tiles.
+        /// </summary>
+        private readonly EntitySnapshot[,] entitySnapshots;
+
+        /// <summary>
         /// The IDs of the already processed entities.
         /// </summary>
         private readonly HashSet<int> processedEntities;
+
+        /// <summary>
+        /// The IDs of the currently quadratic entities being monitored.
+        /// </summary>
+        private readonly HashSet<int> monitoredEntities;
 
         /// <summary>
         /// Reference to the owner of this FogOfWar instance.

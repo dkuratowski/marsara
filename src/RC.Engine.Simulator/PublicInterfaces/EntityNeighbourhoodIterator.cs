@@ -30,7 +30,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
         {
             get
             {
-                if (!this.centralEntity.Scenario.VisibleEntities.HasContent(centralEntity)) { throw new ArgumentException("The given entity is not placed on the map!", "entity"); }
+                if (this.centralEntity.Scenario.GetEntityOnMap<Entity>(centralEntity.ID.Read()) == null) { throw new ArgumentException("The given entity is not placed on the map!", "entity"); }
                 
                 /// Calculate the initial processed area.
                 RCIntVector bbTopLeft = this.centralEntity.BoundingBox.Location.Round();
