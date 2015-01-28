@@ -45,7 +45,6 @@ namespace RC.App.BizLogic.Services.Core
             this.selectionManager = ComponentManager.GetInterface<ISelectionManagerBC>();
             this.commandManager = ComponentManager.GetInterface<ICommandManagerBC>();
             this.fogOfWarBC = ComponentManager.GetInterface<IFogOfWarBC>();
-            this.viewFactoryRegistry = ComponentManager.GetInterface<IViewFactoryRegistry>();
         }
 
         /// <see cref="IComponent.Stop"/>
@@ -72,6 +71,7 @@ namespace RC.App.BizLogic.Services.Core
             this.playerManager.Lock();
             this.selectionManager.Reset(this.playerManager[0].Player);
             this.fogOfWarBC.StartFogOfWar(this.playerManager[0].Player);
+
             this.commandDispatcher = new CommandDispatcher();
             this.triggeredScheduler = new TriggeredScheduler(1000 / (int)gameSpeed);
             this.triggeredScheduler.AddScheduledFunction(this.pathFinder.Flush);
@@ -165,11 +165,6 @@ namespace RC.App.BizLogic.Services.Core
         /// Reference to the player manager of the active scenario.
         /// </summary>
         private PlayerManager playerManager;
-
-        /// <summary>
-        /// Reference to the registry interface of the RC.App.BizLogic.ViewService component.
-        /// </summary>
-        private IViewFactoryRegistry viewFactoryRegistry;
 
         /// <summary>
         /// Reference to the scenario manager business component.

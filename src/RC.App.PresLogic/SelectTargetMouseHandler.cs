@@ -80,7 +80,7 @@ namespace RC.App.PresLogic
             {
                 /// Target selection complete
                 TraceManager.WriteAllTrace(string.Format("SELECT_TARGET {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                this.CommandService.SelectTargetPosition(this.MapDisplay.DisplayedArea, evtArgs.Position);
+                this.CommandService.SelectTargetPosition(evtArgs.Position);
             }
         }
 

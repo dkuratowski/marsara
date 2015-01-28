@@ -53,7 +53,8 @@ namespace RC.App.PresLogic.Pages
         /// </summary>
         private RCMapEditorPage() : base()
         {
-            this.mapEditorBE = ComponentManager.GetInterface<IMapEditorService>();
+            this.mapEditorService = ComponentManager.GetInterface<IMapEditorService>();
+            this.scrollService = ComponentManager.GetInterface<IScrollService>();
             this.viewService = ComponentManager.GetInterface<IViewService>();
             this.activatorBtn = UIMouseButton.Undefined;
             this.mouseHandler = null;
@@ -110,6 +111,9 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplay = this.resourceAmountDisplayEx;
             this.mapDisplay.ConnectorOperationFinished += this.OnMapDisplayConnected;
             this.mapDisplay.Connect();
+
+            /// Attach the map display to the scroll service.
+            this.scrollService.AttachWindow(this.mapDisplay.PixelSize);
 
             /// Create the necessary views.
             this.mapTerrainView = this.viewService.CreateView<IMapTerrainView>();
@@ -179,7 +183,7 @@ namespace RC.App.PresLogic.Pages
         {
             this.mapDisplay.ConnectorOperationFinished -= this.OnMapDisplayDisconnected;
 
-            this.mapEditorBE.CloseMap();
+            this.mapEditorService.CloseMap();
             UIRoot.Instance.GraphicsPlatform.RenderLoop.Stop();
         }
 
@@ -259,7 +263,7 @@ namespace RC.App.PresLogic.Pages
             this.workspaceTmp = this.SensitiveParent;
             this.workspaceTmp.DetachSensitive(this);
 
-            this.saveMapTask = UITaskManager.StartParallelTask((param) => this.mapEditorBE.SaveMap(this.fileName), "SaveMapTask");
+            this.saveMapTask = UITaskManager.StartParallelTask((param) => this.mapEditorService.SaveMap(this.fileName), "SaveMapTask");
             this.saveMapTask.Finished += this.OnSaveMapFinished;
             this.saveMapTask.Failed += this.OnSaveMapFailed;
         }
@@ -325,7 +329,7 @@ namespace RC.App.PresLogic.Pages
         {
             if (this.activatorBtn == UIMouseButton.Undefined && this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
             {
-                if (this.mapTerrainView.GetTerrainObjectDisplayCoords(this.mapDisplay.DisplayedArea, evtArgs.Position) != RCIntVector.Undefined)
+                if (this.mapTerrainView.GetTerrainObjectDisplayCoords(evtArgs.Position) != RCIntVector.Undefined)
                 {
                     this.mouseHandler.StopPlacingObject();
                 }
@@ -341,7 +345,7 @@ namespace RC.App.PresLogic.Pages
             }
             else if (this.activatorBtn == UIMouseButton.Undefined && this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
-                int objectID = this.mapObjectView.GetMapObjectID(this.mapDisplay.DisplayedArea, evtArgs.Position);
+                int objectID = this.mapObjectView.GetMapObjectID(evtArgs.Position);
                 if (objectID != -1)
                 {
                     this.mouseHandler.StopPlacingObject();
@@ -374,25 +378,25 @@ namespace RC.App.PresLogic.Pages
                 this.activatorBtn = evtArgs.Button;
                 if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain)
                 {
-                    this.mapEditorBE.DrawTerrain(this.mapDisplay.DisplayedArea, evtArgs.Position, this.mapEditorPanel.SelectedItem);
+                    this.mapEditorService.DrawTerrain(evtArgs.Position, this.mapEditorPanel.SelectedItem);
                 }
                 else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
                 {
-                    this.mapEditorBE.PlaceTerrainObject(this.mapDisplay.DisplayedArea, evtArgs.Position, this.mapEditorPanel.SelectedItem);
+                    this.mapEditorService.PlaceTerrainObject(evtArgs.Position, this.mapEditorPanel.SelectedItem);
                 }
                 else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
                 {
-                    this.mapEditorBE.PlaceStartLocation(this.mapDisplay.DisplayedArea, evtArgs.Position, this.mapEditorPanel.SelectedIndex);
+                    this.mapEditorService.PlaceStartLocation(evtArgs.Position, this.mapEditorPanel.SelectedIndex);
                 }
                 else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
                 {
                     if (this.mapEditorPanel.SelectedItem == RCMapEditorPage.MINERALFIELD_NAME)
                     {
-                        this.mapEditorBE.PlaceMineralField(this.mapDisplay.DisplayedArea, evtArgs.Position);
+                        this.mapEditorService.PlaceMineralField(evtArgs.Position);
                     }
                     else if (this.mapEditorPanel.SelectedItem == RCMapEditorPage.VESPENEGEYSER_NAME)
                     {
-                        this.mapEditorBE.PlaceVespeneGeyser(this.mapDisplay.DisplayedArea, evtArgs.Position);
+                        this.mapEditorService.PlaceVespeneGeyser(evtArgs.Position);
                     }
                 }
             }
@@ -401,12 +405,12 @@ namespace RC.App.PresLogic.Pages
                 this.activatorBtn = evtArgs.Button;
                 if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
                 {
-                    this.mapEditorBE.RemoveTerrainObject(this.mapDisplay.DisplayedArea, evtArgs.Position);
+                    this.mapEditorService.RemoveTerrainObject(evtArgs.Position);
                 }
                 else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation ||
                          this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
                 {
-                    if (this.mapEditorBE.RemoveEntity(this.mapDisplay.DisplayedArea, evtArgs.Position))
+                    if (this.mapEditorService.RemoveEntity(evtArgs.Position))
                     {
                         this.resourceAmountDisplayEx.StopReadingMapObject();
                     }
@@ -432,10 +436,10 @@ namespace RC.App.PresLogic.Pages
         {
             if (this.activatorBtn == UIMouseButton.Undefined && this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
-                int objectID = this.mapObjectView.GetMapObjectID(this.mapDisplay.DisplayedArea, evtArgs.Position);
+                int objectID = this.mapObjectView.GetMapObjectID(evtArgs.Position);
                 if (objectID != -1)
                 {
-                    this.mapEditorBE.ChangeResourceAmount(objectID, Math.Sign(evtArgs.WheelDelta) * RESOURCE_AMOUNT_DELTA);
+                    this.mapEditorService.ChangeResourceAmount(objectID, Math.Sign(evtArgs.WheelDelta) * RESOURCE_AMOUNT_DELTA);
                 }
             }
         }
@@ -450,19 +454,24 @@ namespace RC.App.PresLogic.Pages
             if (this.mapName != null)
             {
                 /// Create a new map.
-                this.mapEditorBE.NewMap(this.mapName, this.tilesetName, this.defaultTerrain, this.mapSize);
+                this.mapEditorService.NewMap(this.mapName, this.tilesetName, this.defaultTerrain, this.mapSize);
             }
             else
             {
                 /// Load an existing map.
-                this.mapEditorBE.LoadMap(this.fileName);
+                this.mapEditorService.LoadMap(this.fileName);
             }
         }
 
         /// <summary>
-        /// Reference to the map editor backend component.
+        /// Reference to the map editor service.
         /// </summary>
-        private IMapEditorService mapEditorBE;
+        private IMapEditorService mapEditorService;
+
+        /// <summary>
+        /// Reference to the scroll service.
+        /// </summary>
+        private IScrollService scrollService;
 
         /// <summary>
         /// Reference to the view service.

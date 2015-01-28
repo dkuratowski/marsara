@@ -26,19 +26,10 @@ namespace RC.App.BizLogic.Views.Core
         #region IFogOfWarView methods
 
         /// <see cref="IFogOfWarView.GetPartialFOWTiles"/>
-        public List<SpriteInst> GetPartialFOWTiles(RCIntRectangle displayedArea)
+        public List<SpriteInst> GetPartialFOWTiles()
         {
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            /// Calculate the currently visible window of cells and quadratic tiles.
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-            RCIntRectangle quadTileWindow = this.Map.CellToQuadRect(cellWindow);
-
             List<SpriteInst> retList = new List<SpriteInst>();
-            foreach (IQuadTile quadTile in this.fogOfWarBC.GetQuadTilesToUpdate(quadTileWindow))
+            foreach (IQuadTile quadTile in this.fogOfWarBC.GetQuadTilesToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
             {
                 FOWTileFlagsEnum partialFowFlags = this.fogOfWarBC.GetPartialFowTileFlags(quadTile.MapCoords);
                 if (partialFowFlags != FOWTileFlagsEnum.None)
@@ -47,9 +38,7 @@ namespace RC.App.BizLogic.Views.Core
                         new SpriteInst()
                         {
                             Index = (int)partialFowFlags,
-                            DisplayCoords = (this.Map.QuadToCellRect(new RCIntRectangle(quadTile.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
-                                          * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                          - displayOffset,
+                            DisplayCoords = this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(quadTile.MapCoords, new RCIntVector(1, 1))).Location,
                             Section = RCIntRectangle.Undefined
                         });
                 }
@@ -58,19 +47,10 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="IFogOfWarView.GetFullFOWTiles"/>
-        public List<SpriteInst> GetFullFOWTiles(RCIntRectangle displayedArea)
+        public List<SpriteInst> GetFullFOWTiles()
         {
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            /// Calculate the currently visible window of cells and quadratic tiles.
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-            RCIntRectangle quadTileWindow = this.Map.CellToQuadRect(cellWindow);
-
             List<SpriteInst> retList = new List<SpriteInst>();
-            foreach (IQuadTile quadTile in this.fogOfWarBC.GetQuadTilesToUpdate(quadTileWindow))
+            foreach (IQuadTile quadTile in this.fogOfWarBC.GetQuadTilesToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
             {
                 FOWTileFlagsEnum fullFowFlags = this.fogOfWarBC.GetFullFowTileFlags(quadTile.MapCoords);
                 if (fullFowFlags != FOWTileFlagsEnum.None)
@@ -79,9 +59,7 @@ namespace RC.App.BizLogic.Views.Core
                         new SpriteInst()
                         {
                             Index = (int)fullFowFlags,
-                            DisplayCoords = (this.Map.QuadToCellRect(new RCIntRectangle(quadTile.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
-                                          * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                          - displayOffset,
+                            DisplayCoords = this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(quadTile.MapCoords, new RCIntVector(1, 1))).Location,
                             Section = RCIntRectangle.Undefined
                         });
                 }
@@ -94,6 +72,6 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Reference to the Fog Of War business component.
         /// </summary>
-        private IFogOfWarBC fogOfWarBC;
+        private readonly IFogOfWarBC fogOfWarBC;
     }
 }

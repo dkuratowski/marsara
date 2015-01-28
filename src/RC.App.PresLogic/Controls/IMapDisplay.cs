@@ -8,43 +8,27 @@ using RC.Common;
 namespace RC.App.PresLogic.Controls
 {
     /// <summary>
-    /// Enumerates the possible scrolling directions of a map display.
-    /// </summary>
-    public enum ScrollDirection
-    {
-        NoScroll = -1,
-        North = 0,
-        NorthEast = 1,
-        East = 2,
-        SouthEast = 3,
-        South = 4,
-        SouthWest = 5,
-        West = 6,
-        NorthWest = 7
-    }
-
-    /// <summary>
     /// Interface of a map display control.
     /// </summary>
     public interface IMapDisplay
     {
         /// <summary>
-        /// Gets the area that is currently displayed on the control.
-        /// </summary>
-        RCIntRectangle DisplayedArea { get; }
-
-        /// <summary>
-        /// Attaches the given mouse handler to the control.
+        /// Attaches the given mouse handler to the map display.
         /// </summary>
         /// <param name="handler">The handler to be attached.</param>
-        /// <exception cref="InvalidOperationException">If another mouse handler has already been attached to the control.</exception>
+        /// <exception cref="InvalidOperationException">If another mouse handler has already been attached to the map display.</exception>
         void AttachMouseHandler(IMouseHandler handler);
         
         /// <summary>
-        /// Detaches the currently attached mouse handler from the control.
+        /// Detaches the currently attached mouse handler from the map display.
         /// </summary>
-        /// <exception cref="InvalidOperationException">If ther is no mouse handler attached to the control.</exception>
+        /// <exception cref="InvalidOperationException">If ther is no mouse handler attached to the map display.</exception>
         void DetachMouseHandler();
+
+        /// <summary>
+        /// Gets the size of the map display in pixels.
+        /// </summary>
+        RCIntVector PixelSize { get; }
     }
 
     /// <summary>
@@ -106,10 +90,5 @@ namespace RC.App.PresLogic.Controls
         /// Gets the reference to the currently active object placement display informations or null if no object placement box shall be displayed.
         /// </summary>
         ObjectPlacementInfo ObjectPlacementInfo { get; }
-
-        /// <summary>
-        /// Gets the current scrolling direction.
-        /// </summary>
-        ScrollDirection CurrentScrollDirection { get; }
     }
 }

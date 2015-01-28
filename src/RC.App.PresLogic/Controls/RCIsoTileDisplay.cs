@@ -53,9 +53,6 @@ namespace RC.App.PresLogic.Controls
 
         #endregion Extension settings
 
-        /// <see cref="RCMapDisplayExtension.MapView"/>
-        protected override IMapView MapView { get { return this.mapTerrainView; } }
-
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
@@ -75,10 +72,9 @@ namespace RC.App.PresLogic.Controls
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
             if (this.highlightIsoTile &&
-                this.DisplayedArea != RCIntRectangle.Undefined &&
                 this.lastKnownMousePosition != RCIntVector.Undefined)
             {
-                renderContext.RenderSprite(this.isotileHighlightedSprite, this.mapTerrainView.GetIsoTileDisplayCoords(this.DisplayedArea, this.lastKnownMousePosition));
+                renderContext.RenderSprite(this.isotileHighlightedSprite, this.mapTerrainView.GetIsoTileDisplayCoords(this.lastKnownMousePosition));
             }
         }
 

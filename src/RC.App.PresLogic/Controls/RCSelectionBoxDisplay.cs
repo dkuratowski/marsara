@@ -23,7 +23,6 @@ namespace RC.App.PresLogic.Controls
         public RCSelectionBoxDisplay(RCMapDisplay extendedControl)
             : base(extendedControl)
         {
-            this.mapView = null;
             this.selectionBoxPointer = UIResourceManager.GetResource<UIPointer>("RC.App.Pointers.SelectionBoxPointer");
             this.crosshairsPointer = UIResourceManager.GetResource<UIPointer>("RC.App.Pointers.CrosshairsPointer");
             this.selectionBoxBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
@@ -51,22 +50,6 @@ namespace RC.App.PresLogic.Controls
             return null;
         }
 
-        /// <see cref="RCMapDisplayExtension.MapView"/>
-        protected override IMapView MapView { get { return this.mapView; } }
-
-        /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
-        protected override void ConnectEx_i()
-        {
-            IViewService viewService = ComponentManager.GetInterface<IViewService>();
-            this.mapView = viewService.CreateView<IMapTerrainView>();
-        }
-
-        /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>
-        protected override void DisconnectEx_i()
-        {
-            this.mapView = null;
-        }
-
         /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
@@ -78,11 +61,6 @@ namespace RC.App.PresLogic.Controls
         }
 
         #endregion Overrides
-
-        /// <summary>
-        /// Reference to a map view.
-        /// </summary>
-        private IMapView mapView;
 
         /// <summary>
         /// Resources for rendering.

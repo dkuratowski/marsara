@@ -23,15 +23,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.loadedTilesets = new Dictionary<string, ITileSet>();
         }
 
-        #region ITileSetStore methods
+        #region ITilesetManagerBC methods
 
-        /// <see cref="ITileSetStore.GetTileSet"/>
+        /// <see cref="ITilesetManagerBC.GetTileSet"/>
         public ITileSet GetTileSet(string tilesetName)
         {
             return this.loadedTilesets.ContainsKey(tilesetName) ? this.loadedTilesets[tilesetName] : null;
         }
 
-        #endregion ITileSetStore methods
+        #endregion ITilesetManagerBC methods
 
         #region IComponent methods
 

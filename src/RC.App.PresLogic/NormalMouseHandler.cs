@@ -80,7 +80,7 @@ namespace RC.App.PresLogic
                 {
                     /// Handle the mouse event.
                     TraceManager.WriteAllTrace(string.Format("RIGHT_CLICK {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                    this.CommandService.SendFastCommand(this.MapDisplay.DisplayedArea, evtArgs.Position);
+                    this.CommandService.SendFastCommand(evtArgs.Position);
                     this.CurrentMouseStatus = MouseStatus.RightDown;
                 }
                 else if (evtArgs.Button == UIMouseButton.Left)
@@ -147,7 +147,7 @@ namespace RC.App.PresLogic
 
                 /// Handle the mouse event.
                 TraceManager.WriteAllTrace(string.Format("LEFT_CLICK {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                this.CommandService.Select(this.MapDisplay.DisplayedArea, evtArgs.Position);
+                this.CommandService.Select(evtArgs.Position);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
@@ -160,7 +160,7 @@ namespace RC.App.PresLogic
 
                 /// Handle the mouse event.
                 TraceManager.WriteAllTrace(string.Format("SELECTION {0}", this.selectionBox), PresLogicTraceFilters.INFO);
-                this.CommandService.Select(this.MapDisplay.DisplayedArea, this.selectionBox);
+                this.CommandService.Select(this.selectionBox);
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
@@ -175,7 +175,7 @@ namespace RC.App.PresLogic
             {
                 /// Handle the mouse event.
                 TraceManager.WriteAllTrace(string.Format("DOUBLE_CLICK {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                this.CommandService.SelectType(this.MapDisplay.DisplayedArea, evtArgs.Position);
+                this.CommandService.SelectType(evtArgs.Position);
 
                 this.CurrentMouseStatus = MouseStatus.None;
             }

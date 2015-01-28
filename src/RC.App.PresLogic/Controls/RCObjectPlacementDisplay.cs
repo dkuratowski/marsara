@@ -23,40 +23,33 @@ namespace RC.App.PresLogic.Controls
         public RCObjectPlacementDisplay(RCMapDisplay extendedControl)
             : base(extendedControl)
         {
-            this.mapView = null;
             this.objectPlacementMaskGreen = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ObjectPlacementMaskGreen");
             this.objectPlacementMaskRed = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ObjectPlacementMaskRed");
             this.lastKnownMousePosition = RCIntVector.Undefined;
         }
 
-        /// <see cref="RCMapDisplayExtension.MapView"/>
-        protected override IMapView MapView { get { return this.mapView; } }
-
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
-            this.mapView = viewService.CreateView<IMapTerrainView>();
             this.MouseSensor.Move += this.OnMouseMove;
         }
 
         /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>
         protected override void DisconnectEx_i()
         {
-            this.mapView = null;
             this.MouseSensor.Move -= this.OnMouseMove;
         }
 
         /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
-            if (this.DisplayedArea != RCIntRectangle.Undefined &&
-                this.MouseHandler != null &&
+            if (this.MouseHandler != null &&
                 this.MouseHandler.ObjectPlacementInfo != null &&
                 this.lastKnownMousePosition != RCIntVector.Undefined)
             {
                 ObjectPlacementBox placementBox =
-                    this.MouseHandler.ObjectPlacementInfo.View.GetObjectPlacementBox(this.DisplayedArea, this.lastKnownMousePosition);
+                    this.MouseHandler.ObjectPlacementInfo.View.GetObjectPlacementBox(this.lastKnownMousePosition);
 
                 foreach (SpriteInst spriteToDisplay in placementBox.Sprites)
                 {
@@ -96,11 +89,6 @@ namespace RC.App.PresLogic.Controls
         /// The sprite for displaying the red parts of the object placement mask.
         /// </summary>
         private UISprite objectPlacementMaskRed;
-
-        /// <summary>
-        /// Reference to a map view.
-        /// </summary>
-        private IMapView mapView;
 
         /// <summary>
         /// The last known position of the mouse cursor in the coordinate system of the display.

@@ -27,13 +27,16 @@ namespace RC.App.PresLogic
             if (mapDisplay == null) { throw new ArgumentNullException("mapDisplay"); }
 
             this.commandService = ComponentManager.GetInterface<ICommandService>();
+            this.scrollService = ComponentManager.GetInterface<IScrollService>();
             this.commandView = ComponentManager.GetInterface<IViewService>().CreateView<ICommandView>();
 
-            this.currentScrollDir = ScrollDirection.NoScroll;
+            this.currentScrollDir = ScrollDirectionEnum.NoScroll;
+            this.timeSinceLastScroll = 0;
             this.isScrollEnabled = true;
             this.mapDisplay = mapDisplay;
-            this.scrollEeventSource = scrollEventSource;
-            this.scrollEeventSource.MouseSensor.Move += this.OnMouseMove;
+            this.scrollEventSource = scrollEventSource;
+            this.scrollEventSource.MouseSensor.Move += this.OnMouseMove;
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
             this.mapDisplay.AttachMouseHandler(this);
         }
 
@@ -43,7 +46,8 @@ namespace RC.App.PresLogic
         public void Inactivate()
         {
             this.mapDisplay.DetachMouseHandler();
-            this.scrollEeventSource.MouseSensor.Move -= this.OnMouseMove;
+            this.scrollEventSource.MouseSensor.Move -= this.OnMouseMove;
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
             this.Inactivate_i();
             if (this.Inactivated != null) { this.Inactivated(); }
         }
@@ -63,9 +67,6 @@ namespace RC.App.PresLogic
 
         /// <see cref="IMouseHandler.ObjectPlacementInfo"/>
         public virtual ObjectPlacementInfo ObjectPlacementInfo { get { return null; } }
-
-        /// <see cref="IMouseHandler.CurrentScrollDirection"/>
-        public ScrollDirection CurrentScrollDirection { get { return this.isScrollEnabled ? this.currentScrollDir : ScrollDirection.NoScroll; } }
 
         #endregion IMouseHandler members
 
@@ -103,7 +104,7 @@ namespace RC.App.PresLogic
             if (!this.isScrollEnabled) { return; }
 
             this.isScrollEnabled = false;
-            this.currentScrollDir = ScrollDirection.NoScroll;
+            this.currentScrollDir = ScrollDirectionEnum.NoScroll;
         }
 
         /// <summary>
@@ -121,23 +122,42 @@ namespace RC.App.PresLogic
         /// </summary>
         private void OnMouseMove(UISensitiveObject sender, UIMouseEventArgs evtArgs)
         {
-            ScrollDirection newScrollDir = ScrollDirection.NoScroll;
+            ScrollDirectionEnum newScrollDir = ScrollDirectionEnum.NoScroll;
 
-            if (evtArgs.Position.X == 0 || evtArgs.Position.X == this.scrollEeventSource.Range.Width - 1 ||
-                evtArgs.Position.Y == 0 || evtArgs.Position.Y == this.scrollEeventSource.Range.Height - 1)
+            if (evtArgs.Position.X == 0 || evtArgs.Position.X == this.scrollEventSource.Range.Width - 1 ||
+                evtArgs.Position.Y == 0 || evtArgs.Position.Y == this.scrollEventSource.Range.Height - 1)
             {
-                if (evtArgs.Position.X == 0 && evtArgs.Position.Y == 0) { newScrollDir = ScrollDirection.NorthWest; }
-                else if (evtArgs.Position.X == this.scrollEeventSource.Range.Width - 1 && evtArgs.Position.Y == 0) { newScrollDir = ScrollDirection.NorthEast; }
-                else if (evtArgs.Position.X == this.scrollEeventSource.Range.Width - 1 && evtArgs.Position.Y == this.scrollEeventSource.Range.Height - 1) { newScrollDir = ScrollDirection.SouthEast; }
-                else if (evtArgs.Position.X == 0 && evtArgs.Position.Y == this.scrollEeventSource.Range.Height - 1) { newScrollDir = ScrollDirection.SouthWest; }
-                else if (evtArgs.Position.X == 0) { newScrollDir = ScrollDirection.West; }
-                else if (evtArgs.Position.X == this.scrollEeventSource.Range.Width - 1) { newScrollDir = ScrollDirection.East; }
-                else if (evtArgs.Position.Y == 0) { newScrollDir = ScrollDirection.North; }
-                else if (evtArgs.Position.Y == this.scrollEeventSource.Range.Height - 1) { newScrollDir = ScrollDirection.South; }
+                if (evtArgs.Position.X == 0 && evtArgs.Position.Y == 0) { newScrollDir = ScrollDirectionEnum.NorthWest; }
+                else if (evtArgs.Position.X == this.scrollEventSource.Range.Width - 1 && evtArgs.Position.Y == 0) { newScrollDir = ScrollDirectionEnum.NorthEast; }
+                else if (evtArgs.Position.X == this.scrollEventSource.Range.Width - 1 && evtArgs.Position.Y == this.scrollEventSource.Range.Height - 1) { newScrollDir = ScrollDirectionEnum.SouthEast; }
+                else if (evtArgs.Position.X == 0 && evtArgs.Position.Y == this.scrollEventSource.Range.Height - 1) { newScrollDir = ScrollDirectionEnum.SouthWest; }
+                else if (evtArgs.Position.X == 0) { newScrollDir = ScrollDirectionEnum.West; }
+                else if (evtArgs.Position.X == this.scrollEventSource.Range.Width - 1) { newScrollDir = ScrollDirectionEnum.East; }
+                else if (evtArgs.Position.Y == 0) { newScrollDir = ScrollDirectionEnum.North; }
+                else if (evtArgs.Position.Y == this.scrollEventSource.Range.Height - 1) { newScrollDir = ScrollDirectionEnum.South; }
 
             }
             
             this.currentScrollDir = newScrollDir;
+        }
+
+        /// <summary>
+        /// This method is called on every frame update.
+        /// </summary>
+        private void OnFrameUpdate()
+        {
+            if (!this.isScrollEnabled || this.currentScrollDir == ScrollDirectionEnum.NoScroll)
+            {
+                this.timeSinceLastScroll = 0;
+                return;
+            }
+
+            this.timeSinceLastScroll += UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
+            if (this.timeSinceLastScroll > TIME_BETWEEN_MAP_SCROLLS)
+            {
+                this.timeSinceLastScroll = 0;
+                this.scrollService.Scroll(this.currentScrollDir);
+            }
         }
 
         #endregion Event handling
@@ -145,7 +165,7 @@ namespace RC.App.PresLogic
         /// <summary>
         /// The current scrolling direction.
         /// </summary>
-        private ScrollDirection currentScrollDir;
+        private ScrollDirectionEnum currentScrollDir;
 
         /// <summary>
         /// This flag indicates whether scrolling is currently enabled or not.
@@ -155,7 +175,7 @@ namespace RC.App.PresLogic
         /// <summary>
         /// The event source for the scrolling.
         /// </summary>
-        private UISensitiveObject scrollEeventSource;
+        private UISensitiveObject scrollEventSource;
 
         /// <summary>
         /// Reference to the target map display.
@@ -168,8 +188,23 @@ namespace RC.App.PresLogic
         private ICommandService commandService;
 
         /// <summary>
+        /// Reference to the scroll service.
+        /// </summary>
+        private IScrollService scrollService;
+
+        /// <summary>
         /// Reference to a command view.
         /// </summary>
         private ICommandView commandView;
+
+        /// <summary>
+        /// Elapsed time since last scroll in milliseconds.
+        /// </summary>
+        private int timeSinceLastScroll;
+
+        /// <summary>
+        /// The time between scrolling operations in milliseconds.
+        /// </summary>
+        private const int TIME_BETWEEN_MAP_SCROLLS = 20;
     }
 }

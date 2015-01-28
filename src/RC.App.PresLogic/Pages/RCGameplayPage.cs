@@ -69,10 +69,11 @@ namespace RC.App.PresLogic.Pages
         /// <see cref="IGameConnector.Connect"/>
         public void Connect()
         {
-            if (this.gameConnection.CurrentStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("The gameplay page is not offline!"); }
+            if (this.gameConnection.ConnectionStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("The gameplay page is not offline!"); }
             
             /// TODO: A scenario shall be running at this point!
             ComponentManager.GetInterface<IMultiplayerService>().CreateNewGame(".\\maps\\testmap4.rcm", GameTypeEnum.Melee, GameSpeedEnum.Fastest);
+            ComponentManager.GetInterface<IScrollService>().AttachWindow(this.mapDisplay.PixelSize);
 
             /// Create and start the map display control.
             this.gameConnection.ConnectorOperationFinished += this.OnConnected;
@@ -82,7 +83,7 @@ namespace RC.App.PresLogic.Pages
         /// <see cref="IGameConnector.Disconnect"/>
         public void Disconnect()
         {
-            if (this.gameConnection.CurrentStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("The gameplay page is not online!"); }
+            if (this.gameConnection.ConnectionStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("The gameplay page is not online!"); }
 
             this.commandView = null;
             this.selectionIndicatorView = null;
@@ -102,10 +103,10 @@ namespace RC.App.PresLogic.Pages
             this.gameConnection.Disconnect();
         }
 
-        /// <see cref="IGameConnector.CurrentStatus"/>
-        public ConnectionStatusEnum CurrentStatus
+        /// <see cref="IGameConnector.ConnectionStatus"/>
+        public ConnectionStatusEnum ConnectionStatus
         {
-            get { return this.gameConnection.CurrentStatus; }
+            get { return this.gameConnection.ConnectionStatus; }
         }
 
         /// <see cref="IGameConnector.ConnectorOperationFinished"/>

@@ -36,6 +36,7 @@ namespace RC.App.BizLogic.Services.Core
         public void Start()
         {
             this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
+            this.mapWindowBC = ComponentManager.GetInterface<IMapWindowBC>();
             this.mapEditor = ComponentManager.GetInterface<IMapEditor>();
         }
 
@@ -88,15 +89,13 @@ namespace RC.App.BizLogic.Services.Core
         public event Action AnimationsUpdated;
 
         /// <see cref="IMapEditorService.DrawTerrain"/>
-        public void DrawTerrain(RCIntRectangle displayedArea, RCIntVector position, string terrainType)
+        public void DrawTerrain(RCIntVector position, string terrainType)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
             if (terrainType == null) { throw new ArgumentNullException("terrainType"); }
 
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntVector navCellCoords = this.mapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             IIsoTile isotile = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentIsoTile;
 
             IEnumerable<IIsoTile> affectedIsoTiles = this.mapEditor.DrawTerrain(this.scenarioManager.ActiveScenario.Map, isotile,
@@ -123,16 +122,14 @@ namespace RC.App.BizLogic.Services.Core
         }
 
         /// <see cref="IMapEditorService.PlaceTerrainObject"/>
-        public bool PlaceTerrainObject(RCIntRectangle displayedArea, RCIntVector position, string terrainObject)
+        public bool PlaceTerrainObject(RCIntVector position, string terrainObject)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
             if (terrainObject == null) { throw new ArgumentNullException("terrainObject"); }
 
             ITerrainObjectType terrainObjType = this.scenarioManager.ActiveScenario.Map.Tileset.GetTerrainObjectType(terrainObject);
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntVector navCellCoords = this.mapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - terrainObjType.QuadraticSize / 2;
 
@@ -166,14 +163,12 @@ namespace RC.App.BizLogic.Services.Core
         }
 
         /// <see cref="IMapEditorService.RemoveTerrainObject"/>
-        public bool RemoveTerrainObject(RCIntRectangle displayedArea, RCIntVector position)
+        public bool RemoveTerrainObject(RCIntVector position)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntVector navCellCoords = this.mapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             ITerrainObject objToCheck = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile.TerrainObject;
             if (objToCheck != null)
             {
@@ -184,14 +179,12 @@ namespace RC.App.BizLogic.Services.Core
         }
 
         /// <see cref="IMapEditorService.PlaceStartLocation"/>
-        public bool PlaceStartLocation(RCIntRectangle displayedArea, RCIntVector position, int playerIndex)
+        public bool PlaceStartLocation(RCIntVector position, int playerIndex)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntVector navCellCoords = this.mapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
 
             IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(StartLocation.STARTLOCATION_TYPE_NAME);
@@ -227,14 +220,12 @@ namespace RC.App.BizLogic.Services.Core
         }
 
         /// <see cref="IMapEditorService.PlaceMineralField"/>
-        public bool PlaceMineralField(RCIntRectangle displayedArea, RCIntVector position)
+        public bool PlaceMineralField(RCIntVector position)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntVector navCellCoords = this.mapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
 
             IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(MineralField.MINERALFIELD_TYPE_NAME);
@@ -249,14 +240,12 @@ namespace RC.App.BizLogic.Services.Core
         }
 
         /// <see cref="IMapEditorService.PlaceVespeneGeyser"/>
-        public bool PlaceVespeneGeyser(RCIntRectangle displayedArea, RCIntVector position)
+        public bool PlaceVespeneGeyser(RCIntVector position)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntVector navCellCoords = this.mapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
 
             IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(VespeneGeyser.VESPENEGEYSER_TYPE_NAME);
@@ -271,14 +260,12 @@ namespace RC.App.BizLogic.Services.Core
         }
 
         /// <see cref="IMapEditorService.RemoveEntity"/>
-        public bool RemoveEntity(RCIntRectangle displayedArea, RCIntVector position)
+        public bool RemoveEntity(RCIntVector position)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntVector navCellCoords = this.mapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             foreach (Entity entity in this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(navCellCoords))
             {
                 this.scenarioManager.ActiveScenario.DetachEntityFromMap(entity);
@@ -323,6 +310,11 @@ namespace RC.App.BizLogic.Services.Core
         /// Reference to the scenario manager business component.
         /// </summary>
         private IScenarioManagerBC scenarioManager;
+
+        /// <summary>
+        /// Reference to the map window business component.
+        /// </summary>
+        private IMapWindowBC mapWindowBC;
 
         /// <summary>
         /// Reference to the scheduler of the map editor.

@@ -28,28 +28,14 @@ namespace RC.App.BizLogic.Views.Core
         #region ISelectionIndicatorView
 
         /// <see cref="ISelectionIndicatorView.GetVisibleSelIndicators"/>
-        public List<SelIndicatorInst> GetVisibleSelIndicators(RCIntRectangle displayedArea)
+        public List<SelIndicatorInst> GetVisibleSelIndicators()
         {
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
             HashSet<int> currentSelection = this.selectionManager.CurrentSelection;
             if (currentSelection.Count == 0) { return new List<SelIndicatorInst>(); }
 
-            /// Calculate the currently visible window of cells and quadratic tiles.
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-            RCIntRectangle quadTileWindow = this.Map.CellToQuadRect(cellWindow);
-
             /// Display the selection indicators of the currently visible entities inside the currently visible window of quadratic tiles.
             List<SelIndicatorInst> retList = new List<SelIndicatorInst>();
-            HashSet<Entity> entitiesOnMap = this.Scenario.GetEntitiesOnMap<Entity>(
-                new RCNumRectangle(cellWindow.X - CoordTransformationHelper.HALF_VECT.X,
-                                   cellWindow.Y - CoordTransformationHelper.HALF_VECT.Y,
-                                   cellWindow.Width,
-                                   cellWindow.Height));
-            foreach (Entity entity in this.fogOfWarBC.GetEntitiesToUpdate(quadTileWindow))
+            foreach (Entity entity in this.fogOfWarBC.GetEntitiesToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
             {
                 if (currentSelection.Contains(entity.ID.Read()))
                 {
@@ -60,7 +46,7 @@ namespace RC.App.BizLogic.Views.Core
                     retList.Add(new SelIndicatorInst()
                     {
                         SelIndicatorType = indicatorType,
-                        IndicatorRect = (RCIntRectangle)((entity.BoundingBox - cellWindow.Location + CoordTransformationHelper.HALF_VECT) * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT) - displayOffset,
+                        IndicatorRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entity.BoundingBox),
                         HpNorm = (RCNumber)1, // TODO: must base on real data
                         ShieldNorm = (RCNumber)1, // TODO: must base on real data
                         EnergyNorm = (RCNumber)1 // TODO: must base on real data

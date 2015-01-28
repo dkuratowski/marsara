@@ -36,9 +36,6 @@ namespace RC.App.PresLogic.Controls
         
         #region Overrides
 
-        /// <see cref="RCMapDisplayExtension.MapView"/>
-        protected override IMapView MapView { get { return this.selectionIndicatorView; } }
-
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
@@ -56,7 +53,7 @@ namespace RC.App.PresLogic.Controls
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
             /// Render the selection indicators of the selected map objects.
-            List<SelIndicatorInst> selectionIndicators = this.selectionIndicatorView.GetVisibleSelIndicators(this.DisplayedArea);
+            List<SelIndicatorInst> selectionIndicators = this.selectionIndicatorView.GetVisibleSelIndicators();
             foreach (SelIndicatorInst selIndicator in selectionIndicators)
             {
                 if (selIndicator.SelIndicatorType == SelIndicatorTypeEnum.Friendly)

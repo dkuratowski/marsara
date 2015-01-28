@@ -37,9 +37,6 @@ namespace RC.App.PresLogic.Controls
 
         #region Overrides
 
-        /// <see cref="RCMapDisplayExtension.MapView"/>
-        protected override IMapView MapView { get { return this.mapObjectView; } }
-
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
@@ -76,7 +73,7 @@ namespace RC.App.PresLogic.Controls
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
             /// Retrieve the list of the visible map objects.
-            List<ObjectInst> mapObjects = this.mapObjectView.GetVisibleMapObjects(this.DisplayedArea);
+            List<ObjectInst> mapObjects = this.mapObjectView.GetVisibleMapObjects();
 
             /// Render the object sprites.
             foreach (ObjectInst obj in mapObjects)

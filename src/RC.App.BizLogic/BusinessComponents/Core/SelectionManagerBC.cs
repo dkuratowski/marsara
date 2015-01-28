@@ -13,7 +13,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     /// Implementation of the selection manager business component.
     /// </summary>
     [Component("RC.App.BizLogic.SelectionManagerBC")]
-    class SelectionManagerBC : ISelectionManagerBC, IComponent
+    class SelectionManagerBC : ScenarioDependentComponent, ISelectionManagerBC
     {
         /// <summary>
         /// Constructs a SelectionManagerBC instance.
@@ -23,28 +23,28 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.localPlayer = PlayerEnum.Neutral;
         }
 
-        #region IComponent methods
+        #region Overrides from ScenarioDependentComponent
 
-        /// <see cref="IComponent.Start"/>
-        public void Start()
+        /// <see cref="ScenarioDependentComponent.StartImpl"/>
+        protected override void StartImpl()
         {
-            this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
             this.fogOfWarBC = ComponentManager.GetInterface<IFogOfWarBC>();
         }
 
-        /// <see cref="IComponent.Stop"/>
-        public void Stop()
+        /// <see cref="ScenarioDependentComponent.OnActiveScenarioChanged"/>
+        protected override void OnActiveScenarioChanged(Scenario activeScenario)
         {
+            this.localPlayer = PlayerEnum.Neutral;
         }
 
-        #endregion IComponent methods
+        #endregion Overrides from ScenarioDependentComponent
 
         #region ISelectionManagerBC methods
 
         /// <see cref="ISelectionManagerBC.Reset"/>
         public void Reset(PlayerEnum localPlayer)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (localPlayer == PlayerEnum.Neutral) { throw new ArgumentException("Local player cannot be PlayerEnum.Neutral!", "localPlayer"); }
 
             this.localPlayer = localPlayer;
@@ -59,12 +59,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="ISelectionManagerBC.GetEntity"/>
         public int GetEntity(RCNumVector position)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
             this.Update();
 
-            Entity entityAtPos = this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(position).FirstOrDefault();
+            Entity entityAtPos = this.ActiveScenario.GetEntitiesOnMap<Entity>(position).FirstOrDefault();
             if (entityAtPos == null) { return -1; }
             return entityAtPos.ID.Read();
         }
@@ -72,7 +72,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="ISelectionManagerBC.SelectEntities"/>
         public void SelectEntities(RCNumRectangle selectionBox)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
             this.Update();
@@ -84,7 +84,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             Entity otherPlayerBuilding = null;
             Entity otherPlayerAddon = null;
             Entity other = null;
-            foreach (Entity entity in this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(selectionBox))
+            foreach (Entity entity in this.ActiveScenario.GetEntitiesOnMap<Entity>(selectionBox))
             {
                 if (entity is Unit)
                 {
@@ -149,12 +149,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="ISelectionManagerBC.SelectEntity"/>
         public void SelectEntity(RCNumVector position)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
             this.Update();
 
-            Entity entityAtPos = this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(position).FirstOrDefault();
+            Entity entityAtPos = this.ActiveScenario.GetEntitiesOnMap<Entity>(position).FirstOrDefault();
             if (entityAtPos == null) { return; }
             this.currentSelection.Clear();
             this.currentSelection.Add(entityAtPos.ID.Read());
@@ -163,7 +163,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="ISelectionManagerBC.AddRemoveEntityToSelection"/>
         public void AddRemoveEntityToSelection(RCNumVector position)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
             this.Update();
@@ -173,7 +173,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="ISelectionManagerBC.AddEntitiesToSelection"/>
         public void AddEntitiesToSelection(RCNumRectangle selectionBox)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
             this.Update();
@@ -183,7 +183,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="ISelectionManagerBC.LoadSelection"/>
         public void LoadSelection(int index)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
             this.Update();
@@ -193,7 +193,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="ISelectionManagerBC.SaveCurrentSelection"/>
         public void SaveCurrentSelection(int index)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
             this.Update();
@@ -205,7 +205,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             get
             {
-                if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+                if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
                 if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
                 this.Update();
@@ -218,7 +218,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             get
             {
-                if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+                if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
                 return this.localPlayer;
             }
         }
@@ -234,13 +234,13 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             HashSet<int> idsToRemove = new HashSet<int>();
             foreach (int id in this.currentSelection)
             {
-                if (this.scenarioManager.ActiveScenario.GetEntity<Entity>(id) == null) { idsToRemove.Add(id); }
+                if (this.ActiveScenario.GetEntity<Entity>(id) == null) { idsToRemove.Add(id); }
             }
             foreach (HashSet<int> savedSelection in this.savedSelections)
             {
                 foreach (int id in savedSelection)
                 {
-                    if (this.scenarioManager.ActiveScenario.GetEntity<Entity>(id) == null) { idsToRemove.Add(id); }
+                    if (this.ActiveScenario.GetEntity<Entity>(id) == null) { idsToRemove.Add(id); }
                 }
             }
 
@@ -254,11 +254,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 }
             }
         }
-
-        /// <summary>
-        /// Reference to the scenario manager business component.
-        /// </summary>
-        private IScenarioManagerBC scenarioManager;
 
         /// <summary>
         /// Reference to the Fog Of War business component.

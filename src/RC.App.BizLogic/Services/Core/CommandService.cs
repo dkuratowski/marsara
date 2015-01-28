@@ -23,6 +23,7 @@ namespace RC.App.BizLogic.Services.Core
             this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
             this.selectionManager = ComponentManager.GetInterface<ISelectionManagerBC>();
             this.commandManager = ComponentManager.GetInterface<ICommandManagerBC>();
+            this.mapWindowBC = ComponentManager.GetInterface<IMapWindowBC>();
 
             /// TODO: Temporary reference for sending fast commands!
             this.multiplayerService = ComponentManager.GetInterface<IMultiplayerService>();
@@ -38,74 +39,39 @@ namespace RC.App.BizLogic.Services.Core
         #region ICommandService methods
 
         /// <see cref="ICommandService.Select"/>
-        public void Select(RCIntRectangle displayedArea, RCIntVector position)
+        public void Select(RCIntVector position)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
 
-            RCIntVector mapSize = this.scenarioManager.ActiveScenario.Map.CellSize * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT;
-            if (!new RCIntRectangle(0, 0, mapSize.X, mapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-
-            RCNumVector mapCoords = new RCNumVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                    (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL) - CoordTransformationHelper.HALF_VECT;
-            this.selectionManager.SelectEntity(mapCoords);
+            this.selectionManager.SelectEntity(this.mapWindowBC.AttachedWindow.WindowToMapCoords(position));
         }
 
         /// <see cref="ICommandService.Select"/>
-        public void Select(RCIntRectangle displayedArea, RCIntRectangle selectionBox)
+        public void Select(RCIntRectangle selectionBox)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
 
-            RCIntVector mapSize = this.scenarioManager.ActiveScenario.Map.CellSize * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT;
-            if (!new RCIntRectangle(0, 0, mapSize.X, mapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-
-            RCNumRectangle mapCoords =
-                new RCNumRectangle(
-                    new RCNumVector((displayedArea + selectionBox.Location).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                    (displayedArea + selectionBox.Location).Y / BizLogicConstants.PIXEL_PER_NAVCELL) - CoordTransformationHelper.HALF_VECT,
-                    new RCNumVector((RCNumber)selectionBox.Size.X / (RCNumber)BizLogicConstants.PIXEL_PER_NAVCELL,
-                                    (RCNumber)selectionBox.Size.Y / (RCNumber)BizLogicConstants.PIXEL_PER_NAVCELL));
-            this.selectionManager.SelectEntities(mapCoords);
+            this.selectionManager.SelectEntities(this.mapWindowBC.AttachedWindow.WindowToMapRect(selectionBox));
         }
 
         /// <see cref="ICommandService.SelectType"/>
-        public void SelectType(RCIntRectangle displayedArea, RCIntVector position)
+        public void SelectType(RCIntVector position)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             /// TODO: implement!
         }
 
         /// <see cref="ICommandService.SendFastCommand"/>
-        public void SendFastCommand(RCIntRectangle displayedArea, RCIntVector position)
+        public void SendFastCommand(RCIntVector position)
         {
             /// TODO: This is a PROTOTYPE CODE!
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-
-            RCIntVector mapSize = this.scenarioManager.ActiveScenario.Map.CellSize * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT;
-            if (!new RCIntRectangle(0, 0, mapSize.X, mapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
 
             if (this.selectionManager.CurrentSelection.Count != 0)
             {
-                RCIntRectangle cellWindow;
-                RCIntVector displayOffset;
-                CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-
-                RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                            (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-
                 this.multiplayerService.PostCommand(RCCommand.Create(RC.App.BizLogic.Services.FastCommand.MNEMONIC,
                                                                      this.selectionManager.CurrentSelection.ToArray(),
-                                                                     navCellCoords,
+                                                                     this.mapWindowBC.AttachedWindow.WindowToMapCoords(position),
                                                                      -1,
                                                                      null));
             }
@@ -115,32 +81,24 @@ namespace RC.App.BizLogic.Services.Core
         public void PressCommandButton(RCIntVector panelPosition)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+
             this.commandManager.PressCommandButton(panelPosition);
         }
 
         /// <see cref="ICommandService.SelectTargetPosition"/>
-        public void SelectTargetPosition(RCIntRectangle displayedArea, RCIntVector position)
+        public void SelectTargetPosition(RCIntVector position)
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            RCIntVector mapSize = this.scenarioManager.ActiveScenario.Map.CellSize * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT;
-            if (!new RCIntRectangle(0, 0, mapSize.X, mapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            this.commandManager.SelectTargetPosition(navCellCoords);
+            this.commandManager.SelectTargetPosition(this.mapWindowBC.AttachedWindow.WindowToMapCoords(position));
         }
 
         /// <see cref="ICommandService.CancelSelectingTargetPosition"/>
         public void CancelSelectingTargetPosition()
         {
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+
             this.commandManager.CancelSelectingTargetPosition();
         }
 
@@ -160,6 +118,11 @@ namespace RC.App.BizLogic.Services.Core
         /// Reference to the command manager business component.
         /// </summary>
         private ICommandManagerBC commandManager;
+
+        /// <summary>
+        /// Reference to the map window business component.
+        /// </summary>
+        private IMapWindowBC mapWindowBC;
 
         /// <summary>
         /// TODO: Temporary reference for sending fast commands!

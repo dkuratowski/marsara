@@ -28,6 +28,7 @@ namespace RC.App.PresLogic.Controls
             this.mapView = null;
             this.tiles = null;
             this.terrainObjects = null;
+            this.terrainRenderer = null;
         }
 
         /// <summary>
@@ -37,9 +38,6 @@ namespace RC.App.PresLogic.Controls
 
         #region Overrides
 
-        /// <see cref="RCMapDisplay.MapView"/>
-        protected override IMapView MapView { get { return this.mapView; } }
-
         /// <see cref="RCMapDisplay.Connect_i"/>
         protected override void Connect_i()
         {
@@ -48,6 +46,14 @@ namespace RC.App.PresLogic.Controls
             ITileSetView tilesetView = viewService.CreateView<ITileSetView>();
             this.tiles = new IsoTileSpriteGroup(tilesetView);
             this.terrainObjects = new TerrainObjectSpriteGroup(tilesetView);
+
+            this.ConnectorOperationFinished += this.OnConnected;
+        }
+
+        /// <see cref="RCMapDisplay.Disconnect_i"/>
+        protected override void Disconnect_i()
+        {
+            this.terrainRenderer = null;
         }
 
         /// <see cref="RCMapDisplay.ConnectBackgroundProc_i"/>
@@ -70,25 +76,27 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="UIObject.Render_i"/>
         protected override void Render_i(IUIRenderContext renderContext)
         {
-            if (this.DisplayedArea != RCIntRectangle.Undefined)
+            if (this.terrainRenderer != null)
             {
-                /// Display the currently visible tiles.
-                foreach (SpriteInst tileDisplayInfo in this.mapView.GetVisibleIsoTiles(this.DisplayedArea))
-	            {
-                    UISprite tileToDisplay = this.tiles[tileDisplayInfo.Index];
-                    renderContext.RenderSprite(tileToDisplay, tileDisplayInfo.DisplayCoords, tileDisplayInfo.Section);
-                }
-
-                /// Display the currently visible terrain objects.
-                foreach (SpriteInst terrainObjDisplayInfo in this.mapView.GetVisibleTerrainObjects(this.DisplayedArea))
-                {
-                    UISprite terrainObjToDisplay = this.terrainObjects[terrainObjDisplayInfo.Index];
-                    renderContext.RenderSprite(terrainObjToDisplay, terrainObjDisplayInfo.DisplayCoords, terrainObjDisplayInfo.Section);
-                }
+                this.terrainRenderer.Render(renderContext);
             }
         }
 
         #endregion Overrides
+
+        /// <summary>
+        /// Called when this RCMapDisplayBasic has been connected.
+        /// </summary>
+        private void OnConnected(IGameConnector sender)
+        {
+            this.ConnectorOperationFinished -= this.OnConnected;
+            this.terrainRenderer = new MapTerrainRenderer(this.tiles, this.terrainObjects);
+        }
+
+        /// <summary>
+        /// Reference to the terrain renderer instance.
+        /// </summary>
+        private MapTerrainRenderer terrainRenderer;
 
         /// <summary>
         /// List of the tiles in the tileset of the currently displayed map.

@@ -46,6 +46,7 @@ namespace RC.UnitTests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
+            tilesets = new Dictionary<string, ITileSet>();
             mapLoader = new MapLoader();
             mapLoader.Start();
             PrivateObject mapLoaderObj = new PrivateObject(mapLoader);

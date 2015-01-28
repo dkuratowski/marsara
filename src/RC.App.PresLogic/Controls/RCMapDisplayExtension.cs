@@ -169,7 +169,7 @@ namespace RC.App.PresLogic.Controls
         private void OnExtendedControlConnected(IGameConnector sender)
         {
             if (sender != this.extendedControl) { throw new InvalidOperationException("Unexpected connector!"); }
-            if (sender.CurrentStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("Extended control is not online!"); }
+            if (sender.ConnectionStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("Extended control is not online!"); }
 
             this.extendedControl.ConnectorOperationFinished -= this.OnExtendedControlConnected;
             this.extendedCtrlOpFinished.Set();
@@ -181,7 +181,7 @@ namespace RC.App.PresLogic.Controls
         private void OnExtendedControlDisconnected(IGameConnector sender)
         {
             if (sender != this.extendedControl) { throw new InvalidOperationException("Unexpected connector!"); }
-            if (sender.CurrentStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("Extended control is not offline!"); }
+            if (sender.ConnectionStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("Extended control is not offline!"); }
 
             this.extendedControl.ConnectorOperationFinished -= this.OnExtendedControlDisconnected;
             this.extendedCtrlOpFinished.Set();

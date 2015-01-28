@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Common.ComponentModel;
@@ -14,37 +12,31 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     /// The implementation of the Fog Of War business component.
     /// </summary>
     [Component("RC.App.BizLogic.FogOfWarBC")]
-    class FogOfWarBC : IFogOfWarBC, IComponent
+    class FogOfWarBC : ScenarioDependentComponent, IFogOfWarBC
     {
         /// <summary>
         /// Constructs a FogOfWarBC instance.
         /// </summary>
         public FogOfWarBC()
         {
-            this.cache = new CachedValue<FowVisibilityInfo>(this.CalculateVisibilityWithoutFow);
-            this.quadTileWindow = RCIntRectangle.Undefined;
-            this.runningFows = new FogOfWar[Player.MAX_PLAYERS];
-            this.runningFowsCount = 0;
-            this.fowCacheMatrix = null;
-            this.targetScenario = null;
-            this.currentIterationIndex = 0;
-            this.fowIndex = 0;
+            this.Reset();
         }
 
-        #region IComponent methods
+        #region Overrides from ScenarioDependentComponent
 
-        /// <see cref="IComponent.Start"/>
-        public void Start()
+        /// <see cref="ScenarioDependentComponent.StartImpl"/>
+        protected override void StartImpl()
         {
-            this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
+            this.mapWindowBC = ComponentManager.GetInterface<IMapWindowBC>();
         }
 
-        /// <see cref="IComponent.Stop"/>
-        public void Stop()
+        /// <see cref="ScenarioDependentComponent.OnActiveScenarioChanged"/>
+        protected override void OnActiveScenarioChanged(Scenario activeScenario)
         {
+            this.Reset();
         }
 
-        #endregion IComponent methods
+        #endregion Overrides from ScenarioDependentComponent
 
         #region IFogOfWarBC methods
 
@@ -52,20 +44,18 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         public void StartFogOfWar(PlayerEnum owner)
         {
             if (owner == PlayerEnum.Neutral) { throw new ArgumentException("Fog Of War owner cannot be PlayerEnum.Neutral!"); }
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             
-            Player ownerPlayer = this.scenarioManager.ActiveScenario.GetPlayer((int)owner);
+            Player ownerPlayer = this.ActiveScenario.GetPlayer((int)owner);
             if (ownerPlayer == null) { throw new InvalidOperationException(string.Format("Player {0} doesn't exist!", owner)); }
 
             if (this.runningFows[(int)owner] != null) { throw new InvalidOperationException(string.Format("Fog Of War for player {0} is already running!", owner)); }
             this.runningFows[(int)owner] = new FogOfWar(ownerPlayer);
             this.runningFowsCount++;
 
-            if (this.targetScenario == null)
+            if (this.runningFowsCount == 1)
             {
-                this.targetScenario = this.scenarioManager.ActiveScenario;
-                this.fowCacheMatrix = new FowCacheMatrix(this.runningFows, this.targetScenario);
+                this.fowCacheMatrix = new FowCacheMatrix(this.runningFows, this.ActiveScenario);
                 this.cache = new CachedValue<FowVisibilityInfo>(this.CalculateVisibilityWithFow);
             }
             else
@@ -78,8 +68,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         public void StopFogOfWar(PlayerEnum owner)
         {
             if (owner == PlayerEnum.Neutral) { throw new ArgumentException("Fog Of War owner cannot be PlayerEnum.Neutral!"); }
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             if (this.runningFows[(int)owner] == null) { throw new InvalidOperationException(string.Format("Fog Of War for player {0} is not running!", owner)); }
             this.runningFows[(int)owner] = null;
@@ -87,7 +76,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.runningFowsCount == 0)
             {
                 this.quadTileWindow = RCIntRectangle.Undefined;
-                this.targetScenario = null;
                 this.fowCacheMatrix = null;
                 this.currentIterationIndex = 0;
                 this.fowIndex = 0;
@@ -102,8 +90,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="IFogOfWarBC.GetIsoTilesToUpdate"/>
         public IEnumerable<IIsoTile> GetIsoTilesToUpdate(RCIntRectangle quadTileWindow)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             this.UpdateQuadTileWindow(quadTileWindow);
             return this.cache.Value.IsoTilesToUpdate;
@@ -112,8 +99,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="IFogOfWarBC.GetTerrainObjectsToUpdate"/>
         public IEnumerable<ITerrainObject> GetTerrainObjectsToUpdate(RCIntRectangle quadTileWindow)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             this.UpdateQuadTileWindow(quadTileWindow);
             return this.cache.Value.TerrainObjectsToUpdate;
@@ -122,8 +108,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="IFogOfWarBC.GetQuadTilesToUpdate"/>
         public IEnumerable<IQuadTile> GetQuadTilesToUpdate(RCIntRectangle quadTileWindow)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             this.UpdateQuadTileWindow(quadTileWindow);
             return this.cache.Value.QuadTilesToUpdate;
@@ -132,8 +117,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="IFogOfWarBC.GetEntitySnapshotsToUpdate"/>
         public IEnumerable<EntitySnapshot> GetEntitySnapshotsToUpdate(RCIntRectangle quadTileWindow)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             this.UpdateQuadTileWindow(quadTileWindow);
             return this.cache.Value.EntitySnapshotsToUpdate;
@@ -142,8 +126,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="IFogOfWarBC.GetEntitiesToUpdate"/>
         public IEnumerable<Entity> GetEntitiesToUpdate(RCIntRectangle quadTileWindow)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             this.UpdateQuadTileWindow(quadTileWindow);
             return this.cache.Value.EntitiesToUpdate;
@@ -152,8 +135,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="IFogOfWarBC.IsEntityVisible"/>
         public bool IsEntityVisible(RCIntRectangle quadTileWindow, Entity entity)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             this.UpdateQuadTileWindow(quadTileWindow);
             return this.cache.Value.EntitiesToUpdate.Contains(entity);
@@ -162,8 +144,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="IFogOfWarBC.GetFullFowTileFlags"/>
         public FOWTileFlagsEnum GetFullFowTileFlags(RCIntVector quadCoords)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
                         
             return this.runningFowsCount > 0 ? this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(quadCoords) : FOWTileFlagsEnum.None;
         }
@@ -171,8 +152,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="IFogOfWarBC.GetPartialFowTileFlags"/>
         public FOWTileFlagsEnum GetPartialFowTileFlags(RCIntVector quadCoords)
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             return this.runningFowsCount > 0 ? this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadCoords) : FOWTileFlagsEnum.None;
         }
@@ -180,8 +160,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="IFogOfWarBC.ExecuteUpdateIteration"/>
         public void ExecuteUpdateIteration()
         {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            if (this.targetScenario != null && this.targetScenario != this.scenarioManager.ActiveScenario) { throw new InvalidOperationException("Fog Of War calculation is running for a different Scenario!"); }
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.runningFowsCount == 0) { return; }
 
             int remainingEntitiesInCurrIteration = MAX_ENTITIES_PER_ITERATION;
@@ -232,7 +211,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.quadTileWindow == RCIntRectangle.Undefined) { throw new InvalidOperationException("Visibility window not defined!"); }
 
             /// Collect the isometric & quadratic tiles that need to be updated.
-            IMapAccess map = this.scenarioManager.ActiveScenario.Map;
+            IMapAccess map = this.ActiveScenario.Map;
             HashSet<IIsoTile> isoTilesToUpdate = new HashSet<IIsoTile>();
             HashSet<IQuadTile> quadTilesToUpdate = new HashSet<IQuadTile>();
             HashSet<ITerrainObject> terrainObjectsToUpdate = new HashSet<ITerrainObject>();
@@ -262,12 +241,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
 
             /// Collect the currently visible entities.
-            RCIntRectangle cellWindow = map.QuadToCellRect(this.quadTileWindow);
-            HashSet<Entity> entitiesOnMap = this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(
-                new RCNumRectangle(cellWindow.X - CoordTransformationHelper.HALF_VECT.X,
-                                   cellWindow.Y - CoordTransformationHelper.HALF_VECT.Y,
-                                   cellWindow.Width,
-                                   cellWindow.Height));
+            HashSet<Entity> entitiesOnMap = this.ActiveScenario.GetEntitiesOnMap<Entity>(this.mapWindowBC.AttachedWindow.WindowMapCoords);
             HashSet<Entity> entitiesToUpdate = new HashSet<Entity>();
             foreach (Entity entity in entitiesOnMap)
             {
@@ -303,7 +277,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private FowVisibilityInfo CalculateVisibilityWithoutFow()
         {
             /// Collect the isometric & quadratic tiles that need to be updated.
-            IMapAccess map = this.scenarioManager.ActiveScenario.Map;
+            IMapAccess map = this.ActiveScenario.Map;
             HashSet<IIsoTile> isoTilesToUpdate = new HashSet<IIsoTile>();
             HashSet<ITerrainObject> terrainObjectsToUpdate = new HashSet<ITerrainObject>();
             for (int column = this.quadTileWindow.Left; column < this.quadTileWindow.Right; column++)
@@ -319,12 +293,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
 
             /// Collect the currently visible entities.
-            RCIntRectangle cellWindow = map.QuadToCellRect(this.quadTileWindow);
-            HashSet<Entity> entitiesToUpdate = this.scenarioManager.ActiveScenario.GetEntitiesOnMap<Entity>(
-                new RCNumRectangle(cellWindow.X - CoordTransformationHelper.HALF_VECT.X,
-                                   cellWindow.Y - CoordTransformationHelper.HALF_VECT.Y,
-                                   cellWindow.Width,
-                                   cellWindow.Height));
+            HashSet<Entity> entitiesToUpdate = this.ActiveScenario.GetEntitiesOnMap<Entity>(this.mapWindowBC.AttachedWindow.WindowMapCoords);
 
             /// Create the calculated visibility info.
             return new FowVisibilityInfo
@@ -399,7 +368,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 {
                     for (int row = snapshot.QuadraticPosition.Top; row < snapshot.QuadraticPosition.Bottom; row++)
                     {
-                        IQuadTile quadTileToUpdate = this.targetScenario.Map.GetQuadTile(new RCIntVector(col, row));
+                        IQuadTile quadTileToUpdate = this.ActiveScenario.Map.GetQuadTile(new RCIntVector(col, row));
                         if (quadTileToUpdate != null &&
                             (this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None ||
                              this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None))
@@ -425,7 +394,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 {
                     for (int row = entity.QuadraticPosition.Top; row < entity.QuadraticPosition.Bottom; row++)
                     {
-                        IQuadTile quadTileToUpdate = this.targetScenario.Map.GetQuadTile(new RCIntVector(col, row));
+                        IQuadTile quadTileToUpdate = this.ActiveScenario.Map.GetQuadTile(new RCIntVector(col, row));
                         if (quadTileToUpdate != null &&
                             (this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None ||
                              this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None))
@@ -444,19 +413,33 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private void UpdateQuadTileWindow(RCIntRectangle quadTileWindow)
         {
             if (quadTileWindow == RCIntRectangle.Undefined) { throw new ArgumentNullException("quadTileWindow"); }
-            if (!this.scenarioManager.ActiveScenario.Map.IsFinalized || quadTileWindow != this.quadTileWindow)
+            if (!this.ActiveScenario.Map.IsFinalized || quadTileWindow != this.quadTileWindow)
             {
                 this.quadTileWindow = quadTileWindow;
                 this.cache.Invalidate();
             }
         }
 
+        /// <summary>
+        /// Resets the state of this business component.
+        /// </summary>
+        private void Reset()
+        {
+            this.cache = new CachedValue<FowVisibilityInfo>(this.CalculateVisibilityWithoutFow);
+            this.quadTileWindow = RCIntRectangle.Undefined;
+            this.runningFows = new FogOfWar[Player.MAX_PLAYERS];
+            this.runningFowsCount = 0;
+            this.fowCacheMatrix = null;
+            this.currentIterationIndex = 0;
+            this.fowIndex = 0;
+        }
+
         #endregion Internal methods
 
         /// <summary>
-        /// Reference to the scenario manager business component.
+        /// Reference to the map window business component.
         /// </summary>
-        private IScenarioManagerBC scenarioManager;
+        private IMapWindowBC mapWindowBC;
 
         /// <summary>
         /// List of the running Fog Of Wars indexed by the players they belong to. If a given player has no running
@@ -473,11 +456,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// Reference to the cache matrix that is used to lazy calculation and caching the Fog Of War state and FOW-flags for the quadratic tiles.
         /// </summary>
         private FowCacheMatrix fowCacheMatrix;
-
-        /// <summary>
-        /// Reference to the target scenario for which the running Fog Of Wars are being calculated.
-        /// </summary>
-        private Scenario targetScenario;
 
         /// <summary>
         /// The index of the current iteration of the current update.
@@ -498,11 +476,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// The rectangular area of the map in quadratic tile coordinates for which to calculate the visibility informations.
         /// </summary>
         private RCIntRectangle quadTileWindow;
-
-        /// <summary>
-        /// Represents the vector (0.5;0.5).
-        /// </summary>
-        private static readonly RCNumVector HALF_VECTOR = new RCNumVector((RCNumber)1 / (RCNumber)2, (RCNumber)1 / (RCNumber)2);
 
         /// <summary>
         /// The minimum number of iterations per FOW updates.

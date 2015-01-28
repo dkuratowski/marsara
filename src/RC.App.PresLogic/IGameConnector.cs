@@ -40,7 +40,7 @@ namespace RC.App.PresLogic
         /// <summary>
         /// Gets the current status of this game connector.
         /// </summary>
-        ConnectionStatusEnum CurrentStatus { get; }
+        ConnectionStatusEnum ConnectionStatus { get; }
 
         /// <summary>
         /// This event is raised when the current connection/disconnection operation has been finished. The parameter

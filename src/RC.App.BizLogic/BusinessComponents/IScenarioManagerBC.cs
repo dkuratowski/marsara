@@ -56,5 +56,10 @@ namespace RC.App.BizLogic.BusinessComponents
         /// Gets a reference to the simulation metadata.
         /// </summary>
         IScenarioMetadata Metadata { get; }
+
+        /// <summary>
+        /// This event is raised when the active scenario has been changed.
+        /// </summary>
+        event Action<Scenario> ActiveScenarioChanged;
     }
 }

@@ -77,8 +77,8 @@ namespace RC.App.PresLogic.Panels
             };
         }
 
-        /// <see cref="IGameConnector.CurrentStatus"/>
-        ConnectionStatusEnum IGameConnector.CurrentStatus
+        /// <see cref="IGameConnector.ConnectionStatus"/>
+        ConnectionStatusEnum IGameConnector.ConnectionStatus
         {
             get
             {

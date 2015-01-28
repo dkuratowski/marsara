@@ -9,20 +9,18 @@ namespace RC.App.BizLogic.Views
     /// <summary>
     /// Interface of views on the Fog Of War of the currently opened map.
     /// </summary>
-    public interface IFogOfWarView : IMapView
+    public interface IFogOfWarView
     {
         /// <summary>
-        /// Gets the list of the partial Fog Of War tiles to update at the given area.
+        /// Gets the list of the partial Fog Of War tiles to update at the displayed area.
         /// </summary>
-        /// <param name="displayedArea">The area of the map to be displayed in pixels.</param>
         /// <returns>The list of display informations of the partial Fog Of War tiles to update.</returns>
-        List<SpriteInst> GetPartialFOWTiles(RCIntRectangle displayedArea);
+        List<SpriteInst> GetPartialFOWTiles();
 
         /// <summary>
-        /// Gets the list of the full Fog Of War tiles to update at the given area.
+        /// Gets the list of the full Fog Of War tiles to update at the displayed area.
         /// </summary>
-        /// <param name="displayedArea">The area of the map to be displayed in pixels.</param>
         /// <returns>The list of display informations of the full Fog Of War tiles to update.</returns>
-        List<SpriteInst> GetFullFOWTiles(RCIntRectangle displayedArea);
+        List<SpriteInst> GetFullFOWTiles();
     }
 }

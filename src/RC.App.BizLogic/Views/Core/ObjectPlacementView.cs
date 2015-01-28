@@ -26,28 +26,16 @@ namespace RC.App.BizLogic.Views.Core
         #region IObjectPlacementView members
 
         /// <see cref="IObjectPlacementView.GetObjectPlacementBox"/>
-        public ObjectPlacementBox GetObjectPlacementBox(RCIntRectangle displayedArea, RCIntVector position)
+        public ObjectPlacementBox GetObjectPlacementBox(RCIntVector position)
         {
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(position)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntVector navCellCoords = this.MapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             IQuadTile quadTileAtPos = this.Map.GetCell(navCellCoords).ParentQuadTile;
             RCIntVector objectQuadraticSize = this.GetObjectQuadraticSize();
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objectQuadraticSize / 2;
 
             List<SpriteInst> spritesToDisplay = this.GetObjectSprites();
             RCIntVector topLeftDisplayCoords =
-                    (this.Map.QuadToCellRect(new RCIntRectangle(topLeftQuadCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
-                  * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                  - displayOffset;
+                this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(topLeftQuadCoords, new RCIntVector(1, 1))).Location;
             for (int i = 0; i < spritesToDisplay.Count; i++)
             {
                 spritesToDisplay[i] = new SpriteInst()
@@ -72,9 +60,8 @@ namespace RC.App.BizLogic.Views.Core
                 {
                     RCIntVector relativeQuadCoords = new RCIntVector(x, y);
                     RCIntVector absQuadCoords = topLeftQuadCoords + relativeQuadCoords;
-                    RCIntRectangle partRect = (this.Map.QuadToCellRect(new RCIntRectangle(absQuadCoords, new RCIntVector(1, 1))) - cellWindow.Location)
-                                            * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                            - displayOffset;
+                    RCIntRectangle partRect =
+                        this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(absQuadCoords, new RCIntVector(1, 1)));
                     if (violatingQuadCoords.Contains(relativeQuadCoords) || this.fogOfWarBC.GetFullFowTileFlags(absQuadCoords).HasFlag(FOWTileFlagsEnum.Current))
                     {
                         placementBox.IllegalParts.Add(partRect);
@@ -122,6 +109,6 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Reference to the Fog Of War business component.
         /// </summary>
-        private IFogOfWarBC fogOfWarBC;
+        private readonly IFogOfWarBC fogOfWarBC;
     }
 }

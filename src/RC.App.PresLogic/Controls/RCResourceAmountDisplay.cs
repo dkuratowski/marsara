@@ -22,7 +22,6 @@ namespace RC.App.PresLogic.Controls
         public RCResourceAmountDisplay(RCMapDisplay extendedControl)
             : base(extendedControl)
         {
-            this.mapView = null;
             this.mapObjectDataView = null;
             this.drawPosition = RCIntVector.Undefined;
             this.stringToRender = new UIString("R:{0}", UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, RCColor.White);
@@ -54,28 +53,23 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         public int MapObjectID { get { return this.mapObjectDataView != null ? this.mapObjectDataView.ObjectID : -1; } }
 
-        /// <see cref="RCMapDisplayExtension.MapView"/>
-        protected override IMapView MapView { get { return this.mapView; } }
-
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
-            this.mapView = viewService.CreateView<IMapTerrainView>();
             this.MouseSensor.Move += this.OnMouseMove;
         }
 
         /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>
         protected override void DisconnectEx_i()
         {
-            this.mapView = null;
             this.MouseSensor.Move -= this.OnMouseMove;
         }
 
         /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
-            if (this.DisplayedArea != RCIntRectangle.Undefined && this.drawPosition != RCIntVector.Undefined && this.mapObjectDataView != null)
+            if (this.drawPosition != RCIntVector.Undefined && this.mapObjectDataView != null)
             {
                 if (this.mapObjectDataView.MineralsAmount != -1)
                 {
@@ -102,11 +96,6 @@ namespace RC.App.PresLogic.Controls
                 this.drawPosition = evtArgs.Position - new RCIntVector(0, this.stringToRender.Font.MinimumLineHeight);
             }
         }
-
-        /// <summary>
-        /// Reference to a map view.
-        /// </summary>
-        private IMapView mapView;
 
         /// <summary>
         /// Reference to the map object data view or null if there is no map object whose resource data is being displayed.

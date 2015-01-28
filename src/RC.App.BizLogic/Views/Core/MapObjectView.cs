@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RC.Engine.Maps.PublicInterfaces;
+﻿using System.Collections.Generic;
 using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
-using RC.Common.Diagnostics;
 using RC.Engine.Simulator.Scenarios;
-using RC.App.BizLogic.BusinessComponents.Core;
 using RC.App.BizLogic.BusinessComponents;
 using RC.Common.ComponentModel;
 
@@ -29,23 +23,13 @@ namespace RC.App.BizLogic.Views.Core
         #region IMapObjectView methods
 
         /// <see cref="IMapObjectView.GetVisibleMapObjects"/>
-        public List<ObjectInst> GetVisibleMapObjects(RCIntRectangle displayedArea)
+        public List<ObjectInst> GetVisibleMapObjects()
         {
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            /// Calculate the currently visible window of cells and quadratic tiles.
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-            RCIntRectangle quadTileWindow = this.Map.CellToQuadRect(cellWindow);
-
             /// Display the currently visible entities inside the currently visible window of quadratic tiles.
             List<ObjectInst> retList = new List<ObjectInst>();
-            foreach (Entity entity in this.fogOfWarBC.GetEntitiesToUpdate(quadTileWindow))
+            foreach (Entity entity in this.fogOfWarBC.GetEntitiesToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
             {
-                RCIntRectangle displayRect =
-                    (RCIntRectangle)((entity.BoundingBox - cellWindow.Location + CoordTransformationHelper.HALF_VECT) * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT) - displayOffset;
+                RCIntRectangle displayRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entity.BoundingBox);
                 List<SpriteInst> entitySprites = new List<SpriteInst>();
                 foreach (AnimationPlayer animation in entity.CurrentAnimations)
                 {
@@ -71,10 +55,9 @@ namespace RC.App.BizLogic.Views.Core
             }
 
             /// Display the currently visible entity snapshots.
-            foreach (EntitySnapshot entitySnapshot in this.fogOfWarBC.GetEntitySnapshotsToUpdate(quadTileWindow))
+            foreach (EntitySnapshot entitySnapshot in this.fogOfWarBC.GetEntitySnapshotsToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
             {
-                RCIntRectangle displayRect =
-                    (RCIntRectangle)((entitySnapshot.Position - cellWindow.Location + CoordTransformationHelper.HALF_VECT) * CoordTransformationHelper.PIXEL_PER_NAVCELL_VECT) - displayOffset;
+                RCIntRectangle displayRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entitySnapshot.Position);
                 List<SpriteInst> snapshotSprites = new List<SpriteInst>();
                 foreach (int spriteIdx in entitySnapshot.AnimationFrame)
                 {
@@ -96,25 +79,12 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="IMapObjectView.GetMapObjectID"/>
-        public int GetMapObjectID(RCIntRectangle displayedArea, RCIntVector position)
+        public int GetMapObjectID(RCIntVector position)
         {
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(position)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            /// Calculate the currently visible window of cells and quadratic tiles.
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-            RCIntRectangle quadTileWindow = this.Map.CellToQuadRect(cellWindow);
-
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
-            foreach (Entity entity in this.Scenario.GetEntitiesOnMap<Entity>(navCellCoords))
+            foreach (Entity entity in this.Scenario.GetEntitiesOnMap<Entity>(this.MapWindowBC.AttachedWindow.WindowToMapCoords(position)))
             {
                 /// Get the ID of the entity only if it's not hidden by FOW.
-                if (this.fogOfWarBC.IsEntityVisible(quadTileWindow, entity))
+                if (this.fogOfWarBC.IsEntityVisible(this.MapWindowBC.AttachedWindow.QuadTileWindow, entity))
                 {
                     return entity.ID.Read();
                 }

@@ -26,28 +26,17 @@ namespace RC.App.BizLogic.Views.Core
         #region IMapTerrainView methods
 
         /// <see cref="IMapTerrainView.GetVisibleIsoTiles"/>
-        public List<SpriteInst> GetVisibleIsoTiles(RCIntRectangle displayedArea)
+        public List<SpriteInst> GetVisibleIsoTiles()
         {
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            /// Calculate the currently visible window of cells and quadratic tiles.
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-            RCIntRectangle quadTileWindow = this.Map.CellToQuadRect(cellWindow);
-
             /// Collect the currently visible isometric tiles.
             List<SpriteInst> retList = new List<SpriteInst>();
-            foreach (IIsoTile isoTile in this.fogOfWarBC.GetIsoTilesToUpdate(quadTileWindow))
+            foreach (IIsoTile isoTile in this.fogOfWarBC.GetIsoTilesToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
             {
                 retList.Add(
                     new SpriteInst()
                     {
                         Index = isoTile.Variant.Index,
-                        DisplayCoords = (isoTile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
-                                      * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                      - displayOffset,
+                        DisplayCoords = this.MapWindowBC.AttachedWindow.CellToWindowRect(new RCIntRectangle(isoTile.GetCellMapCoords(new RCIntVector(0, 0)), isoTile.CellSize)).Location,
                         Section = RCIntRectangle.Undefined
                     });
             }
@@ -56,46 +45,23 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="IMapTerrainView.GetIsoTileDisplayCoords"/>
-        public RCIntVector GetIsoTileDisplayCoords(RCIntRectangle displayedArea, RCIntVector position)
+        public RCIntVector GetIsoTileDisplayCoords(RCIntVector position)
         {
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(position)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntVector navCellCoords = this.MapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             IIsoTile isotile = this.Map.GetCell(navCellCoords).ParentIsoTile;
-            return (isotile.GetCellMapCoords(new RCIntVector(0, 0)) - cellWindow.Location)
-                 * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                 - displayOffset;
+            return this.MapWindowBC.AttachedWindow.CellToWindowRect(new RCIntRectangle(isotile.GetCellMapCoords(new RCIntVector(0, 0)), isotile.CellSize)).Location;
         }
 
         /// <see cref="IMapTerrainView.GetVisibleTerrainObjects"/>
-        public List<SpriteInst> GetVisibleTerrainObjects(RCIntRectangle displayedArea)
+        public List<SpriteInst> GetVisibleTerrainObjects()
         {
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            /// Calculate the currently visible window of cells and quadratic tiles.
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-            RCIntRectangle quadTileWindow = this.Map.CellToQuadRect(cellWindow);
-
             List<SpriteInst> retList = new List<SpriteInst>();
-            foreach (ITerrainObject terrainObj in this.fogOfWarBC.GetTerrainObjectsToUpdate(quadTileWindow))
+            foreach (ITerrainObject terrainObj in this.fogOfWarBC.GetTerrainObjectsToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
             {
                 retList.Add(new SpriteInst()
                 {
                     Index = terrainObj.Type.Index,
-                    DisplayCoords = (this.Map.QuadToCellRect(new RCIntRectangle(terrainObj.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
-                                  * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                                  - displayOffset,
+                    DisplayCoords = this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(terrainObj.MapCoords, new RCIntVector(1, 1))).Location,
                     Section = RCIntRectangle.Undefined
                 });
             }
@@ -103,50 +69,30 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="IMapTerrainView.GetTerrainObjectDisplayCoords"/>
-        public RCIntVector GetTerrainObjectDisplayCoords(RCIntRectangle displayedArea, RCIntVector position)
+        public RCIntVector GetTerrainObjectDisplayCoords(RCIntVector position)
         {
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(position)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-
-            RCIntVector navCellCoords = new RCIntVector((displayedArea + position).X / BizLogicConstants.PIXEL_PER_NAVCELL,
-                                                        (displayedArea + position).Y / BizLogicConstants.PIXEL_PER_NAVCELL);
+            RCIntVector navCellCoords = this.MapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             ITerrainObject objToCheck = this.Map.GetCell(navCellCoords).ParentQuadTile.TerrainObject;
             if (objToCheck != null)
             {
-                return (this.Map.QuadToCellRect(new RCIntRectangle(objToCheck.MapCoords, new RCIntVector(1, 1))).Location - cellWindow.Location)
-                     * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)
-                     - displayOffset;
+                return this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(objToCheck.MapCoords, new RCIntVector(1, 1))).Location;
             }
 
             return RCIntVector.Undefined;
         }
 
         /// <see cref="IMapTerrainView.GetWalkableCells"/>
-        public List<RCIntRectangle> GetWalkableCells(RCIntRectangle displayedArea)
+        public List<RCIntRectangle> GetWalkableCells()
         {
-            if (displayedArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("displayedArea"); }
-            if (!new RCIntRectangle(0, 0, this.MapSize.X, this.MapSize.Y).Contains(displayedArea)) { throw new ArgumentOutOfRangeException("displayedArea"); }
-
-            RCIntRectangle cellWindow;
-            RCIntVector displayOffset;
-            CoordTransformationHelper.CalculateCellWindow(displayedArea, out cellWindow, out displayOffset);
-
             List<RCIntRectangle> retList = new List<RCIntRectangle>();
-            for (int row = cellWindow.Top; row < cellWindow.Bottom; row++)
+            for (int row = this.MapWindowBC.AttachedWindow.CellWindow.Top; row < this.MapWindowBC.AttachedWindow.CellWindow.Bottom; row++)
             {
-                for (int col = cellWindow.Left; col < cellWindow.Right; col++)
+                for (int col = this.MapWindowBC.AttachedWindow.CellWindow.Left; col < this.MapWindowBC.AttachedWindow.CellWindow.Right; col++)
                 {
                     RCIntVector cellCoords = new RCIntVector(col, row);
                     if (this.Map.GetCell(cellCoords).IsBuildable)
                     {
-                        retList.Add(new RCIntRectangle((cellCoords - cellWindow.Location) * new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL) - displayOffset,
-                                                       new RCIntVector(BizLogicConstants.PIXEL_PER_NAVCELL, BizLogicConstants.PIXEL_PER_NAVCELL)));
+                        retList.Add(this.MapWindowBC.AttachedWindow.CellToWindowRect(new RCIntRectangle(cellCoords, new RCIntVector(1, 1))));
                     }
                 }
             }
@@ -158,6 +104,6 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Reference to the Fog Of War business component.
         /// </summary>
-        private IFogOfWarBC fogOfWarBC;
+        private readonly IFogOfWarBC fogOfWarBC;
     }
 }

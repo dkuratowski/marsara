@@ -15,6 +15,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     /// <summary>
     /// The implementation of the command manager business component.
     /// </summary>
+    /// TODO: derive from ScenarioDependentComponent!
     [Component("RC.App.BizLogic.CommandManagerBC")]
     class CommandManagerBC : ICommandManagerBC, IComponent
     {

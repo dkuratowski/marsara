@@ -25,7 +25,7 @@ namespace RC.App.PresLogic
             this.disconnectedConnectors = new HashSet<IGameConnector>();
             foreach (IGameConnector connector in aggregatedConnectors)
             {
-                if (connector.CurrentStatus != ConnectionStatusEnum.Offline) { throw new ArgumentException("All aggregated connectors shall be in the state ConnectionStatusEnum.Offline!", "aggregatedConnectors"); }
+                if (connector.ConnectionStatus != ConnectionStatusEnum.Offline) { throw new ArgumentException("All aggregated connectors shall be in the state ConnectionStatusEnum.Offline!", "aggregatedConnectors"); }
                 this.disconnectedConnectors.Add(connector);
                 connector.ConnectorOperationFinished += this.OnOperationFinished;
             }
@@ -70,8 +70,8 @@ namespace RC.App.PresLogic
             foreach (IGameConnector connector in this.connectedConnectors) { connector.Disconnect(); }
         }
 
-        /// <see cref="IGameConnector.CurrentStatus"/>
-        public ConnectionStatusEnum CurrentStatus
+        /// <see cref="IGameConnector.ConnectionStatus"/>
+        public ConnectionStatusEnum ConnectionStatus
         {
             get
             {
@@ -99,7 +99,7 @@ namespace RC.App.PresLogic
             if (this.currentStatus == ConnectionStatusEnum.Connecting)
             {
                 if (!this.disconnectedConnectors.Contains(connector)) { throw new InvalidOperationException("Unknown connector!"); }
-                if (connector.CurrentStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("Aggregated connector is not online!"); }
+                if (connector.ConnectionStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("Aggregated connector is not online!"); }
 
                 this.disconnectedConnectors.Remove(connector);
                 this.connectedConnectors.Add(connector);
@@ -113,7 +113,7 @@ namespace RC.App.PresLogic
             else if (this.currentStatus == ConnectionStatusEnum.Disconnecting)
             {
                 if (!this.connectedConnectors.Contains(connector)) { throw new InvalidOperationException("Unknown connector!"); }
-                if (connector.CurrentStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("Aggregated connector is not offline!"); }
+                if (connector.ConnectionStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("Aggregated connector is not offline!"); }
 
                 this.connectedConnectors.Remove(connector);
                 this.disconnectedConnectors.Add(connector);

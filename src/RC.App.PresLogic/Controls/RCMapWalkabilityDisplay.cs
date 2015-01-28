@@ -31,9 +31,6 @@ namespace RC.App.PresLogic.Controls
 
         #region Overrides
 
-        /// <see cref="RCMapDisplayExtension.MapView"/>
-        protected override IMapView MapView { get { return this.mapTerrainView; } }
-
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
@@ -50,7 +47,7 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
-            foreach (RCIntRectangle walkableCell in this.mapTerrainView.GetWalkableCells(this.DisplayedArea))
+            foreach (RCIntRectangle walkableCell in this.mapTerrainView.GetWalkableCells())
             {
                 renderContext.RenderRectangle(this.greenBrush, walkableCell);
             }

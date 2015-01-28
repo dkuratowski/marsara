@@ -37,9 +37,6 @@ namespace RC.App.PresLogic.Controls
         
         #region Overrides
 
-        /// <see cref="RCMapDisplayExtension.MapView"/>
-        protected override IMapView MapView { get { return this.fogOfWarView; } }
-
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
@@ -73,21 +70,18 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
-            if (this.DisplayedArea != RCIntRectangle.Undefined)
+            /// Display the partial FOW-tiles.
+            foreach (SpriteInst partialFowTileInfo in this.fogOfWarView.GetPartialFOWTiles())
             {
-                /// Display the partial FOW-tiles.
-                foreach (SpriteInst partialFowTileInfo in this.fogOfWarView.GetPartialFOWTiles(this.DisplayedArea))
-                {
-                    UISprite fowSprite = this.partialFowSprites[partialFowTileInfo.Index];
-                    renderContext.RenderSprite(fowSprite, partialFowTileInfo.DisplayCoords, partialFowTileInfo.Section);
-                }
+                UISprite fowSprite = this.partialFowSprites[partialFowTileInfo.Index];
+                renderContext.RenderSprite(fowSprite, partialFowTileInfo.DisplayCoords, partialFowTileInfo.Section);
+            }
 
-                /// Display the full FOW-tiles.
-                foreach (SpriteInst fullFowTileInfo in this.fogOfWarView.GetFullFOWTiles(this.DisplayedArea))
-                {
-                    UISprite fowSprite = this.fullFowSprites[fullFowTileInfo.Index];
-                    renderContext.RenderSprite(fowSprite, fullFowTileInfo.DisplayCoords, fullFowTileInfo.Section);
-                }
+            /// Display the full FOW-tiles.
+            foreach (SpriteInst fullFowTileInfo in this.fogOfWarView.GetFullFOWTiles())
+            {
+                UISprite fowSprite = this.fullFowSprites[fullFowTileInfo.Index];
+                renderContext.RenderSprite(fowSprite, fullFowTileInfo.DisplayCoords, fullFowTileInfo.Section);
             }
         }
 

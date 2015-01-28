@@ -48,60 +48,53 @@ namespace RC.App.BizLogic.Services
         /// <summary>
         /// Draws the given terrain type on the isometric tile at the given position.
         /// </summary>
-        /// <param name="displayedArea">The displayed area in pixels.</param>
         /// <param name="position">The position inside the displayed area in pixels.</param>
-        /// <param name="terrainName">The name of the terrain type to draw.</param>
-        void DrawTerrain(RCIntRectangle displayedArea, RCIntVector position, string terrainType);
+        /// <param name="terrainType">The name of the terrain type to draw.</param>
+        void DrawTerrain(RCIntVector position, string terrainType);
 
         /// <summary>
         /// Places a terrain object on the map at the given position.
         /// </summary>
-        /// <param name="displayedArea">The displayed area in pixels.</param>
         /// <param name="position">The position inside the displayed area in pixels.</param>
         /// <param name="terrainObject">The name of the terrain object to place.</param>
         /// <returns>True if the terrain object could be placed to the given position, false otherwise.</returns>
-        bool PlaceTerrainObject(RCIntRectangle displayedArea, RCIntVector position, string terrainObject);
+        bool PlaceTerrainObject(RCIntVector position, string terrainObject);
 
         /// <summary>
         /// Removes a terrain object from the map at the given position.
         /// </summary>
-        /// <param name="displayedArea">The displayed area in pixels.</param>
         /// <param name="position">The position inside the displayed area in pixels.</param>
         /// <returns>True if the terrain object at the given position was removed, false otherwise.</returns>
-        bool RemoveTerrainObject(RCIntRectangle displayedArea, RCIntVector position);
+        bool RemoveTerrainObject(RCIntVector position);
 
         /// <summary>
         /// Places a start location on the map at the given position.
         /// </summary>
-        /// <param name="displayedArea">The displayed area in pixels.</param>
         /// <param name="position">The position inside the displayed area in pixels.</param>
         /// <param name="playerIndex">The index of the player that the start location belongs to.</param>
         /// <returns>True if the start location could be placed to the given position, false otherwise.</returns>
-        bool PlaceStartLocation(RCIntRectangle displayedArea, RCIntVector position, int playerIndex);
+        bool PlaceStartLocation(RCIntVector position, int playerIndex);
 
         /// <summary>
         /// Places a mineral field on the map at the given position.
         /// </summary>
-        /// <param name="displayedArea">The displayed area in pixels.</param>
         /// <param name="position">The position inside the displayed area in pixels.</param>
         /// <returns>True if the mineral field could be placed to the given position, false otherwise.</returns>
-        bool PlaceMineralField(RCIntRectangle displayedArea, RCIntVector position);
+        bool PlaceMineralField(RCIntVector position);
 
         /// <summary>
         /// Places a vespene geyser on the map at the given position.
         /// </summary>
-        /// <param name="displayedArea">The displayed area in pixels.</param>
         /// <param name="position">The position inside the displayed area in pixels.</param>
         /// <returns>True if the vespene geyser could be placed to the given position, false otherwise.</returns>
-        bool PlaceVespeneGeyser(RCIntRectangle displayedArea, RCIntVector position);
+        bool PlaceVespeneGeyser(RCIntVector position);
 
         /// <summary>
         /// Removes an entity from the map at the given position.
         /// </summary>
-        /// <param name="displayedArea">The displayed area in pixels.</param>
         /// <param name="position">The position inside the displayed area in pixels.</param>
         /// <returns>True if the entity at the given position was removed, false otherwise.</returns>
-        bool RemoveEntity(RCIntRectangle displayedArea, RCIntVector position);
+        bool RemoveEntity(RCIntVector position);
 
         /// <summary>
         /// Changes the amount of resource in the given object if it is a resource object.

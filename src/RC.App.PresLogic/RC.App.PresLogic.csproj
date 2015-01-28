@@ -89,6 +89,7 @@
     <Compile Include="IsoTileSpriteGroup.cs" />
     <Compile Include="MapEditorMouseHandler.cs" />
     <Compile Include="MapObjectSpriteGroup.cs" />
+    <Compile Include="MapTerrainRenderer.cs" />
     <Compile Include="MaskedSpriteGroup.cs" />
     <Compile Include="NormalMouseHandler.cs" />
     <Compile Include="PresLogicConstants.cs" />

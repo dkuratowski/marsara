@@ -38,6 +38,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="IComponent.Stop"/>
         public void Stop()
         {
+            this.ActiveScenarioChanged = null;
+            this.CloseScenario();
+
+            this.viewFactoryRegistry = null;
+            this.tilesetManager = null;
+            this.mapLoader = null;
+            this.scenarioLoader = null;
+            this.navmeshLoader = null;
+            this.pathFinder = null;
         }
 
         #endregion IComponent methods
@@ -53,6 +62,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.activeScenario = this.scenarioLoader.NewScenario(map);
 
             this.RegisterFactoryMethods();
+
+            if (this.ActiveScenarioChanged != null) { this.ActiveScenarioChanged(this.activeScenario); }
         }
 
         /// <see cref="IScenarioManagerBC.OpenScenario"/>
@@ -68,6 +79,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.activeScenario = this.scenarioLoader.LoadScenario(map, mapBytes);
 
             this.RegisterFactoryMethods();
+
+            if (this.ActiveScenarioChanged != null) { this.ActiveScenarioChanged(this.activeScenario); }
         }
 
         /// <see cref="IScenarioManagerBC.SaveScenario"/>
@@ -104,6 +117,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
                 this.activeScenario.Map.Close();
                 this.activeScenario = null;
+
+                if (this.ActiveScenarioChanged != null) { this.ActiveScenarioChanged(this.activeScenario); }
             }
         }
 
@@ -112,6 +127,9 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
         /// <see cref="IScenarioManagerBC.Metadata"/>
         public IScenarioMetadata Metadata { get { return this.scenarioLoader.Metadata; } }
+
+        /// <see cref="IScenarioManagerBC.ActiveScenarioChanged"/>
+        public event Action<Scenario> ActiveScenarioChanged; 
 
         #endregion IScenarioManagerBC methods
 
