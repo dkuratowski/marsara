@@ -37,6 +37,12 @@ namespace RC.App.BizLogic.Services
         void AttachWindow(RCIntVector windowSize);
 
         /// <summary>
+        /// Attaches a minimap with the given pixel size.
+        /// </summary>
+        /// <param name="minimapSize">The size of the minimap in pixels.</param>
+        void AttachMinimap(RCIntVector minimapSize);
+
+        /// <summary>
         /// Scrolls the map window towards the given direction.
         /// </summary>
         /// <param name="direction">The direction of the scroll.</param>

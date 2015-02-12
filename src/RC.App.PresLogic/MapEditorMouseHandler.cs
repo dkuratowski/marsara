@@ -33,7 +33,7 @@ namespace RC.App.PresLogic
         /// </summary>
         /// <param name="view">The view to be used.</param>
         /// <param name="sprites">The sprite group to be used.</param>
-        public void StartPlacingObject(IObjectPlacementView view, SpriteGroup sprites)
+        public void StartPlacingObject(IObjectPlacementView view, ISpriteGroup sprites)
         {
             this.StopPlacingObject();
             this.objectPlacementInfo = new ObjectPlacementInfo(view, sprites);

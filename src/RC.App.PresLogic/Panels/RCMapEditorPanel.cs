@@ -48,15 +48,18 @@ namespace RC.App.PresLogic.Panels
         /// <summary>
         /// Creates an RCMapEditorPanel instance.
         /// </summary>
+        /// <param name="isoTileSpriteGroup">Reference to the sprites of the isometric tile types.</param>
+        /// <param name="terrainObjectSpriteGroup">Reference to the sprites of the terrain object types.</param>
         /// <param name="backgroundRect">The area of the background of the panel in workspace coordinates.</param>
         /// <param name="contentRect">The area of the content of the panel relative to the background rectangle.</param>
         /// <param name="backgroundSprite">
         /// Name of the sprite resource that will be the background of this panel or null if there is no background.
         /// </param>
-        public RCMapEditorPanel(RCIntRectangle backgroundRect, RCIntRectangle contentRect,
-                               ShowMode showMode, HideMode hideMode,
-                               int appearDuration, int disappearDuration,
-                               string backgroundSprite)
+        public RCMapEditorPanel(ISpriteGroup isoTileSpriteGroup, ISpriteGroup terrainObjectSpriteGroup,
+                                RCIntRectangle backgroundRect, RCIntRectangle contentRect,
+                                ShowMode showMode, HideMode hideMode,
+                                int appearDuration, int disappearDuration,
+                                string backgroundSprite)
             : base(backgroundRect, contentRect, showMode, hideMode, appearDuration, disappearDuration, backgroundSprite)
         {
             this.tilesetView = ComponentManager.GetInterface<IViewService>().CreateView<ITileSetView>();
@@ -66,6 +69,7 @@ namespace RC.App.PresLogic.Panels
             this.paletteListbox = new RCListBox(new RCIntVector(6, 24), 85, 11, 100);
             this.saveButton = new RCMenuButton("Save", new RCIntRectangle(6, 180, 41, 15));
             this.exitButton = new RCMenuButton("Exit", new RCIntRectangle(50, 180, 41, 15));
+            this.minimapDisplay = new RCMinimapDisplay(isoTileSpriteGroup, terrainObjectSpriteGroup, new RCIntVector(16, 209), new RCIntVector(64, 64));
 
             this.editModeSelector.SelectedIndexChanged += this.OnEditModeSelectionChanged;
             this.paletteListbox.SelectedIndexChanged += this.OnPaletteListboxSelectionChanged;
@@ -74,9 +78,15 @@ namespace RC.App.PresLogic.Panels
             this.AddControl(this.paletteListbox);
             this.AddControl(this.saveButton);
             this.AddControl(this.exitButton);
+            this.AddControl(this.minimapDisplay);
 
             this.ResetControls();
         }
+
+        /// <summary>
+        /// Gets the minimap display control.
+        /// </summary>
+        public RCMinimapDisplay MinimapDisplay { get { return this.minimapDisplay; } }
 
         /// <summary>
         /// Gets the "Save" button.
@@ -184,5 +194,10 @@ namespace RC.App.PresLogic.Panels
         /// The "Exit" button.
         /// </summary>
         private RCMenuButton exitButton;
+
+        /// <summary>
+        /// The minimap display control.
+        /// </summary>
+        private RCMinimapDisplay minimapDisplay;
     }
 }

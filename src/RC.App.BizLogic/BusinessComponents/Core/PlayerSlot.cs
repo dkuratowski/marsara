@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.App.BizLogic.Views;
+using RC.Common;
 using RC.Engine.Simulator.Scenarios;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
@@ -57,6 +58,16 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             {
                 if (this.state != PlayerSlotStateEnum.Connected) { throw new InvalidOperationException("No connected player on slot!"); }
                 return this.race;
+            }
+        }
+
+        /// <see cref="IPlayerSlot.StartPosition"/>
+        public RCNumVector StartPosition
+        {
+            get
+            {
+                if (this.state != PlayerSlotStateEnum.Connected) { throw new InvalidOperationException("No connected player on slot!"); }
+                return this.player.StartPosition;
             }
         }
 

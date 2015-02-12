@@ -240,6 +240,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
+        /// Creates a view of type IMinimapView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IMinimapView CreateMinimapView()
+        {
+            return new MinimapView();
+        }
+
+        /// <summary>
         /// Registers the implemented factory methods to the view factory.
         /// </summary>
         private void RegisterFactoryMethods()
@@ -251,6 +260,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateSelIndicatorView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateCommandView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMinimapView);
             this.viewFactoryRegistry.RegisterViewFactory<IMapObjectDataView, int>(this.CreateMapObjectDataView);
             this.viewFactoryRegistry.RegisterViewFactory<ITerrainObjectPlacementView, string>(this.CreateTerrainObjectPlacementView);
             this.viewFactoryRegistry.RegisterViewFactory<IMapObjectPlacementView, string>(this.CreateMapObjectPlacementView);
@@ -268,6 +278,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ISelectionIndicatorView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ICommandView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IMinimapView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectDataView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ITerrainObjectPlacementView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectPlacementView>();

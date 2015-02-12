@@ -41,7 +41,7 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         /// <param name="view">The view to be used.</param>
         /// <param name="sprites">The sprite group to be used.</param>
-        public ObjectPlacementInfo(IObjectPlacementView view, SpriteGroup sprites)
+        public ObjectPlacementInfo(IObjectPlacementView view, ISpriteGroup sprites)
         {
             if (view == null) { throw new ArgumentNullException("view"); }
             if (sprites == null) { throw new ArgumentNullException("sprites"); }
@@ -58,7 +58,7 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// Gets the sprite group to be used.
         /// </summary>
-        public SpriteGroup Sprites { get { return this.sprites; } }
+        public ISpriteGroup Sprites { get { return this.sprites; } }
 
         /// <summary>
         /// The view to be used.
@@ -68,7 +68,7 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// The sprite group to be used.
         /// </summary>
-        private SpriteGroup sprites;
+        private ISpriteGroup sprites;
     }
 
     /// <summary>

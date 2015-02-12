@@ -54,7 +54,7 @@ namespace RC.App.BizLogic.BusinessComponents
         RCIntRectangle CellToWindowRect(RCIntRectangle cellRect);
 
         /// <summary>
-        /// Gets the current window in map coordinates.
+        /// Gets the map window in map coordinates.
         /// </summary>
         RCNumRectangle WindowMapCoords { get; }
 
@@ -62,12 +62,6 @@ namespace RC.App.BizLogic.BusinessComponents
         /// Gets the rectangle of cells on the map that are visible through the window.
         /// </summary>
         RCIntRectangle CellWindow { get; }
-
-        /// <summary>
-        /// Gets the difference between the top-left corner of the window and the top-left corner of the
-        /// top-left visible cell in window coordinates.
-        /// </summary>
-        RCIntVector WindowOffset { get; }
 
         /// <summary>
         /// Gets the rectangle of quadratic tiles on the map that are visible through the window.

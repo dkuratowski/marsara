@@ -26,9 +26,11 @@ namespace RC.Engine.Simulator.Scenarios
 
             this.playerIndex = this.ConstructField<int>("playerIndex");
             this.startLocation = this.ConstructField<StartLocation>("startLocation");
+            this.startPosition = this.ConstructField<RCNumVector>("startPosition");
 
             this.playerIndex.Write(playerIndex);
             this.startLocation.Write(startLocation);
+            this.startPosition.Write(startLocation.PositionValue.Read());
 
             this.buildings = new HashSet<Building>();
             this.units = new HashSet<Unit>();
@@ -82,6 +84,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// Gets the index of this player.
         /// </summary>
         public int PlayerIndex { get { return this.playerIndex.Read(); } }
+
+        /// <summary>
+        /// Gets the start position of this player.
+        /// </summary>
+        public RCNumVector StartPosition { get { return this.startPosition.Read(); } }
 
         /// <summary>
         /// Gets the start location of this player.
@@ -139,6 +146,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// The start location of the player.
         /// </summary>
         private readonly HeapedValue<StartLocation> startLocation;
+
+        /// <summary>
+        /// The start position of the player.
+        /// </summary>
+        private readonly HeapedValue<RCNumVector> startPosition; 
 
         #endregion Heaped members
 

@@ -6,26 +6,37 @@ using System.Text;
 namespace RC.App.PresLogic
 {
     /// <summary>
-    /// Handles a collection of connectors and connects/disconnects them together. A connection/disconnection operation is
+    /// Handles a collection of connectors that will be connected/disconnected concurrently. A connection/disconnection operation is
     /// successful only if all of the aggregated operations were successful.
+    /// Note: All aggregated connectors shall be in the state ConnectionStatusEnum.Offline.
     /// </summary>
-    class AggregateGameConnector : IGameConnector, IDisposable
+    class ConcurrentGameConnector : IGameConnector, IDisposable
     {
         /// <summary>
-        /// Constructs an AggregatedGameConnection instance.
+        /// Constructs ConcurrentGameConnector instance.
         /// </summary>
-        /// <param name="aggregatedConnectors">
-        /// The collection of the aggregated conntectors. All aggregated connectors shall be in the state ConnectionStatusEnum.Offline.
+        /// <param name="firstConnector">
+        /// The first connector to connect concurrently.
         /// </param>
-        public AggregateGameConnector(HashSet<IGameConnector> aggregatedConnectors)
+        /// <param name="furtherConnectors">The further connectors to connect concurrently.</param>
+        public ConcurrentGameConnector(IGameConnector firstConnector, params IGameConnector[] furtherConnectors)
         {
-            if (aggregatedConnectors == null || aggregatedConnectors.Count == 0) { throw new ArgumentNullException("aggregatedConnectors"); }
+            if (firstConnector == null) { throw new ArgumentNullException("firstConnector"); }
+            if (furtherConnectors == null) { throw new ArgumentNullException("furtherConnectors"); }
 
             this.connectedConnectors = new HashSet<IGameConnector>();
             this.disconnectedConnectors = new HashSet<IGameConnector>();
-            foreach (IGameConnector connector in aggregatedConnectors)
+
+            /// Handle the first connector.
+            if (firstConnector.ConnectionStatus != ConnectionStatusEnum.Offline) { throw new ArgumentException("All aggregated connectors shall be in the state ConnectionStatusEnum.Offline!", "firstConnector"); }
+            this.disconnectedConnectors.Add(firstConnector);
+            firstConnector.ConnectorOperationFinished += this.OnOperationFinished;
+
+            /// Handle the further connectors.
+            foreach (IGameConnector connector in furtherConnectors)
             {
-                if (connector.ConnectionStatus != ConnectionStatusEnum.Offline) { throw new ArgumentException("All aggregated connectors shall be in the state ConnectionStatusEnum.Offline!", "aggregatedConnectors"); }
+                if (connector == null) { throw new ArgumentException("None of the elements of furtherConnectors can be null!", "furtherConnectors"); }
+                if (connector.ConnectionStatus != ConnectionStatusEnum.Offline) { throw new ArgumentException("All aggregated connectors shall be in the state ConnectionStatusEnum.Offline!", "furtherConnectors"); }
                 this.disconnectedConnectors.Add(connector);
                 connector.ConnectorOperationFinished += this.OnOperationFinished;
             }
@@ -39,7 +50,7 @@ namespace RC.App.PresLogic
         /// <see cref="IDisposable.Dispose"/>
         public void Dispose()
         {
-            if (this.isDisposed) { throw new ObjectDisposedException("AggregateGameConnector"); }
+            if (this.isDisposed) { throw new ObjectDisposedException("ConcurrentGameConnector"); }
             if (this.currentStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("The connector is not offline!"); }
 
             foreach (IGameConnector connector in this.disconnectedConnectors) { connector.ConnectorOperationFinished -= this.OnOperationFinished; }
@@ -53,7 +64,7 @@ namespace RC.App.PresLogic
         /// <see cref="IGameConnector.Connect"/>
         public void Connect()
         {
-            if (this.isDisposed) { throw new ObjectDisposedException("AggregateGameConnector"); }
+            if (this.isDisposed) { throw new ObjectDisposedException("ConcurrentGameConnector"); }
             if (this.currentStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("The connector is not offline!"); }
 
             this.currentStatus = ConnectionStatusEnum.Connecting;
@@ -63,7 +74,7 @@ namespace RC.App.PresLogic
         /// <see cref="IGameConnector.Disconnect"/>
         public void Disconnect()
         {
-            if (this.isDisposed) { throw new ObjectDisposedException("AggregateGameConnector"); }
+            if (this.isDisposed) { throw new ObjectDisposedException("ConcurrentGameConnector"); }
             if (this.currentStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("The connector is not online!"); }
 
             this.currentStatus = ConnectionStatusEnum.Disconnecting;
@@ -75,7 +86,7 @@ namespace RC.App.PresLogic
         {
             get
             {
-                if (this.isDisposed) { throw new ObjectDisposedException("AggregateGameConnector"); }
+                if (this.isDisposed) { throw new ObjectDisposedException("ConcurrentGameConnector"); }
                 return this.currentStatus;
             }
         }
@@ -93,7 +104,7 @@ namespace RC.App.PresLogic
         /// <param name="connector">The aggregated connector whose operation has been finished.</param>
         private void OnOperationFinished(IGameConnector connector)
         {
-            if (this.isDisposed) { throw new ObjectDisposedException("AggregateGameConnector"); }
+            if (this.isDisposed) { throw new ObjectDisposedException("ConcurrentGameConnector"); }
             if (connector == null) { throw new ArgumentNullException("connector"); }
 
             if (this.currentStatus == ConnectionStatusEnum.Connecting)

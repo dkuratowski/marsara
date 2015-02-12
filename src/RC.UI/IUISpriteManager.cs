@@ -68,6 +68,24 @@ namespace RC.UI
         UISprite ScaleSprite(UISprite sprite, RCIntVector pixelSize);
 
         /// <summary>
+        /// Makes a copy of the given 2D sprite shrinked to the given sprite size. The pixel size of the shrinked sprite will be the
+        /// same as the pixel size of the original sprite.
+        /// </summary>
+        /// <param name="sprite">The original sprite to shrink.</param>
+        /// <param name="spriteSize">The size of the shrinked sprite.</param>
+        /// <returns>The copy of the given UISprite shrinked to the given sprite size or null if failed to shrink the sprite.</returns>
+        UISprite ShrinkSprite(UISprite sprite, RCIntVector spriteSize);
+
+        /// <summary>
+        /// Makes a copy of the given 2D sprite shrinked to the given sprite size.
+        /// </summary>
+        /// <param name="sprite">The original sprite to shrink.</param>
+        /// <param name="spriteSize">The size of the shrinked sprite.</param>
+        /// <param name="pixelSize">The pixel size of the shrinked sprite.</param>
+        /// <returns>The copy of the given UISprite shrinked to the given sprite size or null if failed to shrink the sprite.</returns>
+        UISprite ShrinkSprite(UISprite sprite, RCIntVector spriteSize, RCIntVector pixelSize);
+
+        /// <summary>
         /// Creates a render context for the given sprite.
         /// </summary>
         /// <param name="sprite">The sprite to create render context for.</param>
@@ -122,6 +140,12 @@ namespace RC.UI
 
         /// <see cref="IUISpriteManager.ScaleSprite"/>
         public abstract UISprite ScaleSprite(UISprite sprite, RCIntVector pixelSize);
+
+        /// <see cref="IUISpriteManager.ShrinkSprite"/>
+        public abstract UISprite ShrinkSprite(UISprite sprite, RCIntVector spriteSize);
+
+        /// <see cref="IUISpriteManager.ShrinkSprite"/>
+        public abstract UISprite ShrinkSprite(UISprite sprite, RCIntVector spriteSize, RCIntVector pixelSize);
 
         /// <see cref="IUISpriteManager.CreateRenderContext"/>
         public IUIRenderContext CreateRenderContext(UISprite sprite)

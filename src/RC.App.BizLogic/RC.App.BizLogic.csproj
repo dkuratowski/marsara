@@ -59,6 +59,24 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -84,6 +102,7 @@
     <Compile Include="BusinessComponents\Core\ICommandBuilder.cs" />
     <Compile Include="BusinessComponents\Core\MapWindowImpl.cs" />
     <Compile Include="BusinessComponents\Core\MapWindowBC.cs" />
+    <Compile Include="BusinessComponents\Core\Minimap.cs" />
     <Compile Include="BusinessComponents\Core\ScenarioDependentComponent.cs" />
     <Compile Include="BusinessComponents\Core\TargetPositionListener.cs" />
     <Compile Include="BusinessComponents\EntitySnapshot.cs" />
@@ -91,6 +110,7 @@
     <Compile Include="BusinessComponents\IFogOfWarBC.cs" />
     <Compile Include="BusinessComponents\IMapWindow.cs" />
     <Compile Include="BusinessComponents\IMapWindowBC.cs" />
+    <Compile Include="BusinessComponents\IMinimap.cs" />
     <Compile Include="BusinessComponents\ISelectionManagerBC.cs" />
     <Compile Include="BusinessComponents\Core\ScenarioManagerBC.cs" />
     <Compile Include="BusinessComponents\IScenarioManagerBC.cs" />
@@ -108,6 +128,7 @@
     <Compile Include="BusinessComponents\Core\PlayerSlot.cs" />
     <Compile Include="Views\Core\CommandView.cs" />
     <Compile Include="Views\Core\FogOfWarView.cs" />
+    <Compile Include="Views\Core\MinimapView.cs" />
     <Compile Include="Views\Core\SelectionIndicatorView.cs" />
     <Compile Include="Services\Core\ViewService.cs" />
     <Compile Include="Views\CommandButtonStateEnum.cs" />
@@ -137,6 +158,7 @@
     <Compile Include="Views\IMapObjectView.cs" />
     <Compile Include="Views\IMapTerrainView.cs" />
     <Compile Include="Views\IMetadataView.cs" />
+    <Compile Include="Views\IMinimapView.cs" />
     <Compile Include="Views\IObjectPlacementView.cs" />
     <Compile Include="BusinessComponents\ITaskManagerBC.cs" />
     <Compile Include="Views\ISelectionIndicatorView.cs" />

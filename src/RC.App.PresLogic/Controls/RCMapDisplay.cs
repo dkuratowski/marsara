@@ -73,7 +73,7 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="IGameConnector.Disconnect"/>
         public void Disconnect()
         {
-            if (!this.isConnected || this.backgroundTask != null) { throw new InvalidOperationException("The map display has been connected or is currently being connected!"); }
+            if (!this.isConnected || this.backgroundTask != null) { throw new InvalidOperationException("The map display has been disconnected or is currently being disconnected!"); }
 
             this.Disconnect_i();
             this.backgroundTask = UITaskManager.StartParallelTask(this.DisconnectBackgroundProc_i, "RCMapDisplay.Disconnect");

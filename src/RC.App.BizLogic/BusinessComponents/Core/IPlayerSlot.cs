@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.App.BizLogic.Views;
+using RC.Common;
 using RC.Engine.Simulator.Scenarios;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
@@ -38,6 +39,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// </summary>
         /// <exception cref="InvalidOperationException">If there is no connected player.</exception>
         RaceEnum Race { get; }
+
+        /// <summary>
+        /// Gets the start position of the player that is connected to this slot.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">If there is no connected player.</exception>
+        RCNumVector StartPosition { get; }
 
         /// <summary>
         /// Gets the start location of the player that is connected to this slot.

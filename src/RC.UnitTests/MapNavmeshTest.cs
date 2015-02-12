@@ -23,7 +23,7 @@ namespace RC.UnitTests
         [AssemblyInitialize]
         public static void AssemblyInitialize(TestContext context)
         {
-            ConfigurationManager.Initialize("..\\..\\..\\..\\config\\RC.Engine.Simulator\\RC.Engine.Simulator.node");
+            ConfigurationManager.Initialize("..\\..\\..\\..\\..\\config\\RC.Engine.Simulator\\RC.Engine.Simulator.node");
             ConstantsTable.Add("RC.App.Version", "1.0.0.0", "STRING");
             tilesets = new Dictionary<string, ITileSet>();
         }
@@ -31,9 +31,9 @@ namespace RC.UnitTests
         /// <summary>
         /// The input and output directories.
         /// </summary>
-        public const string INPUT_DIR = "..\\..\\..\\..\\maps";
+        public const string INPUT_DIR = "..\\..\\..\\..\\..\\maps";
         public const string OUTPUT_DIR = ".\\MapNavmeshTest_out";
-        public const string TILESET_DIR = "..\\..\\..\\..\\tilesets";
+        public const string TILESET_DIR = "..\\..\\..\\..\\..\\tilesets";
 
         /// <summary>
         /// Contains test context informations.

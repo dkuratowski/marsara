@@ -58,6 +58,24 @@
     <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -68,7 +86,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AggregateGameConnector.cs" />
+    <Compile Include="ConcurrentGameConnector.cs" />
     <Compile Include="CmdButtonSpriteGroup.cs" />
     <Compile Include="Controls\IMapDisplay.cs" />
     <Compile Include="Controls\RCCommandButton.cs" />
@@ -80,16 +98,20 @@
     <Compile Include="Controls\RCMapDisplayExtension.cs" />
     <Compile Include="Controls\RCMapObjectDisplay.cs" />
     <Compile Include="Controls\RCMapWalkabilityDisplay.cs" />
+    <Compile Include="Controls\RCMinimapDisplay.cs" />
     <Compile Include="Controls\RCObjectPlacementDisplay.cs" />
     <Compile Include="Controls\RCResourceAmountDisplay.cs" />
     <Compile Include="Controls\RCSelectionBoxDisplay.cs" />
     <Compile Include="Controls\RCSelectionDisplay.cs" />
     <Compile Include="FOWSpriteGroup.cs" />
     <Compile Include="IGameConnector.cs" />
+    <Compile Include="IMinimapBackgroundJob.cs" />
     <Compile Include="IsoTileSpriteGroup.cs" />
+    <Compile Include="ISpriteGroup.cs" />
     <Compile Include="MapEditorMouseHandler.cs" />
     <Compile Include="MapObjectSpriteGroup.cs" />
-    <Compile Include="MapTerrainRenderer.cs" />
+    <Compile Include="MinimapSpriteBuffer.cs" />
+    <Compile Include="MinimapTerrainUpdateJob.cs" />
     <Compile Include="MaskedSpriteGroup.cs" />
     <Compile Include="NormalMouseHandler.cs" />
     <Compile Include="PresLogicConstants.cs" />
@@ -101,6 +123,7 @@
     <Compile Include="Panels\RCResourceBar.cs" />
     <Compile Include="Panels\RCTooltipBar.cs" />
     <Compile Include="SelectTargetMouseHandler.cs" />
+    <Compile Include="SequentialGameConnector.cs" />
     <Compile Include="SpriteGroup.cs" />
     <Compile Include="Controls\RCMapDisplay.cs" />
     <Compile Include="Controls\RCScrollBar.cs" />
@@ -127,6 +150,7 @@
     <Compile Include="Pages\RCSelectGamePage.cs" />
     <Compile Include="Panels\RCSelectGamePanel.cs" />
     <Compile Include="Panels\RCSelectMapPanel.cs" />
+    <Compile Include="SpriteGroupLoader.cs" />
     <Compile Include="TaskManagerBC.cs" />
     <Compile Include="TerrainObjectSpriteGroup.cs" />
   </ItemGroup>

@@ -23,7 +23,7 @@ namespace RC.UnitTests
         /// The input and output directories.
         /// </summary>
         public const string OUTPUT_DIR = ".\\FogOfWarTest_out";
-        public const string FOW_SPRITEPALETTE_DIR = "..\\..\\..\\..\\sprites\\fow";
+        public const string FOW_SPRITEPALETTE_DIR = "..\\..\\..\\..\\..\\sprites\\fow";
         public const string FOW_SPRITEPALETTE_FILE = "fow.xml";
 
         /// <summary>

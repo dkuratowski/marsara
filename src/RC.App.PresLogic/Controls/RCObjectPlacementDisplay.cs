@@ -31,7 +31,6 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
-            IViewService viewService = ComponentManager.GetInterface<IViewService>();
             this.MouseSensor.Move += this.OnMouseMove;
         }
 

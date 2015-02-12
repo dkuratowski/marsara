@@ -45,6 +45,7 @@ namespace RC.App.BizLogic.Services.Core
             this.selectionManager = ComponentManager.GetInterface<ISelectionManagerBC>();
             this.commandManager = ComponentManager.GetInterface<ICommandManagerBC>();
             this.fogOfWarBC = ComponentManager.GetInterface<IFogOfWarBC>();
+            this.mapWindowBC = ComponentManager.GetInterface<IMapWindowBC>();
         }
 
         /// <see cref="IComponent.Stop"/>
@@ -71,6 +72,7 @@ namespace RC.App.BizLogic.Services.Core
             this.playerManager.Lock();
             this.selectionManager.Reset(this.playerManager[0].Player);
             this.fogOfWarBC.StartFogOfWar(this.playerManager[0].Player);
+            this.mapWindowBC.ScrollTo(this.playerManager[0].StartPosition);
 
             this.commandDispatcher = new CommandDispatcher();
             this.triggeredScheduler = new TriggeredScheduler(1000 / (int)gameSpeed);
@@ -185,5 +187,10 @@ namespace RC.App.BizLogic.Services.Core
         /// Reference to the Fog Of War business component.
         /// </summary>
         private IFogOfWarBC fogOfWarBC;
+
+        /// <summary>
+        /// Reference to the map window business component.
+        /// </summary>
+        private IMapWindowBC mapWindowBC;
     }
 }

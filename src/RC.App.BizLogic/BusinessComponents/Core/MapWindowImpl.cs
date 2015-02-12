@@ -13,20 +13,22 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// Constructs a MapWindowBase instance.
         /// </summary>
         /// <param name="targetScenario">Reference to the target scenario.</param>
-        public MapWindowBase(Scenario targetScenario)
+        protected MapWindowBase(Scenario targetScenario)
         {
+            if (targetScenario == null) { throw new ArgumentNullException("targetScenario"); }
+
             this.isDisposed = false;
             this.targetScenario = targetScenario;
 
-            this.windowCache = new CachedValue<RCNumRectangle>(this.CalculateWindow);
+            this.windowMapCoordsCache = new CachedValue<RCNumRectangle>(this.CalculateWindowMapCoords);
             this.cellWindowCache = new CachedValue<RCIntRectangle>(this.CalculateCellWindow);
             this.quadTileWindowCache = new CachedValue<RCIntRectangle>(this.CalculateQuadTileWindow);
             this.windowOffsetCache = new CachedValue<RCIntVector>(this.CalculateWindowOffset);
             this.pixelWindowCache = new CachedValue<RCIntRectangle>(this.CalculatePixelWindow);
 
             RCNumVector nullVectorOfPixelGrid = new RCNumVector(
-                (RCNumber)1 / 2 - (RCNumber)1 / (2 * MapWindowBase.PIXEL_PER_NAVCELL),
-                (RCNumber)1 / 2 - (RCNumber)1 / (2 * MapWindowBase.PIXEL_PER_NAVCELL));
+                (RCNumber)1 / (2 * MapWindowBase.PIXEL_PER_NAVCELL) - (RCNumber)1 / 2,
+                (RCNumber)1 / (2 * MapWindowBase.PIXEL_PER_NAVCELL) - (RCNumber)1 / 2);
             RCNumVector baseVectorOfPixelGridX = new RCNumVector((RCNumber)1 / MapWindowBase.PIXEL_PER_NAVCELL, 0);
             RCNumVector baseVectorOfPixelGridY = new RCNumVector(0, (RCNumber)1 / MapWindowBase.PIXEL_PER_NAVCELL);
             this.mapToPixelGridTransformation = new RCCoordTransformation(nullVectorOfPixelGrid, baseVectorOfPixelGridX, baseVectorOfPixelGridY);
@@ -52,7 +54,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (windowCoords == RCIntVector.Undefined) { throw new ArgumentNullException("windowCoords"); }
             if (this.isDisposed) { throw new ObjectDisposedException("IMapWindow"); }
 
-            return this.mapToPixelGridTransformation.TransformBA(this.PixelWindow.Location + windowCoords);
+            return this.mapToPixelGridTransformation.TransformBA(this.pixelWindowCache.Value.Location + windowCoords);
         }
 
         /// <see cref="IMapWindow.WindowToMapRect"/>
@@ -61,7 +63,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (windowRect == RCIntRectangle.Undefined) { throw new ArgumentNullException("windowRect"); }
             if (this.isDisposed) { throw new ObjectDisposedException("IMapWindow"); }
 
-            RCNumRectangle windowRectPixelCoords = new RCNumRectangle(this.PixelWindow.Location + windowRect.Location - MapWindowBase.HALF_VECTOR, windowRect.Size);
+            RCNumRectangle windowRectPixelCoords = new RCNumRectangle(this.pixelWindowCache.Value.Location + windowRect.Location - MapWindowBase.HALF_VECTOR, windowRect.Size);
             RCNumVector topLeftCornerMapCoords = this.mapToPixelGridTransformation.TransformBA(windowRectPixelCoords.Location);
             RCNumVector bottomRightCornerMapCoords = this.mapToPixelGridTransformation.TransformBA(windowRectPixelCoords.Location + windowRectPixelCoords.Size);
 
@@ -83,8 +85,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (mapRect == RCNumRectangle.Undefined) { throw new ArgumentNullException("mapRect"); }
             if (this.isDisposed) { throw new ObjectDisposedException("IMapWindow"); }
 
-            RCIntVector topLeftCornerWindowCoords = this.mapToPixelGridTransformation.TransformAB(mapRect.Location).Round() - this.PixelWindow.Location;
-            RCIntVector bottomRightCornerWindowCoords = this.mapToPixelGridTransformation.TransformAB(mapRect.Location + mapRect.Size).Round() - this.PixelWindow.Location;
+            RCIntVector topLeftCornerWindowCoords = this.mapToPixelGridTransformation.TransformAB(mapRect.Location).Round() - this.pixelWindowCache.Value.Location;
+            RCIntVector bottomRightCornerWindowCoords = this.mapToPixelGridTransformation.TransformAB(mapRect.Location + mapRect.Size).Round() - this.pixelWindowCache.Value.Location;
 
             return new RCIntRectangle(topLeftCornerWindowCoords, bottomRightCornerWindowCoords - topLeftCornerWindowCoords + new RCIntVector(1, 1));
         }
@@ -114,7 +116,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             get
             {
                 if (this.isDisposed) { throw new ObjectDisposedException("IMapWindow"); }
-                return this.windowCache.Value;
+                return this.windowMapCoordsCache.Value;
             }
         }
 
@@ -125,16 +127,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             {
                 if (this.isDisposed) { throw new ObjectDisposedException("IMapWindow"); }
                 return this.cellWindowCache.Value;
-            }
-        }
-
-        /// <see cref="IMapWindow.WindowOffset"/>
-        public RCIntVector WindowOffset
-        {
-            get
-            {
-                if (this.isDisposed) { throw new ObjectDisposedException("IMapWindow"); }
-                return this.windowOffsetCache.Value;
             }
         }
 
@@ -163,6 +155,18 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         #region Protected members
 
         /// <summary>
+        /// Invalidates the cached values.
+        /// </summary>
+        protected void InvalidateCaches()
+        {
+            this.windowMapCoordsCache.Invalidate();
+            this.cellWindowCache.Invalidate();
+            this.quadTileWindowCache.Invalidate();
+            this.windowOffsetCache.Invalidate();
+            this.pixelWindowCache.Invalidate();
+        }
+
+        /// <summary>
         /// Gets the full pixel grid.
         /// </summary>
         protected RCIntRectangle FullPixelGrid { get { return this.fullPixelGrid; } }
@@ -187,12 +191,16 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         #region Internal calculation methods
 
         /// <summary>
-        /// Calculates the window.
+        /// Calculates the map coordinates of the window.
         /// </summary>
-        /// <returns>The calculated window.</returns>
-        private RCNumRectangle CalculateWindow()
+        /// <returns>The calculated map coordinates of the window.</returns>
+        private RCNumRectangle CalculateWindowMapCoords()
         {
-            return new RCNumRectangle(this.cellWindowCache.Value.Location - MapWindowBase.HALF_VECTOR, this.cellWindowCache.Value.Size);
+            RCNumRectangle pixelWindowPixelCoords = new RCNumRectangle(this.pixelWindowCache.Value.Location - MapWindowBase.HALF_VECTOR, this.pixelWindowCache.Value.Size);
+            RCNumVector topLeftCornerMapCoords = this.mapToPixelGridTransformation.TransformBA(pixelWindowPixelCoords.Location);
+            RCNumVector bottomRightCornerMapCoords = this.mapToPixelGridTransformation.TransformBA(pixelWindowPixelCoords.Location + pixelWindowPixelCoords.Size);
+
+            return new RCNumRectangle(topLeftCornerMapCoords, bottomRightCornerMapCoords - topLeftCornerMapCoords);
         }
 
         /// <summary>
@@ -201,10 +209,10 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <returns>The calculated cell window.</returns>
         private RCIntRectangle CalculateCellWindow()
         {
-            return new RCIntRectangle(this.PixelWindow.X / MapWindowBase.PIXEL_PER_NAVCELL,
-                                      this.PixelWindow.Y / MapWindowBase.PIXEL_PER_NAVCELL,
-                                      (this.PixelWindow.Right - 1) / MapWindowBase.PIXEL_PER_NAVCELL - this.PixelWindow.X / MapWindowBase.PIXEL_PER_NAVCELL + 1,
-                                      (this.PixelWindow.Bottom - 1) / MapWindowBase.PIXEL_PER_NAVCELL - this.PixelWindow.Y / MapWindowBase.PIXEL_PER_NAVCELL + 1);
+            return new RCIntRectangle(this.pixelWindowCache.Value.X / MapWindowBase.PIXEL_PER_NAVCELL,
+                                      this.pixelWindowCache.Value.Y / MapWindowBase.PIXEL_PER_NAVCELL,
+                                      (this.pixelWindowCache.Value.Right - 1) / MapWindowBase.PIXEL_PER_NAVCELL - this.pixelWindowCache.Value.X / MapWindowBase.PIXEL_PER_NAVCELL + 1,
+                                      (this.pixelWindowCache.Value.Bottom - 1) / MapWindowBase.PIXEL_PER_NAVCELL - this.pixelWindowCache.Value.Y / MapWindowBase.PIXEL_PER_NAVCELL + 1);
         }
 
         /// <summary>
@@ -222,7 +230,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <returns>The calculated window offset vector.</returns>
         private RCIntVector CalculateWindowOffset()
         {
-            return new RCIntVector(this.PixelWindow.X % MapWindowBase.PIXEL_PER_NAVCELL, this.PixelWindow.Y % MapWindowBase.PIXEL_PER_NAVCELL);
+            return new RCIntVector(this.pixelWindowCache.Value.X % MapWindowBase.PIXEL_PER_NAVCELL, this.pixelWindowCache.Value.Y % MapWindowBase.PIXEL_PER_NAVCELL);
         }
 
         /// <summary>
@@ -230,8 +238,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// </summary>
         private RCIntRectangle CellToWindowRectImpl(RCIntRectangle cellRect)
         {
-            return (cellRect - this.CellWindow.Location) *
-                   new RCIntVector(MapWindowBase.PIXEL_PER_NAVCELL, MapWindowBase.PIXEL_PER_NAVCELL) - this.WindowOffset;
+            return (cellRect - this.cellWindowCache.Value.Location) *
+                   new RCIntVector(MapWindowBase.PIXEL_PER_NAVCELL, MapWindowBase.PIXEL_PER_NAVCELL) - this.windowOffsetCache.Value;
         }
 
         #endregion Internal calculation methods
@@ -257,9 +265,9 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private CachedValue<RCIntRectangle> pixelWindowCache;
 
         /// <summary>
-        /// Cached window.
+        /// Cached cell window map coordinates.
         /// </summary>
-        private CachedValue<RCNumRectangle> windowCache;
+        private CachedValue<RCNumRectangle> windowMapCoordsCache;
 
         /// <summary>
         /// Cached cell window.
@@ -321,39 +329,50 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// Constructs a PartialMapWindow instance.
         /// </summary>
         /// <param name="targetScenario">Reference to the target scenario.</param>
-        /// <param name="windowCenterMapCoords">The coordinates of the center of this map window in map coordinates.</param>
+        /// <param name="desiredWindowCenterMapCoords">The desired coordinates of the center of this map window in map coordinates.</param>
         /// <param name="windowPixelSize">The size of this window in pixels.</param>
-        public PartialMapWindow(Scenario targetScenario, RCNumVector windowCenterMapCoords, RCIntVector windowPixelSize)
+        public PartialMapWindow(Scenario targetScenario, RCNumVector desiredWindowCenterMapCoords, RCIntVector windowPixelSize)
             : base(targetScenario)
         {
-            if (windowCenterMapCoords == RCNumVector.Undefined) { throw new ArgumentNullException("windowCenterMapCoords"); }
+            if (desiredWindowCenterMapCoords == RCNumVector.Undefined) { throw new ArgumentNullException("desiredWindowCenterMapCoords"); }
             if (windowPixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("windowPixelSize"); }
 
-            this.windowCenterMapCoords = windowCenterMapCoords;
             this.windowPixelSize = windowPixelSize;
+            this.desiredWindowCenterMapCoords = desiredWindowCenterMapCoords;
+        }
+
+        /// <summary>
+        /// Scrolls the center of this window to the given position on the map.
+        /// </summary>
+        /// <param name="targetPosition">The coordinates of the target position on the map.</param>
+        public void ScrollTo(RCNumVector targetPosition)
+        {
+            if (targetPosition == RCNumVector.Undefined) { throw new ArgumentNullException("targetPosition"); }
+            this.desiredWindowCenterMapCoords = targetPosition;
+            this.InvalidateCaches();
         }
 
         /// <see cref="MapWindowBase.CalculatePixelWindow"/>
         protected override RCIntRectangle CalculatePixelWindow()
         {
-            RCIntVector windowCenterPixelCoords = this.MapToPixelGridTransformation.TransformAB(windowCenterMapCoords).Round();
+            RCIntVector windowCenterPixelCoords = this.MapToPixelGridTransformation.TransformAB(this.desiredWindowCenterMapCoords).Round();
             RCIntVector windowTopLeftPixelCoords = new RCIntVector(
-                Math.Max(0, windowCenterPixelCoords.X - windowPixelSize.X / 2),
-                Math.Max(0, windowCenterPixelCoords.Y - windowPixelSize.Y / 2));
-            RCIntRectangle pixelWindow = new RCIntRectangle(windowTopLeftPixelCoords, windowPixelSize);
-            pixelWindow.Intersect(this.FullPixelGrid);
+                Math.Min(Math.Max(0, windowCenterPixelCoords.X - this.windowPixelSize.X / 2), this.FullPixelGrid.Right - this.windowPixelSize.X),
+                Math.Min(Math.Max(0, windowCenterPixelCoords.Y - this.windowPixelSize.Y / 2), this.FullPixelGrid.Bottom - this.windowPixelSize.Y));
+            RCIntRectangle pixelWindow = new RCIntRectangle(windowTopLeftPixelCoords, this.windowPixelSize);
 
+            if (pixelWindow.Width > this.FullPixelGrid.Width || pixelWindow.Height > this.FullPixelGrid.Height) { throw new InvalidOperationException("Pixel window is bigger than the pixel grid of the map!"); }
             return pixelWindow;
         }
-
-        /// <summary>
-        /// The coordinates of the center of this map window in map coordinates.
-        /// </summary>
-        private RCNumVector windowCenterMapCoords;
 
         /// <summary>
         /// The size of this window in pixels.
         /// </summary>
         private RCIntVector windowPixelSize;
+
+        /// <summary>
+        /// The desired coordinates of the center of this map window in map coordinates.
+        /// </summary>
+        private RCNumVector desiredWindowCenterMapCoords;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using RC.Common;
@@ -228,6 +229,71 @@ namespace RC.UI.XnaPlugin
             }
         }
 
+        /// <see cref="UISpriteManagerBase.ShrinkSprite"/>
+        public override UISprite ShrinkSprite(UISprite sprite, RCIntVector spriteSize)
+        {
+            return this.ShrinkSprite(sprite, spriteSize, sprite.PixelSize);
+        }
+
+        /// <see cref="UISpriteManagerBase.ShrinkSprite"/>
+        public override UISprite ShrinkSprite(UISprite sprite, RCIntVector spriteSize, RCIntVector pixelSize)
+        {
+            if (this.ObjectDisposed) { throw new ObjectDisposedException("XnaSpriteManager"); }
+            if (spriteSize == RCIntVector.Undefined) { throw new ArgumentNullException("spriteSize"); }
+            if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
+
+            lock (this.lockObj)
+            {
+                /// Search the sprite in the list.
+                XnaSprite spriteToShrink = (XnaSprite)sprite;
+
+                /// Create a copy of the original bitmap with pixelsize (1, 1) if necessary.
+                Bitmap bitmapToShrink;
+                if (spriteToShrink.PixelSize != new RCIntVector(1, 1))
+                {
+                    bitmapToShrink = new Bitmap(spriteToShrink.Size.X, spriteToShrink.Size.Y, PixelFormat.Format24bppRgb);
+                    XnaBitmapUtils.CopyBitmapScaled(spriteToShrink.RawBitmap, bitmapToShrink, spriteToShrink.PixelSize, new RCIntVector(1, 1));
+                }
+                else
+                {
+                    bitmapToShrink = spriteToShrink.RawBitmap;
+                }
+
+                /// Create the shrinked bitmap with pixelsize (1, 1).
+                Bitmap shrinkedBitmap = new Bitmap(spriteSize.X, spriteSize.Y, PixelFormat.Format24bppRgb);
+                Graphics gc = Graphics.FromImage(shrinkedBitmap);
+                gc.InterpolationMode = InterpolationMode.NearestNeighbor;
+                gc.DrawImage(bitmapToShrink, new Rectangle(0, 0, spriteSize.X, spriteSize.Y), new Rectangle(0, 0, bitmapToShrink.Width, bitmapToShrink.Height), GraphicsUnit.Pixel);
+                gc.Dispose();
+
+                /// Scale the shrinked bitmap to the target pixel size if necessary.
+                Bitmap scaledShrinkedBitmap;
+                if (pixelSize != new RCIntVector(1, 1))
+                {
+                    scaledShrinkedBitmap = new Bitmap(shrinkedBitmap.Width*pixelSize.X,
+                                                      shrinkedBitmap.Height*pixelSize.Y,
+                                                      PixelFormat.Format24bppRgb);
+                    XnaBitmapUtils.CopyBitmapScaled(shrinkedBitmap, scaledShrinkedBitmap, new RCIntVector(1, 1), pixelSize);
+                }
+                else
+                {
+                    scaledShrinkedBitmap = shrinkedBitmap;
+                }
+
+                /// Create the XnaSprite object and register it to this sprite manager.
+                XnaSprite shrinkedSprite = new XnaSprite(scaledShrinkedBitmap, pixelSize, this.platform);
+                shrinkedSprite.TransparentColor = sprite.TransparentColor;
+                this.sprites.Add(shrinkedSprite);
+
+                /// Cleanup if necessary.
+                if (bitmapToShrink != spriteToShrink.RawBitmap) { bitmapToShrink.Dispose(); }
+                if (shrinkedBitmap != scaledShrinkedBitmap) { shrinkedBitmap.Dispose(); }
+
+                TraceManager.WriteAllTrace("XnaSpriteManager.ShrinkedSprite: Sprite shrinked", XnaTraceFilters.INFO);
+                return shrinkedSprite;
+            }
+        }
+
         /// <see cref="UISpriteManagerBase.CreateRenderContext_i"/>
         protected override IUIRenderContext CreateRenderContext_i(UISprite sprite)
         {
@@ -273,8 +339,11 @@ namespace RC.UI.XnaPlugin
 
             lock (this.lockObj)
             {
-                /// Search the sprite in the list.
                 XnaSprite spriteToDestroy = (XnaSprite)sprite;
+                if (this.renderContexts.ContainsKey(spriteToDestroy))
+                {
+                    throw new UIException("The given sprite still has active render context!");
+                }
 
                 /// Remove the sprite from the list and destroy it.
                 if (!this.sprites.Remove(spriteToDestroy)) { throw new UIException("The given sprite has already been disposed or has not been created by this sprite manager!"); }

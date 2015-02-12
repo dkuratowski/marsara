@@ -101,19 +101,41 @@ namespace RC.App.PresLogic.Pages
         {
             UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnUpdateAfterMapLoaded;
 
+            /// Create the sprite group loaders for loading the shared sprite groups.
+            this.isoTileSpriteGroupLoader = new SpriteGroupLoader(
+                () => new IsoTileSpriteGroup(ComponentManager.GetInterface<IViewService>().CreateView<ITileSetView>()));
+            this.terrainObjectSpriteGroupLoader = new SpriteGroupLoader(
+                () => new TerrainObjectSpriteGroup(ComponentManager.GetInterface<IViewService>().CreateView<ITileSetView>()));
+
+            /// Create and register the map editor panel.
+            this.mapEditorPanel = new RCMapEditorPanel(this.isoTileSpriteGroupLoader,
+                                                       this.terrainObjectSpriteGroupLoader,
+                                                       new RCIntRectangle(this.Range.Right - 97, 0, 97, 288),
+                                                       new RCIntRectangle(0, 0, 97, 288),
+                                                       UIPanel.ShowMode.Appear, UIPanel.HideMode.Disappear,
+                                                       0, 0,
+                                                       "RC.MapEditor.Sprites.CtrlPanel");
+            this.RegisterPanel(this.mapEditorPanel);
+
             /// Create the map display control.
-            this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize - new RCIntVector(97, 0));
+            this.mapDisplayBasic = new RCMapDisplayBasic(this.isoTileSpriteGroupLoader, this.terrainObjectSpriteGroupLoader, new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize - new RCIntVector(97, 0));
             //this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic);
             this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic);
             this.isotileDisplayEx = new RCIsoTileDisplay(this.mapObjectDisplayEx);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.isotileDisplayEx);
             this.resourceAmountDisplayEx = new RCResourceAmountDisplay(this.objectPlacementDisplayEx);
             this.mapDisplay = this.resourceAmountDisplayEx;
-            this.mapDisplay.ConnectorOperationFinished += this.OnMapDisplayConnected;
-            this.mapDisplay.Connect();
+
+            /// Connect the map and the minimap displays.
+            this.displaysConnector = new SequentialGameConnector(
+                new ConcurrentGameConnector(this.isoTileSpriteGroupLoader, this.terrainObjectSpriteGroupLoader),
+                new ConcurrentGameConnector(this.mapDisplay, this.mapEditorPanel.MinimapDisplay));
+            this.displaysConnector.ConnectorOperationFinished += this.OnDisplaysConnected;
+            this.displaysConnector.Connect();
 
             /// Attach the map display to the scroll service.
             this.scrollService.AttachWindow(this.mapDisplay.PixelSize);
+            this.scrollService.AttachMinimap(this.mapEditorPanel.MinimapDisplay.Range.Size);
 
             /// Create the necessary views.
             this.mapTerrainView = this.viewService.CreateView<IMapTerrainView>();
@@ -123,13 +145,9 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// This method is called when the map display connected successfully.
         /// </summary>
-        private void OnMapDisplayConnected(IGameConnector sender)
+        private void OnDisplaysConnected(IGameConnector sender)
         {
-            this.mapDisplay.ConnectorOperationFinished -= this.OnMapDisplayConnected;
-
-            /// Attach the map display control to this page.
-            this.Attach(this.mapDisplay);
-            this.AttachSensitive(this.mapDisplay);
+            this.displaysConnector.ConnectorOperationFinished -= this.OnDisplaysConnected;
 
             /// Subscribe to the events of the appropriate mouse sensors & create the mouse handler.
             this.mouseHandler = new MapEditorMouseHandler(this, this.mapDisplay);
@@ -138,20 +156,16 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplay.MouseSensor.ButtonUp += this.OnMouseUp;
             this.mapDisplay.MouseSensor.Wheel += this.OnMouseWheel;
 
-            /// Create and register the map editor panel.
-            this.mapEditorPanel = new RCMapEditorPanel(new RCIntRectangle(this.Range.Right - 97, 0, 97, 200),
-                                                       new RCIntRectangle(0, 0, 97, 200),
-                                                       UIPanel.ShowMode.Appear, UIPanel.HideMode.Disappear,
-                                                       0, 0,
-                                                       "RC.MapEditor.Sprites.CtrlPanel");
-            this.RegisterPanel(this.mapEditorPanel);
-
             /// Subscribe to the events of the map editor panel.
             this.mapEditorPanel.EditModeChanged += this.OnEditModeChanged;
             this.mapEditorPanel.SelectedItemChanged += this.OnSelectedItemChanged;
             this.mapEditorPanel.SaveButton.Pressed += this.OnSaveMapPressed;
             this.mapEditorPanel.ExitButton.Pressed += this.OnExitPressed;
             this.isotileDisplayEx.HighlightIsoTile = this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain;
+
+            /// Attach the map display control to this page.
+            this.Attach(this.mapDisplay);
+            this.AttachSensitive(this.mapDisplay);
 
             /// Show the map editor panel.
             this.mapEditorPanel.Show();
@@ -171,17 +185,17 @@ namespace RC.App.PresLogic.Pages
             {
                 this.StatusChanged -= this.OnPageStatusChanged;
 
-                this.mapDisplay.ConnectorOperationFinished += this.OnMapDisplayDisconnected;
-                this.mapDisplay.Disconnect();
+                this.displaysConnector.ConnectorOperationFinished += this.OnDisplaysDisconnected;
+                this.displaysConnector.Disconnect();
             }
         }
 
         /// <summary>
         /// This method is called when the map display disconnected successfully.
         /// </summary>
-        private void OnMapDisplayDisconnected(IGameConnector sender)
+        private void OnDisplaysDisconnected(IGameConnector sender)
         {
-            this.mapDisplay.ConnectorOperationFinished -= this.OnMapDisplayDisconnected;
+            this.displaysConnector.ConnectorOperationFinished -= this.OnDisplaysDisconnected;
 
             this.mapEditorService.CloseMap();
             UIRoot.Instance.GraphicsPlatform.RenderLoop.Stop();
@@ -202,7 +216,7 @@ namespace RC.App.PresLogic.Pages
             {
                 this.mouseHandler.StartPlacingObject(
                     this.viewService.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
-                    this.mapDisplayBasic.TerrainObjectSprites);
+                    this.terrainObjectSpriteGroupLoader);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
@@ -231,7 +245,7 @@ namespace RC.App.PresLogic.Pages
             {
                 this.mouseHandler.StartPlacingObject(
                     this.viewService.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
-                    this.mapDisplayBasic.TerrainObjectSprites);
+                    this.terrainObjectSpriteGroupLoader);
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
@@ -339,7 +353,7 @@ namespace RC.App.PresLogic.Pages
                     {
                         this.mouseHandler.StartPlacingObject(
                             this.viewService.CreateView<ITerrainObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
-                            this.mapDisplayBasic.TerrainObjectSprites);
+                            this.terrainObjectSpriteGroupLoader);
                     }
                 }
             }
@@ -379,10 +393,12 @@ namespace RC.App.PresLogic.Pages
                 if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.DrawTerrain)
                 {
                     this.mapEditorService.DrawTerrain(evtArgs.Position, this.mapEditorPanel.SelectedItem);
+                    this.mapEditorPanel.MinimapDisplay.UpdateTerrainSprite();
                 }
                 else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
                 {
                     this.mapEditorService.PlaceTerrainObject(evtArgs.Position, this.mapEditorPanel.SelectedItem);
+                    this.mapEditorPanel.MinimapDisplay.UpdateTerrainSprite();
                 }
                 else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
                 {
@@ -406,6 +422,7 @@ namespace RC.App.PresLogic.Pages
                 if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceTerrainObject)
                 {
                     this.mapEditorService.RemoveTerrainObject(evtArgs.Position);
+                    this.mapEditorPanel.MinimapDisplay.UpdateTerrainSprite();
                 }
                 else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation ||
                          this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
@@ -527,6 +544,21 @@ namespace RC.App.PresLogic.Pages
         /// Reference to the panel with the controls.
         /// </summary>
         private RCMapEditorPanel mapEditorPanel;
+
+        /// <summary>
+        /// Reference to the loader of the isometric tile sprite group.
+        /// </summary>
+        private SpriteGroupLoader isoTileSpriteGroupLoader;
+
+        /// <summary>
+        /// Reference to the loader of the terrain object sprite group.
+        /// </summary>
+        private SpriteGroupLoader terrainObjectSpriteGroupLoader;
+
+        /// <summary>
+        /// Connector for connecting the map and minimap displays.
+        /// </summary>
+        private IGameConnector displaysConnector;
 
         /// <summary>
         /// Reference to the background task that loads the map.

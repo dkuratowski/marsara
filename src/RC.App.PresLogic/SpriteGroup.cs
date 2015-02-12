@@ -7,15 +7,15 @@ using RC.UI;
 namespace RC.App.PresLogic
 {
     /// <summary>
-    /// Common interface of a sprite-group. Sprite-groups can be used to handle loading/unloading a group of sprites that are not
+    /// Common base class of a sprite-group. Sprite-groups can be used to handle loading/unloading a group of sprites that are not
     /// loaded as resources.
     /// </summary>
-    public abstract class SpriteGroup
+    public abstract class SpriteGroup : ISpriteGroup
     {
         /// <summary>
         /// Creates a SpriteGroup instance.
         /// </summary>
-        public SpriteGroup()
+        protected SpriteGroup()
         {
             this.spriteList = new List<UISprite>();
             this.isLoaded = false;
@@ -53,12 +53,12 @@ namespace RC.App.PresLogic
             this.isLoaded = false;
         }
 
-        /// <summary>
-        /// Gets the sprite at the given index.
-        /// </summary>
-        /// <param name="index">The index of the sprite to get.</param>
-        /// <returns>The sprite at the given index.</returns>
+        #region ISpriteGroup members
+
+        /// <see cref="ISpriteGroup.Item"/>
         public UISprite this[int index] { get { return this.spriteList[index]; } }
+
+        #endregion ISpriteGroup members
 
         /// <summary>
         /// Internal implementation of loading the sprite-group that has to be implemented by the derived classes.

@@ -25,7 +25,17 @@ namespace RC.App.PresLogic.Pages
         /// </summary>
         public RCGameplayPage() : base()
         {
-            this.mapDisplayBasic = new RCMapDisplayBasic(new RCIntVector(0, 13), new RCIntVector(320, 135));
+            /// Create the sprite group loaders for loading the shared sprite groups.
+            SpriteGroupLoader isoTileSpriteGroupLoader = new SpriteGroupLoader(
+                () => new IsoTileSpriteGroup(ComponentManager.GetInterface<IViewService>().CreateView<ITileSetView>()));
+            SpriteGroupLoader terrainObjectSpriteGroupLoader = new SpriteGroupLoader(
+                () => new TerrainObjectSpriteGroup(ComponentManager.GetInterface<IViewService>().CreateView<ITileSetView>()));
+
+            /// Create the map display and its extensions.
+            this.mapDisplayBasic = new RCMapDisplayBasic(isoTileSpriteGroupLoader,
+                                                         terrainObjectSpriteGroupLoader,
+                                                         new RCIntVector(0, 13),
+                                                         new RCIntVector(320, 135));
             //this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic);
             this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic);
             this.selectionDisplayEx = new RCSelectionDisplay(this.mapObjectDisplayEx);
@@ -36,11 +46,13 @@ namespace RC.App.PresLogic.Pages
 
             this.mouseHandler = null;
 
-            this.minimapPanel = new RCMinimapPanel(new RCIntRectangle(0, 120, 80, 80),
-                                                   new RCIntRectangle(1, 1, 78, 78),
+            this.minimapPanel = new RCMinimapPanel(isoTileSpriteGroupLoader,
+                                                   terrainObjectSpriteGroupLoader,
+                                                   new RCIntRectangle(0, 128, 72, 72),
+                                                   new RCIntRectangle(1, 1, 70, 70),
                                                    "RC.App.Sprites.MinimapPanel");
-            this.detailsPanel = new RCDetailsPanel(new RCIntRectangle(80, 148, 170, 52),
-                                                   new RCIntRectangle(0, 1, 170, 50),
+            this.detailsPanel = new RCDetailsPanel(new RCIntRectangle(72, 148, 178, 52),
+                                                   new RCIntRectangle(0, 1, 178, 50),
                                                    "RC.App.Sprites.DetailsPanel");
             this.commandPanel = new RCCommandPanel(new RCIntRectangle(250, 130, 70, 70),
                                                    new RCIntRectangle(3, 3, 64, 64),
@@ -61,7 +73,9 @@ namespace RC.App.PresLogic.Pages
             this.RegisterPanel(this.resourceBar);
             this.RegisterPanel(this.menuButtonPanel);
 
-            this.gameConnection = new AggregateGameConnector(new HashSet<IGameConnector> { this.mapDisplay, this.commandPanel });
+            this.gameConnection = new SequentialGameConnector(
+                new ConcurrentGameConnector(isoTileSpriteGroupLoader, terrainObjectSpriteGroupLoader),
+                new ConcurrentGameConnector(this.mapDisplay, this.commandPanel, this.minimapPanel));
         }
 
         #region IGameConnector methods
