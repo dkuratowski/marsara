@@ -84,11 +84,6 @@ namespace RC.NetworkingSystem
         /// in time (milliseconds).
         /// </summary>
         public static readonly int CONNECTION_ACCEPT_FREQUENCY = ConstantsTable.Get<int>("RC.NetworkingSystem.ConnectionAcceptFrequency");
-
-        /// <summary>
-        /// The maximum amount of incompleted server tasks.
-        /// </summary>
-        public static readonly int SERVER_TASK_FIFO_CAPACITY = ConstantsTable.Get<int>("RC.NetworkingSystem.ServerTaskFifoCapacity");
     }
 
     /// <summary>

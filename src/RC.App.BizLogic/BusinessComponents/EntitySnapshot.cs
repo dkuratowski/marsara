@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.App.BizLogic.BusinessComponents.Core;
 using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
@@ -38,10 +39,7 @@ namespace RC.App.BizLogic.BusinessComponents
             this.animationFrame = spriteIndices.ToArray();
 
             /// Save the owner player of the source entity.
-            StartLocation entityAsStartLoc = sourceEntity as StartLocation;
-            this.owner = entityAsStartLoc != null
-                       ? (PlayerEnum)entityAsStartLoc.PlayerIndex
-                       : (sourceEntity.Owner != null ? (PlayerEnum)sourceEntity.Owner.PlayerIndex : PlayerEnum.Neutral);
+            this.owner = BizLogicHelpers.GetEntityOwner(sourceEntity);
         }
 
         #region Public members

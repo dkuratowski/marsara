@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using RC.App.BizLogic.BusinessComponents.Core;
 using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Simulator.Scenarios;
@@ -27,7 +28,7 @@ namespace RC.App.BizLogic.Views.Core
         {
             /// Display the currently visible entities inside the currently visible window of quadratic tiles.
             List<ObjectInst> retList = new List<ObjectInst>();
-            foreach (Entity entity in this.fogOfWarBC.GetEntitiesToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
+            foreach (Entity entity in this.fogOfWarBC.GetEntitiesToUpdate())
             {
                 RCIntRectangle displayRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entity.BoundingBox);
                 List<SpriteInst> entitySprites = new List<SpriteInst>();
@@ -44,18 +45,15 @@ namespace RC.App.BizLogic.Views.Core
                     }
                 }
 
-                StartLocation entityAsStartLoc = entity as StartLocation;
                 retList.Add(new ObjectInst()
                 {
-                    Owner = entityAsStartLoc != null
-                          ? (PlayerEnum)entityAsStartLoc.PlayerIndex
-                          : (entity.Owner != null ? (PlayerEnum)entity.Owner.PlayerIndex : PlayerEnum.Neutral),
+                    Owner = BizLogicHelpers.GetEntityOwner(entity),
                     Sprites = entitySprites
                 });
             }
 
             /// Display the currently visible entity snapshots.
-            foreach (EntitySnapshot entitySnapshot in this.fogOfWarBC.GetEntitySnapshotsToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
+            foreach (EntitySnapshot entitySnapshot in this.fogOfWarBC.GetEntitySnapshotsToUpdate())
             {
                 RCIntRectangle displayRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entitySnapshot.Position);
                 List<SpriteInst> snapshotSprites = new List<SpriteInst>();
@@ -84,7 +82,7 @@ namespace RC.App.BizLogic.Views.Core
             foreach (Entity entity in this.Scenario.GetEntitiesOnMap<Entity>(this.MapWindowBC.AttachedWindow.WindowToMapCoords(position)))
             {
                 /// Get the ID of the entity only if it's not hidden by FOW.
-                if (this.fogOfWarBC.IsEntityVisible(this.MapWindowBC.AttachedWindow.QuadTileWindow, entity))
+                if (this.fogOfWarBC.IsEntityVisible(entity))
                 {
                     return entity.ID.Read();
                 }

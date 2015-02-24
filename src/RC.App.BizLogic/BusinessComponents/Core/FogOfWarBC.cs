@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Common.ComponentModel;
+using RC.Common.Diagnostics;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Scenarios;
 
@@ -88,56 +89,112 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="IFogOfWarBC.GetIsoTilesToUpdate"/>
-        public IEnumerable<IIsoTile> GetIsoTilesToUpdate(RCIntRectangle quadTileWindow)
+        public IEnumerable<IIsoTile> GetIsoTilesToUpdate()
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
-            this.UpdateQuadTileWindow(quadTileWindow);
+            this.UpdateQuadTileWindow();
             return this.cache.Value.IsoTilesToUpdate;
         }
 
         /// <see cref="IFogOfWarBC.GetTerrainObjectsToUpdate"/>
-        public IEnumerable<ITerrainObject> GetTerrainObjectsToUpdate(RCIntRectangle quadTileWindow)
+        public IEnumerable<ITerrainObject> GetTerrainObjectsToUpdate()
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
-            this.UpdateQuadTileWindow(quadTileWindow);
+            this.UpdateQuadTileWindow();
             return this.cache.Value.TerrainObjectsToUpdate;
         }
 
         /// <see cref="IFogOfWarBC.GetQuadTilesToUpdate"/>
-        public IEnumerable<IQuadTile> GetQuadTilesToUpdate(RCIntRectangle quadTileWindow)
+        public IEnumerable<IQuadTile> GetQuadTilesToUpdate()
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
-            this.UpdateQuadTileWindow(quadTileWindow);
+            this.UpdateQuadTileWindow();
             return this.cache.Value.QuadTilesToUpdate;
         }
 
         /// <see cref="IFogOfWarBC.GetEntitySnapshotsToUpdate"/>
-        public IEnumerable<EntitySnapshot> GetEntitySnapshotsToUpdate(RCIntRectangle quadTileWindow)
+        public IEnumerable<EntitySnapshot> GetEntitySnapshotsToUpdate()
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
-            this.UpdateQuadTileWindow(quadTileWindow);
+            this.UpdateQuadTileWindow();
             return this.cache.Value.EntitySnapshotsToUpdate;
         }
 
         /// <see cref="IFogOfWarBC.GetEntitiesToUpdate"/>
-        public IEnumerable<Entity> GetEntitiesToUpdate(RCIntRectangle quadTileWindow)
+        public IEnumerable<Entity> GetEntitiesToUpdate()
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
-            this.UpdateQuadTileWindow(quadTileWindow);
+            this.UpdateQuadTileWindow();
             return this.cache.Value.EntitiesToUpdate;
         }
 
-        /// <see cref="IFogOfWarBC.IsEntityVisible"/>
-        public bool IsEntityVisible(RCIntRectangle quadTileWindow, Entity entity)
+        /// <see cref="IFogOfWarBC.GetEntitySnapshotsInWindow"/>
+        public IEnumerable<EntitySnapshot> GetEntitySnapshotsInWindow(RCIntRectangle quadWindow)
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.runningFowsCount == 0) { yield break; }
+
+            for (int column = quadWindow.Left; column < quadWindow.Right; column++)
+            {
+                for (int row = quadWindow.Top; row < quadWindow.Bottom; row++)
+                {
+                    RCIntVector quadCoords = new RCIntVector(column, row);
+
+                    /// If the FOW is full at the current quadratic tile -> continue with the next.
+                    FOWTypeEnum fowAtQuadTile = this.fowCacheMatrix.GetFowStateAtQuadTile(quadCoords);
+                    if (fowAtQuadTile == FOWTypeEnum.Full) { continue; }
+
+                    /// Add the entity snapshot into the returned list.
+                    EntitySnapshot snapshot = this.fowCacheMatrix.GetEntitySnapshotAtQuadTile(quadCoords);
+                    if (snapshot != null) { yield return snapshot; }
+                }
+            }
+        }
+
+        /// <see cref="IFogOfWarBC.GetEntitiesInWindow"/>
+        public IEnumerable<Entity> GetEntitiesInWindow(RCIntRectangle quadWindow)
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
-            this.UpdateQuadTileWindow(quadTileWindow);
+            /// Collect the currently visible entities inside the given window.
+            RCNumRectangle cellWindow = (RCNumRectangle)this.ActiveScenario.Map.QuadToCellRect(quadWindow) - new RCNumVector(1, 1) / 2;
+            HashSet<Entity> entitiesOnMap = this.ActiveScenario.GetEntitiesOnMap<Entity>(cellWindow);
+            foreach (Entity entity in entitiesOnMap)
+            {
+                if (this.runningFowsCount == 0)
+                {
+                    yield return entity;
+                }
+                else
+                {
+                    bool breakLoop = false;
+                    for (int col = entity.QuadraticPosition.Left; !breakLoop && col < entity.QuadraticPosition.Right; col++)
+                    {
+                        for (int row = entity.QuadraticPosition.Top; !breakLoop && row < entity.QuadraticPosition.Bottom; row++)
+                        {
+                            if (this.fowCacheMatrix.GetFowStateAtQuadTile(new RCIntVector(col, row)) == FOWTypeEnum.None)
+                            {
+                                /// Found at least 1 quadratic tile where the entity is visible.
+                                yield return entity;
+                                breakLoop = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <see cref="IFogOfWarBC.IsEntityVisible"/>
+        public bool IsEntityVisible(Entity entity)
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+
+            this.UpdateQuadTileWindow();
             return this.cache.Value.EntitiesToUpdate.Contains(entity);
         }
 
@@ -155,6 +212,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             return this.runningFowsCount > 0 ? this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadCoords) : FOWTileFlagsEnum.None;
+        }
+
+        /// <see cref="IFogOfWarBC.GetPartialFowTileFlags"/>
+        public FOWTypeEnum GetFowState(RCIntVector quadCoords)
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+
+            return this.runningFowsCount > 0 ? this.fowCacheMatrix.GetFowStateAtQuadTile(quadCoords) : FOWTypeEnum.None;
         }
 
         /// <see cref="IFogOfWarBC.ExecuteUpdateIteration"/>
@@ -245,15 +310,16 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             HashSet<Entity> entitiesToUpdate = new HashSet<Entity>();
             foreach (Entity entity in entitiesOnMap)
             {
-                for (int col = entity.QuadraticPosition.Left; col < entity.QuadraticPosition.Right; col++)
+                bool breakLoop = false;
+                for (int col = entity.QuadraticPosition.Left; !breakLoop && col < entity.QuadraticPosition.Right; col++)
                 {
-                    for (int row = entity.QuadraticPosition.Top; row < entity.QuadraticPosition.Bottom; row++)
+                    for (int row = entity.QuadraticPosition.Top; !breakLoop && row < entity.QuadraticPosition.Bottom; row++)
                     {
                         if (this.fowCacheMatrix.GetFowStateAtQuadTile(new RCIntVector(col, row)) == FOWTypeEnum.None)
                         {
                             /// Found at least 1 quadratic tile where the entity is visible.
                             this.AddEntityToUpdate(entity, entitiesToUpdate, quadTilesToUpdate);
-                            break;
+                            breakLoop = true;
                         }
                     }
                 }
@@ -409,13 +475,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// Updates the visibility window and invalidates the cache if necessary.
         /// </summary>
-        /// <param name="quadTileWindow">The new visibility window.</param>
-        private void UpdateQuadTileWindow(RCIntRectangle quadTileWindow)
+        private void UpdateQuadTileWindow()
         {
-            if (quadTileWindow == RCIntRectangle.Undefined) { throw new ArgumentNullException("quadTileWindow"); }
-            if (!this.ActiveScenario.Map.IsFinalized || quadTileWindow != this.quadTileWindow)
+            if (!this.ActiveScenario.Map.IsFinalized || this.quadTileWindow != this.mapWindowBC.AttachedWindow.QuadTileWindow)
             {
-                this.quadTileWindow = quadTileWindow;
+                this.quadTileWindow = this.mapWindowBC.AttachedWindow.QuadTileWindow;
                 this.cache.Invalidate();
             }
         }

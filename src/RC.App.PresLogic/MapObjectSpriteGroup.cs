@@ -38,7 +38,7 @@ namespace RC.App.PresLogic
         protected override bool IsMaskingForced { get { return this.owner == PlayerEnum.Neutral; } }
 
         /// <see cref="MaskedSpriteGroup.TargetColor"/>
-        protected override RCColor TargetColor { get { return PLAYER_COLOR_MAPPINGS[this.owner]; } }
+        protected override RCColor TargetColor { get { return PresLogicConstants.PLAYER_COLOR_MAPPINGS[this.owner]; } }
 
         #endregion Overriden from MaskedSpriteGroup
 
@@ -51,21 +51,5 @@ namespace RC.App.PresLogic
         /// The owner of the map objects in this group.
         /// </summary>
         private PlayerEnum owner;
-
-        /// <summary>
-        /// Defines the colors of the players.
-        /// </summary>
-        private static readonly Dictionary<PlayerEnum, RCColor> PLAYER_COLOR_MAPPINGS = new Dictionary<PlayerEnum, RCColor>()
-        {
-            { PlayerEnum.Neutral, RCColor.Black },
-            { PlayerEnum.Player0, RCColor.Red },
-            { PlayerEnum.Player1, RCColor.Blue },
-            { PlayerEnum.Player2, RCColor.Cyan },
-            { PlayerEnum.Player3, RCColor.Magenta },
-            { PlayerEnum.Player4, RCColor.LightMagenta },
-            { PlayerEnum.Player5, RCColor.Green },
-            { PlayerEnum.Player6, RCColor.WhiteHigh },
-            { PlayerEnum.Player7, RCColor.Yellow }
-        };
     }
 }

@@ -47,5 +47,11 @@ namespace RC.App.BizLogic.Services
         /// </summary>
         /// <param name="direction">The direction of the scroll.</param>
         void Scroll(ScrollDirectionEnum direction);
+
+        /// <summary>
+        /// Scrolls the map window to the position given on the minimap.
+        /// </summary>
+        /// <param name="position">The position inside the minimap control in pixels.</param>
+        void ScrollToMinimapPosition(RCIntVector position);
     }
 }

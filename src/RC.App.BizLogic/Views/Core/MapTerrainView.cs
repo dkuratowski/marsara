@@ -30,7 +30,7 @@ namespace RC.App.BizLogic.Views.Core
         {
             /// Collect the currently visible isometric tiles.
             List<SpriteInst> retList = new List<SpriteInst>();
-            foreach (IIsoTile isoTile in this.fogOfWarBC.GetIsoTilesToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
+            foreach (IIsoTile isoTile in this.fogOfWarBC.GetIsoTilesToUpdate())
             {
                 retList.Add(
                     new SpriteInst()
@@ -56,7 +56,7 @@ namespace RC.App.BizLogic.Views.Core
         public List<SpriteInst> GetVisibleTerrainObjects()
         {
             List<SpriteInst> retList = new List<SpriteInst>();
-            foreach (ITerrainObject terrainObj in this.fogOfWarBC.GetTerrainObjectsToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
+            foreach (ITerrainObject terrainObj in this.fogOfWarBC.GetTerrainObjectsToUpdate())
             {
                 retList.Add(new SpriteInst()
                 {

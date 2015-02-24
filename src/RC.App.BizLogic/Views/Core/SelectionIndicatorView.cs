@@ -35,7 +35,7 @@ namespace RC.App.BizLogic.Views.Core
 
             /// Display the selection indicators of the currently visible entities inside the currently visible window of quadratic tiles.
             List<SelIndicatorInst> retList = new List<SelIndicatorInst>();
-            foreach (Entity entity in this.fogOfWarBC.GetEntitiesToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
+            foreach (Entity entity in this.fogOfWarBC.GetEntitiesToUpdate())
             {
                 if (currentSelection.Contains(entity.ID.Read()))
                 {

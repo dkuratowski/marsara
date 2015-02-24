@@ -25,10 +25,10 @@ namespace RC.NetworkingSystem
             this.listener = listener;
             this.announcer = null;
             this.tasks = new List<NetworkingTaskType>();
-            this.manipulators = new Fifo<LineManipulator>(NetworkingSystemConstants.SERVER_TASK_FIFO_CAPACITY);
-            this.manipulatorParams = new Fifo<int>(NetworkingSystemConstants.SERVER_TASK_FIFO_CAPACITY);
-            this.outgoingPackages = new Fifo<RCPackage>(NetworkingSystemConstants.SERVER_TASK_FIFO_CAPACITY);
-            this.outgoingPackageTargets = new Fifo<int[]>(NetworkingSystemConstants.SERVER_TASK_FIFO_CAPACITY);
+            this.manipulators = new Fifo<LineManipulator>();
+            this.manipulatorParams = new Fifo<int>();
+            this.outgoingPackages = new Fifo<RCPackage>();
+            this.outgoingPackageTargets = new Fifo<int[]>();
 
             this.connections = new LobbyConnection[maxClients - 1];
             for (int i = 0; i < this.connections.Length; i++)

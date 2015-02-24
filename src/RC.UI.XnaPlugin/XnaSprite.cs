@@ -102,7 +102,7 @@ namespace RC.UI.XnaPlugin
             }
         }
 
-        /// <see cref="UISprite.TransparentColor_set"/>
+        /// <see cref="UISprite.Upload_i"/>
         protected override void Upload_i()
         {
             if (this.isLocked) { throw new UIException("Sprite is locked"); }
@@ -135,6 +135,23 @@ namespace RC.UI.XnaPlugin
             }
 
             this.isUploaded = true;
+        }
+
+        /// <see cref="UISprite.Download_i"/>
+        protected override void Download_i()
+        {
+            if (this.xnaTexture != null)
+            {
+                lock (this.platform.Device)
+                {
+                    this.xnaTexture.Dispose();
+                }
+
+                this.xnaTexture = null;
+                TraceManager.WriteAllTrace("XnaSprite: XNA-texture destroyed", XnaTraceFilters.DETAILS);
+            }
+
+            this.isUploaded = false;
         }
 
         /// <see cref="UISprite.Save"/>

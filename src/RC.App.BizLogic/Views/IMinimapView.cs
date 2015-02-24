@@ -24,6 +24,14 @@ namespace RC.App.BizLogic.Views
         List<SpriteInst> GetTerrainObjectSprites();
 
         /// <summary>
+        /// Refreshes the minimap pixel informations in the given rows.
+        /// </summary>
+        /// <param name="firstRowIndex">The index of the first scanned row.</param>
+        /// <param name="rowsCount">The numbers of rows to scan.</param>
+        /// <param name="pixelInfos">The array of the pixel informations to refresh.</param>
+        void RefreshPixelInfos(int firstRowIndex, int rowsCount, MinimapPixelInfo[,] pixelInfos);
+
+        /// <summary>
         /// Gets the location of the indicator of the current map window on the minimap display.
         /// </summary>
         RCIntRectangle WindowIndicator { get; }

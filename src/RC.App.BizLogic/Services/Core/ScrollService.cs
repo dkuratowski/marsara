@@ -68,6 +68,21 @@ namespace RC.App.BizLogic.Services.Core
             else if (direction == ScrollDirectionEnum.NorthWest) { this.mapWindowBC.ScrollTo(windowCenterMapCoords + new RCNumVector(-SCROLL_STEP, -SCROLL_STEP)); }
         }
 
+        /// <see cref="IScrollService.ScrollToMinimapPosition"/>
+        public void ScrollToMinimapPosition(RCIntVector position)
+        {
+            if (this.mapWindowBC.Minimap == null) { throw new InvalidOperationException("Minimap has not yet been attached!"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            RCIntVector minimapPixelCoords = position - this.mapWindowBC.Minimap.MinimapPosition.Location;
+            minimapPixelCoords = new RCIntVector(Math.Min(this.mapWindowBC.Minimap.MinimapPosition.Width - 1, Math.Max(0, minimapPixelCoords.X)),
+                                                 Math.Min(this.mapWindowBC.Minimap.MinimapPosition.Height - 1, Math.Max(0, minimapPixelCoords.Y)));
+
+            IMinimapPixel minimapPixel = this.mapWindowBC.Minimap.GetMinimapPixel(minimapPixelCoords);
+            RCNumVector pixelCenterOnMap = minimapPixel.CoveredArea.Location + minimapPixel.CoveredArea.Size / 2;
+            this.mapWindowBC.ScrollTo(pixelCenterOnMap);
+        }
+
         #endregion IScrollService members
 
         /// <summary>

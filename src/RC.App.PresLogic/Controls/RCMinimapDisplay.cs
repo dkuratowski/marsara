@@ -31,6 +31,12 @@ namespace RC.App.PresLogic.Controls
             if (terrainObjectSpriteGroup == null) { throw new ArgumentNullException("terrainObjectSpriteGroup"); }
 
             this.minimapView = null;
+            this.minimapScanner = null;
+            this.scannerStatus = ScannerStatusEnum.Inactive;
+            this.mouseHandler = null;
+            this.showAttackSignalsFlag = false;
+            this.timeSinceAttackSignalFlagChanged = 0;
+            this.spriteBuffer = null;
             this.isoTileSpriteGroup = isoTileSpriteGroup;
             this.terrainObjectSpriteGroup = terrainObjectSpriteGroup;
 
@@ -38,8 +44,9 @@ namespace RC.App.PresLogic.Controls
             this.backgroundTask = null;
             this.stopBackgroundTaskEvent = null;
             this.newJobEvent = null;
-            this.jobQueue = new Fifo<IMinimapBackgroundJob>(JOB_QUEUE_CAPACITY);
+            this.jobQueue = new Fifo<IMinimapBackgroundJob>();
 
+            this.crosshairsPointer = UIResourceManager.GetResource<UIPointer>("RC.App.Pointers.CrosshairsPointer");
             this.windowLocationBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.WhiteHigh, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.windowLocationBrush.Upload();
         }
@@ -52,8 +59,8 @@ namespace RC.App.PresLogic.Controls
             if (this.connectionStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("The minimap display has not yet been connected!"); }
 
             UISprite spriteToUpdate = this.spriteBuffer.CheckoutTerrainSprite();
-            this.terrainUpdateJob = new MinimapTerrainUpdateJob(spriteToUpdate, this.minimapView, this.isoTileSpriteGroup, this.terrainObjectSpriteGroup);
-            lock (this.jobQueue) { this.jobQueue.Push(this.terrainUpdateJob); }
+            MinimapTerrainRenderJob terrainUpdateJob = new MinimapTerrainRenderJob(spriteToUpdate, this.minimapView, this.isoTileSpriteGroup, this.terrainObjectSpriteGroup);
+            lock (this.jobQueue) { this.jobQueue.Push(terrainUpdateJob); }
             this.newJobEvent.Set();
         }
 
@@ -63,6 +70,8 @@ namespace RC.App.PresLogic.Controls
         public void Connect()
         {
             if (this.connectionStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("The minimap display has been connected or is currently being connected!"); }
+
+            TraceManager.WriteAllTrace("Start minimap connection...", PresLogicTraceFilters.INFO);
 
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
             this.minimapView = viewService.CreateView<IMinimapView>();
@@ -85,7 +94,12 @@ namespace RC.App.PresLogic.Controls
         {
             if (this.connectionStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("The minimap display has been disconnected or is currently being disconnected!"); }
 
+            TraceManager.WriteAllTrace("Start minimap disconnection...", PresLogicTraceFilters.INFO);
+
+            this.scannerStatus = ScannerStatusEnum.Inactive;
             this.connectionStatus = ConnectionStatusEnum.Disconnecting;
+            this.mouseHandler.Dispose();
+            this.mouseHandler = null;
             this.minimapView = null;
             this.stopBackgroundTaskEvent.Set();
         }
@@ -100,11 +114,22 @@ namespace RC.App.PresLogic.Controls
 
         #region Overrides
 
+        /// <see cref="UISensitiveObject.GetMousePointer"/>
+        public override UIPointer GetMousePointer(RCIntVector localPosition)
+        {
+            return this.mouseHandler != null && this.mouseHandler.DisplayCrosshairs ? this.crosshairsPointer : null;
+        }
+
         /// <see cref="UIObject.Render_i"/>
         protected sealed override void Render_i(IUIRenderContext renderContext)
         {
-            /// TODO: implement the rendering operation!
             renderContext.RenderSprite(this.spriteBuffer.TerrainSprite, this.minimapView.MinimapPosition.Location);
+            renderContext.RenderSprite(this.spriteBuffer.FOWSprite, this.minimapView.MinimapPosition.Location);
+            renderContext.RenderSprite(this.spriteBuffer.EntitiesSprite, this.minimapView.MinimapPosition.Location);
+            if (this.showAttackSignalsFlag)
+            {
+                renderContext.RenderSprite(this.spriteBuffer.AttackSignalsSprite, this.minimapView.MinimapPosition.Location);
+            }
             renderContext.RenderRectangle(this.windowLocationBrush, this.minimapView.WindowIndicator);
         }
 
@@ -150,6 +175,7 @@ namespace RC.App.PresLogic.Controls
                 }
             }
 
+            this.minimapScanner.Dispose();
             this.spriteBuffer.DestroyBuffers();
         }
 
@@ -164,16 +190,45 @@ namespace RC.App.PresLogic.Controls
 
             if (finishedJob == this.spriteBuffer)
             {
-                this.connectionStatus = ConnectionStatusEnum.Online;
-                if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
-            }
-            else if (finishedJob == this.terrainUpdateJob)
-            {
-                this.spriteBuffer.CheckinTerrainSprite(this.terrainUpdateJob.TargetSprite);
-                this.terrainUpdateJob = null;
-            }
+                if (this.scannerStatus == ScannerStatusEnum.Inactive)
+                {
+                    /// Connection completed, start the first scan operation.
+                    TraceManager.WriteAllTrace("Minimap connection completed", PresLogicTraceFilters.INFO);
+                    this.minimapScanner = new MinimapScanner(this.minimapView);
+                    this.minimapScanner.InitScan(this.spriteBuffer.CheckoutFOWSprite(),
+                                                 this.spriteBuffer.CheckoutEntitiesSprite(),
+                                                 this.spriteBuffer.CheckoutAttackSignalsSprite());
+                    this.scannerStatus = ScannerStatusEnum.Scanning;
+                    this.mouseHandler = new MinimapMouseHandler(this);
+                    this.showAttackSignalsFlag = false;
+                    this.timeSinceAttackSignalFlagChanged = 0;
+                    UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnExecuteScan;
 
-            TraceManager.WriteAllTrace("Message arrived from background task...", PresLogicTraceFilters.INFO);
+                    this.connectionStatus = ConnectionStatusEnum.Online;
+                    if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
+                }
+            }
+            else if (finishedJob is MinimapTerrainRenderJob)
+            {
+                /// Terrain rendering completed.
+                TraceManager.WriteAllTrace("Minimap terrain refresh completed", PresLogicTraceFilters.INFO);
+                this.spriteBuffer.CheckinTerrainSprite((finishedJob as MinimapTerrainRenderJob).Result);
+            }
+            else if (finishedJob == this.minimapScanner)
+            {
+                if (this.scannerStatus == ScannerStatusEnum.Rendering)
+                {
+                    /// Rendering completed, start the next scan operation.
+                    TraceManager.WriteAllTrace("Minimap refresh completed", PresLogicTraceFilters.INFO);
+                    this.spriteBuffer.CheckinFOWSprite(this.minimapScanner.FOWBuffer);
+                    this.spriteBuffer.CheckinEntitiesSprite(this.minimapScanner.EntitiesBuffer);
+                    this.spriteBuffer.CheckinAttackSignalsSprite(this.minimapScanner.AttackSignalsBuffer);
+                    this.minimapScanner.InitScan(this.spriteBuffer.CheckoutFOWSprite(),
+                                                 this.spriteBuffer.CheckoutEntitiesSprite(),
+                                                 this.spriteBuffer.CheckoutAttackSignalsSprite());
+                    this.scannerStatus = ScannerStatusEnum.Scanning;
+                }
+            }
         }
 
         /// <summary>
@@ -185,19 +240,60 @@ namespace RC.App.PresLogic.Controls
         {
             if (sender != this.backgroundTask) { throw new InvalidOperationException("Unexpected sender!"); }
 
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnExecuteScan;
+            this.showAttackSignalsFlag = false;
+            this.timeSinceAttackSignalFlagChanged = 0;
             this.backgroundTask = null;
+            this.minimapView = null;
+            this.minimapScanner = null;
             this.spriteBuffer = null;
-            this.terrainUpdateJob = null;
             this.connectionStatus = ConnectionStatusEnum.Offline;
             this.stopBackgroundTaskEvent.Close();
             this.newJobEvent.Close();
             this.stopBackgroundTaskEvent = null;
             this.newJobEvent = null;
 
+            TraceManager.WriteAllTrace("Minimap disconnection completed", PresLogicTraceFilters.INFO);
+
             if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
         }
 
+        /// <summary>
+        /// Execute the current scan operation on the UI-thread.
+        /// </summary>
+        private void OnExecuteScan()
+        {
+            /// Update the attack signal flag.
+            this.timeSinceAttackSignalFlagChanged += UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
+            if (this.timeSinceAttackSignalFlagChanged > ATTACKSIGNAL_FLASHTIME)
+            {
+                this.timeSinceAttackSignalFlagChanged = 0;
+                this.showAttackSignalsFlag = !this.showAttackSignalsFlag;
+            }
+
+            /// Continue the scan operation if we are in scanning state.
+            if (this.scannerStatus != ScannerStatusEnum.Scanning) { return; }
+            if (this.minimapScanner.ExecuteScan())
+            {
+                /// Scan operation finished, start the rendering on the background task.
+                TraceManager.WriteAllTrace("Start minimap refresh...", PresLogicTraceFilters.INFO);
+                this.scannerStatus = ScannerStatusEnum.Rendering;
+                lock (this.jobQueue) { this.jobQueue.Push(this.minimapScanner); }
+                this.newJobEvent.Set();
+            }
+        }
+
         #endregion Background task related methods
+
+        /// <summary>
+        /// Enumerates the possible state of the minimap scanner.
+        /// </summary>
+        private enum ScannerStatusEnum
+        {
+            Inactive = 0,   /// Neither scanning nor rendering is in progress.
+            Scanning = 1,   /// Scanning is in progress on the UI-thread.
+            Rendering = 2   /// Rendering is in progress on the background task.
+        }
 
         /// <summary>
         /// Event to stop the background task.
@@ -230,19 +326,40 @@ namespace RC.App.PresLogic.Controls
         private MinimapSpriteBuffer spriteBuffer;
 
         /// <summary>
-        /// Reference to the current terrain update job.
+        /// Reference to the minimap scanner if this minimap display is connected; otherwise null.
         /// </summary>
-        private MinimapTerrainUpdateJob terrainUpdateJob;
+        private MinimapScanner minimapScanner;
+
+        /// <summary>
+        /// The current status of the minimap scanner.
+        /// </summary>
+        private ScannerStatusEnum scannerStatus;
+
+        /// <summary>
+        /// Reference to the mouse handler of this minimap display control.
+        /// </summary>
+        private MinimapMouseHandler mouseHandler;
 
         /// <summary>
         /// Reference to the job queue.
         /// </summary>
-        private Fifo<IMinimapBackgroundJob> jobQueue;
+        private readonly Fifo<IMinimapBackgroundJob> jobQueue;
 
         /// <summary>
         /// Brush for displaying the current location of the map window on the minimap.
         /// </summary>
         private readonly UISprite windowLocationBrush;
+
+        /// <summary>
+        /// Crosshairs pointer.
+        /// </summary>
+        private readonly UIPointer crosshairsPointer;
+
+        /// <summary>
+        /// Fields for flashing the attack signals.
+        /// </summary>
+        private bool showAttackSignalsFlag;
+        private int timeSinceAttackSignalFlagChanged;
 
         /// <summary>
         /// Reference to the sprites of the isometric tile types.
@@ -255,8 +372,8 @@ namespace RC.App.PresLogic.Controls
         private readonly ISpriteGroup terrainObjectSpriteGroup;
 
         /// <summary>
-        /// The capacity of the job queue.
+        /// The flashing time of the attack signals in milliseconds.
         /// </summary>
-        private const int JOB_QUEUE_CAPACITY = 1024;
+        private const int ATTACKSIGNAL_FLASHTIME = 250;
     }
 }

@@ -72,7 +72,8 @@ namespace RC.UI
         public abstract byte[] Save();
 
         /// <summary>
-        /// Uploads this UISprite to the graphics device.
+        /// Uploads this UISprite to the graphics device. A UISprite can be rendered onto the screen only if it is
+        /// uploaded.
         /// </summary>
         public void Upload()
         {
@@ -81,9 +82,24 @@ namespace RC.UI
         }
 
         /// <summary>
+        /// Downloads this UISprite from the graphics device. A UISprite can be rendered onto the screen only if it is
+        /// uploaded.
+        /// </summary>
+        public void Download()
+        {
+            if (!this.IsUploaded) { throw new UIException("Sprite has not yet been uploaded!"); }
+            this.Download_i();
+        }
+
+        /// <summary>
         /// Internal implementation of the uploading.
         /// </summary>
         protected abstract void Upload_i();
+
+        /// <summary>
+        /// Internal implementation of the downloading.
+        /// </summary>
+        protected abstract void Download_i();
 
         /// <summary>
         /// Internal method to setting a new transparent color.

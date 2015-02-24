@@ -103,6 +103,7 @@
     <Compile Include="BusinessComponents\Core\MapWindowImpl.cs" />
     <Compile Include="BusinessComponents\Core\MapWindowBC.cs" />
     <Compile Include="BusinessComponents\Core\Minimap.cs" />
+    <Compile Include="BusinessComponents\Core\MinimapPixel.cs" />
     <Compile Include="BusinessComponents\Core\ScenarioDependentComponent.cs" />
     <Compile Include="BusinessComponents\Core\TargetPositionListener.cs" />
     <Compile Include="BusinessComponents\EntitySnapshot.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="BusinessComponents\IMapWindow.cs" />
     <Compile Include="BusinessComponents\IMapWindowBC.cs" />
     <Compile Include="BusinessComponents\IMinimap.cs" />
+    <Compile Include="BusinessComponents\IMinimapPixel.cs" />
     <Compile Include="BusinessComponents\ISelectionManagerBC.cs" />
     <Compile Include="BusinessComponents\Core\ScenarioManagerBC.cs" />
     <Compile Include="BusinessComponents\IScenarioManagerBC.cs" />
@@ -162,6 +164,7 @@
     <Compile Include="Views\IObjectPlacementView.cs" />
     <Compile Include="BusinessComponents\ITaskManagerBC.cs" />
     <Compile Include="Views\ISelectionIndicatorView.cs" />
+    <Compile Include="Views\MinimapPixelInfo.cs" />
     <Compile Include="Views\ObjectInst.cs" />
     <Compile Include="Views\SelIndicatorInst.cs" />
     <Compile Include="Views\SpriteInst.cs" />

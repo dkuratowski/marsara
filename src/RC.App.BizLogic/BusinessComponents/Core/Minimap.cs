@@ -1,5 +1,7 @@
 ﻿using System;
+using RC.App.BizLogic.Views;
 using RC.Common;
+using RC.Engine.Simulator.Scenarios;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -11,10 +13,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// Constructs a Minimap instance.
         /// </summary>
+        /// <param name="targetScenario">Reference to the target scenario.</param>
         /// <param name="fullWindow">Reference to the full window.</param>
         /// <param name="attachedWindow">Reference to the currently attached window.</param>
         /// <param name="minimapControlPixelSize">The size of the minimap control in pixels.</param>
-        public Minimap(IMapWindow fullWindow, IMapWindow attachedWindow, RCIntVector minimapControlPixelSize)
+        public Minimap(Scenario targetScenario, IMapWindow fullWindow, IMapWindow attachedWindow, RCIntVector minimapControlPixelSize)
         {
             if (fullWindow == null) { throw new ArgumentNullException("fullWindow"); }
             if (attachedWindow == null) { throw new ArgumentNullException("attachedWindow"); }
@@ -25,11 +28,23 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.attachedWindow = attachedWindow;
 
             this.windowIndicatorCache = new CachedValue<RCIntRectangle>(this.CalculateWindowIndicator);
+            this.windowIndicatorSizeCache = new CachedValue<RCIntVector>(this.CalculateWindowIndicatorSize);
 
             if (!Minimap.TryAlignMinimapHorizontally(minimapControlPixelSize, this.fullWindow.CellWindow.Size, out this.minimapPosition, out this.mapToMinimapTransformation) &&
                 !Minimap.TryAlignMinimapVertically(minimapControlPixelSize, this.fullWindow.CellWindow.Size, out this.minimapPosition, out this.mapToMinimapTransformation))
             {
                 throw new InvalidOperationException("Unable to align the minimap inside the minimap control!");
+            }
+
+            this.pixelMatrix = new MinimapPixel[this.minimapPosition.Width, this.minimapPosition.Height];
+            this.quadTileMatrix = new MinimapPixel[targetScenario.Map.Size.X, targetScenario.Map.Size.Y];
+            for (int row = 0; row < this.minimapPosition.Width; row++)
+            {
+                for (int col = 0; col < this.minimapPosition.Height; col++)
+                {
+                    this.pixelMatrix[col, row] = new MinimapPixel(targetScenario, new RCIntVector(col, row), this.mapToMinimapTransformation);
+                    this.AddPixelToQuadTileMatrix(this.pixelMatrix[col, row]);
+                }
             }
         }
 
@@ -39,11 +54,36 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         public void Dispose()
         {
             this.isDisposed = true;
+            for (int row = 0; row < this.minimapPosition.Width; row++)
+            {
+                for (int col = 0; col < this.minimapPosition.Height; col++)
+                {
+                    this.pixelMatrix[col, row].Dispose();
+                }
+            }
         }
 
         #endregion IDisposable members
 
         #region IMinimap members
+
+        /// <see cref="IMinimap.GetMinimapPixel"/>
+        public IMinimapPixel GetMinimapPixel(RCIntVector minimapPixel)
+        {
+            if (this.isDisposed) { throw new ObjectDisposedException("IMinimap"); }
+            if (minimapPixel == RCIntVector.Undefined) { throw new ArgumentNullException("minimapPixel"); }
+
+            return this.pixelMatrix[minimapPixel.X, minimapPixel.Y];
+        }
+
+        /// <see cref="IMinimap.GetMinimapPixel"/>
+        public IMinimapPixel GetMinimapPixelAtQuadTile(RCIntVector quadTile)
+        {
+            if (this.isDisposed) { throw new ObjectDisposedException("IMinimap"); }
+            if (quadTile == RCIntVector.Undefined) { throw new ArgumentNullException("quadTile"); }
+
+            return this.quadTileMatrix[quadTile.X, quadTile.Y];
+        }
 
         /// <see cref="IMinimap.WindowIndicator"/>
         public RCIntRectangle WindowIndicator
@@ -88,15 +128,25 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             bool alignToRight = this.attachedWindow.WindowMapCoords.Right == this.fullWindow.WindowMapCoords.Right;
             bool alignToTop = this.attachedWindow.WindowMapCoords.Top == this.fullWindow.WindowMapCoords.Top;
             bool alignToBottom = this.attachedWindow.WindowMapCoords.Bottom == this.fullWindow.WindowMapCoords.Bottom;
-            
-            RCIntVector topLeftCornerTransformed = this.mapToMinimapTransformation.TransformAB(this.attachedWindow.WindowMapCoords.Location).Round();
-            RCIntVector size = this.mapToMinimapTransformation.TransformAB(this.attachedWindow.WindowMapCoords.Size).Round();
 
-            int topLeftCornerX = alignToLeft ? 0 : (alignToRight ? this.minimapPosition.Size.X - size.X : topLeftCornerTransformed.X);
-            int topLeftCornerY = alignToTop ? 0 : (alignToBottom ? this.minimapPosition.Size.Y - size.Y : topLeftCornerTransformed.Y);
+            RCIntVector size = this.windowIndicatorSizeCache.Value;
+            RCIntVector topLeftCorner = this.mapToMinimapTransformation.TransformAB(this.attachedWindow.WindowMapCoords.Location).Round();
+            int topLeftCornerX = alignToLeft ? 0 : (alignToRight ? this.minimapPosition.Size.X - size.X : topLeftCorner.X);
+            int topLeftCornerY = alignToTop ? 0 : (alignToBottom ? this.minimapPosition.Size.Y - size.Y : topLeftCorner.Y);
             RCIntRectangle indicatorRect = new RCIntRectangle(topLeftCornerX, topLeftCornerY, size.X, size.Y) + this.minimapPosition.Location;
 
             return indicatorRect;
+        }
+
+        /// <summary>
+        /// Calculates the size of the window indicator.
+        /// </summary>
+        /// <returns>The calculated window indicator size.</returns>
+        private RCIntVector CalculateWindowIndicatorSize()
+        {
+            RCIntVector topLeftCorner = this.mapToMinimapTransformation.TransformAB(this.attachedWindow.WindowMapCoords.Location).Round();
+            RCIntVector bottomRightCorner = this.mapToMinimapTransformation.TransformAB(this.attachedWindow.WindowMapCoords.Location + this.attachedWindow.WindowMapCoords.Size).Round();
+            return bottomRightCorner - topLeftCorner;
         }
 
         /// <summary>
@@ -179,6 +229,22 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             return true;
         }
 
+        /// <summary>
+        /// Adds the given minimap pixel to the quadratic tile matrix.
+        /// </summary>
+        /// <param name="pixel">The minimap pixel to add.</param>
+        private void AddPixelToQuadTileMatrix(MinimapPixel pixel)
+        {
+            for (int quadY = pixel.CoveredQuadTiles.Top; quadY < pixel.CoveredQuadTiles.Bottom; quadY++)
+            {
+                for (int quadX = pixel.CoveredQuadTiles.Left; quadX < pixel.CoveredQuadTiles.Right; quadX++)
+                {
+                    if (this.quadTileMatrix[quadX, quadY] != null) { throw new InvalidOperationException("Quadratic tile covered by multiple minimap pixels!"); }
+                    this.quadTileMatrix[quadX, quadY] = pixel;
+                }
+            }
+        }
+
         #endregion Private methods
 
         /// <summary>
@@ -199,12 +265,27 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// The position of the minimap inside the minimap control.
         /// </summary>
-        private RCIntRectangle minimapPosition;
+        private readonly RCIntRectangle minimapPosition;
 
         /// <summary>
         /// Cached window indicator.
         /// </summary>
         private CachedValue<RCIntRectangle> windowIndicatorCache;
+
+        /// <summary>
+        /// Cached window indicator size.
+        /// </summary>
+        private CachedValue<RCIntVector> windowIndicatorSizeCache;
+
+        /// <summary>
+        /// The 2D array of the minimap pixels.
+        /// </summary>
+        private readonly MinimapPixel[,] pixelMatrix;
+
+        /// <summary>
+        /// The 2D array that contains the covering minimap pixel for each quadratic tiles.
+        /// </summary>
+        private readonly MinimapPixel[,] quadTileMatrix;
 
         /// <summary>
         /// Coordinate transformation between the map (A) and minimap (B) coordinate-systems.

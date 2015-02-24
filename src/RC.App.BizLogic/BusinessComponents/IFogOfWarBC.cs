@@ -29,47 +29,55 @@ namespace RC.App.BizLogic.BusinessComponents
         void StopFogOfWar(PlayerEnum owner);
 
         /// <summary>
-        /// Gets all the isometric tiles that are not entirely hidden by the Fog Of War inside the given area.
+        /// Gets all the isometric tiles that are not entirely hidden by the Fog Of War inside the area of the attached window.
         /// </summary>
-        /// <param name="quadTileWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
-        /// <returns>All the isometric tiles that are not entirely hidden by the Fog Of War inside the given area.</returns>
-        IEnumerable<IIsoTile> GetIsoTilesToUpdate(RCIntRectangle quadTileWindow);
+        /// <returns>All the isometric tiles that are not entirely hidden by the Fog Of War inside the area of the attached window.</returns>
+        IEnumerable<IIsoTile> GetIsoTilesToUpdate();
 
         /// <summary>
-        /// Gets all the terrain objects that are not entirely hidden by the Fog Of War inside the given area.
+        /// Gets all the terrain objects that are not entirely hidden by the Fog Of War inside the area of the attached window.
         /// </summary>
-        /// <param name="quadTileWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
-        /// <returns>All the terrain objects that are not entirely hidden by the Fog Of War inside the given area.</returns>
-        IEnumerable<ITerrainObject> GetTerrainObjectsToUpdate(RCIntRectangle quadTileWindow);
+        /// <returns>All the terrain objects that are not entirely hidden by the Fog Of War inside the area of the attached window.</returns>
+        IEnumerable<ITerrainObject> GetTerrainObjectsToUpdate();
 
         /// <summary>
-        /// Gets all the quadratic tiles on which the Fog Of War shall be updated inside the given area.
+        /// Gets all the quadratic tiles on which the Fog Of War shall be updated inside the area of the attached window.
         /// </summary>
-        /// <param name="quadTileWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
-        /// <returns>All the quadratic tiles on which the Fog Of War shall be updated inside the given area.</returns>
-        IEnumerable<IQuadTile> GetQuadTilesToUpdate(RCIntRectangle quadTileWindow);
+        /// <returns>All the quadratic tiles on which the Fog Of War shall be updated inside the area of the attached window.</returns>
+        IEnumerable<IQuadTile> GetQuadTilesToUpdate();
+
+        /// <summary>
+        /// Gets all the entity snapshots that are not entirely hidden by the Fog Of War inside the area of the attached window.
+        /// </summary>
+        /// <returns>All the entity snapshots that are not entirely hidden by the Fog Of War inside the area of the attached window.</returns>
+        IEnumerable<EntitySnapshot> GetEntitySnapshotsToUpdate();
+
+        /// <summary>
+        /// Gets all the entities that are not entirely hidden by the Fog Of War inside the area of the attached window.
+        /// </summary>
+        /// <returns>All the entities that are not entirely hidden by the Fog Of War inside the area of the attached window.</returns>
+        IEnumerable<Entity> GetEntitiesToUpdate();
 
         /// <summary>
         /// Gets all the entity snapshots that are not entirely hidden by the Fog Of War inside the given area.
         /// </summary>
-        /// <param name="quadTileWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
+        /// <param name="quadWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
         /// <returns>All the entity snapshots that are not entirely hidden by the Fog Of War inside the given area.</returns>
-        IEnumerable<EntitySnapshot> GetEntitySnapshotsToUpdate(RCIntRectangle quadTileWindow);
+        IEnumerable<EntitySnapshot> GetEntitySnapshotsInWindow(RCIntRectangle quadWindow);
 
         /// <summary>
         /// Gets all the entities that are not entirely hidden by the Fog Of War inside the given area.
         /// </summary>
-        /// <param name="quadTileWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
+        /// <param name="quadWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
         /// <returns>All the entities that are not entirely hidden by the Fog Of War inside the given area.</returns>
-        IEnumerable<Entity> GetEntitiesToUpdate(RCIntRectangle quadTileWindow);
+        IEnumerable<Entity> GetEntitiesInWindow(RCIntRectangle quadWindow);
 
         /// <summary>
-        /// Checks whether the given entity is not entirely hidden by the Fog Of War inside the given area.
+        /// Checks whether the given entity is not entirely hidden by the Fog Of War inside the area of the attached window.
         /// </summary>
-        /// <param name="quadTileWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
         /// <param name="entity">The entity to check.</param>
-        /// <returns>True if the given entity is not entirely hidden by the Fog Of War inside the given area; otherwise false.</returns>
-        bool IsEntityVisible(RCIntRectangle quadTileWindow, Entity entity);
+        /// <returns>True if the given entity is not entirely hidden by the Fog Of War inside the area of the attached window; otherwise false.</returns>
+        bool IsEntityVisible(Entity entity);
 
         /// <summary>
         /// Gets the full FOW-flags at the given quadratic tile.
@@ -85,6 +93,13 @@ namespace RC.App.BizLogic.BusinessComponents
         /// <returns>The partial FOW-flags at the given quadratic tile.</returns>
         FOWTileFlagsEnum GetPartialFowTileFlags(RCIntVector quadCoords);
 
+        /// <summary>
+        /// Gets the current FOW-state at the given quadratic tile.
+        /// </summary>
+        /// <param name="quadCoords">The quadratic coordinates of the tile.</param>
+        /// <returns>The current FOW-state at the given quadratic tile.</returns>
+        FOWTypeEnum GetFowState(RCIntVector quadCoords);
+        
         /// <summary>
         /// Executes the next Fog Of War update iteration.
         /// </summary>

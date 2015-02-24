@@ -1,5 +1,4 @@
 <constantsConfig>
-  <constant namespace="RC.NetworkingSystem" name="ServerTaskFifoCapacity" type="INT">1024</constant>
   <constant namespace="RC.NetworkingSystem" name="ServerConnectionManagerCycleTime" type="INT">30</constant>
   <constant namespace="RC.NetworkingSystem" name="ClientConnectionManagerCycleTime" type="INT">30</constant>
   <constant namespace="RC.NetworkingSystem" name="ConnectionAcceptFrequency" type="INT">1000</constant>

@@ -80,7 +80,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.attachedWindow == null) { throw new InvalidOperationException("Window has not yet been attached!"); }
             if (this.minimap != null) { throw new InvalidOperationException("Minimap already attached!"); }
 
-            this.minimap = new Minimap(this.fullWindow, this.attachedWindow, minimapControlPixelSize);
+            this.minimap = new Minimap(this.ActiveScenario, this.fullWindow, this.attachedWindow, minimapControlPixelSize);
         }
 
         /// <see cref="IMapWindowBC.ScrollTo"/>

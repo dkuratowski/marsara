@@ -77,6 +77,29 @@ namespace RC.App.BizLogic.Services.Core
             }
         }
 
+        /// <see cref="ICommandService.SendFastCommandOnMinimap"/>
+        public void SendFastCommandOnMinimap(RCIntVector position)
+        {
+            /// TODO: This is a PROTOTYPE CODE!
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+
+            RCIntVector minimapPixelCoords = position - this.mapWindowBC.Minimap.MinimapPosition.Location;
+            minimapPixelCoords = new RCIntVector(Math.Min(this.mapWindowBC.Minimap.MinimapPosition.Width - 1, Math.Max(0, minimapPixelCoords.X)),
+                                                 Math.Min(this.mapWindowBC.Minimap.MinimapPosition.Height - 1, Math.Max(0, minimapPixelCoords.Y)));
+
+            IMinimapPixel minimapPixel = this.mapWindowBC.Minimap.GetMinimapPixel(minimapPixelCoords);
+            RCNumVector pixelCenterOnMap = minimapPixel.CoveredArea.Location + minimapPixel.CoveredArea.Size / 2;
+
+            if (this.selectionManager.CurrentSelection.Count != 0)
+            {
+                this.multiplayerService.PostCommand(RCCommand.Create(RC.App.BizLogic.Services.FastCommand.MNEMONIC,
+                                                                     this.selectionManager.CurrentSelection.ToArray(),
+                                                                     pixelCenterOnMap,
+                                                                     -1,
+                                                                     null));
+            }
+        }
+
         /// <see cref="ICommandService.PressCommandButton"/>
         public void PressCommandButton(RCIntVector panelPosition)
         {
@@ -92,6 +115,21 @@ namespace RC.App.BizLogic.Services.Core
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             this.commandManager.SelectTargetPosition(this.mapWindowBC.AttachedWindow.WindowToMapCoords(position));
+        }
+
+        /// <see cref="ICommandService.SelectTargetPositionOnMinimap"/>
+        public void SelectTargetPositionOnMinimap(RCIntVector position)
+        {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            RCIntVector minimapPixelCoords = position - this.mapWindowBC.Minimap.MinimapPosition.Location;
+            minimapPixelCoords = new RCIntVector(Math.Min(this.mapWindowBC.Minimap.MinimapPosition.Width - 1, Math.Max(0, minimapPixelCoords.X)),
+                                                 Math.Min(this.mapWindowBC.Minimap.MinimapPosition.Height - 1, Math.Max(0, minimapPixelCoords.Y)));
+
+            IMinimapPixel minimapPixel = this.mapWindowBC.Minimap.GetMinimapPixel(minimapPixelCoords);
+            RCNumVector pixelCenterOnMap = minimapPixel.CoveredArea.Location + minimapPixel.CoveredArea.Size / 2;
+            this.commandManager.SelectTargetPosition(pixelCenterOnMap);
         }
 
         /// <see cref="ICommandService.CancelSelectingTargetPosition"/>

@@ -29,7 +29,7 @@ namespace RC.App.BizLogic.Views.Core
         public List<SpriteInst> GetPartialFOWTiles()
         {
             List<SpriteInst> retList = new List<SpriteInst>();
-            foreach (IQuadTile quadTile in this.fogOfWarBC.GetQuadTilesToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
+            foreach (IQuadTile quadTile in this.fogOfWarBC.GetQuadTilesToUpdate())
             {
                 FOWTileFlagsEnum partialFowFlags = this.fogOfWarBC.GetPartialFowTileFlags(quadTile.MapCoords);
                 if (partialFowFlags != FOWTileFlagsEnum.None)
@@ -50,7 +50,7 @@ namespace RC.App.BizLogic.Views.Core
         public List<SpriteInst> GetFullFOWTiles()
         {
             List<SpriteInst> retList = new List<SpriteInst>();
-            foreach (IQuadTile quadTile in this.fogOfWarBC.GetQuadTilesToUpdate(this.MapWindowBC.AttachedWindow.QuadTileWindow))
+            foreach (IQuadTile quadTile in this.fogOfWarBC.GetQuadTilesToUpdate())
             {
                 FOWTileFlagsEnum fullFowFlags = this.fogOfWarBC.GetFullFowTileFlags(quadTile.MapCoords);
                 if (fullFowFlags != FOWTileFlagsEnum.None)

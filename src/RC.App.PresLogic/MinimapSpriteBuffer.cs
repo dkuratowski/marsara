@@ -25,13 +25,8 @@ namespace RC.App.PresLogic
             if (tileSpriteGroup == null) { throw new ArgumentNullException("tileSpriteGroup"); }
             if (terrainObjectSpriteGroup == null) { throw new ArgumentNullException("terrainObjectSpriteGroup"); }
 
-            this.tileSpriteGroup = tileSpriteGroup;
-            this.terrainObjectSpriteGroup = terrainObjectSpriteGroup;
-
-            this.isoTileInfos = new List<SpriteInst>(minimapView.GetIsoTileSprites());
-            this.terrainObjectInfos = new List<SpriteInst>(minimapView.GetTerrainObjectSprites());
-            this.mapPixelSize = minimapView.MapPixelSize;
-            this.minimapPixelSize = minimapView.MinimapPosition.Size;
+            this.terrainRenderer = new MinimapTerrainRenderJob(minimapView, tileSpriteGroup, terrainObjectSpriteGroup);
+            this.bufferSize = minimapView.MinimapPosition.Size;
 
             this.terrainPrimaryBuffer = null;
             this.terrainSecondaryBuffer = null;
@@ -50,12 +45,35 @@ namespace RC.App.PresLogic
         /// </summary>
         public void InitBuffers()
         {
-            this.terrainPrimaryBuffer = this.CreateTerrainSprite();
+            /// Render the terrain sprite using the underlying MinimapTerrainRenderJob instance and clone it.
+            this.terrainRenderer.Execute();
+            this.terrainPrimaryBuffer = this.terrainRenderer.Result;
             this.terrainSecondaryBuffer = this.CloneSprite(this.terrainPrimaryBuffer);
-
-            /// TODO: upload all!
-            this.terrainPrimaryBuffer.Upload();
             this.terrainSecondaryBuffer.Upload();
+
+            /// Create the other buffers with their default content.
+            this.fowPrimaryBuffer = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Black, this.bufferSize, UIWorkspace.Instance.PixelScaling);
+            this.fowSecondaryBuffer = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Black, this.bufferSize, UIWorkspace.Instance.PixelScaling);
+            this.entitiesPrimaryBuffer = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(PresLogicConstants.DEFAULT_TRANSPARENT_COLOR, this.bufferSize, UIWorkspace.Instance.PixelScaling);
+            this.entitiesSecondaryBuffer = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(PresLogicConstants.DEFAULT_TRANSPARENT_COLOR, this.bufferSize, UIWorkspace.Instance.PixelScaling);
+            this.attackSignalsPrimaryBuffer = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(PresLogicConstants.DEFAULT_TRANSPARENT_COLOR, this.bufferSize, UIWorkspace.Instance.PixelScaling);
+            this.attackSignalsSecondaryBuffer = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(PresLogicConstants.DEFAULT_TRANSPARENT_COLOR, this.bufferSize, UIWorkspace.Instance.PixelScaling);
+
+            /// Set the transparent color of the other buffers.
+            this.fowPrimaryBuffer.TransparentColor = PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
+            this.fowSecondaryBuffer.TransparentColor = PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
+            this.entitiesPrimaryBuffer.TransparentColor = PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
+            this.entitiesSecondaryBuffer.TransparentColor = PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
+            this.attackSignalsPrimaryBuffer.TransparentColor = PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
+            this.attackSignalsSecondaryBuffer.TransparentColor = PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
+
+            /// Upload the other buffers.
+            this.fowPrimaryBuffer.Upload();
+            this.fowSecondaryBuffer.Upload();
+            this.entitiesPrimaryBuffer.Upload();
+            this.entitiesSecondaryBuffer.Upload();
+            this.attackSignalsPrimaryBuffer.Upload();
+            this.attackSignalsSecondaryBuffer.Upload();
         }
 
         /// <summary>
@@ -250,42 +268,6 @@ namespace RC.App.PresLogic
         #region Internal methods
 
         /// <summary>
-        /// Creates the sprite for rendering the terrain on the minimap.
-        /// </summary>
-        /// <returns>The created sprite.</returns>
-        private UISprite CreateTerrainSprite()
-        {
-            /// Create the sprite that will contain the image of the full map in original size.
-            UISprite fullMapImage = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Black, this.mapPixelSize);
-            IUIRenderContext fullMapImageRenderContext = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateRenderContext(fullMapImage);
-
-            /// Render the isometric tiles to the map image.
-            foreach (SpriteInst tileDisplayInfo in this.isoTileInfos)
-            {
-                UISprite tileToDisplay = this.tileSpriteGroup[tileDisplayInfo.Index];
-                fullMapImageRenderContext.RenderSprite(tileToDisplay, tileDisplayInfo.DisplayCoords, tileDisplayInfo.Section);
-            }
-
-            /// Render the terrain objects to the map image.
-            foreach (SpriteInst terrainObjDisplayInfo in this.terrainObjectInfos)
-            {
-                UISprite terrainObjToDisplay = this.terrainObjectSpriteGroup[terrainObjDisplayInfo.Index];
-                fullMapImageRenderContext.RenderSprite(terrainObjToDisplay, terrainObjDisplayInfo.DisplayCoords, terrainObjDisplayInfo.Section);
-            }
-
-            /// Close the render context of the map image.
-            UIRoot.Instance.GraphicsPlatform.SpriteManager.CloseRenderContext(fullMapImage);
-
-            /// Create the shrinked copy of the full map image.
-            UISprite minimapImage = UIRoot.Instance.GraphicsPlatform.SpriteManager.ShrinkSprite(fullMapImage, this.minimapPixelSize, UIWorkspace.Instance.PixelScaling);
-
-            /// Destroy the full map image as it is no longer needed.
-            UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(fullMapImage);
-
-            return minimapImage;
-        }
-
-        /// <summary>
         /// Clones the given sprite.
         /// </summary>
         /// <param name="spriteToClone">The sprite to be cloned.</param>
@@ -296,10 +278,16 @@ namespace RC.App.PresLogic
             IUIRenderContext clonedSpriteCtx = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateRenderContext(clonedSprite);
             clonedSpriteCtx.RenderSprite(spriteToClone, new RCIntVector(0, 0));
             UIRoot.Instance.GraphicsPlatform.SpriteManager.CloseRenderContext(clonedSprite);
+            clonedSprite.TransparentColor = spriteToClone.TransparentColor;
             return clonedSprite;
         }
 
         #endregion Internal methods
+
+        /// <summary>
+        /// The size of the buffers.
+        /// </summary>
+        private RCIntVector bufferSize;
 
         /// <summary>
         /// List of the stored buffers.
@@ -314,21 +302,8 @@ namespace RC.App.PresLogic
         private UISprite attackSignalsSecondaryBuffer;
 
         /// <summary>
-        /// List of the informations for the initialization.
+        /// Reference to the terrain renderer.
         /// </summary>
-        private List<SpriteInst> isoTileInfos;
-        private List<SpriteInst> terrainObjectInfos;
-        private RCIntVector mapPixelSize;
-        private RCIntVector minimapPixelSize;
-
-        /// <summary>
-        /// Reference to the sprite group of the isometric tiles.
-        /// </summary>
-        private readonly ISpriteGroup tileSpriteGroup;
-
-        /// <summary>
-        /// Reference to the sprite group of the terrain objects.
-        /// </summary>
-        private readonly ISpriteGroup terrainObjectSpriteGroup;
+        private MinimapTerrainRenderJob terrainRenderer;
     }
 }

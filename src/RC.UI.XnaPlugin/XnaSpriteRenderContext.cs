@@ -61,11 +61,10 @@ namespace RC.UI.XnaPlugin
                             : this.spriteManager.ScaleSprite(sprite, this.targetSprite.PixelSize);
 
             XnaSprite srcSprite = (XnaSprite)source;
-            Bitmap srcBitmap = srcSprite.TransparentBitmap == null ? srcSprite.RawBitmap : srcSprite.TransparentBitmap;
+            Bitmap srcBitmap = srcSprite.TransparentBitmap ?? srcSprite.RawBitmap;
             this.targetGC.DrawImageUnscaled(srcBitmap,
                                             position.X * this.targetSprite.PixelSize.X,
                                             position.Y * this.targetSprite.PixelSize.Y);
-
             if (source != sprite) { this.spriteManager.DestroySprite(source); }
         }
 

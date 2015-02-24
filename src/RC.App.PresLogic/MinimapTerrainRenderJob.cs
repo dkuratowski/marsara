@@ -13,22 +13,34 @@ namespace RC.App.PresLogic
     /// <summary>
     /// Background job that renders the terrain of the map into a sprite for the minimap.
     /// </summary>
-    class MinimapTerrainUpdateJob : IMinimapBackgroundJob
+    class MinimapTerrainRenderJob : IMinimapBackgroundJob
     {
         /// <summary>
-        /// Constructs a MinimapTerrainUpdateJob instance.
+        /// Constructs a MinimapTerrainRenderJob instance.
         /// </summary>
-        /// <param name="targetSprite">The target of the render job.</param>
+        /// <param name="minimapView">Reference to the view that is used to collect the informations for the rendering.</param>
         /// <param name="tileSpriteGroup">Reference to the sprite group of the isometric tiles.</param>
         /// <param name="terrainObjectSpriteGroup">Reference to the sprite group of the terrain objects.</param>
-        public MinimapTerrainUpdateJob(UISprite targetSprite, IMinimapView minimapView, ISpriteGroup tileSpriteGroup, ISpriteGroup terrainObjectSpriteGroup)
+        public MinimapTerrainRenderJob(IMinimapView minimapView, ISpriteGroup tileSpriteGroup, ISpriteGroup terrainObjectSpriteGroup)
+            : this(null, minimapView, tileSpriteGroup, terrainObjectSpriteGroup)
         {
-            if (targetSprite == null) { throw new ArgumentNullException("targetSprite"); }
+        }
+
+        /// <summary>
+        /// Constructs a MinimapTerrainRenderJob instance.
+        /// </summary>
+        /// <param name="oldTerrainSprite">Reference to an old terrain sprite that needs to be replaced or null if there was no old terrain sprite.</param>
+        /// <param name="minimapView">Reference to the view that is used to collect the informations for the rendering.</param>
+        /// <param name="tileSpriteGroup">Reference to the sprite group of the isometric tiles.</param>
+        /// <param name="terrainObjectSpriteGroup">Reference to the sprite group of the terrain objects.</param>
+        public MinimapTerrainRenderJob(UISprite oldTerrainSprite, IMinimapView minimapView, ISpriteGroup tileSpriteGroup, ISpriteGroup terrainObjectSpriteGroup)
+        {
             if (minimapView == null) { throw new ArgumentNullException("minimapView"); }
             if (tileSpriteGroup == null) { throw new ArgumentNullException("tileSpriteGroup"); }
             if (terrainObjectSpriteGroup == null) { throw new ArgumentNullException("terrainObjectSpriteGroup"); }
 
-            this.targetSprite = targetSprite;
+            this.result = oldTerrainSprite;
+
             this.isoTileInfos = new List<SpriteInst>(minimapView.GetIsoTileSprites());
             this.terrainObjectInfos = new List<SpriteInst>(minimapView.GetTerrainObjectSprites());
             this.mapPixelSize = minimapView.MapPixelSize;
@@ -43,10 +55,12 @@ namespace RC.App.PresLogic
         /// <see cref="IMinimapBackgroundJob.Execute"/>
         public void Execute()
         {
-            /// Destroy the old terrain sprite.
-            UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(this.targetSprite);
-
-            /// TODO: this is a duplicate of MinimapSpriteBuffer.CreateTerrainSprite!!!
+            /// Destroy the old terrain sprite if exists.
+            if (this.result != null)
+            {
+                UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(this.result);
+                this.result = null;
+            }
 
             /// Create the sprite that will contain the image of the full map in original size.
             UISprite fullMapImage = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Black, this.mapPixelSize);
@@ -70,13 +84,13 @@ namespace RC.App.PresLogic
             UIRoot.Instance.GraphicsPlatform.SpriteManager.CloseRenderContext(fullMapImage);
 
             /// Create the shrinked copy of the full map image.
-            this.targetSprite = UIRoot.Instance.GraphicsPlatform.SpriteManager.ShrinkSprite(fullMapImage, this.minimapPixelSize, UIWorkspace.Instance.PixelScaling);
+            this.result = UIRoot.Instance.GraphicsPlatform.SpriteManager.ShrinkSprite(fullMapImage, this.minimapPixelSize, UIWorkspace.Instance.PixelScaling);
 
             /// Destroy the full map image as it is no longer needed.
             UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(fullMapImage);
 
             /// Upload the create minimap image.
-            this.targetSprite.Upload();
+            this.result.Upload();
         }
 
         #endregion IMinimapBackgroundJob methods
@@ -84,12 +98,12 @@ namespace RC.App.PresLogic
         /// <summary>
         /// Gets the target sprite of this render job.
         /// </summary>
-        public UISprite TargetSprite { get { return this.targetSprite; } }
+        public UISprite Result { get { return this.result; } }
 
         /// <summary>
         /// The target of the render job.
         /// </summary>
-        private UISprite targetSprite;
+        private UISprite result;
 
         /// <summary>
         /// List of the informations for the rendering.

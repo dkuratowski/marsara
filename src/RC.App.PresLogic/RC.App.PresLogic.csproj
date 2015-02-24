@@ -110,8 +110,10 @@
     <Compile Include="ISpriteGroup.cs" />
     <Compile Include="MapEditorMouseHandler.cs" />
     <Compile Include="MapObjectSpriteGroup.cs" />
+    <Compile Include="MinimapMouseHandler.cs" />
+    <Compile Include="MinimapScanner.cs" />
     <Compile Include="MinimapSpriteBuffer.cs" />
-    <Compile Include="MinimapTerrainUpdateJob.cs" />
+    <Compile Include="MinimapTerrainRenderJob.cs" />
     <Compile Include="MaskedSpriteGroup.cs" />
     <Compile Include="NormalMouseHandler.cs" />
     <Compile Include="PresLogicConstants.cs" />

@@ -8,6 +8,13 @@ namespace RC.Common
     public class Fifo<T>
     {
         /// <summary>
+        /// Constructs a FIFO queue with the default capacity.
+        /// </summary>
+        public Fifo() : this(DEFAULT_FIFO_CAPACITY)
+        {
+        }
+
+        /// <summary>
         /// Constructs a FIFO queue with the given capacity.
         /// </summary>
         /// <param name="capacity">The maximum amount of items that can be stored in this FIFO.</param>
@@ -87,5 +94,10 @@ namespace RC.Common
         /// The number of the items in the FIFO.
         /// </summary>
         private int fifoLength;
+
+        /// <summary>
+        /// The default capacity of a Fifo.
+        /// </summary>
+        private const int DEFAULT_FIFO_CAPACITY = 1024;
     }
 }
