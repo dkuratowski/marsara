@@ -8,6 +8,7 @@ using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Maps.ComponentInterfaces;
 using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Commands;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Scenarios;
 using RC.Engine.Simulator.MotionControl;
@@ -40,6 +41,7 @@ namespace RC.App.BizLogic.Services.Core
             /// TODO: remove when no longer necessary!
             this.taskManager = ComponentManager.GetInterface<ITaskManagerBC>();
             this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
+            this.commandExecutor = ComponentManager.GetInterface<ICommandExecutor>();
 
             this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
             this.selectionManager = ComponentManager.GetInterface<ISelectionManagerBC>();
@@ -117,7 +119,7 @@ namespace RC.App.BizLogic.Services.Core
             List<RCCommand> incomingCommands = this.commandDispatcher.GetIncomingCommands();
             foreach (RCCommand command in incomingCommands)
             {
-                command.Execute(this.scenarioManager.ActiveScenario);
+                this.commandExecutor.StartExecution(this.scenarioManager.ActiveScenario, command);
             }
         }
 
@@ -155,6 +157,7 @@ namespace RC.App.BizLogic.Services.Core
         private ManualResetEvent testDssTaskCanFinishEvt;
         private IPathFinder pathFinder;
         private ITaskManagerBC taskManager;
+        private ICommandExecutor commandExecutor;
 
         #endregion Prototype code
 

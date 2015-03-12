@@ -14,9 +14,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     class TargetPositionListener : CommandInputListener, ITargetPositionListener
     {
         /// <see cref="CommandInputListener.TryComplete"/>
-        public override bool TryComplete()
+        public override CommandInputListener.CompletionResultEnum TryComplete()
         {
-            return this.CommandBuilder.TargetPosition != RCNumVector.Undefined;
+            return this.CommandBuilder.TargetPosition != RCNumVector.Undefined
+                ? CommandInputListener.CompletionResultEnum.Succeeded
+                : CommandInputListener.CompletionResultEnum.FailedAndCancel;
         }
 
         #region ITargetPositionListener members

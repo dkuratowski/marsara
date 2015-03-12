@@ -1,6 +1,7 @@
 ﻿using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Commands;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.PublicInterfaces;
 using System;
@@ -26,11 +27,13 @@ namespace RC.Engine.Simulator.Scenarios
 
             this.position = this.ConstructField<RCNumVector>("position");
             this.velocity = this.ConstructField<RCNumVector>("velocity");
+            this.isFlying = this.ConstructField<byte>("isFlying");
             this.id = this.ConstructField<int>("id");
             this.typeID = this.ConstructField<int>("typeID");
             this.pathTracker = this.ConstructField<PathTrackerBase>("pathTracker");
             this.owner = this.ConstructField<Player>("owner");
             this.scenario = this.ConstructField<Scenario>("scenario");
+            this.affectingCmdExecution = this.ConstructField<CmdExecutionBase>("affectingCmdExecution");
 
             this.elementType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetElementType(elementTypeName);
             this.scenario.Write(null);
@@ -50,10 +53,12 @@ namespace RC.Engine.Simulator.Scenarios
             this.position.Write(RCNumVector.Undefined);
             this.position.ValueChanged += (sender, args) => this.quadraticPositionCache.Invalidate();
             this.velocity.Write(new RCNumVector(0, 0));
+            this.isFlying.Write(0x00);
             this.id.Write(-1);
             this.typeID.Write(this.elementType.ID);
             this.pathTracker.Write(null);
             this.owner.Write(null);
+            this.affectingCmdExecution.Write(null);
         }
 
         /// <summary>
@@ -75,6 +80,25 @@ namespace RC.Engine.Simulator.Scenarios
         /// Gets the position value of this entity.
         /// </summary>
         public IValueRead<RCNumVector> PositionValue { get { return this.position; } }
+
+        /// <summary>
+        /// Gets whether this entity is currently flying or not.
+        /// </summary>
+        public bool IsFlying { get { return this.isFlying.Read() != 0x00; } }
+
+        /// <summary>
+        /// Gets the type of the command that is currently being executed by this entity or null if there is no command currently
+        /// being executed by this entity.
+        /// </summary>
+        public string CommandBeingExecuted
+        {
+            get
+            {
+                return this.affectingCmdExecution.Read() != null
+                    ? this.affectingCmdExecution.Read().CommandBeingExecuted
+                    : null;
+            }
+        }
 
         /// <summary>
         /// Gets the metadata type definition of the entity.
@@ -288,6 +312,31 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <summary>
+        /// This method is called when a command execution starts to affecting this entity.
+        /// </summary>
+        /// <param name="cmdExecution">The command execution.</param>
+        internal void OnCommandExecutionStarted(CmdExecutionBase cmdExecution)
+        {
+            if (this.scenario.Read() == null) { throw new InvalidOperationException("The entity doesn't not belong to a scenario!"); }
+            if (this.affectingCmdExecution.Read() != null)
+            {
+                /// Unregister this entity from the command execution it is currently being affected.
+                this.affectingCmdExecution.Read().RemoveEntity(this);
+            }
+            this.affectingCmdExecution.Write(cmdExecution);
+        }
+
+        /// <summary>
+        /// This method is called when the currently affecting command execution stops affecting this entity.
+        /// </summary>
+        internal void OnCommandExecutionStopped()
+        {
+            if (this.scenario.Read() == null) { throw new InvalidOperationException("The entity doesn't not belong to a scenario!"); }
+            if (this.affectingCmdExecution.Read() == null) { throw new InvalidOperationException("The entity is not being affected by any command executions!"); }
+            this.affectingCmdExecution.Write(null);
+        }
+
+        /// <summary>
         /// This method is called when this entity is being added to the map.
         /// </summary>
         /// <param name="position">The position of this entity on the map.</param>
@@ -404,6 +453,12 @@ namespace RC.Engine.Simulator.Scenarios
         /// <see cref="HeapedObject.DisposeImpl"/>
         protected override void DisposeImpl()
         {
+            if (this.affectingCmdExecution.Read() != null)
+            {
+                /// Unregister this entity from the command execution it is currently being affected.
+                this.affectingCmdExecution.Read().RemoveEntity(this);
+                this.affectingCmdExecution.Write(null);
+            }
             if (this.pathTracker.Read() != null) { this.pathTracker.Read().Dispose(); this.pathTracker.Write(null); }
             if (this.entityActuator != null) { this.entityActuator.Dispose(); this.entityActuator = null; }
         }
@@ -421,6 +476,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// The velocity of this entity.
         /// </summary>
         private readonly HeapedValue<RCNumVector> velocity;
+
+        /// <summary>
+        /// This flag indicates whether the entity is on the ground (0x00) or is flying (any other value).
+        /// </summary>
+        private readonly HeapedValue<byte> isFlying; 
 
         /// <summary>
         /// The ID of this entity.
@@ -447,6 +507,12 @@ namespace RC.Engine.Simulator.Scenarios
         /// to a scenario.
         /// </summary>
         private readonly HeapedValue<Scenario> scenario;
+
+        /// <summary>
+        /// Reference to the command execution that is affecting this entity or null if this entity is not affected by
+        /// any command execution.
+        /// </summary>
+        private readonly HeapedValue<CmdExecutionBase> affectingCmdExecution;
 
         #endregion Heaped members
 

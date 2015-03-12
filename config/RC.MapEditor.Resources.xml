@@ -11,6 +11,12 @@
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
 	  <parameter name="offset">0;0</parameter>
     </resource>
+    <resource namespace="RC.App.Pointers" name="CrosshairsPointer" loader="PointerLoader">
+      <path name="imageFile">../sprites/pointers/crosshairs_pointer.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+      <parameter name="offset">3;3</parameter>
+    </resource>
     <resource namespace="RC.App.Sprites" name="ScrollbarHorz" loader="SpriteLoader">
       <path name="imageFile">../sprites/controls/scrollbar_horz.png</path>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>

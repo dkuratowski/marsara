@@ -6,20 +6,21 @@ using System.Xml.Linq;
 using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Common.Configuration;
+using RC.Engine.Simulator.ComponentInterfaces;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
     /// <summary>
     /// Represents a command input listener that is waiting for trigger from the command panel.
     /// </summary>
-    abstract class ButtonListener : CommandInputListener, ICommandButtonListener
+    abstract class ButtonListener : CommandInputListener, IButtonListener
     {
-        #region ICommandButtonListener members
+        #region IButtonListener members
 
-        /// <see cref="ICommandButtonListener.CommandPanelSlot"/>
+        /// <see cref="IButtonListener.CommandPanelSlot"/>
         public RCIntVector CommandPanelSlot { get { return this.panelPosition; } }
 
-        /// <see cref="ICommandButtonListener.ButtonSprite"/>
+        /// <see cref="IButtonListener.ButtonSprite"/>
         public SpriteInst ButtonSprite
         {
             get
@@ -33,11 +34,16 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
         }
 
-        /// <see cref="ICommandButtonListener.ButtonState"/>
-        /// TODO: implement this property!
-        public CommandButtonStateEnum ButtonState { get { return CommandButtonStateEnum.Enabled; } }
+        /// <see cref="IButtonListener.ButtonAvailability"/>
+        public virtual AvailabilityEnum ButtonAvailability { get { return AvailabilityEnum.Enabled; } }
 
-        #endregion ICommandButtonListener members
+        /// <see cref="IButtonListener.IsHighlighted"/>
+        public virtual bool IsHighlighted { get { return false; } }
+
+        /// <see cref="IButtonListener.Priority"/>
+        public int Priority { get { return this.priority; } }
+
+        #endregion IButtonListener members
 
         /// <see cref="CommandInputListener.Init"/>
         protected override void Init(XElement listenerElem)
@@ -48,10 +54,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             XAttribute panelPosAttr = listenerElem.Attribute(PANELPOSITION_ATTR);
             if (panelPosAttr == null) { throw new InvalidOperationException("Panel position not defined for a button listener!"); }
 
+            XAttribute priorityAttr = listenerElem.Attribute(PRIORITY_ATTR);
+            
             int spriteIndex = this.SpritePalette.GetSpriteIndex(spriteNameAttr.Value);
             this.spriteSection = this.SpritePalette.GetSection(spriteIndex);
             this.spriteOffset = this.SpritePalette.GetOffset(spriteIndex);
             this.panelPosition = XmlHelper.LoadIntVector(panelPosAttr.Value);
+            this.priority = priorityAttr != null ? XmlHelper.LoadInt(priorityAttr.Value) : 0;
+
+            if (this.priority < 0) { throw new InvalidOperationException("Priority shall be non-negative!"); }
         }
 
         /// <summary>
@@ -70,9 +81,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private RCIntVector spriteOffset;
 
         /// <summary>
+        /// The priority of this button listener.
+        /// </summary>
+        private int priority;
+
+        /// <summary>
         /// The supported XML-nodes and attributes.
         /// </summary>
         private const string SPRITENAME_ATTR = "sprite";
         private const string PANELPOSITION_ATTR = "panelPosition";
+        private const string PRIORITY_ATTR = "priority";
     }
 }

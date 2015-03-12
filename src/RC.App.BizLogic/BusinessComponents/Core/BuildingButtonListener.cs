@@ -18,10 +18,10 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
         /// <see cref="CommandInputListener.TryComplete"/>
         /// TODO: implement this method!
-        public override bool TryComplete()
+        public override CommandInputListener.CompletionResultEnum TryComplete()
         {
             this.CommandBuilder.Parameter = this.selectedBuildingType;
-            return true;
+            return CommandInputListener.CompletionResultEnum.Succeeded;
         }
 
         /// <see cref="CommandInputListener.Init"/>

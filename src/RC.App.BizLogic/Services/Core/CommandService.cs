@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using RC.App.BizLogic.BusinessComponents;
 using RC.App.BizLogic.BusinessComponents.Core;
+using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Common.ComponentModel;
+using RC.Engine.Simulator.Commands;
 
 namespace RC.App.BizLogic.Services.Core
 {
@@ -69,11 +71,11 @@ namespace RC.App.BizLogic.Services.Core
 
             if (this.selectionManager.CurrentSelection.Count != 0)
             {
-                this.multiplayerService.PostCommand(RCCommand.Create(RC.App.BizLogic.Services.FastCommand.MNEMONIC,
-                                                                     this.selectionManager.CurrentSelection.ToArray(),
-                                                                     this.mapWindowBC.AttachedWindow.WindowToMapCoords(position),
-                                                                     -1,
-                                                                     null));
+                this.multiplayerService.PostCommand(new RCCommand(null,
+                                                                  this.selectionManager.CurrentSelection.ToArray(),
+                                                                  this.mapWindowBC.AttachedWindow.WindowToMapCoords(position),
+                                                                  -1,
+                                                                  null));
             }
         }
 
@@ -82,6 +84,7 @@ namespace RC.App.BizLogic.Services.Core
         {
             /// TODO: This is a PROTOTYPE CODE!
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.selectionManager.LocalPlayer == PlayerEnum.Neutral) { return; }
 
             RCIntVector minimapPixelCoords = position - this.mapWindowBC.Minimap.MinimapPosition.Location;
             minimapPixelCoords = new RCIntVector(Math.Min(this.mapWindowBC.Minimap.MinimapPosition.Width - 1, Math.Max(0, minimapPixelCoords.X)),
@@ -92,11 +95,11 @@ namespace RC.App.BizLogic.Services.Core
 
             if (this.selectionManager.CurrentSelection.Count != 0)
             {
-                this.multiplayerService.PostCommand(RCCommand.Create(RC.App.BizLogic.Services.FastCommand.MNEMONIC,
-                                                                     this.selectionManager.CurrentSelection.ToArray(),
-                                                                     pixelCenterOnMap,
-                                                                     -1,
-                                                                     null));
+                this.multiplayerService.PostCommand(new RCCommand(null,
+                                                                  this.selectionManager.CurrentSelection.ToArray(),
+                                                                  pixelCenterOnMap,
+                                                                  -1,
+                                                                  null));
             }
         }
 

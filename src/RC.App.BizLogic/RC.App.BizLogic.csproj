@@ -172,7 +172,6 @@
     <Compile Include="Views\ITileSetView.cs" />
     <Compile Include="Views\ObjectPlacementBox.cs" />
     <Compile Include="Views\PlayerEnum.cs" />
-    <Compile Include="Services\RCCommand.cs" />
     <Compile Include="Views\SelIndicatorTypeEnum.cs" />
   </ItemGroup>
   <ItemGroup>

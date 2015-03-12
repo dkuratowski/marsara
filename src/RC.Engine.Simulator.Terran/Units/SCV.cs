@@ -29,6 +29,6 @@ namespace RC.Engine.Simulator.Terran.Units
         /// <summary>
         /// The name of the SCV element type.
         /// </summary>
-        private const string SCV_TYPE_NAME = "SCV";
+        public const string SCV_TYPE_NAME = "SCV";
     }
 }

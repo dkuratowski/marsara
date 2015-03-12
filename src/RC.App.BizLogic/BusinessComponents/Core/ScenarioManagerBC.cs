@@ -116,6 +116,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 this.UnregisterFactoryMethods();
 
                 this.activeScenario.Map.Close();
+                this.activeScenario.Dispose();
                 this.activeScenario = null;
 
                 if (this.ActiveScenarioChanged != null) { this.ActiveScenarioChanged(this.activeScenario); }

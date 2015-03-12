@@ -118,35 +118,6 @@ namespace RC.App.PresLogic
                 this.currentRow = -1;
             }
             return this.currentRow == -1;
-
-            
-            //while (this.currentRow.Y - firstRow < SCANNED_ROWS_PER_FRAME)
-            //{
-            //    this.pixelInfoArray[this.currentRow.X, this.currentRow.Y].FOWStatus = this.minimapView.GetFowType(this.currentRow);
-            //    this.pixelInfoArray[this.currentRow.X, this.currentRow.Y].EntityIndicatorType = MinimapPixelInfo.EntityIndicatorTypeEnum.None;
-
-            //    if (this.currentRow.X == this.minimapView.MinimapPosition.Width - 1)
-            //    {
-            //        /// End of current row --> check if finished
-            //        if (this.currentRow.Y == this.minimapView.MinimapPosition.Height - 1)
-            //        {
-            //            /// End of scan operation.
-            //            this.currentRow = RCIntVector.Undefined;
-            //            isScanFinished = true;
-            //            break;
-            //        }
-
-            //        /// Move to the next row.
-            //        this.currentRow = new RCIntVector(0, this.currentRow.Y + 1);
-            //    }
-            //    else
-            //    {
-            //        /// Move to the next column.
-            //        this.currentRow += new RCIntVector(1, 0);
-            //    }
-            //}
-
-            //return isScanFinished;
         }
 
         #endregion Public methods for the UI-thread

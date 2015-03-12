@@ -192,7 +192,7 @@ namespace RC.App.BizLogic.Views.Core
                 for (int quadTileX = quadraticPosition.Left; quadTileX < quadraticPosition.Right; quadTileX++)
                 {
                     IMinimapPixel pixelAtQuadTile = this.MapWindowBC.Minimap.GetMinimapPixelAtQuadTile(new RCIntVector(quadTileX, quadTileY));
-                    if (owner == this.selectionManagerBC.LocalPlayer)
+                    if (this.selectionManagerBC.LocalPlayer != PlayerEnum.Neutral && owner == this.selectionManagerBC.LocalPlayer)
                     {
                         /// TODO: distinguish between friendly and attacked-friendly entities!
                         pixelInfos[pixelAtQuadTile.PixelCoords.X, pixelAtQuadTile.PixelCoords.Y].EntityIndicatorType = MinimapPixelInfo.EntityIndicatorTypeEnum.Friendly;

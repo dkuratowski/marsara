@@ -117,18 +117,8 @@ namespace RC.Engine.Simulator.Scenarios
         /// <see cref="IDisposable.Dispose"/>
         protected override void DisposeImpl()
         {
-            foreach (Unit unit in this.units)
-            {
-                if (unit.PositionValue.Read() != RCNumVector.Undefined) { this.Scenario.DetachEntityFromMap(unit); }
-                this.startLocation.Read().Scenario.RemoveEntityFromScenario(unit);
-                unit.Dispose();
-            }
-            foreach (Building building in this.buildings)
-            {
-                if (building.PositionValue.Read() != RCNumVector.Undefined) { this.Scenario.DetachEntityFromMap(building); }
-                this.startLocation.Read().Scenario.RemoveEntityFromScenario(building);
-                building.Dispose();
-            }
+            foreach (Unit unit in this.units) { unit.OnRemovedFromPlayer(); }
+            foreach (Building building in this.buildings) { building.OnRemovedFromPlayer(); }
             this.units.Clear();
             this.buildings.Clear();
         }

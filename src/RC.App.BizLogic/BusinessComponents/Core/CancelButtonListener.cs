@@ -13,6 +13,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     class CancelButtonListener : ButtonListener
     {
         /// <see cref="CommandInputListener.TryComplete"/>
-        public override bool TryComplete() { return false; }
+        public override CommandInputListener.CompletionResultEnum TryComplete() { return CommandInputListener.CompletionResultEnum.FailedAndCancel; }
     }
 }

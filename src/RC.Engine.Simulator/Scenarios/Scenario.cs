@@ -1,7 +1,9 @@
-﻿using RC.Common;
+﻿using System.Security.Policy;
+using RC.Common;
 using RC.Common.Configuration;
 using RC.Engine.Maps.Core;
 using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Commands;
 using RC.Engine.Simulator.PublicInterfaces;
 using System;
 using System.Collections.Generic;
@@ -50,6 +52,7 @@ namespace RC.Engine.Simulator.Scenarios
                                            ConstantsTable.Get<int>("RC.Engine.Maps.BspMinNodeSize"));
             this.entitySet = new Dictionary<int, Entity>();
             this.boundQuadEntities = new QuadEntity[this.map.Size.X, this.map.Size.Y];
+            this.commandExecutions = new HashSet<CmdExecutionBase>();
         }
 
         #region Public members: Player management
@@ -86,8 +89,17 @@ namespace RC.Engine.Simulator.Scenarios
 
             StartLocation startLoc = this.players[index].Read().StartLocation;
             this.AttachEntityToMap(startLoc, this.map.GetQuadTile(startLoc.LastKnownQuadCoords));
+            HashSet<Entity> entitiesOfPlayer = new HashSet<Entity>(this.players[index].Read().Entities);
             this.players[index].Read().Dispose();
             this.players[index].Write(null);
+
+            /// Destroy entities of the player.
+            foreach (Entity entity in entitiesOfPlayer)
+            {
+                if (entity.PositionValue.Read() != RCNumVector.Undefined) { this.DetachEntityFromMap(entity); }
+                this.RemoveEntityFromScenario(entity);
+                entity.Dispose();
+            }
         }
 
         /// <summary>
@@ -383,11 +395,70 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         public void UpdateState()
         {
+            HashSet<CmdExecutionBase> commandExecutionsCopy = new HashSet<CmdExecutionBase>(this.commandExecutions);
+            foreach (CmdExecutionBase cmdExecution in commandExecutionsCopy)
+            {
+                if (cmdExecution.Continue()) { cmdExecution.Dispose(); }
+            }
             foreach (Entity entity in this.entitySet.Values) { entity.UpdateState(); }
             this.currentFrameIndex.Write(this.currentFrameIndex.Read() + 1);
         }
 
         #endregion Public members: Simulation management
+
+        #region Internal members: Command execution management
+
+        /// <summary>
+        /// Notifies this Scenario that a new command execution has been started.
+        /// </summary>
+        /// <param name="cmdExecution">The new command execution.</param>
+        internal void OnCommandExecutionStarted(CmdExecutionBase cmdExecution)
+        {
+            this.commandExecutions.Add(cmdExecution);
+        }
+
+        /// <summary>
+        /// Notifies this Scenario that an existing command execution has been stopped.
+        /// </summary>
+        /// <param name="cmdExecution">The stopped command execution.</param>
+        internal void OnCommandExecutionStopped(CmdExecutionBase cmdExecution)
+        {
+            this.commandExecutions.Remove(cmdExecution);
+        }
+
+        #endregion Internal members: Command execution management
+
+        #region IDisposable methods
+
+        /// <see cref="HeapedObject.DisposeImpl"/>
+        protected override void DisposeImpl()
+        {
+            /// Destroy command executions
+            foreach (CmdExecutionBase cmdExecution in this.commandExecutions) { cmdExecution.Dispose(); }
+            this.commandExecutions.Clear();
+
+            /// Destroy players
+            foreach (IValue<Player> player in this.players)
+            {
+                if (player.Read() != null)
+                {
+                    player.Read().Dispose();
+                    player.Write(null);
+                }
+            }
+
+            /// Destroy entities
+            HashSet<Entity> entitySetCopy = new HashSet<Entity>(this.entitySet.Values);
+            foreach (Entity entity in entitySetCopy)
+            {
+                if (entity.PositionValue.Read() != RCNumVector.Undefined) { this.DetachEntityFromMap(entity); }
+                this.RemoveEntityFromScenario(entity);
+                entity.Dispose();
+            }
+            this.entitySet.Clear();
+        }
+
+        #endregion IDisposable methods
 
         #region Heaped members
 
@@ -435,6 +506,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         /// TODO: store these entities also in a HeapedArray!
         private QuadEntity[,] boundQuadEntities;
+
+        /// <summary>
+        /// The command executions currently in progress.
+        /// </summary>
+        private HashSet<CmdExecutionBase> commandExecutions;
 
         /// <summary>
         /// Reference to the player initializer component.

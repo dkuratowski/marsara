@@ -77,11 +77,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CmdExecutionBase.cs" />
+    <Compile Include="Commands\CommandExecutionFactoryBase.cs" />
+    <Compile Include="Commands\CommandExecutor.cs" />
+    <Compile Include="Commands\ICommandExecutionFactory.cs" />
+    <Compile Include="Commands\MagicBox.cs" />
+    <Compile Include="Commands\MoveExecution.cs" />
+    <Compile Include="Commands\MoveExecutionFactory.cs" />
+    <Compile Include="Commands\RCCommand.cs" />
+    <Compile Include="ComponentInterfaces\ICommandExecutor.cs" />
     <Compile Include="ComponentInterfaces\IHeapManager.cs" />
     <Compile Include="ComponentInterfaces\IScenarioLoader.cs" />
     <Compile Include="ComponentInterfaces\IHeapManagerPluginInstall.cs" />
-    <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
+    <Compile Include="Commands\ICommandExecutorPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IPlayerInitializer.cs" />
+    <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
     <Compile Include="MotionControl\EntityActuatorBase.cs" />
     <Compile Include="MotionControl\GroundUnitActuator.cs" />
     <Compile Include="MotionControl\GroundUnitPathTracker.cs" />

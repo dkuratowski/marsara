@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Linq;
 using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Common.Configuration;
+using RC.Engine.Simulator.ComponentInterfaces;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -14,6 +13,16 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     /// </summary>
     abstract class CommandInputListener
     {
+        /// <summary>
+        /// Enumerates the possible results of the CommandInputListener.TryComplete method.
+        /// </summary>
+        public enum CompletionResultEnum 
+        {
+            FailedButContinue = 0,  /// The completion was failed, but continue the current command input procedure.
+            FailedAndCancel = 1,    /// The completion was failed, and cancel the current command input procedure.
+            Succeeded = 2,          /// The completion was successful.
+        }
+
         /// <summary>
         /// Loads a command input listener (and all of its children recursively) from the given XML-node.
         /// </summary>
@@ -64,12 +73,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// Tries to complete this input listener.
         /// </summary>
-        /// <returns>True if the completion was successful; otherwise false.</returns>
+        /// <returns>The result of the completion.</returns>
         /// <remarks>
-        /// If the completion was unsuccessful then the current command input procedure will be cancelled.
-        /// The default implementation always returns true.
+        /// The default implementation always returns CompletionResultEnum.Succeeded.
         /// </remarks>
-        public virtual bool TryComplete() { return true; }
+        public virtual CompletionResultEnum TryComplete() { return CompletionResultEnum.Succeeded; }
 
         /// <summary>
         /// Gets the children of this command input listener.
@@ -150,21 +158,31 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     /// <summary>
     /// Interface for listeners that are waiting for a trigger from the command panel.
     /// </summary>
-    interface ICommandButtonListener
+    interface IButtonListener
     {
         /// <summary>
-        /// Gets the slot on the command panel from which this listener is waiting for trigger.
+        /// Gets the slot on the command panel from which this button listener is waiting for trigger.
         /// </summary>
         RCIntVector CommandPanelSlot { get; }
 
         /// <summary>
-        /// Gets the sprite of the command button to be displayed for this listener.
+        /// Gets the sprite of the button to be displayed for this listener.
         /// </summary>
         SpriteInst ButtonSprite { get; }
 
         /// <summary>
-        /// Gets the state of the command button for this listener.
+        /// Gets the availability of the button for this listener.
         /// </summary>
-        CommandButtonStateEnum ButtonState { get; }
+        AvailabilityEnum ButtonAvailability { get; }
+
+        /// <summary>
+        /// Gets whether the button shall be highlighted or not.
+        /// </summary>
+        bool IsHighlighted { get; }
+
+        /// <summary>
+        /// Gets the priority of this button listener. The higher this number is, the higher the priority this listener has.
+        /// </summary>
+        int Priority { get; }
     }
 }

@@ -40,5 +40,5 @@
     <class>RC.Common.Diagnostics.LogfileTrace</class>
     <ctorParam type="STRING">RC.App.LogfileTrace</ctorParam>
     <ctorParam type="STRING">RC.App</ctorParam>
-  </registerTrace>-->
+  </registerTrace-->
 </traceConfig>

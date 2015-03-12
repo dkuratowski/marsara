@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using RC.App.BizLogic.Views;
+using RC.Common.ComponentModel;
 using RC.Common.Configuration;
+using RC.Engine.Simulator.ComponentInterfaces;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -12,16 +15,28 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     /// </summary>
     class CommandButtonListener : ButtonListener
     {
+        /// <see cref="ButtonListener.ButtonAvailability"/>
+        public override AvailabilityEnum ButtonAvailability
+        {
+            get
+            {
+                return this.commandExecutor.GetCommandAvailability(
+                    this.scenarioManagerBC.ActiveScenario,
+                    this.selectedCommandType,
+                    this.selectionManagerBC.CurrentSelection);
+            }
+        }
+
         /// <see cref="CommandInputListener.CheckCompletionStatus"/>
         /// TODO: implement this method!
         public override bool CheckCompletionStatus() { return true; }
 
         /// <see cref="CommandInputListener.TryComplete"/>
         /// TODO: implement this method!
-        public override bool TryComplete()
+        public override CommandInputListener.CompletionResultEnum TryComplete()
         {
             this.CommandBuilder.CommandType = this.selectedCommandType;
-            return true;
+            return CommandInputListener.CompletionResultEnum.Succeeded;
         }
 
         /// <see cref="CommandInputListener.Init"/>
@@ -31,13 +46,32 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             XAttribute commandAttr = listenerElem.Attribute(COMMAND_ATTR);
             if (commandAttr == null) { throw new InvalidOperationException("Command type not defined for a command button listener!"); }
+
             this.selectedCommandType = commandAttr.Value;
+            this.commandExecutor = ComponentManager.GetInterface<ICommandExecutor>();
+            this.selectionManagerBC = ComponentManager.GetInterface<ISelectionManagerBC>();
+            this.scenarioManagerBC = ComponentManager.GetInterface<IScenarioManagerBC>();
         }
 
         /// <summary>
         /// The type of the command selected by this listener.
         /// </summary>
         private string selectedCommandType;
+
+        /// <summary>
+        /// Reference to the command executor component.
+        /// </summary>
+        private ICommandExecutor commandExecutor;
+
+        /// <summary>
+        /// Reference to the selection manager business component.
+        /// </summary>
+        private ISelectionManagerBC selectionManagerBC;
+
+        /// <summary>
+        /// Reference to the scenario manager business component.
+        /// </summary>
+        private IScenarioManagerBC scenarioManagerBC;
 
         /// <summary>
         /// The supported XML-nodes and attributes.

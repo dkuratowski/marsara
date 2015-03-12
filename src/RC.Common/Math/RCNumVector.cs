@@ -53,6 +53,17 @@ namespace RC.Common
         }
 
         /// <summary>
+        /// Scales an RCNumVector with a given factor.
+        /// </summary>
+        /// <param name="fact">The scaling factor.</param>
+        /// <param name="vect">The RCNumVector to scale.</param>
+        /// <returns>The scaled RCIntVector.</returns>
+        public static RCNumVector operator *(RCNumber fact, RCNumVector vect)
+        {
+            return vect * fact;
+        }
+
+        /// <summary>
         /// Computes the product of two given RCNumVector.
         /// </summary>
         /// <param name="lVect">The first RCNumVector.</param>

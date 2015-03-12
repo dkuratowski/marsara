@@ -5,6 +5,7 @@ using System.Text;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Common.Configuration;
+using RC.Engine.Simulator.Commands;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -23,26 +24,22 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
-        /// Creates an RCPackage from the state of this CommandBuilder.
+        /// Creates an RCCommand from the state of this CommandBuilder.
         /// </summary>
-        /// <returns>The created RCPackage.</returns>
-        /// <exception cref="InvalidOperationException">If RCPackage could not be created.</exception>
-        public RCPackage CreatePackage()
+        /// <returns>The created RCCommand.</returns>
+        /// <exception cref="InvalidOperationException">If RCCommand could not be created.</exception>
+        public RCCommand CreateCommand()
         {
             if (this.commandType == null) { throw new InvalidOperationException("Undefined command type!"); }
 
             HashSet<int> recipientEntities = this.selectionManager.CurrentSelection;
-            if (recipientEntities.Count == 0) { throw new InvalidOperationException("No recipient entities!"); }
             /// TODO: check if all the recipient entities belong to the local player!
 
-            RCPackage package = RCPackage.CreateCustomDataPackage(COMMAND_PACKAGEFORMAT);
-            package.WriteString(0, this.commandType);
-            package.WriteIntArray(1, recipientEntities.ToArray());
-            package.WriteInt(2, this.targetPosition != RCNumVector.Undefined ? this.targetPosition.X.Bits : 0);
-            package.WriteInt(3, this.targetPosition != RCNumVector.Undefined ? this.targetPosition.Y.Bits : 0);
-            package.WriteInt(4, this.targetEntity);
-            package.WriteString(5, this.parameter ?? string.Empty);
-            return package;
+            return new RCCommand(this.commandType,
+                                 recipientEntities.ToArray(),
+                                 this.targetPosition,
+                                 this.targetEntity,
+                                 this.parameter);
         }
 
         /// <summary>
@@ -136,10 +133,5 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// Reference to the selection manager business component.
         /// </summary>
         private ISelectionManagerBC selectionManager;
-
-        /// <summary>
-        /// The ID of the command package format.
-        /// </summary>
-        private static int COMMAND_PACKAGEFORMAT = RCPackageFormatMap.Get("RC.App.BizLogic.Command");
     }
 }

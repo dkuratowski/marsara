@@ -6,6 +6,7 @@ using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Common.Configuration;
+using RC.Engine.Simulator.Commands;
 
 namespace RC.App.BizLogic.BusinessComponents
 {
@@ -83,8 +84,8 @@ namespace RC.App.BizLogic.BusinessComponents
         string SelectedBuildingType { get; }
 
         /// <summary>
-        /// This event is raised when a new command package has been created.
+        /// This event is raised when a new command has been created.
         /// </summary>
-        event Action<RCPackage> NewCommand;
+        event Action<RCCommand> NewCommand;
     }
 }

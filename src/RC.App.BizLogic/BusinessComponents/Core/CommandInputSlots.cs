@@ -22,6 +22,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         public SpriteInst ButtonSprite { get; set; }
 
         /// <summary>
+        /// Reference to the button listener that is waiting for trigger from the command panel.
+        /// </summary>
+        public IButtonListener ButtonListener { get; set; }
+
+        /// <summary>
         /// Reference to the listener to complete when the button is pressed.
         /// </summary>
         public CommandInputListener Listener { get; set; }

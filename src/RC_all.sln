@@ -148,7 +148,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.App.BizLogic", "RC.App.B
 	ProjectSection(SolutionItems) = preProject
 		..\config\RC.App.BizLogic\RC.App.BizLogic.ConstantsConfig.xml = ..\config\RC.App.BizLogic\RC.App.BizLogic.ConstantsConfig.xml
 		..\config\RC.App.BizLogic\RC.App.BizLogic.node = ..\config\RC.App.BizLogic\RC.App.BizLogic.node
-		..\config\RC.App.BizLogic\RC.App.BizLogic.PackageFormatConfig.xml = ..\config\RC.App.BizLogic\RC.App.BizLogic.PackageFormatConfig.xml
 		..\config\RC.App.BizLogic\RC.App.BizLogic.TraceConfig.xml = ..\config\RC.App.BizLogic\RC.App.BizLogic.TraceConfig.xml
 	EndProjectSection
 EndProject

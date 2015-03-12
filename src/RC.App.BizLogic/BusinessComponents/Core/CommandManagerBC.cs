@@ -9,6 +9,8 @@ using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Common.Configuration;
 using RC.Common.Diagnostics;
+using RC.Engine.Simulator.Commands;
+using RC.Engine.Simulator.ComponentInterfaces;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -181,7 +183,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="ICommandManagerBC.NewCommand"/>
-        public event Action<RCPackage> NewCommand;
+        public event Action<RCCommand> NewCommand;
 
         #endregion ICommandManagerBC methods
 
@@ -195,7 +197,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             using (new CommandBuilderPermission(this.commandBuilder))
             {
-                if (listener.TryComplete())
+                CommandInputListener.CompletionResultEnum completionResult = listener.TryComplete();
+                if (completionResult == CommandInputListener.CompletionResultEnum.Succeeded)
                 {
                     /// Listener completed successfully -> activate children.
                     List<CommandInputListener> children = new List<CommandInputListener>(listener.Children);
@@ -210,18 +213,22 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                         /// No children -> current command input procedure completed.
                         this.completedListeners.Clear();
                         this.activeListeners = new List<CommandInputListener>(this.rootListeners);
-                        RCPackage commandPackage = this.commandBuilder.CreatePackage();
+                        RCCommand command = this.commandBuilder.CreateCommand();
                         this.commandBuilder.Reset();
-                        TraceManager.WriteAllTrace(commandPackage, BizLogicTraceFilters.INFO);
-                        if (this.NewCommand != null) { this.NewCommand(commandPackage); }
+                        TraceManager.WriteAllTrace(command, BizLogicTraceFilters.INFO);
+                        if (this.NewCommand != null) { this.NewCommand(command); }
                     }
                 }
-                else
+                else if (completionResult == CommandInputListener.CompletionResultEnum.FailedAndCancel)
                 {
-                    /// Listener completion was unsuccessful -> cancel command input procedure.
+                    /// Listener completion failed and command input procedure shall be cancelled.
                     this.completedListeners.Clear();
                     this.activeListeners = new List<CommandInputListener>(this.rootListeners);
                     this.commandBuilder.Reset();
+                }
+                else if (completionResult == CommandInputListener.CompletionResultEnum.FailedButContinue)
+                {
+                    /// Listener completion failed but command input procedure shall be continued.
                 }
             }
 
@@ -241,6 +248,27 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 this.TryAttachAsButtonListener(activeListener);
                 this.TryAttachAsTargetPositionListener(activeListener);
             }
+
+            /// Highlight the button with the highest priority.
+            CommandPanelSlot slotToHighlight = null;
+            for (int row = 0; row < BUTTON_ARRAY_ROWS; row++)
+            {
+                for (int col = 0; col < BUTTON_ARRAY_COLS; col++)
+                {
+                    if (this.commandPanelSlots[row, col] == null) { continue; }
+                    if (this.commandPanelSlots[row, col].ButtonState != CommandButtonStateEnum.Enabled) { continue; }
+                    if (!this.commandPanelSlots[row, col].ButtonListener.IsHighlighted) { continue; }
+                    if (slotToHighlight == null || this.commandPanelSlots[row, col].ButtonListener.Priority > slotToHighlight.ButtonListener.Priority)
+                    {
+                        slotToHighlight = this.commandPanelSlots[row, col];
+                    }
+                    else if (this.commandPanelSlots[row, col].ButtonListener.Priority == slotToHighlight.ButtonListener.Priority)
+                    {
+                        throw new InvalidOperationException(string.Format("IButtonListeners with the same priority should be highlighted at command panel slots {0} and {1}!", new RCIntVector(row, col), slotToHighlight.ButtonListener.CommandPanelSlot));
+                    }
+                }
+            }
+            if (slotToHighlight != null) { slotToHighlight.ButtonState = CommandButtonStateEnum.Highlighted; }
         }
 
         /// <summary>
@@ -254,19 +282,31 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// </remarks>
         private void TryAttachAsButtonListener(CommandInputListener listener)
         {
-            ICommandButtonListener buttonListener = listener as ICommandButtonListener;
+            IButtonListener buttonListener = listener as IButtonListener;
             if (buttonListener == null) { return; }
 
-            CommandButtonStateEnum buttonState = buttonListener.ButtonState;
-            if (buttonState == CommandButtonStateEnum.Invisible) { return; }
+            AvailabilityEnum buttonAvailability = buttonListener.ButtonAvailability;
+            if (buttonAvailability == AvailabilityEnum.Unavailable) { return; }
 
             RCIntVector slotPosition = buttonListener.CommandPanelSlot;
-            if (this.commandPanelSlots[slotPosition.X, slotPosition.Y] != null) { throw new InvalidOperationException(string.Format("ICommandButtonListener has already been attached to command panel slot {0}!", slotPosition)); }
+            if (this.commandPanelSlots[slotPosition.X, slotPosition.Y] != null)
+            {
+                if (this.commandPanelSlots[slotPosition.X, slotPosition.Y].ButtonListener.Priority > buttonListener.Priority)
+                {
+                    /// Another IButtonListener with higher priority has already been attached to the command panel slot.
+                    return;
+                }
+                else if (this.commandPanelSlots[slotPosition.X, slotPosition.Y].ButtonListener.Priority == buttonListener.Priority)
+                {
+                    throw new InvalidOperationException(string.Format("Another IButtonListener with the same priority has already been attached to command panel slot {0}!", slotPosition));
+                }
+            }
 
             this.commandPanelSlots[slotPosition.X, slotPosition.Y] = new CommandPanelSlot
             {
-                ButtonState = buttonState,
+                ButtonState = buttonAvailability == AvailabilityEnum.Disabled ? CommandButtonStateEnum.Disabled : CommandButtonStateEnum.Enabled,
                 ButtonSprite = buttonListener.ButtonSprite,
+                ButtonListener = buttonListener,
                 Listener = listener
             };
         }
