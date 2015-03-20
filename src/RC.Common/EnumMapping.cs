@@ -53,9 +53,25 @@ namespace RC.Common
         /// Maps the given enum value to it's target value declared by it's EnumMappingAttribute.
         /// </summary>
         /// <param name="enumVal">The enum value you want to map.</param>
+        /// <returns>The mapped value.</returns>
+        /// <exception cref="ArgumentException">If mapping was unsuccessful.</exception>
+        public static TMapTarget Map(TEnum enumVal)
+        {
+            TMapTarget retVal;
+            if (!TryMap(enumVal, out retVal))
+            {
+                throw new ArgumentException(string.Format("Cannot map enumeration value '{0}'!", enumVal), "enumVal");
+            }
+            return retVal;
+        }
+
+        /// <summary>
+        /// Tries to map the given enum value to it's target value declared by it's EnumMappingAttribute.
+        /// </summary>
+        /// <param name="enumVal">The enum value you want to map.</param>
         /// <param name="tgtVal">This will contain the mapped value in case of success or default(TMapTarget) otherwise.</param>
         /// <returns>True in case of success, false otherwise.</returns>
-        public static bool Map(TEnum enumVal, out TMapTarget tgtVal)
+        public static bool TryMap(TEnum enumVal, out TMapTarget tgtVal)
         {
             tgtVal = default(TMapTarget);
             if (typeof(TEnum).IsEnum)
@@ -82,12 +98,27 @@ namespace RC.Common
         }
 
         /// <summary>
-        /// Maps the given value to it's corresponding enum value declared by EnumMappingAttribute of the enum value.
+        /// Demaps the given value to it's corresponding enum value declared by EnumMappingAttribute of the enum value.
+        /// </summary>
+        /// <param name="srcVal">The value you want to map.</param>
+        /// <returns>The corresponding enum value.</returns>
+        public static TEnum Demap(TMapTarget srcVal)
+        {
+            TEnum retVal;
+            if (!TryDemap(srcVal, out retVal))
+            {
+                throw new ArgumentException(string.Format("Cannot map value '{0}' to enumeration!", srcVal), "srcVal");
+            }
+            return retVal;
+        }
+
+        /// <summary>
+        /// Tries to map the given value to it's corresponding enum value declared by EnumMappingAttribute of the enum value.
         /// </summary>
         /// <param name="srcVal">The value you want to map.</param>
         /// <param name="enumVal">This will contain the corresponding enum value in case of success or default(TEnum) otherwise.</param>
         /// <returns>True in case of success, false otherwise.</returns>
-        public static bool Demap(TMapTarget srcVal, out TEnum enumVal)
+        public static bool TryDemap(TMapTarget srcVal, out TEnum enumVal)
         {
             if (srcVal == null) { throw new ArgumentNullException("srcVal"); }
 

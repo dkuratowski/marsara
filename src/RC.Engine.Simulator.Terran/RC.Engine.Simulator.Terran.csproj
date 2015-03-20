@@ -78,7 +78,6 @@
   <ItemGroup>
     <Compile Include="Buildings\CommandCenter.cs" />
     <Compile Include="CommandExecutorPlugin.cs" />
-    <Compile Include="PrototypeFastCommandExecutionFactory.cs" />
     <Compile Include="TerranHeapManagerPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TerranScenarioLoaderPlugin.cs" />

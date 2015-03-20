@@ -125,7 +125,7 @@ namespace RC.Common.Configuration
                 {
                     /// Try to parse the constant type string.
                     CtorParamType paramType;
-                    if (!EnumMap<CtorParamType, string>.Demap(paramTypeAttr.Value, out paramType))
+                    if (!EnumMap<CtorParamType, string>.TryDemap(paramTypeAttr.Value, out paramType))
                     {
                         throw new ConfigurationException(string.Format("Unexpected constructor parameter type {0} defined.", paramTypeAttr.Value));
                     }

@@ -44,6 +44,6 @@ namespace RC.Engine.Simulator.ComponentInterfaces
         /// <param name="scenario">The scenario of the entities</param>
         /// <param name="entityIDs">The IDs of the entities.</param>
         /// <returns>The commands that are currently being executed by the given set of entities.</returns>
-        IEnumerable<string> GetCommandsBeingExecuted(Scenario scenario, IEnumerable<int> entityIDs);
+        HashSet<string> GetCommandsBeingExecuted(Scenario scenario, IEnumerable<int> entityIDs);
     }
 }

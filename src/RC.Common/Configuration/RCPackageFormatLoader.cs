@@ -38,7 +38,7 @@ namespace RC.Common.Configuration
                         if (fieldTypeAttr != null)
                         {
                             RCPackageFieldType fieldType;
-                            if (EnumMap<RCPackageFieldType, string>.Demap(fieldTypeAttr.Value, out fieldType))
+                            if (EnumMap<RCPackageFieldType, string>.TryDemap(fieldTypeAttr.Value, out fieldType))
                             {
                                 newFormat.DefineField(fieldType);
                                 hasFields = true;

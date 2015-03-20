@@ -29,10 +29,10 @@ namespace RC.Engine.Simulator.Commands
         }
 
         /// <see cref="ICommandExecutionFactory.StartCommandExecution"/>
-        public void StartCommandExecution(HashSet<Entity> entitySet, RCNumVector targetPosition, Entity targetEntity, string parameter)
+        public void StartCommandExecution(HashSet<Entity> entitySet, RCNumVector targetPosition, int targetEntityID, string parameter)
         {
             HashSet<T> entitiesToHandle = this.CollectEntitiesToHandle(entitySet);
-            this.StartCommandExecution(entitiesToHandle, entitySet, targetPosition, targetEntity, parameter);
+            this.StartCommandExecution(entitiesToHandle, entitySet, targetPosition, targetEntityID, parameter);
         }
 
         #endregion ICommandExecutionFactory members
@@ -67,9 +67,9 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="entitiesToHandle">The subset of the full entity set that this factory has to handle.</param>
         /// <param name="fullEntitySet">The entity set.</param>
         /// <param name="targetPosition">The target position.</param>
-        /// <param name="targetEntity">The target entity.</param>
+        /// <param name="targetEntityID">The ID of the target entity or -1 if undefined.</param>
         /// <param name="parameter">The optional parameter.</param>
-        protected abstract void StartCommandExecution(HashSet<T> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, Entity targetEntity, string parameter);
+        protected abstract void StartCommandExecution(HashSet<T> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID, string parameter);
 
         #endregion Overridables
 

@@ -32,8 +32,10 @@ namespace RC.Engine.Simulator.Terran
         {
             /// TODO: Write installation code here!
             extendedComponent.RegisterPlayerInitializer(RaceEnum.Terran, this.TerranInitializer);
-            //extendedComponent.RegisterCommandExecutionFactory(SCV.SCV_TYPE_NAME, new MoveExecutionFactory(SCV.SCV_TYPE_NAME));
-            extendedComponent.RegisterCommandExecutionFactory(new PrototypeFastCommandExecutionFactory());
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, SCV.SCV_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, SCV.SCV_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Attack, SCV.SCV_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, SCV.SCV_TYPE_NAME));
         }
 
         /// <see cref="IPlugin<T>.Uninstall"/>

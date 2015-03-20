@@ -354,7 +354,7 @@ namespace RC.Engine.Simulator.Core
             if (sizeElem != null)
             {
                 SizeEnum size;
-                if (!EnumMap<SizeEnum, string>.Demap(sizeElem.Value, out size))
+                if (!EnumMap<SizeEnum, string>.TryDemap(sizeElem.Value, out size))
                 {
                     throw new SimulatorException(string.Format("Unexpected size '{0}' defined in general data!", sizeElem.Value));
                 }
@@ -407,7 +407,7 @@ namespace RC.Engine.Simulator.Core
             weaponData.SetRangeMax(XmlHelper.LoadInt(rangeMaxElem.Value));
 
             DamageTypeEnum damageType;
-            if (!EnumMap<DamageTypeEnum, string>.Demap(damageTypeElem.Value, out damageType))
+            if (!EnumMap<DamageTypeEnum, string>.TryDemap(damageTypeElem.Value, out damageType))
             {
                 throw new SimulatorException(string.Format("Unexpected damage type '{0}' defined in weapon data!", damageTypeElem.Value));
             }
@@ -418,7 +418,7 @@ namespace RC.Engine.Simulator.Core
             if (splashTypeElem != null)
             {
                 SplashTypeEnum splashType;
-                if (!EnumMap<SplashTypeEnum, string>.Demap(splashTypeElem.Value, out splashType))
+                if (!EnumMap<SplashTypeEnum, string>.TryDemap(splashTypeElem.Value, out splashType))
                 {
                     throw new SimulatorException(string.Format("Unexpected splash type '{0}' defined in weapon data!", splashTypeElem.Value));
                 }

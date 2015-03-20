@@ -75,6 +75,7 @@ namespace RC.App.BizLogic.Services.Core
             this.selectionManager.Reset(this.playerManager[0].Player);
             this.fogOfWarBC.StartFogOfWar(this.playerManager[0].Player);
             this.mapWindowBC.ScrollTo(this.playerManager[0].StartPosition);
+            this.commandManager.NewCommand += this.PostCommand;
 
             this.commandDispatcher = new CommandDispatcher();
             this.triggeredScheduler = new TriggeredScheduler(1000 / (int)gameSpeed);
@@ -139,6 +140,7 @@ namespace RC.App.BizLogic.Services.Core
         /// PROTOTYPE CODE
         private void OnDssTaskFinished(ITask sender, object message)
         {
+            this.commandManager.NewCommand -= this.PostCommand;
             this.dssTask.Finished -= this.OnDssTaskFinished;
             this.dssTask = null;
             this.testDssTaskCanFinishEvt.Close();

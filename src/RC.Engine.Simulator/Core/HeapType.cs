@@ -27,7 +27,7 @@ namespace RC.Engine.Simulator.Core
             name = name.Trim();
             if (!IDENTIFIER_SYNTAX.IsMatch(name) || name.EndsWith("*")) { throw new HeapException(string.Format("Invalid type name '{0}'!", name)); }
             if (fields == null) { throw new ArgumentNullException("fields"); }
-            if (fields.Count == 0) { throw new HeapException(string.Format("User defined type '{0}' doesn't define any fields!", name)); }
+            //if (fields.Count == 0) { throw new HeapException(string.Format("User defined type '{0}' doesn't define any fields!", name)); }
 
             /// Members filled at initialization.
             this.name = name;
@@ -91,7 +91,7 @@ namespace RC.Engine.Simulator.Core
                     throw new ArgumentException("Unexpected value of 'builtInType'!", "builtInType");
             }
             string name;
-            if (!EnumMap<BuiltInTypeEnum, string>.Map(builtInType, out name) || name == null) { throw new ArgumentException("No name defined for the built-in type!", "builtInType"); }
+            if (!EnumMap<BuiltInTypeEnum, string>.TryMap(builtInType, out name) || name == null) { throw new ArgumentException("No name defined for the built-in type!", "builtInType"); }
             if (!IDENTIFIER_SYNTAX.IsMatch(name) || name.EndsWith("*")) { throw new HeapException(string.Format("Invalid built-in type name '{0}'!", name)); }
             this.name = name;
             this.builtInType = builtInType;

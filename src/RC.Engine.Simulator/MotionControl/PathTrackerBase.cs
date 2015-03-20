@@ -163,7 +163,7 @@ namespace RC.Engine.Simulator.MotionControl
         protected virtual bool CheckInactivationCriteria()
         {
             /// TODO: replace this with a more sophisticated inactivation criteria if necessary!
-            return this.timeSinceClosestDistanceReached.Read() > 100;
+            return this.ControlledEntity.Position.Contains(this.TargetPosition) || this.timeSinceClosestDistanceReached.Read() > 100;
         }
 
         #endregion Overridable methods

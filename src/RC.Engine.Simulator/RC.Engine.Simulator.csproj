@@ -77,13 +77,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\AttackExecution.cs" />
+    <Compile Include="Commands\BasicCmdExecutionFactory.cs" />
+    <Compile Include="Commands\MoveExecution.cs" />
+    <Compile Include="Commands\StopExecution.cs" />
     <Compile Include="Commands\CmdExecutionBase.cs" />
     <Compile Include="Commands\CommandExecutionFactoryBase.cs" />
     <Compile Include="Commands\CommandExecutor.cs" />
     <Compile Include="Commands\ICommandExecutionFactory.cs" />
     <Compile Include="Commands\MagicBox.cs" />
-    <Compile Include="Commands\MoveExecution.cs" />
-    <Compile Include="Commands\MoveExecutionFactory.cs" />
     <Compile Include="Commands\RCCommand.cs" />
     <Compile Include="ComponentInterfaces\ICommandExecutor.cs" />
     <Compile Include="ComponentInterfaces\IHeapManager.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="Scenarios\IScenarioElementType.cs" />
     <Compile Include="Scenarios\IWeaponData.cs" />
     <Compile Include="MotionControl\MotionController.cs" />
+    <Compile Include="Scenarios\Locator.cs" />
     <Compile Include="Scenarios\Player.cs" />
     <Compile Include="Scenarios\QuadEntity.cs" />
     <Compile Include="Scenarios\RaceEnum.cs" />

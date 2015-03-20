@@ -140,7 +140,7 @@ namespace RC.Engine.Maps.Core
             if (combinationAttr == null) { throw new TileSetException("Terrain combination not defined for mixed tile!"); }
 
             TerrainCombination combination;
-            if (!EnumMap<TerrainCombination, string>.Demap(combinationAttr.Value, out combination))
+            if (!EnumMap<TerrainCombination, string>.TryDemap(combinationAttr.Value, out combination))
             {
                 throw new TileSetException(string.Format("Unexpected terrain combination '{0}' defined for mixed tile.", combinationAttr.Value));
             }
@@ -238,7 +238,7 @@ namespace RC.Engine.Maps.Core
                 foreach (string combStr in combinationStrings)
                 {
                     TerrainCombination combination;
-                    if (!EnumMap<TerrainCombination, string>.Demap(combStr, out combination) || combination == TerrainCombination.Simple)
+                    if (!EnumMap<TerrainCombination, string>.TryDemap(combStr, out combination) || combination == TerrainCombination.Simple)
                     {
                         throw new TileSetException(string.Format("Unexpected terrain combination '{0}' defined for tile constraint!", combStr));
                     }
@@ -405,7 +405,7 @@ namespace RC.Engine.Maps.Core
                     XAttribute quarterAttr = fromElem.Attribute(XmlTileSetConstants.CELLDATACHANGESET_QUARTER_WHICH_ATTR);
                     if (quarterAttr == null) { throw new TileSetException("Quarter not defined for a quarter data changeset element!"); }
                     MapDirection quarter;
-                    if (!EnumMap<MapDirection, string>.Demap(quarterAttr.Value, out quarter))
+                    if (!EnumMap<MapDirection, string>.TryDemap(quarterAttr.Value, out quarter))
                     {
                         throw new TileSetException(string.Format("Unexpected quarter '{0}' defined for quarter data changeset!", quarterAttr.Value));
                     }
@@ -484,13 +484,13 @@ namespace RC.Engine.Maps.Core
                 if (whatCombinationAttr == null) { throw new TileSetException("Terrain combination not defined for a neighbour condition!"); }
 
                 TerrainCombination combination;
-                if (!EnumMap<TerrainCombination, string>.Demap(whatCombinationAttr.Value, out combination))
+                if (!EnumMap<TerrainCombination, string>.TryDemap(whatCombinationAttr.Value, out combination))
                 {
                     throw new TileSetException(string.Format("Unexpected terrain combination '{0}' defined for neighbour condition!", whatCombinationAttr.Value));
                 }
 
                 MapDirection neighbour;
-                if (!EnumMap<MapDirection, string>.Demap(whichNeighbourAttr.Value, out neighbour))
+                if (!EnumMap<MapDirection, string>.TryDemap(whichNeighbourAttr.Value, out neighbour))
                 {
                     throw new TileSetException(string.Format("Unexpected neighbour direction '{0}' defined for neighbour condition!", whichNeighbourAttr.Value));
                 }
@@ -503,7 +503,7 @@ namespace RC.Engine.Maps.Core
             {
                 /// Load complex condition.
                 LogicalOp logicalOp;
-                if (!EnumMap<LogicalOp, string>.Demap(fromElem.Name.LocalName, out logicalOp))
+                if (!EnumMap<LogicalOp, string>.TryDemap(fromElem.Name.LocalName, out logicalOp))
                 {
                     throw new TileSetException(string.Format("Unexpected logical operator '{0}' defined for complex condition!", fromElem.Name.LocalName));
                 }

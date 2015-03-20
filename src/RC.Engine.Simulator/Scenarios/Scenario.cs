@@ -434,7 +434,8 @@ namespace RC.Engine.Simulator.Scenarios
         protected override void DisposeImpl()
         {
             /// Destroy command executions
-            foreach (CmdExecutionBase cmdExecution in this.commandExecutions) { cmdExecution.Dispose(); }
+            HashSet<CmdExecutionBase> commandExecutionsCopy = new HashSet<CmdExecutionBase>(this.commandExecutions);
+            foreach (CmdExecutionBase cmdExecution in commandExecutionsCopy) { cmdExecution.Dispose(); }
             this.commandExecutions.Clear();
 
             /// Destroy players

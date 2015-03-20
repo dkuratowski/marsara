@@ -36,8 +36,8 @@ namespace RC.Engine.Simulator.Commands
         /// </summary>
         /// <param name="entitySet">The entity set.</param>
         /// <param name="targetPosition">The target position.</param>
-        /// <param name="targetEntity">The target entity.</param>
+        /// <param name="targetEntityID">The ID of the target entity or -1 if not defined.</param>
         /// <param name="parameter">The optional parameter.</param>
-        void StartCommandExecution(HashSet<Entity> entitySet, RCNumVector targetPosition, Entity targetEntity, string parameter);
+        void StartCommandExecution(HashSet<Entity> entitySet, RCNumVector targetPosition, int targetEntityID, string parameter);
     }
 }

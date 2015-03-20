@@ -27,6 +27,18 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
         }
 
+        /// <see cref="ButtonListener.IsHighlighted"/>
+        public override bool IsHighlighted
+        {
+            get
+            {
+                return this.commandExecutor.GetCommandsBeingExecuted(
+                    scenarioManagerBC.ActiveScenario,
+                    selectionManagerBC.CurrentSelection)
+                    .Contains(this.selectedCommandType);
+            }
+        }
+
         /// <see cref="CommandInputListener.CheckCompletionStatus"/>
         /// TODO: implement this method!
         public override bool CheckCompletionStatus() { return true; }

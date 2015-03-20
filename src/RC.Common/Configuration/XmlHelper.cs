@@ -194,7 +194,7 @@ namespace RC.Common.Configuration
 
                 /// Try to parse the type attribute.
                 CtorParamType paramType;
-                if (!EnumMap<CtorParamType, string>.Demap(paramTypeAttr.Value, out paramType))
+                if (!EnumMap<CtorParamType, string>.TryDemap(paramTypeAttr.Value, out paramType))
                 {
                     throw new ConfigurationException(string.Format("Unexpected constructor parameter type '{0}' defined.", paramTypeAttr.Value));
                 }
@@ -289,7 +289,7 @@ namespace RC.Common.Configuration
                 TVariant variant = defaultVariant;
                 if (spriteVariantAttr != null)
                 {
-                    if (!EnumMap<TVariant, string>.Demap(spriteVariantAttr.Value, out variant))
+                    if (!EnumMap<TVariant, string>.TryDemap(spriteVariantAttr.Value, out variant))
                     {
                         throw new InvalidOperationException(string.Format("Unexpected sprite variant '{0}'!", spriteVariantAttr.Value));
                     }

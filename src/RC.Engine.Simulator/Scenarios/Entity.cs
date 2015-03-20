@@ -34,13 +34,13 @@ namespace RC.Engine.Simulator.Scenarios
             this.owner = this.ConstructField<Player>("owner");
             this.scenario = this.ConstructField<Scenario>("scenario");
             this.affectingCmdExecution = this.ConstructField<CmdExecutionBase>("affectingCmdExecution");
+            this.locator = this.ConstructField<Locator>("locator");
 
             this.elementType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetElementType(elementTypeName);
             this.scenario.Write(null);
             this.currentAnimations = new List<AnimationPlayer>();
             this.entityActuator = null;
             this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
-            this.sightRangeCache = null;
             this.quadraticPositionCache = new CachedValue<RCIntRectangle>(() =>
                 {
                     if (this.position.Read() == RCNumVector.Undefined) { return RCIntRectangle.Undefined; }
@@ -59,17 +59,33 @@ namespace RC.Engine.Simulator.Scenarios
             this.pathTracker.Write(null);
             this.owner.Write(null);
             this.affectingCmdExecution.Write(null);
-        }
-
-        /// <summary>
-        /// TODO: this is only a temporary solution for testing motion control.
-        /// </summary>
-        public void Move(RCNumVector toCoords)
-        {
-            if (this.pathTracker.Read() != null) { this.pathTracker.Read().TargetPosition = toCoords; }
+            this.locator.Write(new Locator(this));
         }
 
         #region Public interface
+
+        /// <summary>
+        /// Orders this entity to start moving to the given position.
+        /// </summary>
+        /// <param name="toCoords">The target position.</param>
+        public void StartMoving(RCNumVector toCoords)
+        {
+            if (toCoords == RCNumVector.Undefined) { throw new ArgumentNullException("toCoords"); }
+            if (this.pathTracker.Read() != null) { this.pathTracker.Read().TargetPosition = toCoords; }
+        }
+
+        /// <summary>
+        /// Gets whether this entity is currently performing a move operation or not.
+        /// </summary>
+        public bool IsMoving { get { return this.pathTracker.Read() != null && this.pathTracker.Read().TargetPosition != RCNumVector.Undefined; } }
+
+        /// <summary>
+        /// Orders this entity to stop at its current position.
+        /// </summary>
+        public void StopMoving()
+        {
+            if (this.pathTracker.Read() != null) { this.pathTracker.Read().TargetPosition = RCNumVector.Undefined; }
+        }
 
         /// <summary>
         /// Gets the ID of the entity.
@@ -126,22 +142,9 @@ namespace RC.Engine.Simulator.Scenarios
         public Scenario Scenario { get { return this.scenario.Read(); } }
 
         /// <summary>
-        /// Gets the coordinates of the quadratic tiles that are currently visible by this entity.
+        /// Gets the locator of this entity.
         /// </summary>
-        /// TODO: later the sight range will depend on the upgrades of the players!
-        public IEnumerable<RCIntVector> VisibleQuadCoords
-        {
-            get
-            {
-                IQuadTile currentQuadTile = this.Scenario.Map.GetCell(this.position.Read().Round()).ParentQuadTile;
-                if (this.sightRangeCache == null || this.sightRangeCache.Item1 != currentQuadTile)
-                {
-                    this.sightRangeCache = new Tuple<IQuadTile, List<RCIntVector>>(currentQuadTile, this.CalculateVisibleQuadCoords());
-                }
-
-                return new List<RCIntVector>(this.sightRangeCache.Item2);
-            }
-        }
+        public Locator Locator { get { return this.locator.Read(); } }
 
         #endregion Public interface
 
@@ -423,33 +426,6 @@ namespace RC.Engine.Simulator.Scenarios
             return !collision;
         }
 
-        /// <summary>
-        /// Calculates the quadratic coordinates currently visible by this entity.
-        /// </summary>
-        /// <returns>The quadratic coordinates currently visible by this entity.</returns>
-        /// <remarks>
-        /// Can be overriden in the derived classes. The default implementation can be used by ground units.
-        /// </remarks>
-        protected virtual List<RCIntVector> CalculateVisibleQuadCoords()
-        {
-            IQuadTile currentQuadTile = this.Scenario.Map.GetCell(this.position.Read().Round()).ParentQuadTile;
-            List<RCIntVector> retList = new List<RCIntVector>();
-            foreach (RCIntVector relativeQuadCoord in this.elementType.RelativeQuadCoordsInSight)
-            {
-                RCIntVector otherQuadCoords = currentQuadTile.MapCoords + relativeQuadCoord;
-                if (otherQuadCoords.X >= 0 && otherQuadCoords.X < this.Scenario.Map.Size.X &&
-                    otherQuadCoords.Y >= 0 && otherQuadCoords.Y < this.Scenario.Map.Size.Y)
-                {
-                    IQuadTile otherQuadTile = this.Scenario.Map.GetQuadTile(otherQuadCoords);
-                    if (currentQuadTile.GroundLevel >= otherQuadTile.GroundLevel)
-                    {
-                        retList.Add(otherQuadTile.MapCoords);
-                    }
-                }
-            }
-            return retList;
-        }
-
         /// <see cref="HeapedObject.DisposeImpl"/>
         protected override void DisposeImpl()
         {
@@ -514,6 +490,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// </summary>
         private readonly HeapedValue<CmdExecutionBase> affectingCmdExecution;
 
+        /// <summary>
+        /// Reference to the locator of this entity.
+        /// </summary>
+        private readonly HeapedValue<Locator> locator;
+
         #endregion Heaped members
 
         /// <summary>
@@ -540,10 +521,5 @@ namespace RC.Engine.Simulator.Scenarios
         /// The cached value of the quadratic position of this Entity.
         /// </summary>
         private CachedValue<RCIntRectangle> quadraticPositionCache;
-
-        /// <summary>
-        /// Data structure to store the calculated sight range of this entity for the last known quadratic tile.
-        /// </summary>
-        private Tuple<IQuadTile, List<RCIntVector>> sightRangeCache;
     }
 }

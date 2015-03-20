@@ -22,15 +22,9 @@ namespace RC.Engine.Simulator.Commands
             if (this.scenario.Read() == null) { throw new ObjectDisposedException("CmdExecutionBase"); }
             if (this.recipientEntities.Count == 0) { return true; }
 
+            /// TODO: if some of the recipient entities has detached from the map, remove them from the list!
             return this.ContinueImpl();
         }
-
-        /// <summary>
-        /// Gets the type of the command that is currently being executed by this execution or null if there is no command currently
-        /// being executed by this execution.
-        /// </summary>
-        /// <remarks>Can be overriden in the derived classes. The default implementation constantly returns null.</remarks>
-        public virtual string CommandBeingExecuted { get { return null; } }
 
         #endregion Public interface
 
@@ -60,7 +54,7 @@ namespace RC.Engine.Simulator.Commands
             if (recipientEntities.Count == 0) { throw new ArgumentException("No recipient entities for command execution!", "recipientEntities"); }
 
             this.typeOfRecipientEntities = null;
-            this.scenario = this.ConstructField<Scenario>("targetScenario");
+            this.scenario = this.ConstructField<Scenario>("scenario");
             this.owner = this.ConstructField<Player>("owner");
             this.scenario.Write(null);
             this.owner.Write(null);
@@ -144,6 +138,13 @@ namespace RC.Engine.Simulator.Commands
         #endregion Overrides
 
         #region Overridables
+
+        /// <summary>
+        /// Gets the type of the command that is currently being executed by this execution or null if there is no command currently
+        /// being executed by this execution.
+        /// </summary>
+        /// <remarks>Can be overriden in the derived classes. The default implementation constantly returns null.</remarks>
+        public virtual string CommandBeingExecuted { get { return null; } }
 
         /// <summary>
         /// The internal implementation of CmdExecutionBase.Continue.

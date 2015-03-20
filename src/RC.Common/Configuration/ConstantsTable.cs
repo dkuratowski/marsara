@@ -26,7 +26,7 @@ namespace RC.Common.Configuration
 
             /// Try to parse the constant type string.
             ConstantType constTypeEnum;
-            if (!EnumMap<ConstantType, string>.Demap(constType, out constTypeEnum))
+            if (!EnumMap<ConstantType, string>.TryDemap(constType, out constTypeEnum))
             {
                 throw new ConfigurationException(string.Format("Unexpected constant type {0} defined for constant {1}.", constType, constName));
             }

@@ -125,7 +125,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                     Entity entity = entitiesIterator.Current;
                     if (!this.processedEntities.Contains(entity.ID.Read()))
                     {
-                        foreach (RCIntVector visibleQuadCoord in entity.VisibleQuadCoords)
+                        foreach (RCIntVector visibleQuadCoord in entity.Locator.VisibleQuadCoords)
                         {
                             /// Update the expiration time of the quadratic tile.
                             this.fowExpirationTimes[visibleQuadCoord.X, visibleQuadCoord.Y] =

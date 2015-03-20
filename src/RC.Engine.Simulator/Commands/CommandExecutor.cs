@@ -32,8 +32,8 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="ICommandExecutor.GetCommandAvailability"/>
         public AvailabilityEnum GetCommandAvailability(Scenario scenario, string commandType, IEnumerable<int> entityIDs)
         {
-            /// Get all the existing entities from the scenario.
-            HashSet<Entity> entitySet = this.GetExistingEntities(scenario, entityIDs);
+            /// Get all the existing entities from the scenario that are currently attached to the map.
+            HashSet<Entity> entitySet = this.GetEntitiesOnMap(scenario, entityIDs);
             if (entitySet.Count == 0) { return AvailabilityEnum.Unavailable; }
 
             /// Select the factories to be used and get the availability of the command from the selected factories
@@ -70,24 +70,25 @@ namespace RC.Engine.Simulator.Commands
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
             if (command == null) { throw new ArgumentNullException("command"); }
 
-            HashSet<Entity> entitySet = this.GetExistingEntities(scenario, command.RecipientEntities);
-            Entity targetEntity = command.TargetEntity != -1 ? scenario.GetEntity<Entity>(command.TargetEntity) : null;
+            HashSet<Entity> entitySet = this.GetEntitiesOnMap(scenario, command.RecipientEntities);
             foreach (ICommandExecutionFactory factory in this.SelectFactories(command.CommandType, entitySet))
             {
-                factory.StartCommandExecution(entitySet, command.TargetPosition, targetEntity, command.Parameter);
+                factory.StartCommandExecution(entitySet, command.TargetPosition, command.TargetEntity, command.Parameter);
             }
         }
 
         /// <see cref="ICommandExecutor.GetCommandsBeingExecuted"/>
-        public IEnumerable<string> GetCommandsBeingExecuted(Scenario scenario, IEnumerable<int> entityIDs)
+        public HashSet<string> GetCommandsBeingExecuted(Scenario scenario, IEnumerable<int> entityIDs)
         {
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
 
-            HashSet<Entity> entitySet = this.GetExistingEntities(scenario, entityIDs);
+            HashSet<string> retList = new HashSet<string>();
+            HashSet<Entity> entitySet = this.GetEntitiesOnMap(scenario, entityIDs);
             foreach (Entity entity in entitySet)
             {
-                if (entity.CommandBeingExecuted != null) { yield return entity.CommandBeingExecuted; }
+                if (entity.CommandBeingExecuted != null) { retList.Add(entity.CommandBeingExecuted); }
             }
+            return retList;
         }
 
         #endregion ICommandExecutor methods
@@ -150,17 +151,17 @@ namespace RC.Engine.Simulator.Commands
         }
 
         /// <summary>
-        /// Gets all the existing entities from the scenario.
+        /// Gets all the existing entities that are currently attached to the map.
         /// </summary>
         /// <param name="scenario">The scenario.</param>
         /// <param name="entityIDs">The IDs of the entities to get.</param>
-        /// <returns>All the existing entities.</returns>
-        private HashSet<Entity> GetExistingEntities(Scenario scenario, IEnumerable<int> entityIDs)
+        /// <returns>All the existing entities that are currently attached to the map.</returns>
+        private HashSet<Entity> GetEntitiesOnMap(Scenario scenario, IEnumerable<int> entityIDs)
         {
             HashSet<Entity> entitySet = new HashSet<Entity>();
             foreach (int entityId in entityIDs)
             {
-                Entity entity = scenario.GetEntity<Entity>(entityId);
+                Entity entity = scenario.GetEntityOnMap<Entity>(entityId);
                 if (entity != null) { entitySet.Add(entity); }
             }
             return entitySet;

@@ -312,7 +312,7 @@ namespace RC.Engine.Simulator.Core
             if (builtInType != BuiltInTypeEnum.NonBuiltIn)
             {
                 string heapTypeName;
-                if (!EnumMap<BuiltInTypeEnum, string>.Map(builtInType, out heapTypeName))
+                if (!EnumMap<BuiltInTypeEnum, string>.TryMap(builtInType, out heapTypeName))
                 {
                     throw new SimulatorException(string.Format("Invalid field type: {0}!", builtInType.ToString()));
                 }
