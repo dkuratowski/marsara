@@ -32,12 +32,9 @@ namespace RC.Engine.Simulator.Scenarios
         /// <returns>The entities that are in the sight-range of the owner entity.</returns>
         public HashSet<Entity> LocateEntities()
         {
-            /// Calculate the search area.
-            RCNumRectangle searchArea = this.CalculateSearchArea(this.GetSightRangeOfOwner());
-
             /// Collect the entities in sight-range.
             HashSet<Entity> retList = new HashSet<Entity>();
-            HashSet<Entity> entitiesToCheck = this.owner.Read().Scenario.GetEntitiesOnMap<Entity>(searchArea);
+            HashSet<Entity> entitiesToCheck = this.owner.Read().Scenario.GetEntitiesOnMap<Entity>(this.owner.Read().PositionValue.Read(), this.GetSightRangeOfOwner());
             entitiesToCheck.Remove(this.owner.Read());
             HashSet<RCIntVector> visibleQuadCoords = this.VisibleQuadCoords;
             foreach (Entity entity in entitiesToCheck)
@@ -59,14 +56,24 @@ namespace RC.Engine.Simulator.Scenarios
         }
 
         /// <summary>
+        /// Checks whether the given position is in the sight-range of the owner entity.
+        /// </summary>
+        /// <param name="position">The position to check.</param>
+        /// <returns>True if the given position is in the sight-range of the owner entity; otherwise false.</returns>
+        public bool LocatePosition(RCNumVector position)
+        {
+            RCIntVector quadCoordAtPosition = this.owner.Read().Scenario.Map.GetCell(position.Round()).ParentQuadTile.MapCoords;
+            return this.VisibleQuadCoords.Contains(quadCoordAtPosition);
+        }
+
+        /// <summary>
         /// Searches the entities that are in a rectangular area around the owner entity with the given radius.
         /// </summary>
         /// <param name="searchAreaRadius">The radius of the search area given in quadratic tiles.</param>
         /// <returns>The entities that are in the search area.</returns>
         public HashSet<Entity> SearchNearbyEntities(int searchAreaRadius)
         {
-            RCNumRectangle searchArea = this.CalculateSearchArea(searchAreaRadius);
-            HashSet<Entity> nearbyEntities = this.owner.Read().Scenario.GetEntitiesOnMap<Entity>(searchArea);
+            HashSet<Entity> nearbyEntities = this.owner.Read().Scenario.GetEntitiesOnMap<Entity>(this.owner.Read().PositionValue.Read(), searchAreaRadius);
             nearbyEntities.Remove(this.owner.Read());
             return nearbyEntities;
         }
@@ -87,22 +94,6 @@ namespace RC.Engine.Simulator.Scenarios
 
                 return new HashSet<RCIntVector>(this.sightRangeCache.Item2);
             }
-        }
-
-        /// <summary>
-        /// Calculates a search area around the owner entity with the given radius.
-        /// </summary>
-        /// <param name="radius">The radius of the search area given in quadratic tiles.</param>
-        /// <returns>The calculated search area.</returns>
-        private RCNumRectangle CalculateSearchArea(int radius)
-        {
-            if (radius <= 0) { throw new ArgumentOutOfRangeException("radius", "The radius of the search area shall be greater than 0!"); }
-
-            RCIntVector currentQuadCoord = this.owner.Read().Scenario.Map.GetCell(this.owner.Read().PositionValue.Read().Round()).ParentQuadTile.MapCoords;
-            RCIntVector topLeftQuadCoord = currentQuadCoord - new RCIntVector(radius - 1, radius - 1);
-            RCIntVector bottomRightQuadCoord = currentQuadCoord + new RCIntVector(radius - 1, radius - 1);
-            RCIntRectangle quadRect = new RCIntRectangle(topLeftQuadCoord, bottomRightQuadCoord - topLeftQuadCoord + new RCIntVector(1, 1));
-            return (RCNumRectangle)this.owner.Read().Scenario.Map.QuadToCellRect(quadRect) - new RCNumVector(1, 1) / 2;
         }
 
         /// <summary>

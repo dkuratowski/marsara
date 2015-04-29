@@ -16,7 +16,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
     /// </summary>
     public abstract class HeapedObject : IDisposable
     {
-        private static int objectCount = 0; // TODO: remove
+        //private static HashSet<HeapedObject> objects = new HashSet<HeapedObject>(); // TODO: remove
 
         /// <summary>
         /// Constructs a HeapedObject instance.
@@ -50,8 +50,8 @@ namespace RC.Engine.Simulator.PublicInterfaces
             this.heapManager.DetachingHeapedObjects += this.OnDetachingHeapedObject;
 
             // TODO: remove
-            //objectCount++;
-            //TraceManager.WriteAllTrace(string.Format("HeapedObject_Create -> Count = {0}", objectCount), TraceFilters.INFO);
+            //objects.Add(this);
+            //TraceManager.WriteAllTrace(string.Format("HeapedObject_Create -> Count = {0}", objects.Count), TraceFilters.INFO);
         }
 
         /// <summary>
@@ -222,8 +222,8 @@ namespace RC.Engine.Simulator.PublicInterfaces
             }
 
             // TODO: remove
-            //objectCount--;
-            //TraceManager.WriteAllTrace(string.Format("HeapedObject_Destroy -> Count = {0}", objectCount), TraceFilters.INFO);
+            //objects.Remove(this);
+            //TraceManager.WriteAllTrace(string.Format("HeapedObject_Destroy -> Count = {0}", objects.Count), TraceFilters.INFO);
         }
 
         /// <summary>

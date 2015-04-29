@@ -35,6 +35,7 @@ namespace RC.Engine.Simulator.Scenarios
             this.scenario = this.ConstructField<Scenario>("scenario");
             this.affectingCmdExecution = this.ConstructField<CmdExecutionBase>("affectingCmdExecution");
             this.locator = this.ConstructField<Locator>("locator");
+            this.armour = this.ConstructField<Armour>("armour");
 
             this.elementType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetElementType(elementTypeName);
             this.scenario.Write(null);
@@ -60,6 +61,7 @@ namespace RC.Engine.Simulator.Scenarios
             this.owner.Write(null);
             this.affectingCmdExecution.Write(null);
             this.locator.Write(new Locator(this));
+            this.armour.Write(new Armour(this));
         }
 
         #region Public interface
@@ -145,6 +147,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// Gets the locator of this entity.
         /// </summary>
         public Locator Locator { get { return this.locator.Read(); } }
+
+        /// <summary>
+        /// Gets the armour of this entity.
+        /// </summary>
+        public Armour Armour { get { return this.armour.Read(); } }
 
         #endregion Public interface
 
@@ -437,6 +444,11 @@ namespace RC.Engine.Simulator.Scenarios
             }
             if (this.pathTracker.Read() != null) { this.pathTracker.Read().Dispose(); this.pathTracker.Write(null); }
             if (this.entityActuator != null) { this.entityActuator.Dispose(); this.entityActuator = null; }
+
+            this.locator.Read().Dispose();
+            this.locator.Write(null);
+            this.armour.Read().Dispose();
+            this.armour.Write(null);
         }
 
         #endregion Internal members
@@ -494,6 +506,11 @@ namespace RC.Engine.Simulator.Scenarios
         /// Reference to the locator of this entity.
         /// </summary>
         private readonly HeapedValue<Locator> locator;
+
+        /// <summary>
+        /// Reference to the armour of this entity.
+        /// </summary>
+        private readonly HeapedValue<Armour> armour;
 
         #endregion Heaped members
 

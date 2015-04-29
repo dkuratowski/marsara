@@ -23,11 +23,11 @@ namespace RC.Engine.Simulator.Commands
             : base(new HashSet<Entity> { recipientEntity })
         {
             this.recipientEntity = this.ConstructField<Entity>("recipientEntity");
+            this.enemyToAttack = this.ConstructField<Entity>("enemyToAttack");
             this.timeSinceLastSearch = this.ConstructField<int>("timeSinceLastSearch");
             this.recipientEntity.Write(recipientEntity);
+            this.enemyToAttack.Write(null);
             this.timeSinceLastSearch.Write(0);
-
-            this.recipientEntity.Read().StopMoving();
         }
 
         #region Overrides
@@ -40,11 +40,10 @@ namespace RC.Engine.Simulator.Commands
             /// Select an enemy to be attacked.
             if (this.timeSinceLastSearch.Read() == TIME_BETWEEN_ENEMY_SEARCHES)
             {
-                Entity enemyToAttack = this.SelectEnemyToAttack();
-                if (enemyToAttack != null)
+                this.enemyToAttack.Write(this.recipientEntity.Read().Armour.SelectEnemy());
+                if (enemyToAttack.Read() != null)
                 {
                     /// Enemy found -> stop execution finished, attack the enemy.
-                    new AttackExecution(this.recipientEntity.Read(), this.recipientEntity.Read().PositionValue.Read(), enemyToAttack.ID.Read());
                     return true;
                 }
                 this.timeSinceLastSearch.Write(0);
@@ -55,50 +54,35 @@ namespace RC.Engine.Simulator.Commands
             return false;
         }
 
+        /// <see cref="CmdExecutionBase.GetContinuation"/>
+        protected override CmdExecutionBase GetContinuation()
+        {
+            return new AttackExecution(
+                this.recipientEntity.Read(),
+                this.enemyToAttack.Read().PositionValue.Read(),
+                this.enemyToAttack.Read().ID.Read());
+        }
+
+        /// <see cref="CmdExecutionBase.Initialize"/>
+        protected override void Initialize()
+        {
+            this.recipientEntity.Read().StopMoving();
+        }
+
         /// <see cref="CmdExecutionBase.CommandBeingExecuted"/>
-        public override string CommandBeingExecuted { get { return "Stop"; } }
+        protected override string GetCommandBeingExecuted() { return "Stop"; }
 
         #endregion Overrides
-
-        /// <summary>
-        /// Selects an enemy that can be attacked by the recipient entity.
-        /// </summary>
-        /// <returns>An enemy that can be attacked by the recipient entity or null if no such enemy has been found.</returns>
-        private Entity SelectEnemyToAttack()
-        {
-            /// TODO: check the real weapons of the recipient entity in the future instead of weapon metadata.
-            IWeaponData airWeapon = this.recipientEntity.Read().ElementType.AirWeapon;
-            IWeaponData groundWeapon = this.recipientEntity.Read().ElementType.GroundWeapon;
-            if (airWeapon == null && groundWeapon == null)
-            {
-                /// The recipient entity has no weapons -> no enemy can be attacked.
-                return null;
-            }
-
-            /// Select the nearest enemy.
-            RCNumber nearestEnemyDistance = 0;
-            Entity nearestEnemy = null;
-            foreach (Entity locatedEntity in this.recipientEntity.Read().Locator.LocateEntities())
-            {
-                if (locatedEntity.Owner == null || locatedEntity.Owner == this.recipientEntity.Read().Owner) { continue; }
-                if (locatedEntity.IsFlying && airWeapon == null) { continue; }
-                if (!locatedEntity.IsFlying && groundWeapon == null) { continue; }
-
-                if (nearestEnemy == null) { nearestEnemy = locatedEntity; }
-                else
-                {
-                    RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().BoundingBox, locatedEntity.BoundingBox);
-                    if (distance < nearestEnemyDistance) { nearestEnemy = locatedEntity; }
-                }
-            }
-
-            return nearestEnemy;
-        }
 
         /// <summary>
         /// Reference to the recipient entity of this command execution.
         /// </summary>
         private readonly HeapedValue<Entity> recipientEntity;
+
+        /// <summary>
+        /// Reference to the enemy to be attacked if found one; otherwise null.
+        /// </summary>
+        private readonly HeapedValue<Entity> enemyToAttack;
 
         /// <summary>
         /// The elapsed time since last enemy search operation.

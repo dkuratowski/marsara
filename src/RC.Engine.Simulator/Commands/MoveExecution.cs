@@ -23,33 +23,15 @@ namespace RC.Engine.Simulator.Commands
         public MoveExecution(Entity recipientEntity, RCNumVector targetPosition, int targetEntityID)
             : base(new HashSet<Entity> { recipientEntity })
         {
+            this.targetPosition = this.ConstructField<RCNumVector>("targetPosition");
+            this.targetEntityID = this.ConstructField<int>("targetEntityID");
             this.recipientEntity = this.ConstructField<Entity>("recipientEntity");
             this.targetEntity = this.ConstructField<Entity>("targetEntity");
             this.timeSinceLastCheck = this.ConstructField<int>("timeSinceLastCheck");
+            this.targetPosition.Write(targetPosition);
+            this.targetEntityID.Write(targetEntityID);
             this.recipientEntity.Write(recipientEntity);
             this.timeSinceLastCheck.Write(0);
-
-            this.targetEntity.Write(this.LocateTargetEntity(targetEntityID));
-            if (this.targetEntity.Read() == null)
-            {
-                /// Target entity is not defined or could not be located -> simply move to the target position.
-                this.recipientEntity.Read().StartMoving(targetPosition);
-            }
-            else
-            {
-                /// Target entity is defined and could be located -> calculate its distance from the recipient entity.
-                RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().BoundingBox, this.targetEntity.Read().BoundingBox);
-                if (distance <= MAX_DISTANCE)
-                {
-                    /// Close enough -> not necessary to start approaching.
-                    this.recipientEntity.Read().StopMoving();
-                }
-                else
-                {
-                    /// Too far -> start approaching
-                    this.recipientEntity.Read().StartMoving(this.targetEntity.Read().PositionValue.Read());
-                }
-            }
         }
 
         #region Overrides
@@ -70,34 +52,50 @@ namespace RC.Engine.Simulator.Commands
             if (this.targetEntity.Read() == null)
             {
                 /// No target to follow -> simple move operation without any target entity.
-                return this.ContinueMove();
+                return !this.recipientEntity.Read().IsMoving;
+            }
+
+            /// Continue follow the target.
+            this.ContinueFollow();
+            return false;
+        }
+
+        /// <see cref="CmdExecutionBase.GetContinuation"/>
+        protected override CmdExecutionBase GetContinuation()
+        {
+            return new StopExecution(this.recipientEntity.Read());
+        }
+
+        /// <see cref="CmdExecutionBase.Initialize"/>
+        protected override void Initialize()
+        {
+            this.targetEntity.Write(this.LocateEntity(this.targetEntityID.Read()));
+            if (this.targetEntity.Read() == null)
+            {
+                /// Target entity is not defined or could not be located -> simply move to the target position.
+                this.recipientEntity.Read().StartMoving(this.targetPosition.Read());
             }
             else
             {
-                /// Continue follow the target.
-                this.ContinueFollow();
-                return false;
+                /// Target entity is defined and could be located -> calculate its distance from the recipient entity.
+                RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().BoundingBox, this.targetEntity.Read().BoundingBox);
+                if (distance <= MAX_DISTANCE)
+                {
+                    /// Close enough -> not necessary to start approaching.
+                    this.recipientEntity.Read().StopMoving();
+                }
+                else
+                {
+                    /// Too far -> start approaching
+                    this.recipientEntity.Read().StartMoving(this.targetEntity.Read().PositionValue.Read());
+                }
             }
         }
 
         /// <see cref="CmdExecutionBase.CommandBeingExecuted"/>
-        public override string CommandBeingExecuted { get { return "Move"; } }
+        protected override string GetCommandBeingExecuted() { return "Move"; }
 
         #endregion Overrides
-
-        /// <summary>
-        /// Continue the execution in case of a simple move command without any target entity.
-        /// </summary>
-        /// <returns>True if execution is finished; otherwise false.</returns>
-        private bool ContinueMove()
-        {
-            if (!this.recipientEntity.Read().IsMoving)
-            {
-                new StopExecution(this.recipientEntity.Read());
-                return true;
-            }
-            return false;
-        }
 
         /// <summary>
         /// Continue the execution in case of a follow command.
@@ -106,7 +104,7 @@ namespace RC.Engine.Simulator.Commands
         private void ContinueFollow()
         {
             /// Check if target entity still can be located.
-            this.targetEntity.Write(this.LocateTargetEntity(this.targetEntity.Read().ID.Read()));
+            this.targetEntity.Write(this.LocateEntity(this.targetEntity.Read().ID.Read()));
             if (this.targetEntity.Read() == null) { return; }
 
             /// Calculate its distance from the recipient entity.
@@ -124,31 +122,14 @@ namespace RC.Engine.Simulator.Commands
         }
 
         /// <summary>
-        /// Tries to locate the target entity using the locators of friendly entities.
+        /// The target position of this move execution.
         /// </summary>
-        /// <returns>The target entity or null if the target entity could not be located by friendly entities.</returns>
-        private Entity LocateTargetEntity(int targetEntityID)
-        {
-            /// First we check if the target entity is even on the map.
-            Entity targetEntity = this.recipientEntity.Read().Scenario.GetEntityOnMap<Entity>(targetEntityID);
-            if (targetEntity == null) { return null; }
+        private readonly HeapedValue<RCNumVector> targetPosition;
 
-            /// Check if the target entity is friendly.
-            if (targetEntity.Owner == this.recipientEntity.Read().Owner) { return targetEntity; }
-
-            /// Otherwise we search for friendly entities nearby the target entity and ask their locators.
-            foreach (Entity nearbyEntity in targetEntity.Locator.SearchNearbyEntities(TARGET_ENTITY_SEARCH_RADIUS))
-            {
-                /// Ignore nearby entity if non-friendly.
-                if (nearbyEntity.Owner != this.recipientEntity.Read().Owner) { continue; }
-
-                /// Target entity located successfully if any of the nearby friendly entities can locate it.
-                if (nearbyEntity.Locator.LocateEntities().Contains(targetEntity)) { return targetEntity; }
-            }
-
-            /// Target entity could not be located by any of nearby friendly entities.
-            return null;
-        }
+        /// <summary>
+        /// The ID of the target entity of this move execution.
+        /// </summary>
+        private readonly HeapedValue<int> targetEntityID;
 
         /// <summary>
         /// Reference to the recipient entity of this command execution.
@@ -164,11 +145,6 @@ namespace RC.Engine.Simulator.Commands
         /// The elapsed time since last distance check operation.
         /// </summary>
         private readonly HeapedValue<int> timeSinceLastCheck;
-
-        /// <summary>
-        /// The radius of the search area around the target entity when locating it given in quadratic tiles.
-        /// </summary>
-        private static readonly int TARGET_ENTITY_SEARCH_RADIUS = 15;
 
         /// <summary>
         /// The maximum allowed distance between the recipient and the target entities in cells.

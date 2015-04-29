@@ -32,7 +32,10 @@ namespace RC.Engine.Simulator.Commands
         public void StartCommandExecution(HashSet<Entity> entitySet, RCNumVector targetPosition, int targetEntityID, string parameter)
         {
             HashSet<T> entitiesToHandle = this.CollectEntitiesToHandle(entitySet);
-            this.StartCommandExecution(entitiesToHandle, entitySet, targetPosition, targetEntityID, parameter);
+            foreach (CmdExecutionBase commandExecution in this.CreateCommandExecutions(entitiesToHandle, entitySet, targetPosition, targetEntityID, parameter))
+            {
+                commandExecution.AttachToScenario();
+            }
         }
 
         #endregion ICommandExecutionFactory members
@@ -62,14 +65,14 @@ namespace RC.Engine.Simulator.Commands
         protected abstract AvailabilityEnum GetCommandAvailability(HashSet<T> entitiesToHandle, HashSet<Entity> fullEntitySet);
 
         /// <summary>
-        /// Starts a command execution on the given entity set with the given parameters.
+        /// Creates the appropriate command executions on the given entity set with the given parameters.
         /// </summary>
         /// <param name="entitiesToHandle">The subset of the full entity set that this factory has to handle.</param>
         /// <param name="fullEntitySet">The entity set.</param>
         /// <param name="targetPosition">The target position.</param>
         /// <param name="targetEntityID">The ID of the target entity or -1 if undefined.</param>
         /// <param name="parameter">The optional parameter.</param>
-        protected abstract void StartCommandExecution(HashSet<T> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID, string parameter);
+        protected abstract IEnumerable<CmdExecutionBase> CreateCommandExecutions(HashSet<T> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID, string parameter);
 
         #endregion Overridables
 

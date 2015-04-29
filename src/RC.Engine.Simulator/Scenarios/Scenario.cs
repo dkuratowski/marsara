@@ -241,9 +241,7 @@ namespace RC.Engine.Simulator.Scenarios
         /// Gets the entities of the given type that are attached to the map at the given position.
         /// </summary>
         /// <typeparam name="T">The type of the entities to get.</typeparam>
-        /// <param name="position">
-        /// The position to search.
-        /// </param>
+        /// <param name="position">The position to search.</param>
         /// <returns>A list that contains the entities of the given type that are attached to the map at the given position.</returns>
         public HashSet<T> GetEntitiesOnMap<T>(RCNumVector position) where T : Entity
         {
@@ -251,6 +249,31 @@ namespace RC.Engine.Simulator.Scenarios
 
             HashSet<T> retList = new HashSet<T>();
             foreach (Entity entity in this.entitiesOnMap.GetContents(position))
+            {
+                T entityAsT = entity as T;
+                if (entityAsT != null) { retList.Add(entityAsT); }
+            }
+            return retList;
+        }
+
+        /// <summary>
+        /// Gets the entities of the given type that are attached to the map inside the search area around the given position.
+        /// </summary>
+        /// <param name="position">The given position.</param>
+        /// <param name="searchRadius">The radius of the search area given in quadratic tiles.</param>
+        /// <returns>A list that contains the entities of the given type that are attached to the map inside the search area.</returns>
+        public HashSet<T> GetEntitiesOnMap<T>(RCNumVector position, int searchRadius) where T : Entity
+        {
+            if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
+            if (searchRadius <= 0) { throw new ArgumentOutOfRangeException("searchRadius", "The radius of the search area shall be greater than 0!"); }
+
+            RCIntVector quadCoordAtPosition = this.Map.GetCell(position.Round()).ParentQuadTile.MapCoords;
+            RCIntVector topLeftQuadCoord = quadCoordAtPosition - new RCIntVector(searchRadius - 1, searchRadius - 1);
+            RCIntVector bottomRightQuadCoord = quadCoordAtPosition + new RCIntVector(searchRadius - 1, searchRadius - 1);
+            RCIntRectangle quadRect = new RCIntRectangle(topLeftQuadCoord, bottomRightQuadCoord - topLeftQuadCoord + new RCIntVector(1, 1));
+
+            HashSet<T> retList = new HashSet<T>();
+            foreach (Entity entity in this.entitiesOnMap.GetContents((RCNumRectangle)this.Map.QuadToCellRect(quadRect) - new RCNumVector(1, 1) / 2))
             {
                 T entityAsT = entity as T;
                 if (entityAsT != null) { retList.Add(entityAsT); }
@@ -398,7 +421,7 @@ namespace RC.Engine.Simulator.Scenarios
             HashSet<CmdExecutionBase> commandExecutionsCopy = new HashSet<CmdExecutionBase>(this.commandExecutions);
             foreach (CmdExecutionBase cmdExecution in commandExecutionsCopy)
             {
-                if (cmdExecution.Continue()) { cmdExecution.Dispose(); }
+                cmdExecution.Continue();
             }
             foreach (Entity entity in this.entitySet.Values) { entity.UpdateState(); }
             this.currentFrameIndex.Write(this.currentFrameIndex.Read() + 1);

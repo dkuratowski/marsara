@@ -49,64 +49,81 @@ namespace RC.Engine.Simulator.Commands
             return AvailabilityEnum.Enabled;
         }
 
-        /// <see cref="CommandExecutionFactoryBase.StartCommandExecution"/>
-        protected override void StartCommandExecution(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID, string parameter)
+        /// <see cref="CommandExecutionFactoryBase.CreateCommandExecutions"/>
+        protected override IEnumerable<CmdExecutionBase> CreateCommandExecutions(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID, string parameter)
         {
             switch (this.commandType)
             {
                 case BasicCommandEnum.Move:
-                    this.StartMoveExecution(entitiesToHandle, fullEntitySet, targetPosition, targetEntityID);
-                    break;
+                    return this.CreateMoveExecutions(entitiesToHandle, fullEntitySet, targetPosition, targetEntityID);
                 case BasicCommandEnum.Stop:
-                    this.StartStopExecution(entitiesToHandle);
-                    break;
+                    return this.CreateStopExecutions(entitiesToHandle);
                 case BasicCommandEnum.Attack:
-                    this.StartAttackExecution(entitiesToHandle, fullEntitySet, targetPosition, targetEntityID);
-                    break;
+                    return this.CreateAttackExecutions(entitiesToHandle, fullEntitySet, targetPosition, targetEntityID);
                 case BasicCommandEnum.Patrol:
-                    break;
+                    return this.CreatePatrolExecutions(entitiesToHandle, fullEntitySet, targetPosition);
                 case BasicCommandEnum.Hold:
-                    break;
+                    return this.CreateHoldExecutions(entitiesToHandle);
                 default:
                     /// TODO: implement more intelligent handling of undefined commands!
-                    this.StartMoveExecution(entitiesToHandle, fullEntitySet, targetPosition, targetEntityID);
-                    break;
+                    return this.CreateMoveExecutions(entitiesToHandle, fullEntitySet, targetPosition, targetEntityID);
             }
         }
 
         /// <summary>
-        /// Starts stop executions for the given entities.
+        /// Creates stop executions for the given entities.
         /// </summary>
         /// <param name="entitiesToHandle">The entities to stop.</param>
-        private void StartStopExecution(HashSet<Entity> entitiesToHandle)
+        private IEnumerable<CmdExecutionBase> CreateStopExecutions(HashSet<Entity> entitiesToHandle)
         {
-            foreach (Entity entity in entitiesToHandle) { new StopExecution(entity); }
+            foreach (Entity entity in entitiesToHandle) { yield return new StopExecution(entity); }
         }
 
         /// <summary>
-        /// Starts move executions for the given entities.
+        /// Creates hold executions for the given entities.
+        /// </summary>
+        /// <param name="entitiesToHandle">The entities to hold.</param>
+        private IEnumerable<CmdExecutionBase> CreateHoldExecutions(HashSet<Entity> entitiesToHandle)
+        {
+            foreach (Entity entity in entitiesToHandle) { yield return new HoldExecution(entity); }
+        }
+
+        /// <summary>
+        /// Creates move executions for the given entities.
         /// </summary>
         /// <param name="entitiesToHandle">The entities to move.</param>
         /// <param name="fullEntitySet">The set of selected entities.</param>
         /// <param name="targetPosition">The target position.</param>
         /// <param name="targetEntityID">The ID of the target entity or -1 if undefined.</param>
-        private void StartMoveExecution(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID)
+        private IEnumerable<CmdExecutionBase> CreateMoveExecutions(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID)
         {
             MagicBox magicBox = new MagicBox(fullEntitySet, targetPosition);
-            foreach (Entity entity in entitiesToHandle) { new MoveExecution(entity, magicBox.GetTargetPosition(entity), targetEntityID); }
+            foreach (Entity entity in entitiesToHandle) { yield return new MoveExecution(entity, magicBox.GetTargetPosition(entity), targetEntityID); }
         }
 
         /// <summary>
-        /// Starts attack executions for the given entities.
+        /// Creates attack executions for the given entities.
         /// </summary>
         /// <param name="entitiesToHandle">The attacking entities.</param>
         /// <param name="fullEntitySet">The set of selected entities.</param>
         /// <param name="targetPosition">The target position.</param>
         /// <param name="targetEntityID">The ID of the target entity or -1 if undefined.</param>
-        private void StartAttackExecution(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID)
+        private IEnumerable<CmdExecutionBase> CreateAttackExecutions(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID)
         {
             MagicBox magicBox = new MagicBox(fullEntitySet, targetPosition);
-            foreach (Entity entity in entitiesToHandle) { new AttackExecution(entity, magicBox.GetTargetPosition(entity), targetEntityID); }
+            foreach (Entity entity in entitiesToHandle) { yield return new AttackExecution(entity, magicBox.GetTargetPosition(entity), targetEntityID); }
+        }
+
+        /// <summary>
+        /// Creates patrol executions for the given entities.
+        /// </summary>
+        /// <param name="entitiesToHandle">The entities to patrol.</param>
+        /// <param name="fullEntitySet">The set of selected entities.</param>
+        /// <param name="targetPosition">The target position.</param>
+        private IEnumerable<CmdExecutionBase> CreatePatrolExecutions(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition)
+        {
+            MagicBox magicBox = new MagicBox(fullEntitySet, targetPosition);
+            foreach (Entity entity in entitiesToHandle) { yield return new PatrolExecution(entity, magicBox.GetTargetPosition(entity)); }
         }
 
         /// <summary>
