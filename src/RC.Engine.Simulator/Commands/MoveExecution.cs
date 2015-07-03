@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using RC.Common;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
 using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Commands
@@ -78,7 +75,7 @@ namespace RC.Engine.Simulator.Commands
             else
             {
                 /// Target entity is defined and could be located -> calculate its distance from the recipient entity.
-                RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().BoundingBox, this.targetEntity.Read().BoundingBox);
+                RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().Position, this.targetEntity.Read().Position);
                 if (distance <= MAX_DISTANCE)
                 {
                     /// Close enough -> not necessary to start approaching.
@@ -108,7 +105,7 @@ namespace RC.Engine.Simulator.Commands
             if (this.targetEntity.Read() == null) { return; }
 
             /// Calculate its distance from the recipient entity.
-            RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().BoundingBox, this.targetEntity.Read().BoundingBox);
+            RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().Position, this.targetEntity.Read().Position);
             if (distance <= MAX_DISTANCE)
             {
                 /// Close enough -> stop the recipient entity.

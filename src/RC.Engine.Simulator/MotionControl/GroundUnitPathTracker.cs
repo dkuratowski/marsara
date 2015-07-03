@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.Engine.Simulator.MotionControl
 {
@@ -26,19 +24,14 @@ namespace RC.Engine.Simulator.MotionControl
         {
             /// TODO: change this method to return only ground units as dynamic obstacles!
             List<DynamicObstacleInfo> retList = new List<DynamicObstacleInfo>();
-            HashSet<Entity> entitiesInRange = this.ControlledEntity.Scenario.GetEntitiesOnMap<Entity>(
-                new RCNumRectangle(this.ControlledEntity.PositionValue.Read() - new RCNumVector(ENVIRONMENT_SIGHT_RANGE, ENVIRONMENT_SIGHT_RANGE),
-                                   new RCNumVector(ENVIRONMENT_SIGHT_RANGE, ENVIRONMENT_SIGHT_RANGE) * 2));
+            HashSet<Entity> entitiesInRange = this.ControlledEntity.Locator.SearchNearbyEntities(ENVIRONMENT_SIGHT_RANGE);
             foreach (Entity entityInRange in entitiesInRange)
             {
-                if (entityInRange != this.ControlledEntity)
+                retList.Add(new DynamicObstacleInfo()
                 {
-                    retList.Add(new DynamicObstacleInfo()
-                                {
-                                    Position = entityInRange.Position,
-                                    Velocity = entityInRange.Velocity
-                                });
-                }
+                    Position = entityInRange.Position,
+                    Velocity = entityInRange.Velocity
+                });
             }
             return retList;
         }
@@ -80,8 +73,8 @@ namespace RC.Engine.Simulator.MotionControl
         #endregion PathTrackerBase overrides
 
         /// <summary>
-        /// The range of the environment taken into account when collecting dynamic obstacles.
+        /// The range of the environment in quadratic tiles taken into account when collecting dynamic obstacles.
         /// </summary>
-        private static readonly RCNumber ENVIRONMENT_SIGHT_RANGE = 5;
+        private const int ENVIRONMENT_SIGHT_RANGE = 2;
     }
 }

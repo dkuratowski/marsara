@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RC.Common.ComponentModel;
+﻿using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
-using RC.Engine.Simulator.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.Metadata;
 
 namespace RC.Engine.Simulator.ComponentInterfaces
 {

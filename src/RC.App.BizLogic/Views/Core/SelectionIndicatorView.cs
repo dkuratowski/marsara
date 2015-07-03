@@ -1,13 +1,8 @@
 ﻿using RC.Common;
-using RC.Engine.Simulator.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RC.App.BizLogic.BusinessComponents.Core;
 using RC.App.BizLogic.BusinessComponents;
 using RC.Common.ComponentModel;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -35,9 +30,10 @@ namespace RC.App.BizLogic.Views.Core
 
             /// Display the selection indicators of the currently visible entities inside the currently visible window of quadratic tiles.
             List<SelIndicatorInst> retList = new List<SelIndicatorInst>();
-            foreach (Entity entity in this.fogOfWarBC.GetEntitiesToUpdate())
+            foreach (MapObject mapObject in this.fogOfWarBC.GetMapObjectsToUpdate())
             {
-                if (currentSelection.Contains(entity.ID.Read()))
+                Entity entity = mapObject.Owner as Entity;
+                if (entity != null && currentSelection.Contains(entity.ID.Read()))
                 {
                     SelIndicatorTypeEnum indicatorType
                         = entity.Owner != null
@@ -46,7 +42,7 @@ namespace RC.App.BizLogic.Views.Core
                     retList.Add(new SelIndicatorInst()
                     {
                         SelIndicatorType = indicatorType,
-                        IndicatorRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entity.BoundingBox),
+                        IndicatorRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entity.Position),
                         HpNorm = (RCNumber)1, // TODO: must base on real data
                         ShieldNorm = (RCNumber)1, // TODO: must base on real data
                         EnergyNorm = (RCNumber)1 // TODO: must base on real data
@@ -64,11 +60,11 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Reference to the selection manager business component.
         /// </summary>
-        private ISelectionManagerBC selectionManager;
+        private readonly ISelectionManagerBC selectionManager;
 
         /// <summary>
         /// Reference to the Fog Of War business component.
         /// </summary>
-        private IFogOfWarBC fogOfWarBC;
+        private readonly IFogOfWarBC fogOfWarBC;
     }
 }

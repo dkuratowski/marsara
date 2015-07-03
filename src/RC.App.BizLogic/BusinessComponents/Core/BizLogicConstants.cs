@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RC.App.BizLogic.Views;
+﻿using RC.App.BizLogic.Views;
 using RC.Common.Configuration;
 using RC.Common.Diagnostics;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -15,12 +11,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     static class BizLogicHelpers
     {
         /// <summary>
-        /// Gets the owner of the given entity.
+        /// Gets the owner of the given map object.
         /// </summary>
-        /// <param name="entity">Reference to the entity.</param>
-        /// <returns>The owner of the given entity.</returns>
-        public static PlayerEnum GetEntityOwner(Entity entity)
+        /// <param name="mapObject">Reference to the map object.</param>
+        /// <returns>The owner of the given map object or PlayerEnum.Neutral if the map object has no owner.</returns>
+        public static PlayerEnum GetMapObjectOwner(MapObject mapObject)
         {
+            Entity entity = mapObject.Owner as Entity;
+            if (entity == null) { return PlayerEnum.Neutral; }
             StartLocation entityAsStartLoc = entity as StartLocation;
             PlayerEnum owner = entityAsStartLoc != null
                              ? (PlayerEnum)entityAsStartLoc.PlayerIndex

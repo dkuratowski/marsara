@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RC.Engine.Simulator.Scenarios;
 using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
-using RC.Engine.Simulator.PublicInterfaces;
-using RC.App.BizLogic.BusinessComponents.Core;
+using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.Metadata;
 using RC.Common.ComponentModel;
 using RC.App.BizLogic.BusinessComponents;
 

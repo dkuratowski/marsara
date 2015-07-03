@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.Engine.Simulator.PublicInterfaces
 {
@@ -30,11 +28,11 @@ namespace RC.Engine.Simulator.PublicInterfaces
         {
             get
             {
-                if (this.centralEntity.Scenario.GetEntityOnMap<Entity>(centralEntity.ID.Read()) == null) { throw new ArgumentException("The given entity is not placed on the map!", "entity"); }
+                if (!this.centralEntity.HasMapObject) { throw new InvalidOperationException("The given entity is not placed on the map!"); }
                 
                 /// Calculate the initial processed area.
-                RCIntVector bbTopLeft = this.centralEntity.BoundingBox.Location.Round();
-                RCIntVector bbBottomRight = (this.centralEntity.BoundingBox.Location + this.centralEntity.BoundingBox.Size).Round();
+                RCIntVector bbTopLeft = this.centralEntity.Position.Location.Round();
+                RCIntVector bbBottomRight = (this.centralEntity.Position.Location + this.centralEntity.Position.Size).Round();
                 RCIntRectangle processedArea = new RCIntRectangle(bbTopLeft, (bbBottomRight - bbTopLeft) + new RCIntVector(1, 1));
                 for (int layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++)
                 {

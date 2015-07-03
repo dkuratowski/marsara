@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RC.Engine.Maps.PublicInterfaces;
-using RC.Common;
-using RC.App.BizLogic.BusinessComponents.Core;
+﻿using RC.Engine.Maps.PublicInterfaces;
 using RC.App.BizLogic.BusinessComponents;
 using RC.Common.ComponentModel;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.Views.Core
 {

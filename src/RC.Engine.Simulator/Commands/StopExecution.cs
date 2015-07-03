@@ -1,12 +1,7 @@
 ﻿
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RC.Common;
-using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
 
 namespace RC.Engine.Simulator.Commands
 {
@@ -66,6 +61,7 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="CmdExecutionBase.Initialize"/>
         protected override void Initialize()
         {
+            this.recipientEntity.Read().Armour.StopAttack();
             this.recipientEntity.Read().StopMoving();
         }
 

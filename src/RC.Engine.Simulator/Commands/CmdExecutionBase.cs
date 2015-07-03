@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using RC.Common;
+using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
 
 namespace RC.Engine.Simulator.Commands
 {
@@ -171,7 +171,7 @@ namespace RC.Engine.Simulator.Commands
         protected Entity LocateEntity(int entityID)
         {
             /// First we check if the target entity is even on the map.
-            Entity targetEntity = this.Scenario.GetEntityOnMap<Entity>(entityID);
+            Entity targetEntity = this.Scenario.GetElementOnMap<Entity>(entityID);
             if (targetEntity == null) { return null; }
 
             /// Check if the target entity is friendly.
@@ -199,7 +199,7 @@ namespace RC.Engine.Simulator.Commands
         protected bool LocatePosition(RCNumVector position)
         {
             /// Search for friendly entities nearby the target position and ask their locators.
-            foreach (Entity nearbyEntity in this.Scenario.GetEntitiesOnMap<Entity>(position, ENTITY_SEARCH_RADIUS))
+            foreach (Entity nearbyEntity in this.Scenario.GetElementsOnMap<Entity>(position, ENTITY_SEARCH_RADIUS))
             {
                 /// Ignore nearby entity if non-friendly.
                 if (nearbyEntity.Owner != this.Owner) { continue; }

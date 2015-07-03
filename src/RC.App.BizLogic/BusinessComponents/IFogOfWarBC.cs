@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.BusinessComponents
 {
@@ -53,10 +50,10 @@ namespace RC.App.BizLogic.BusinessComponents
         IEnumerable<EntitySnapshot> GetEntitySnapshotsToUpdate();
 
         /// <summary>
-        /// Gets all the entities that are not entirely hidden by the Fog Of War inside the area of the attached window.
+        /// Gets all the map objects that are not entirely hidden by the Fog Of War inside the area of the attached window.
         /// </summary>
-        /// <returns>All the entities that are not entirely hidden by the Fog Of War inside the area of the attached window.</returns>
-        IEnumerable<Entity> GetEntitiesToUpdate();
+        /// <returns>All the map objects that are not entirely hidden by the Fog Of War inside the area of the attached window.</returns>
+        IEnumerable<MapObject> GetMapObjectsToUpdate();
 
         /// <summary>
         /// Gets all the entity snapshots that are not entirely hidden by the Fog Of War inside the given area.
@@ -66,18 +63,18 @@ namespace RC.App.BizLogic.BusinessComponents
         IEnumerable<EntitySnapshot> GetEntitySnapshotsInWindow(RCIntRectangle quadWindow);
 
         /// <summary>
-        /// Gets all the entities that are not entirely hidden by the Fog Of War inside the given area.
+        /// Gets all the map objects that are not entirely hidden by the Fog Of War inside the given area.
         /// </summary>
         /// <param name="quadWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
-        /// <returns>All the entities that are not entirely hidden by the Fog Of War inside the given area.</returns>
-        IEnumerable<Entity> GetEntitiesInWindow(RCIntRectangle quadWindow);
+        /// <returns>All the map objects that are not entirely hidden by the Fog Of War inside the given area.</returns>
+        IEnumerable<MapObject> GetMapObjectsInWindow(RCIntRectangle quadWindow);
 
         /// <summary>
-        /// Checks whether the given entity is not entirely hidden by the Fog Of War inside the area of the attached window.
+        /// Checks whether the given map object is not entirely hidden by the Fog Of War inside the area of the attached window.
         /// </summary>
-        /// <param name="entity">The entity to check.</param>
-        /// <returns>True if the given entity is not entirely hidden by the Fog Of War inside the area of the attached window; otherwise false.</returns>
-        bool IsEntityVisible(Entity entity);
+        /// <param name="mapObject">The map object to check.</param>
+        /// <returns>True if the given map object is not entirely hidden by the Fog Of War inside the area of the attached window; otherwise false.</returns>
+        bool IsMapObjectVisible(MapObject mapObject);
 
         /// <summary>
         /// Gets the full FOW-flags at the given quadratic tile.

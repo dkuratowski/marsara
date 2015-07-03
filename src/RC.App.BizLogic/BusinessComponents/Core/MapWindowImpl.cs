@@ -1,6 +1,6 @@
 ﻿using System;
 using RC.Common;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {

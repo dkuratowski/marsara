@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Linq;
+using RC.Engine.Simulator.Metadata;
+using RC.Engine.Simulator.Metadata.Core;
 using RC.Engine.Simulator.PublicInterfaces;
-using System.IO;
 using RC.Common;
 using RC.Common.Configuration;
-using RC.Engine.Simulator.Scenarios;
 using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Core
@@ -52,6 +50,10 @@ namespace RC.Engine.Simulator.Core
                 else if (scenarioElementTypeElem.Name == XmlMetadataConstants.UPGRADETYPE_ELEM)
                 {
                     LoadUpgradeType(scenarioElementTypeElem, metadata);
+                }
+                else if (scenarioElementTypeElem.Name == XmlMetadataConstants.MISSILETYPE_ELEM)
+                {
+                    LoadMissileType(scenarioElementTypeElem, metadata);
                 }
                 else if (scenarioElementTypeElem.Name == XmlMetadataConstants.CUSTOMTYPE_ELEM)
                 {
@@ -148,6 +150,40 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
+        /// Loads a missile type definition from the given XML node.
+        /// </summary>
+        /// <param name="missileTypeElem">The XML node to load from.</param>
+        /// <param name="metadata">The metadata object being constructed.</param>
+        private static void LoadMissileType(XElement missileTypeElem, ScenarioMetadata metadata)
+        {
+            XAttribute nameAttr = missileTypeElem.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
+            if (nameAttr == null) { throw new SimulatorException("Missile type name not defined!"); }
+
+            MissileType missileType = new MissileType(nameAttr.Value, metadata);
+            LoadScenarioElementType(missileTypeElem, missileType, metadata);
+
+            XElement launchAnimElem = missileTypeElem.Element(XmlMetadataConstants.LAUNCHANIMATION_ELEM);
+            if (launchAnimElem != null) { missileType.SetLaunchAnimation(launchAnimElem.Value); }
+
+            XElement flyingAnimElem = missileTypeElem.Element(XmlMetadataConstants.FLYINGANIMATION_ELEM);
+            if (flyingAnimElem != null) { missileType.SetFlyingAnimation(flyingAnimElem.Value); }
+
+            XElement trailAnimElem = missileTypeElem.Element(XmlMetadataConstants.TRAILANIMATION_ELEM);
+            if (trailAnimElem != null)
+            {
+                XAttribute trailAnimFreqAttr = trailAnimElem.Attribute(XmlMetadataConstants.TRAILANIMATION_FREQUENCY_ATTR);
+                if (trailAnimFreqAttr == null) { throw new SimulatorException("Trail animation frequency not defined for missile type!"); }
+                int trailAnimFreq = XmlHelper.LoadInt(trailAnimFreqAttr.Value);
+                missileType.SetTrailAnimation(trailAnimElem.Value, trailAnimFreq);
+            }
+
+            XElement impactAnimElem = missileTypeElem.Element(XmlMetadataConstants.IMPACTANIMATION_ELEM);
+            if (impactAnimElem != null) { missileType.SetImpactAnimation(impactAnimElem.Value); }
+
+            metadata.AddMissileType(missileType);
+        }
+
+        /// <summary>
         /// Loads the necessary data of a scenario element type.
         /// </summary>
         /// <param name="elementTypeElem">The XML node to load from.</param>
@@ -178,19 +214,19 @@ namespace RC.Engine.Simulator.Core
 
             /// Load the cost data of the element type.
             XElement costsDataElem = elementTypeElem.Element(XmlMetadataConstants.COSTS_ELEM);
-            if (costsDataElem != null) { LoadCostsData(costsDataElem, elementType, metadata); }
+            if (costsDataElem != null) { LoadCostsData(costsDataElem, elementType); }
 
             /// Load the general data of the element type.
             XElement genDataElem = elementTypeElem.Element(XmlMetadataConstants.GENERALDATA_ELEM);
-            if (genDataElem != null) { LoadGeneralData(genDataElem, elementType, metadata); }
+            if (genDataElem != null) { LoadGeneralData(genDataElem, elementType); }
 
             /// Load the ground weapon definition of the element type.
             XElement gndWeaponElem = elementTypeElem.Element(XmlMetadataConstants.GROUNDWEAPON_ELEM);
-            if (gndWeaponElem != null) { elementType.SetGroundWeapon(LoadWeaponData(gndWeaponElem, metadata)); }
+            if (gndWeaponElem != null) { elementType.AddStandardWeapon(LoadWeaponData(gndWeaponElem, metadata)); }
 
             /// Load the air weapon definition of the element type.
             XElement airWeaponElem = elementTypeElem.Element(XmlMetadataConstants.AIRWEAPON_ELEM);
-            if (airWeaponElem != null) { elementType.SetAirWeapon(LoadWeaponData(airWeaponElem, metadata)); }
+            if (airWeaponElem != null) { elementType.AddStandardWeapon(LoadWeaponData(airWeaponElem, metadata)); }
 
             /// Load the requirements of the element type.
             XElement requiresElem = elementTypeElem.Element(XmlMetadataConstants.REQUIRES_ELEM);
@@ -289,7 +325,7 @@ namespace RC.Engine.Simulator.Core
             string[] spriteNames = spritesAttr.Value.Split(',');
             if (spriteNames.Length == 0) { throw new SimulatorException("Syntax error!"); }
 
-            Dictionary<MapDirection, int[]> spriteIndices = new Dictionary<MapDirection, int[]>()
+            Dictionary<MapDirection, int[]> spriteIndices = new Dictionary<MapDirection, int[]>
             {
                 { MapDirection.Undefined, new int[spriteNames.Length] },
                 { MapDirection.North, new int[spriteNames.Length] },
@@ -333,8 +369,7 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="genDataElem">The XML element to load from.</param>
         /// <param name="elementType">The scenario element type being constructed.</param>
-        /// <param name="metadata">The metadata object.</param>
-        private static void LoadGeneralData(XElement genDataElem, ScenarioElementType elementType, ScenarioMetadata metadata)
+        private static void LoadGeneralData(XElement genDataElem, ScenarioElementType elementType)
         {
             XElement areaElem = genDataElem.Element(XmlMetadataConstants.GENDATA_AREA_ELEM);
             XElement armorElem = genDataElem.Element(XmlMetadataConstants.GENDATA_ARMOR_ELEM);
@@ -368,7 +403,7 @@ namespace RC.Engine.Simulator.Core
         /// <param name="costsDataElem">The XML element to load from.</param>
         /// <param name="elementType">The scenario element type being constructed.</param>
         /// <param name="metadata">The metadata object.</param>
-        private static void LoadCostsData(XElement costsDataElem, ScenarioElementType elementType, ScenarioMetadata metadata)
+        private static void LoadCostsData(XElement costsDataElem, ScenarioElementType elementType)
         {
             XElement buildTimeElem = costsDataElem.Element(XmlMetadataConstants.COSTS_BUILDTIME_ELEM);
             XElement foodCostElem = costsDataElem.Element(XmlMetadataConstants.COSTS_FOODCOST_ELEM);
@@ -401,7 +436,13 @@ namespace RC.Engine.Simulator.Core
             if (damageTypeElem == null) { throw new SimulatorException("DamageType not defined!"); }
             if (rangeMaxElem == null) { throw new SimulatorException("RangeMax not defined!"); }
 
-            WeaponData weaponData = new WeaponData(metadata);
+            WeaponTypeEnum weaponType;
+            if (!EnumMap<WeaponTypeEnum, string>.TryDemap(weaponDataElem.Name.LocalName, out weaponType))
+            {
+                throw new SimulatorException(string.Format("Unexpected weapon type '{0}' defined in weapon data!", weaponDataElem.Name.LocalName));
+            }
+
+            WeaponData weaponData = new WeaponData(metadata, weaponType);
             weaponData.SetCooldown(XmlHelper.LoadInt(cooldownElem.Value));
             weaponData.SetDamage(XmlHelper.LoadInt(damageElem.Value));
             weaponData.SetRangeMax(XmlHelper.LoadInt(rangeMaxElem.Value));
@@ -425,7 +466,45 @@ namespace RC.Engine.Simulator.Core
                 weaponData.SetSplashType(splashType);
             }
 
+            foreach (XElement missileElem in weaponDataElem.Elements(XmlMetadataConstants.WPN_MISSILE_ELEM))
+            {
+                weaponData.AddMissile(LoadMissileData(missileElem, metadata));
+            }
+
             return weaponData;
+        }
+
+        /// <summary>
+        /// Loads a missile definition from the given XML node.
+        /// </summary>
+        /// <param name="missileElem">The XML node to load from.</param>
+        /// <param name="metadata">The metadata object.</param>
+        /// <returns>The constructed missile definition.</returns>
+        private static MissileData LoadMissileData(XElement missileElem, ScenarioMetadata metadata)
+        {
+            XAttribute missileTypeAttr = missileElem.Attribute(XmlMetadataConstants.WPN_MISSILE_TYPE_ATTR);
+            if (missileTypeAttr == null) { throw new SimulatorException("Missile type not defined!"); }
+
+            MissileData missile = new MissileData(missileTypeAttr.Value, metadata);
+            foreach (XElement launchElem in missileElem.Elements(XmlMetadataConstants.WPN_MISSILE_LAUNCH_ELEM))
+            {
+                XAttribute directionAttr = launchElem.Attribute(XmlMetadataConstants.WPN_MISSILE_LAUNCH_DIR_ATTR);
+                XAttribute positionAttr = launchElem.Attribute(XmlMetadataConstants.WPN_MISSILE_LAUNCH_POS_ATTR);
+                if (directionAttr == null) { throw new SimulatorException("Direction not defined for missile data launch position!"); }
+                if (positionAttr == null) { throw new SimulatorException("Relative position not defined for missile data launch position!"); }
+
+                MapDirection direction;
+                if (!EnumMap<MapDirection, string>.TryDemap(directionAttr.Value, out direction))
+                {
+                    throw new SimulatorException(string.Format("Unexpected MapDirection '{0}' defined in missile data!", directionAttr.Value));
+                }
+
+                RCNumVector relativePosition = XmlHelper.LoadNumVector(positionAttr.Value);
+
+                missile.AddRelativeLaunchPosition(direction, relativePosition);
+            }
+
+            return missile;
         }
 
         /// <summary>

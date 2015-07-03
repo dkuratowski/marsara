@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RC.Common;
-using RC.Engine.Simulator.Scenarios;
+﻿using RC.Common;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.Engine.Simulator.Terran.Buildings
 {
@@ -18,7 +14,14 @@ namespace RC.Engine.Simulator.Terran.Buildings
         public CommandCenter()
             : base(COMMANDCENTER_TYPE_NAME)
         {
-            this.SetCurrentAnimation("Normal");
+        }
+
+        /// <see cref="ScenarioElement.AttachToMap"/>
+        public override bool AttachToMap(RCNumVector position)
+        {
+            bool attachToMapSuccess = base.AttachToMap(position);
+            if (attachToMapSuccess) { this.MapObject.SetCurrentAnimation("Normal"); }
+            return attachToMapSuccess;
         }
 
         /// <summary>

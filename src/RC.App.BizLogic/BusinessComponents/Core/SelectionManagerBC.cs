@@ -1,11 +1,10 @@
-﻿using RC.Common;
-using RC.Engine.Simulator.Scenarios;
+﻿using System.Linq;
+using RC.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using RC.App.BizLogic.Views;
 using RC.Common.ComponentModel;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -64,7 +63,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             this.Update();
 
-            Entity entityAtPos = this.ActiveScenario.GetEntitiesOnMap<Entity>(position).FirstOrDefault();
+            Entity entityAtPos = this.ActiveScenario.GetElementsOnMap<Entity>(position).FirstOrDefault();
             if (entityAtPos == null) { return -1; }
             return entityAtPos.ID.Read();
         }
@@ -84,7 +83,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             Entity otherPlayerBuilding = null;
             Entity otherPlayerAddon = null;
             Entity other = null;
-            foreach (Entity entity in this.ActiveScenario.GetEntitiesOnMap<Entity>(selectionBox))
+            foreach (Entity entity in this.ActiveScenario.GetElementsOnMap<Entity>(selectionBox))
             {
                 if (entity is Unit)
                 {
@@ -154,7 +153,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             this.Update();
 
-            Entity entityAtPos = this.ActiveScenario.GetEntitiesOnMap<Entity>(position).FirstOrDefault();
+            Entity entityAtPos = this.ActiveScenario.GetElementsOnMap<Entity>(position).FirstOrDefault();
             if (entityAtPos == null) { return; }
             this.currentSelection.Clear();
             this.currentSelection.Add(entityAtPos.ID.Read());
@@ -234,13 +233,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             HashSet<int> idsToRemove = new HashSet<int>();
             foreach (int id in this.currentSelection)
             {
-                if (this.ActiveScenario.GetEntity<Entity>(id) == null) { idsToRemove.Add(id); }
+                Entity entity = this.ActiveScenario.GetElement<Entity>(id);
+                if (entity == null) { idsToRemove.Add(id); }
             }
             foreach (HashSet<int> savedSelection in this.savedSelections)
             {
                 foreach (int id in savedSelection)
                 {
-                    if (this.ActiveScenario.GetEntity<Entity>(id) == null) { idsToRemove.Add(id); }
+                    Entity entity = this.ActiveScenario.GetElement<Entity>(id);
+                    if (entity == null) { idsToRemove.Add(id); }
                 }
             }
 

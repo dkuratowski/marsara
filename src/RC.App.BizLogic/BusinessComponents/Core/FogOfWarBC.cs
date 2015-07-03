@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Common.ComponentModel;
-using RC.Common.Diagnostics;
 using RC.Engine.Maps.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -124,13 +123,13 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             return this.cache.Value.EntitySnapshotsToUpdate;
         }
 
-        /// <see cref="IFogOfWarBC.GetEntitiesToUpdate"/>
-        public IEnumerable<Entity> GetEntitiesToUpdate()
+        /// <see cref="IFogOfWarBC.GetMapObjectsToUpdate"/>
+        public IEnumerable<MapObject> GetMapObjectsToUpdate()
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             this.UpdateQuadTileWindow();
-            return this.cache.Value.EntitiesToUpdate;
+            return this.cache.Value.MapObjectsToUpdate;
         }
 
         /// <see cref="IFogOfWarBC.GetEntitySnapshotsInWindow"/>
@@ -156,31 +155,31 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
         }
 
-        /// <see cref="IFogOfWarBC.GetEntitiesInWindow"/>
-        public IEnumerable<Entity> GetEntitiesInWindow(RCIntRectangle quadWindow)
+        /// <see cref="IFogOfWarBC.GetMapObjectsInWindow"/>
+        public IEnumerable<MapObject> GetMapObjectsInWindow(RCIntRectangle quadWindow)
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             /// Collect the currently visible entities inside the given window.
             RCNumRectangle cellWindow = (RCNumRectangle)this.ActiveScenario.Map.QuadToCellRect(quadWindow) - new RCNumVector(1, 1) / 2;
-            HashSet<Entity> entitiesOnMap = this.ActiveScenario.GetEntitiesOnMap<Entity>(cellWindow);
-            foreach (Entity entity in entitiesOnMap)
+            HashSet<MapObject> mapObjectsOnMap = this.ActiveScenario.GetMapObjects(cellWindow);
+            foreach (MapObject mapObject in mapObjectsOnMap)
             {
                 if (this.runningFowsCount == 0)
                 {
-                    yield return entity;
+                    yield return mapObject;
                 }
                 else
                 {
                     bool breakLoop = false;
-                    for (int col = entity.QuadraticPosition.Left; !breakLoop && col < entity.QuadraticPosition.Right; col++)
+                    for (int col = mapObject.QuadraticPosition.Left; !breakLoop && col < mapObject.QuadraticPosition.Right; col++)
                     {
-                        for (int row = entity.QuadraticPosition.Top; !breakLoop && row < entity.QuadraticPosition.Bottom; row++)
+                        for (int row = mapObject.QuadraticPosition.Top; !breakLoop && row < mapObject.QuadraticPosition.Bottom; row++)
                         {
                             if (this.fowCacheMatrix.GetFowStateAtQuadTile(new RCIntVector(col, row)) == FOWTypeEnum.None)
                             {
                                 /// Found at least 1 quadratic tile where the entity is visible.
-                                yield return entity;
+                                yield return mapObject;
                                 breakLoop = true;
                             }
                         }
@@ -189,13 +188,13 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
         }
 
-        /// <see cref="IFogOfWarBC.IsEntityVisible"/>
-        public bool IsEntityVisible(Entity entity)
+        /// <see cref="IFogOfWarBC.IsMapObjectVisible"/>
+        public bool IsMapObjectVisible(MapObject mapObjects)
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             this.UpdateQuadTileWindow();
-            return this.cache.Value.EntitiesToUpdate.Contains(entity);
+            return this.cache.Value.MapObjectsToUpdate.Contains(mapObjects);
         }
 
         /// <see cref="IFogOfWarBC.GetFullFowTileFlags"/>
@@ -305,20 +304,20 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 }
             }
 
-            /// Collect the currently visible entities.
-            HashSet<Entity> entitiesOnMap = this.ActiveScenario.GetEntitiesOnMap<Entity>(this.mapWindowBC.AttachedWindow.WindowMapCoords);
-            HashSet<Entity> entitiesToUpdate = new HashSet<Entity>();
-            foreach (Entity entity in entitiesOnMap)
+            /// Collect the currently visible map objects.
+            HashSet<MapObject> objectsOnMap = this.ActiveScenario.GetMapObjects(this.mapWindowBC.AttachedWindow.WindowMapCoords);
+            HashSet<MapObject> mapObjectsToUpdate = new HashSet<MapObject>();
+            foreach (MapObject mapObj in objectsOnMap)
             {
                 bool breakLoop = false;
-                for (int col = entity.QuadraticPosition.Left; !breakLoop && col < entity.QuadraticPosition.Right; col++)
+                for (int col = mapObj.QuadraticPosition.Left; !breakLoop && col < mapObj.QuadraticPosition.Right; col++)
                 {
-                    for (int row = entity.QuadraticPosition.Top; !breakLoop && row < entity.QuadraticPosition.Bottom; row++)
+                    for (int row = mapObj.QuadraticPosition.Top; !breakLoop && row < mapObj.QuadraticPosition.Bottom; row++)
                     {
                         if (this.fowCacheMatrix.GetFowStateAtQuadTile(new RCIntVector(col, row)) == FOWTypeEnum.None)
                         {
-                            /// Found at least 1 quadratic tile where the entity is visible.
-                            this.AddEntityToUpdate(entity, entitiesToUpdate, quadTilesToUpdate);
+                            /// Found at least 1 quadratic tile where the map objects is visible.
+                            this.AddMapObjectToUpdate(mapObj, mapObjectsToUpdate, quadTilesToUpdate);
                             breakLoop = true;
                         }
                     }
@@ -332,7 +331,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 TerrainObjectsToUpdate = terrainObjectsToUpdate,
                 QuadTilesToUpdate = quadTilesToUpdate,
                 EntitySnapshotsToUpdate = entitySnapshotsToUpdate,
-                EntitiesToUpdate = entitiesToUpdate
+                MapObjectsToUpdate = mapObjectsToUpdate
             };
         }
 
@@ -358,8 +357,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 }
             }
 
-            /// Collect the currently visible entities.
-            HashSet<Entity> entitiesToUpdate = this.ActiveScenario.GetEntitiesOnMap<Entity>(this.mapWindowBC.AttachedWindow.WindowMapCoords);
+            /// Collect the currently visible map objects.
+            HashSet<MapObject> mapObjectsToUpdate = this.ActiveScenario.GetMapObjects(this.mapWindowBC.AttachedWindow.WindowMapCoords);
 
             /// Create the calculated visibility info.
             return new FowVisibilityInfo
@@ -368,7 +367,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 TerrainObjectsToUpdate = terrainObjectsToUpdate,
                 QuadTilesToUpdate = new List<IQuadTile>(),
                 EntitySnapshotsToUpdate = new List<EntitySnapshot>(),
-                EntitiesToUpdate = entitiesToUpdate
+                MapObjectsToUpdate = mapObjectsToUpdate
             };
         }
 
@@ -447,18 +446,18 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
-        /// Adds the given entity and all of its cutting quadratic tiles into the update lists.
+        /// Adds the given map object and all of its cutting quadratic tiles into the update lists.
         /// </summary>
-        /// <param name="entity">The entity to add.</param>
-        /// <param name="entityUpdateList">The entity update list.</param>
+        /// <param name="mapObj">The map object to add.</param>
+        /// <param name="mapObjectUpdateList">The map object update list.</param>
         /// <param name="quadTileUpdateList">The quadratic update list.</param>
-        private void AddEntityToUpdate(Entity entity, HashSet<Entity> entityUpdateList, HashSet<IQuadTile> quadTileUpdateList)
+        private void AddMapObjectToUpdate(MapObject mapObj, HashSet<MapObject> mapObjectUpdateList, HashSet<IQuadTile> quadTileUpdateList)
         {
-            if (entity != null && entityUpdateList.Add(entity))
+            if (mapObj != null && mapObjectUpdateList.Add(mapObj))
             {
-                for (int col = entity.QuadraticPosition.Left; col < entity.QuadraticPosition.Right; col++)
+                for (int col = mapObj.QuadraticPosition.Left; col < mapObj.QuadraticPosition.Right; col++)
                 {
-                    for (int row = entity.QuadraticPosition.Top; row < entity.QuadraticPosition.Bottom; row++)
+                    for (int row = mapObj.QuadraticPosition.Top; row < mapObj.QuadraticPosition.Bottom; row++)
                     {
                         IQuadTile quadTileToUpdate = this.ActiveScenario.Map.GetQuadTile(new RCIntVector(col, row));
                         if (quadTileToUpdate != null &&

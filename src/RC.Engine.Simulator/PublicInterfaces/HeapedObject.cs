@@ -21,7 +21,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <summary>
         /// Constructs a HeapedObject instance.
         /// </summary>
-        public HeapedObject()
+        protected HeapedObject()
         {
             this.heapManager = ComponentManager.GetInterface<IHeapManagerInternals>();
             

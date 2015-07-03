@@ -1,9 +1,6 @@
 ﻿using RC.Common.ComponentModel;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace RC.Engine.Simulator.Commands
 {

@@ -1,16 +1,8 @@
 ﻿using RC.Common.ComponentModel;
 using RC.Engine.Simulator.ComponentInterfaces;
-using RC.Engine.Simulator.Scenarios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.Terran.Buildings;
-using RC.Engine.Simulator.PublicInterfaces;
-using RC.Engine.Simulator.Terran.Units;
 using RC.Common;
-using RC.Engine.Maps.PublicInterfaces;
-using RC.Common.Diagnostics;
 
 namespace RC.Engine.Simulator.Terran
 {

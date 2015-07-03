@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using RC.Common;
 using RC.Common.ComponentModel;
-using RC.Engine.Maps.ComponentInterfaces;
-using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Commands;
 using RC.Engine.Simulator.ComponentInterfaces;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.MotionControl;
 using RC.App.BizLogic.BusinessComponents.Core;
-using RC.App.BizLogic.Views;
-using RC.App.BizLogic.Views.Core;
 using RC.App.BizLogic.BusinessComponents;
 
 namespace RC.App.BizLogic.Services.Core
@@ -81,8 +74,7 @@ namespace RC.App.BizLogic.Services.Core
             this.triggeredScheduler = new TriggeredScheduler(1000 / (int)gameSpeed);
             this.triggeredScheduler.AddScheduledFunction(this.pathFinder.Flush);
             this.triggeredScheduler.AddScheduledFunction(this.ExecuteCommands);
-            this.triggeredScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.UpdateState);
-            this.triggeredScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.UpdateAnimations);
+            this.triggeredScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.Update);
             this.triggeredScheduler.AddScheduledFunction(this.commandManager.Update);
             this.triggeredScheduler.AddScheduledFunction(this.fogOfWarBC.ExecuteUpdateIteration);
             this.triggeredScheduler.AddScheduledFunction(() => { if (this.GameUpdated != null) { this.GameUpdated(); } });

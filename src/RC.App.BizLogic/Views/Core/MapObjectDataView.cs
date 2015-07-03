@@ -1,9 +1,5 @@
-﻿using RC.Common;
-using RC.Engine.Simulator.Scenarios;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -32,7 +28,7 @@ namespace RC.App.BizLogic.Views.Core
         {
             get
             {
-                MineralField entityAsMineralField = this.Scenario.GetEntity<MineralField>(this.entityID);
+                MineralField entityAsMineralField = this.Scenario.GetElement<MineralField>(this.entityID);
                 return entityAsMineralField != null ? entityAsMineralField.ResourceAmount.Read() : -1;
             }
         }
@@ -42,7 +38,7 @@ namespace RC.App.BizLogic.Views.Core
         {
             get
             {
-                VespeneGeyser entityAsVespeneGeyser = this.Scenario.GetEntity<VespeneGeyser>(this.entityID);
+                VespeneGeyser entityAsVespeneGeyser = this.Scenario.GetElement<VespeneGeyser>(this.entityID);
                 return entityAsVespeneGeyser != null ? entityAsVespeneGeyser.ResourceAmount.Read() : -1;
             }
         }

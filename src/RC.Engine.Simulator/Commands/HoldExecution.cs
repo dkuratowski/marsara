@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
 
 namespace RC.Engine.Simulator.Commands
 {
@@ -64,7 +61,7 @@ namespace RC.Engine.Simulator.Commands
                 return false;
             }
 
-            /// We have a new enemy to be attacked -> Start fire.
+            /// We have a new enemy to be attacked -> Start attack with a standard weapon.
             this.recipientEntity.Read().Armour.StartAttack(this.attackedEntity.Read().ID.Read());
             if (this.recipientEntity.Read().Armour.Target == null)
             {
@@ -80,6 +77,7 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="CmdExecutionBase.Initialize"/>
         protected override void Initialize()
         {
+            this.recipientEntity.Read().Armour.StopAttack();
             this.recipientEntity.Read().StopMoving();
 
             /// Select a nearby enemy to attack if possible.
@@ -90,7 +88,7 @@ namespace RC.Engine.Simulator.Commands
                 return;
             }
 
-            /// We have a new enemy to be attacked -> Start fire.
+            /// We have a new enemy to be attacked -> Start attack with a standard weapon.
             this.recipientEntity.Read().Armour.StartAttack(this.attackedEntity.Read().ID.Read());
             if (this.recipientEntity.Read().Armour.Target == null)
             {

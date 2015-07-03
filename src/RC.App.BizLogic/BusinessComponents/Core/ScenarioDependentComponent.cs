@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RC.Common.ComponentModel;
-using RC.Engine.Simulator.Scenarios;
+﻿using RC.Common.ComponentModel;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {

@@ -1,8 +1,6 @@
-﻿using RC.Engine.Simulator.Scenarios;
+﻿using RC.Engine.Simulator.Metadata;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using RC.Common.ComponentModel;
 using RC.App.BizLogic.BusinessComponents;
 

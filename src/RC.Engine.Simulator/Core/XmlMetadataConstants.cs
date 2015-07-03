@@ -15,6 +15,7 @@ namespace RC.Engine.Simulator.Core
         public const string ADDONTYPE_ELEM = "addonType";
         public const string UNITTYPE_ELEM = "unitType";
         public const string UPGRADETYPE_ELEM = "upgradeType";
+        public const string MISSILETYPE_ELEM = "missileType";
         public const string CUSTOMTYPE_ELEM = "customType";
         public const string TYPE_NAME_ATTR = "name";
         public const string TYPE_HASOWNER_ATTR = "hasOwner";
@@ -27,6 +28,11 @@ namespace RC.Engine.Simulator.Core
         public const string RESEARCHEDIN_ELEM = "researchedIn";
         public const string PREVIOUSLEVEL_ELEM = "previousLevel";
         public const string REQUIRES_ELEM = "requires";
+        public const string LAUNCHANIMATION_ELEM = "launchAnimation";
+        public const string FLYINGANIMATION_ELEM = "flyingAnimation";
+        public const string TRAILANIMATION_ELEM = "trailAnimation";
+        public const string TRAILANIMATION_FREQUENCY_ATTR = "frequency";
+        public const string IMPACTANIMATION_ELEM = "impactAnimation";
         public const string SPRITEPALETTE_ELEM = "spritePalette";
         public const string ANIMPALETTE_ELEM = "animationPalette";
         public const string ANIMATION_ELEM = "animation";
@@ -57,5 +63,10 @@ namespace RC.Engine.Simulator.Core
         public const string WPN_RANGEMAX_ELEM = "rangeMax";
         public const string WPN_RANGEMIN_ELEM = "rangeMin";
         public const string WPN_SPLASHTYPE_ELEM = "splashType";
+        public const string WPN_MISSILE_ELEM = "missile";
+        public const string WPN_MISSILE_TYPE_ATTR = "type";
+        public const string WPN_MISSILE_LAUNCH_ELEM = "launch";
+        public const string WPN_MISSILE_LAUNCH_DIR_ATTR = "direction";
+        public const string WPN_MISSILE_LAUNCH_POS_ATTR = "relativePosition";
     }
 }

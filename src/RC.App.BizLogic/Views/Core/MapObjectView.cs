@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using RC.App.BizLogic.BusinessComponents.Core;
 using RC.Common;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
 using RC.App.BizLogic.BusinessComponents;
 using RC.Common.ComponentModel;
 
@@ -26,28 +26,28 @@ namespace RC.App.BizLogic.Views.Core
         /// <see cref="IMapObjectView.GetVisibleMapObjects"/>
         public List<ObjectInst> GetVisibleMapObjects()
         {
-            /// Display the currently visible entities inside the currently visible window of quadratic tiles.
+            /// Display the currently visible map objects inside the currently visible window of quadratic tiles.
             List<ObjectInst> retList = new List<ObjectInst>();
-            foreach (Entity entity in this.fogOfWarBC.GetEntitiesToUpdate())
+            foreach (MapObject mapObject in this.fogOfWarBC.GetMapObjectsToUpdate())
             {
-                RCIntRectangle displayRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entity.BoundingBox);
+                RCIntRectangle displayRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(mapObject.BoundingBox);
                 List<SpriteInst> entitySprites = new List<SpriteInst>();
-                foreach (AnimationPlayer animation in entity.CurrentAnimations)
+                foreach (AnimationPlayer animation in mapObject.CurrentAnimations)
                 {
                     foreach (int spriteIdx in animation.CurrentFrame)
                     {
                         entitySprites.Add(new SpriteInst()
                         {
-                            Index = entity.ElementType.SpritePalette.Index,
-                            DisplayCoords = displayRect.Location + entity.ElementType.SpritePalette.GetOffset(spriteIdx),
-                            Section = entity.ElementType.SpritePalette.GetSection(spriteIdx)
+                            Index = mapObject.Owner.ElementType.SpritePalette.Index,
+                            DisplayCoords = displayRect.Location + mapObject.Owner.ElementType.SpritePalette.GetOffset(spriteIdx),
+                            Section = mapObject.Owner.ElementType.SpritePalette.GetSection(spriteIdx)
                         });
                     }
                 }
 
                 retList.Add(new ObjectInst()
                 {
-                    Owner = BizLogicHelpers.GetEntityOwner(entity),
+                    Owner = BizLogicHelpers.GetMapObjectOwner(mapObject),
                     Sprites = entitySprites
                 });
             }
@@ -79,10 +79,10 @@ namespace RC.App.BizLogic.Views.Core
         /// <see cref="IMapObjectView.GetMapObjectID"/>
         public int GetMapObjectID(RCIntVector position)
         {
-            foreach (Entity entity in this.Scenario.GetEntitiesOnMap<Entity>(this.MapWindowBC.AttachedWindow.WindowToMapCoords(position)))
+            foreach (Entity entity in this.Scenario.GetElementsOnMap<Entity>(this.MapWindowBC.AttachedWindow.WindowToMapCoords(position)))
             {
                 /// Get the ID of the entity only if it's not hidden by FOW.
-                if (this.fogOfWarBC.IsEntityVisible(entity))
+                if (this.fogOfWarBC.IsMapObjectVisible(entity.MapObject))
                 {
                     return entity.ID.Read();
                 }
@@ -95,6 +95,6 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Reference to the Fog Of War business component.
         /// </summary>
-        private IFogOfWarBC fogOfWarBC;
+        private readonly IFogOfWarBC fogOfWarBC;
     }
 }

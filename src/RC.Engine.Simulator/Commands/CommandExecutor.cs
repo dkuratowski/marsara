@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RC.Common;
 using RC.Common.ComponentModel;
-using RC.Common.Diagnostics;
 using RC.Engine.Simulator.ComponentInterfaces;
-using RC.Engine.Simulator.Core;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
 
 namespace RC.Engine.Simulator.Commands
 {
@@ -161,7 +156,7 @@ namespace RC.Engine.Simulator.Commands
             HashSet<Entity> entitySet = new HashSet<Entity>();
             foreach (int entityId in entityIDs)
             {
-                Entity entity = scenario.GetEntityOnMap<Entity>(entityId);
+                Entity entity = scenario.GetElementOnMap<Entity>(entityId);
                 if (entity != null) { entitySet.Add(entity); }
             }
             return entitySet;

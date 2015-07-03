@@ -1,12 +1,7 @@
-﻿using System.Runtime.Remoting.Messaging;
-using RC.Common;
-using RC.Engine.Maps.PublicInterfaces;
+﻿using RC.Common;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace RC.Engine.Simulator.Commands
 {
@@ -97,7 +92,7 @@ namespace RC.Engine.Simulator.Commands
                 }
             }
 
-            /// We have an entity to be attacked -> Start fire.
+            /// We have an entity to be attacked -> Start attack with a standard weapon.
             this.recipientEntity.Read().Armour.StartAttack(this.attackedEntity.Read().ID.Read());
             if (this.recipientEntity.Read().Armour.Target != null)
             {
@@ -135,7 +130,7 @@ namespace RC.Engine.Simulator.Commands
                 this.recipientEntity.Read().Armour.StartAttack(this.attackedEntity.Read().ID.Read());
                 if (this.recipientEntity.Read().Armour.Target != null)
                 {
-                    /// Still in attack range -> continue fire.
+                    /// Still in attack range -> continue attack with a standard weapon.
                     this.recipientEntity.Read().StopMoving();
                     return false;
                 }
@@ -159,11 +154,11 @@ namespace RC.Engine.Simulator.Commands
             }
 
             /// Target position became visible -> check if the target entity is there.
-            foreach (Entity entityAtTargetPosition in this.Scenario.GetEntitiesOnMap<Entity>(this.targetPosition.Read()))
+            foreach (Entity entityAtTargetPosition in this.Scenario.GetElementsOnMap<Entity>(this.targetPosition.Read()))
             {
                 if (entityAtTargetPosition.ID.Read() == this.targetEntityID.Read())
                 {
-                    /// Target entity found at target position -> start fire.
+                    /// Target entity found at target position -> start attack with a standard weapon.
                     this.attackedEntity.Write(entityAtTargetPosition);
                     this.recipientEntity.Read().Armour.StartAttack(this.attackedEntity.Read().ID.Read());
                     if (this.recipientEntity.Read().Armour.Target != null)
@@ -204,7 +199,7 @@ namespace RC.Engine.Simulator.Commands
                 this.recipientEntity.Read().Armour.StartAttack(this.attackedEntity.Read().ID.Read());
                 if (this.recipientEntity.Read().Armour.Target != null)
                 {
-                    /// Still in attack range -> continue fire.
+                    /// Still in attack range -> continue attack with a standard weapon.
                     this.recipientEntity.Read().StopMoving();
                     return false;
                 }
@@ -230,7 +225,7 @@ namespace RC.Engine.Simulator.Commands
                 return false;
             }
 
-            /// We have a new enemy to be attacked -> Start fire.
+            /// We have a new enemy to be attacked -> Start attack with a standard weapon.
             this.recipientEntity.Read().Armour.StartAttack(this.attackedEntity.Read().ID.Read());
             if (this.recipientEntity.Read().Armour.Target != null)
             {

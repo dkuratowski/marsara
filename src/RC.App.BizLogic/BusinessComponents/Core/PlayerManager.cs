@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using RC.App.BizLogic.Views;
 using RC.Common;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -24,7 +23,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             this.targetScenario = scenario;
             this.isLocked = false;
-            this.freeStartLocations = new HashSet<StartLocation>(this.targetScenario.GetAllEntities<StartLocation>());
+            this.freeStartLocations = new HashSet<StartLocation>(this.targetScenario.GetAllElements<StartLocation>());
             this.freePlayerIndices = new HashSet<PlayerEnum>()
             {
                 PlayerEnum.Player0, PlayerEnum.Player1, PlayerEnum.Player2, PlayerEnum.Player3,

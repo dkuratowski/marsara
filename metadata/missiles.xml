@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<missileType name="Rocket">
+    <generalData>
+      <area>0.75;0.75</area>
+      <speed>8.0</speed>
+    </generalData>
+    <launchAnimation>Launch</launchAnimation>
+    <flyingAnimation>Flying</flyingAnimation>
+    <trailAnimation frequency="5">Trail</trailAnimation>
+    <impactAnimation>Impact</impactAnimation>
+    <spritePalette image="rocket.png" transparentColor="255;0;255">
+      <sprite name="Launch0" sourceRegion="17;1;3;3" offset="0;0" />
+      <sprite name="Launch1" sourceRegion="21;1;3;3" offset="0;0" />
+      <sprite name="Launch2" sourceRegion="25;1;3;3" offset="0;0" />
+      <sprite name="Flying" variant="North" sourceRegion="1;1;3;3" offset="0;0" />
+      <sprite name="Flying" variant="NorthEast" sourceRegion="5;1;3;3" offset="0;0" />
+      <sprite name="Flying" variant="East" sourceRegion="9;1;3;3" offset="0;0" />
+      <sprite name="Flying" variant="SouthEast" sourceRegion="13;1;3;3" offset="0;0" />
+      <sprite name="Flying" variant="South" sourceRegion="1;1;3;3" offset="0;0" />
+      <sprite name="Flying" variant="SouthWest" sourceRegion="5;1;3;3" offset="0;0" />
+      <sprite name="Flying" variant="West" sourceRegion="9;1;3;3" offset="0;0" />
+      <sprite name="Flying" variant="NorthWest" sourceRegion="13;1;3;3" offset="0;0" />
+      <sprite name="Trail0" sourceRegion="19;15;3;3" offset="0;0" />
+      <sprite name="Trail1" sourceRegion="23;15;3;3" offset="0;0" />
+      <sprite name="Trail2" sourceRegion="19;19;3;3" offset="0;0" />
+      <sprite name="Impact0" sourceRegion="1;5;3;3" offset="0;0" />
+      <sprite name="Impact1" sourceRegion="5;5;4;4" offset="0;0" />
+      <sprite name="Impact2" sourceRegion="10;5;6;6" offset="-1;-1" />
+      <sprite name="Impact3" sourceRegion="17;5;10;9" offset="-3;-3" />
+      <sprite name="Impact4" sourceRegion="1;12;10;9" offset="-3;-3" />
+      <sprite name="Impact5" sourceRegion="12;15;6;6" offset="-1;-1" />
+    </spritePalette>
+    <animationPalette>
+      <animation name="Launch">
+        <frame sprites="Launch0" duration="2" />
+        <frame sprites="Launch1" duration="2" />
+        <frame sprites="Launch2" duration="2" />
+      </animation>
+      <animation name="Flying">
+        <frame sprites="Flying" />
+      </animation>
+      <animation name="Trail">
+        <frame sprites="Trail0" duration="2" />
+        <frame sprites="Trail1" duration="2" />
+        <frame sprites="Trail2" duration="2" />
+      </animation>
+      <animation name="Impact">
+        <frame sprites="Impact0" duration="3" />
+        <frame sprites="Impact1" duration="3" />
+        <frame sprites="Impact2" duration="3" />
+        <frame sprites="Impact3" duration="3" />
+        <frame sprites="Impact4" duration="3" />
+        <frame sprites="Impact5" duration="3" />
+      </animation>
+    </animationPalette>
+	</missileType>
+</metadata>

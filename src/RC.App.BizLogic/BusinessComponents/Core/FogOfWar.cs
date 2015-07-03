@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using RC.App.BizLogic.Views;
 using RC.Common;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -151,14 +149,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             List<int> monitoredEntitiesCopy = new List<int>(this.monitoredEntities);
             foreach (int monitoredEntityId in monitoredEntitiesCopy)
             {
-                QuadEntity monitoredEntity = this.owner.Scenario.GetEntityOnMap<QuadEntity>(monitoredEntityId);
+                QuadEntity monitoredEntity = this.owner.Scenario.GetElementOnMap<QuadEntity>(monitoredEntityId);
                 if (monitoredEntity != null && monitoredEntity.Owner != this.owner && monitoredEntity.IsBoundToGrid)
                 {
                     /// Check if the monitored entity is still visible.
                     bool isStillVisible = false;
-                    for (int col = monitoredEntity.QuadraticPosition.Left; col < monitoredEntity.QuadraticPosition.Right; col++)
+                    for (int col = monitoredEntity.MapObject.QuadraticPosition.Left; col < monitoredEntity.MapObject.QuadraticPosition.Right; col++)
                     {
-                        for (int row = monitoredEntity.QuadraticPosition.Top; row < monitoredEntity.QuadraticPosition.Bottom; row++)
+                        for (int row = monitoredEntity.MapObject.QuadraticPosition.Top; row < monitoredEntity.MapObject.QuadraticPosition.Bottom; row++)
                         {
                             if (this.GetFogOfWar(new RCIntVector(col, row)) == FOWTypeEnum.None)
                             {

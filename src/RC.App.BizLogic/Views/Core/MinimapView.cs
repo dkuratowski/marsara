@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using RC.App.BizLogic.BusinessComponents;
 using RC.App.BizLogic.BusinessComponents.Core;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -100,9 +98,13 @@ namespace RC.App.BizLogic.Views.Core
             RCIntVector topLeftQuadTile = topLeftQuadRect.Location;
             RCIntVector bottomRightQuadTile = bottomRightQuadRect.Location + bottomRightQuadRect.Size;
             RCIntRectangle scannedQuadWindow = new RCIntRectangle(topLeftQuadTile, bottomRightQuadTile - topLeftQuadTile);
-            foreach (Entity entity in this.fogOfWarBC.GetEntitiesInWindow(scannedQuadWindow))
+            foreach (MapObject mapObject in this.fogOfWarBC.GetMapObjectsInWindow(scannedQuadWindow))
             {
-                this.AddEntityInfo(entity.QuadraticPosition, BizLogicHelpers.GetEntityOwner(entity), pixelInfos);
+                Entity entity = mapObject.Owner as Entity;
+                if (entity != null)
+                {
+                    this.AddEntityInfo(mapObject.QuadraticPosition, BizLogicHelpers.GetMapObjectOwner(mapObject), pixelInfos);
+                }
             }
             foreach (EntitySnapshot entitySnapshot in this.fogOfWarBC.GetEntitySnapshotsInWindow(scannedQuadWindow))
             {

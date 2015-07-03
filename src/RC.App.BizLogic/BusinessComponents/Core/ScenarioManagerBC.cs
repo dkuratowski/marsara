@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using RC.App.BizLogic.Services.Core;
 using RC.App.BizLogic.Views;
 using RC.App.BizLogic.Views.Core;
@@ -11,8 +8,9 @@ using RC.Common.Diagnostics;
 using RC.Engine.Maps.ComponentInterfaces;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.ComponentInterfaces;
+using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.MotionControl;
-using RC.Engine.Simulator.Scenarios;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {

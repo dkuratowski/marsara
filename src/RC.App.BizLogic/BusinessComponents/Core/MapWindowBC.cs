@@ -1,8 +1,7 @@
 ﻿using System;
-using RC.App.BizLogic.Views.Core;
 using RC.Common;
 using RC.Common.ComponentModel;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {

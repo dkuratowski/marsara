@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
-using RC.Engine.Simulator.Scenarios;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -66,15 +63,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
-        /// Gets the entities that are not entirely hidden by the Fog Of War.
+        /// Gets the map objects that are not entirely hidden by the Fog Of War.
         /// </summary>
-        public HashSet<Entity> EntitiesToUpdate
+        public HashSet<MapObject> MapObjectsToUpdate
         {
-            get { return this.entitiesToUpdate; }
+            get { return this.mapObjectsToUpdate; }
             set
             {
-                if (this.entitiesToUpdate != null) { throw new InvalidOperationException("FogOfWarBCCache.VisibleEntities has already been set!"); }
-                this.entitiesToUpdate = value;
+                if (this.mapObjectsToUpdate != null) { throw new InvalidOperationException("FogOfWarBCCache.MapObjectsToUpdate has already been set!"); }
+                this.mapObjectsToUpdate = value;
             }
         }
 
@@ -99,8 +96,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private IEnumerable<EntitySnapshot> entitySnapshotsToUpdate;
 
         /// <summary>
-        /// The entities that are not entirely hidden by the Fog Of War.
+        /// The map objects that are not entirely hidden by the Fog Of War.
         /// </summary>
-        private HashSet<Entity> entitiesToUpdate;
+        private HashSet<MapObject> mapObjectsToUpdate;
     }
 }
