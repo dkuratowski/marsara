@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 
 namespace RC.UI
 {
@@ -180,7 +181,7 @@ namespace RC.UI
         /// <summary>
         /// Gets the list of the keys that are currently being pressed.
         /// </summary>
-        HashSet<UIKey> PressedKeys { get; }
+        RCSet<UIKey> PressedKeys { get; }
 
         /// <summary>
         /// This event is raised when the state of the keyboard input device has been changed.

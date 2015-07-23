@@ -18,7 +18,7 @@ namespace RC.Common
         /// <param name="minSize">The minimum size of a BSP-node.</param>
         public BspSearchTreeNode(RCNumRectangle area, int capacity, int minSize)
         {
-            this.contents = new HashSet<T>();
+            this.contents = new RCSet<T>();
             this.isLeaf = true;
             this.capacity = capacity;
             this.minSize = minSize;
@@ -105,7 +105,7 @@ namespace RC.Common
         /// <param name="outputList">
         /// A list the contains every content attached to this BspSearchTreeNode at the given position.
         /// </param>
-        public void CollectContents(RCNumVector position, ref HashSet<T> outputList)
+        public void CollectContents(RCNumVector position, ref RCSet<T> outputList)
         {
             if (this.isLeaf)
             {
@@ -130,7 +130,7 @@ namespace RC.Common
         /// <param name="outputList">
         /// A list that contains every content attached to this BspSearchTreeNode inside the given rectangular area.
         /// </param>
-        public void CollectContents(RCNumRectangle area, ref HashSet<T> outputList)
+        public void CollectContents(RCNumRectangle area, ref RCSet<T> outputList)
         {
             if (this.isLeaf)
             {
@@ -192,7 +192,7 @@ namespace RC.Common
         /// <summary>
         /// List of the contents that have intersection with the area covered by this BspSearchTreeNode.
         /// </summary>
-        private HashSet<T> contents;
+        private RCSet<T> contents;
 
         /// <summary>
         /// Reference to the first child of this BspSearchTreeNode.

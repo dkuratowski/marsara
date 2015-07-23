@@ -33,7 +33,7 @@ namespace RC.Engine.Simulator.MotionControl
             this.fromNode = PathNode.CreateSourceNode(fromNode, this.GetEstimation(fromNode));
             this.queuedNodes.Insert(this.fromNode);
             this.queuedNodesMap.Add(this.fromNode.Node, this.fromNode);
-            this.blockedEdges = new HashSet<INavMeshEdge>(blockedEdges);
+            this.blockedEdges = new RCSet<INavMeshEdge>(blockedEdges);
         }
 
         #region Public members
@@ -248,7 +248,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <summary>
         /// Contains the blocked edges that have to be bypassed by this search algorithm.
         /// </summary>
-        private HashSet<INavMeshEdge> blockedEdges;
+        private RCSet<INavMeshEdge> blockedEdges;
 
         /// <summary>
         /// This flag indicates whether this pathfinding algorithm has been finished or not.

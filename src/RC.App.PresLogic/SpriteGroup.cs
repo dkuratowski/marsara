@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 using RC.UI;
 
 namespace RC.App.PresLogic
@@ -40,7 +41,7 @@ namespace RC.App.PresLogic
             if (!this.isLoaded) { throw new InvalidOperationException("The sprite-group is not loaded!"); }
 
             /// Destroy the sprites of this sprite group (be aware of duplicated sprites).
-            HashSet<UISprite> destroyedSprites = new HashSet<UISprite>();
+            RCSet<UISprite> destroyedSprites = new RCSet<UISprite>();
             foreach (UISprite sprite in this.spriteList)
             {
                 if (sprite != null && !destroyedSprites.Contains(sprite))

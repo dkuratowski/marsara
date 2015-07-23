@@ -84,7 +84,7 @@ namespace RC.Engine.Maps.Core
         /// Collects the nodes that are reachable from this node.
         /// </summary>
         /// <param name="collectedNodes">The list of the collected nodes.</param>
-        internal void CollectReachableNodes(ref HashSet<NavMeshNode> collectedNodes)
+        internal void CollectReachableNodes(ref RCSet<NavMeshNode> collectedNodes)
         {
             if (!collectedNodes.Add(this)) { return; }
             foreach (NavMeshNode neighbour in this.neighbours.Keys) { neighbour.CollectReachableNodes(ref collectedNodes); }
@@ -242,7 +242,7 @@ namespace RC.Engine.Maps.Core
             NavMeshNode[] originalNeighbours = this.GetNeighboursByEdges();
 
             /// Create the new slices and set their neighbourhood between each other and the original neighbours of this node.
-            HashSet<NavMeshNode> slices = new HashSet<NavMeshNode>();
+            RCSet<NavMeshNode> slices = new RCSet<NavMeshNode>();
             NavMeshNode prevSlice = null;
             NavMeshNode firstSlice = null;
             NavMeshNode lastSlice = null;
@@ -414,7 +414,7 @@ namespace RC.Engine.Maps.Core
         private NavMeshNode[] GetNeighboursByEdges()
         {
             NavMeshNode[] neighbourList = new NavMeshNode[this.polygon.VertexCount];
-            HashSet<NavMeshNode> neighboursCopy = new HashSet<NavMeshNode>(this.neighbours.Keys);
+            RCSet<NavMeshNode> neighboursCopy = new RCSet<NavMeshNode>(this.neighbours.Keys);
             for (int edgeIdx = 0; edgeIdx < this.polygon.VertexCount; edgeIdx++)
             {
                 NavMeshNode neighbourAtEdge = null;

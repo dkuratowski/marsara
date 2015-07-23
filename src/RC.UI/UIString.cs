@@ -300,8 +300,8 @@ namespace RC.UI
         /// <returns>The list of the found placeholders.</returns>
         private static List<PlaceHolder> SearchPlaceHolders(string format)
         {
-            HashSet<int> escapedOpeningBraces = SearchForwardInFormatString(format, "{{");
-            HashSet<int> escapedClosingBraces = SearchBackwardInFormatString(format, "}}");
+            RCSet<int> escapedOpeningBraces = SearchForwardInFormatString(format, "{{");
+            RCSet<int> escapedClosingBraces = SearchBackwardInFormatString(format, "}}");
 
             List<PlaceHolder> retList = new List<PlaceHolder>();
             int startSearchFrom = 0;
@@ -455,11 +455,11 @@ namespace RC.UI
         /// <returns>
         /// The list that contains the starting index of every occurence of the searched sequence.
         /// </returns>
-        private static HashSet<int> SearchForwardInFormatString(string format, string sequence)
+        private static RCSet<int> SearchForwardInFormatString(string format, string sequence)
         {
             if (sequence == null || sequence.Length == 0) { throw new ArgumentNullException("sequence"); }
 
-            HashSet<int> retList = new HashSet<int>();
+            RCSet<int> retList = new RCSet<int>();
             int startSearchFrom = 0;
             while (startSearchFrom < format.Length)
             {
@@ -480,11 +480,11 @@ namespace RC.UI
         /// <returns>
         /// The list that contains the starting index of every occurence of the searched sequence.
         /// </returns>
-        private static HashSet<int> SearchBackwardInFormatString(string format, string sequence)
+        private static RCSet<int> SearchBackwardInFormatString(string format, string sequence)
         {
             if (sequence == null || sequence.Length == 0) { throw new ArgumentNullException("sequence"); }
 
-            HashSet<int> retList = new HashSet<int>();
+            RCSet<int> retList = new RCSet<int>();
             int startSearchFrom = format.Length - 1;
             while (startSearchFrom >= 0)
             {

@@ -74,11 +74,11 @@ namespace RC.UI
             this.pointerPosition = this.scaledPosition / this.scale;
 
             /// Set the initial state of the mouse wheel and buttons
-            this.pressedButtons = new HashSet<UIMouseButton>();
+            this.pressedButtons = new RCSet<UIMouseButton>();
             this.wheelPosition = 0;
             
             /// Create the UIMouseSensors
-            this.allSensors = new HashSet<UIMouseSensor>();
+            this.allSensors = new RCSet<UIMouseSensor>();
             this.touchedSensors = new List<UIMouseSensor>();
             this.activeSensor = null;
             this.tmpSensorOperations = new List<bool>();
@@ -224,7 +224,7 @@ namespace RC.UI
         private void OnMouseEvent()
         {
             RCIntVector mouseDelta = UIRoot.Instance.MouseAccess.Delta;
-            HashSet<UIMouseButton> pressedButtons = UIRoot.Instance.MouseAccess.PressedButtons;
+            RCSet<UIMouseButton> pressedButtons = UIRoot.Instance.MouseAccess.PressedButtons;
             int scrollWheelPos = UIRoot.Instance.MouseAccess.ScrollWheelPos;
 
             this.scaledPosition += mouseDelta;
@@ -440,7 +440,7 @@ namespace RC.UI
         /// <summary>
         /// Raises the mouse button events on the appropriate sensor.
         /// </summary>
-        private void RaiseMouseButtonEvents(HashSet<UIMouseButton> buttons,
+        private void RaiseMouseButtonEvents(RCSet<UIMouseButton> buttons,
                                             RCIntVector newPointerPos,
                                             UIMouseSensor targetSensor)
         {
@@ -587,7 +587,7 @@ namespace RC.UI
         /// <summary>
         /// List of all registered UIMouseSensor objects.
         /// </summary>
-        private HashSet<UIMouseSensor> allSensors;
+        private RCSet<UIMouseSensor> allSensors;
 
         /// <summary>
         /// List of the UIMouseSensors that are touched by the mouse pointer.
@@ -602,7 +602,7 @@ namespace RC.UI
         /// <summary>
         /// List of the pressed mouse buttons.
         /// </summary>
-        private HashSet<UIMouseButton> pressedButtons;
+        private RCSet<UIMouseButton> pressedButtons;
 
         /// <summary>
         /// The position of the scroll wheel on the mouse.

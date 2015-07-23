@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Engine;
 
@@ -65,7 +66,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// Gets the map objects that are not entirely hidden by the Fog Of War.
         /// </summary>
-        public HashSet<MapObject> MapObjectsToUpdate
+        public RCSet<MapObject> MapObjectsToUpdate
         {
             get { return this.mapObjectsToUpdate; }
             set
@@ -98,6 +99,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// The map objects that are not entirely hidden by the Fog Of War.
         /// </summary>
-        private HashSet<MapObject> mapObjectsToUpdate;
+        private RCSet<MapObject> mapObjectsToUpdate;
     }
 }

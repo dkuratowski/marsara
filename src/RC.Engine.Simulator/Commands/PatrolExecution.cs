@@ -16,7 +16,7 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="recipientEntity">The recipient entity of this command execution.</param>
         /// <param name="targetPosition">The target position.</param>
         public PatrolExecution(Entity recipientEntity, RCNumVector targetPosition)
-            : base(new HashSet<Entity> { recipientEntity })
+            : base(new RCSet<Entity> { recipientEntity })
         {
             this.recipientEntity = this.ConstructField<Entity>("recipientEntity");
             this.patrolStartPosition = this.ConstructField<RCNumVector>("patrolStartPosition");
@@ -25,7 +25,7 @@ namespace RC.Engine.Simulator.Commands
             this.timeSinceLastSearch = this.ConstructField<int>("timeSinceLastSearch");
             
             this.recipientEntity.Write(recipientEntity);
-            this.patrolStartPosition.Write(this.recipientEntity.Read().PositionValue.Read());
+            this.patrolStartPosition.Write(this.recipientEntity.Read().MotionControl.PositionVector.Read());
             this.patrolEndPosition.Write(targetPosition);
             this.targetPosition.Write(targetPosition);
             this.timeSinceLastSearch.Write(0);
@@ -48,14 +48,14 @@ namespace RC.Engine.Simulator.Commands
             this.timeSinceLastSearch.Write(0);
 
             /// Check if we have to change patrol direction.
-            if (!this.recipientEntity.Read().IsMoving)
+            if (!this.recipientEntity.Read().MotionControl.IsMoving)
             {
                 /// Change patrol direction.
                 this.targetPosition.Write(
                     this.targetPosition.Read() == this.patrolStartPosition.Read()
                         ? this.patrolEndPosition.Read()
                         : this.patrolStartPosition.Read());
-                this.recipientEntity.Read().StartMoving(this.targetPosition.Read());
+                this.recipientEntity.Read().MotionControl.StartMoving(this.targetPosition.Read());
             }
 
             /// Check if an enemy became into sight-range.
@@ -63,7 +63,7 @@ namespace RC.Engine.Simulator.Commands
             if (enemyToAttack != null)
             {
                 /// Enemy found -> start an attack sub-execution on the enemy.
-                this.StartSubExecution(new AttackExecution(this.recipientEntity.Read(), enemyToAttack.PositionValue.Read(), enemyToAttack.ID.Read()));
+                this.StartSubExecution(new AttackExecution(this.recipientEntity.Read(), enemyToAttack.MotionControl.PositionVector.Read(), enemyToAttack.ID.Read()));
             }
             return false;
         }
@@ -71,7 +71,7 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="CmdExecutionBase.Initialize"/>
         protected override void Initialize()
         {
-            this.recipientEntity.Read().StartMoving(this.targetPosition.Read());
+            this.recipientEntity.Read().MotionControl.StartMoving(this.targetPosition.Read());
         }
 
         /// <see cref="CmdExecutionBase.CommandBeingExecuted"/>

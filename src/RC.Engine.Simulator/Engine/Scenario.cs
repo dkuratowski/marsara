@@ -50,9 +50,10 @@ namespace RC.Engine.Simulator.Engine
                                            this.map.CellSize.Y),
                                            ConstantsTable.Get<int>("RC.Engine.Maps.BspNodeCapacity"),
                                            ConstantsTable.Get<int>("RC.Engine.Maps.BspMinNodeSize"));
-            this.scenarioElements = new Dictionary<int, ScenarioElement>();
+            this.idToScenarioElementMap = new Dictionary<int, ScenarioElement>();
+            this.scenarioElements = new RCSet<ScenarioElement>();
             this.boundQuadEntities = new QuadEntity[this.map.Size.X, this.map.Size.Y];
-            this.commandExecutions = new HashSet<CmdExecutionBase>();
+            this.commandExecutions = new RCSet<CmdExecutionBase>();
             this.addRemoveElementForbidden = false;
         }
 
@@ -90,7 +91,7 @@ namespace RC.Engine.Simulator.Engine
 
             StartLocation startLoc = this.players[index].Read().StartLocation;
             startLoc.AttachToMap(this.map.GetQuadTile(startLoc.LastKnownQuadCoords));
-            HashSet<Entity> entitiesOfPlayer = new HashSet<Entity>(this.players[index].Read().Entities);
+            RCSet<Entity> entitiesOfPlayer = new RCSet<Entity>(this.players[index].Read().Entities);
             this.players[index].Read().Dispose();
             this.players[index].Write(null);
 
@@ -150,7 +151,7 @@ namespace RC.Engine.Simulator.Engine
         /// </returns>
         public T GetElement<T>(int id) where T : ScenarioElement
         {
-            return this.scenarioElements.ContainsKey(id) ? this.scenarioElements[id] as T : null;
+            return this.idToScenarioElementMap.ContainsKey(id) ? this.idToScenarioElementMap[id] as T : null;
         }
         
         /// <summary>
@@ -158,10 +159,10 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
         /// <returns>A list that contains all of the scenario elements of the given type added to this scenario.</returns>
-        public HashSet<T> GetAllElements<T>() where T : ScenarioElement
+        public RCSet<T> GetAllElements<T>() where T : ScenarioElement
         {
-            HashSet<T> retList = new HashSet<T>();
-            foreach (ScenarioElement element in this.scenarioElements.Values)
+            RCSet<T> retList = new RCSet<T>();
+            foreach (ScenarioElement element in this.scenarioElements)
             {
                 T elementAsT = element as T;
                 if (elementAsT != null) { retList.Add(elementAsT); }
@@ -180,7 +181,8 @@ namespace RC.Engine.Simulator.Engine
 
             int id = this.nextID.Read();
             this.nextID.Write(id + 1);
-            this.scenarioElements.Add(id, element);
+            this.idToScenarioElementMap.Add(id, element);
+            this.scenarioElements.Add(element);
             this.addRemoveElementForbidden = true;
             element.OnAddedToScenario(this, id, new ScenarioMapContext(this.objectsOnMap, this.boundQuadEntities));
             this.addRemoveElementForbidden = false;
@@ -195,7 +197,8 @@ namespace RC.Engine.Simulator.Engine
             if (this.addRemoveElementForbidden) { throw new InvalidOperationException("Removing element from this scenario is currently forbidden!"); }
             if (element == null) { throw new ArgumentNullException("element"); }
             
-            this.scenarioElements.Remove(element.ID.Read());
+            this.idToScenarioElementMap.Remove(element.ID.Read());
+            this.scenarioElements.Remove(element);
             this.addRemoveElementForbidden = true;
             element.OnRemovedFromScenario();
             this.addRemoveElementForbidden = false;
@@ -220,9 +223,9 @@ namespace RC.Engine.Simulator.Engine
         /// </returns>
         public T GetElementOnMap<T>(int id) where T : ScenarioElement
         {
-            if (this.scenarioElements.ContainsKey(id))
+            if (this.idToScenarioElementMap.ContainsKey(id))
             {
-                T retElement = this.scenarioElements[id] as T;
+                T retElement = this.idToScenarioElementMap[id] as T;
                 return retElement != null && retElement.HasMapObject ? retElement : null;
             }
             return null;
@@ -233,9 +236,9 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
         /// <returns>A list that contains the scenario elements of the given type that are attached to the map.</returns>
-        public HashSet<T> GetElementsOnMap<T>() where T : ScenarioElement
+        public RCSet<T> GetElementsOnMap<T>() where T : ScenarioElement
         {
-            HashSet<T> retList = new HashSet<T>();
+            RCSet<T> retList = new RCSet<T>();
             foreach (MapObject mapObj in this.objectsOnMap.GetContents())
             {
                 T elementAsT = mapObj.Owner as T;
@@ -250,11 +253,11 @@ namespace RC.Engine.Simulator.Engine
         /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
         /// <param name="position">The position to search.</param>
         /// <returns>A list that contains the scenario elements of the given type that are attached to the map at the given position.</returns>
-        public HashSet<T> GetElementsOnMap<T>(RCNumVector position) where T : ScenarioElement
+        public RCSet<T> GetElementsOnMap<T>(RCNumVector position) where T : ScenarioElement
         {
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            HashSet<T> retList = new HashSet<T>();
+            RCSet<T> retList = new RCSet<T>();
             foreach (MapObject mapObj in this.objectsOnMap.GetContents(position))
             {
                 T elementAsT = mapObj.Owner as T;
@@ -271,11 +274,11 @@ namespace RC.Engine.Simulator.Engine
         /// The area to search.
         /// </param>
         /// <returns>A list that contains the scenario elements of the given type that are attached to the map inside the given area.</returns>
-        public HashSet<T> GetElementsOnMap<T>(RCNumRectangle area) where T : ScenarioElement
+        public RCSet<T> GetElementsOnMap<T>(RCNumRectangle area) where T : ScenarioElement
         {
             if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
 
-            HashSet<T> retList = new HashSet<T>();
+            RCSet<T> retList = new RCSet<T>();
             foreach (MapObject mapObj in this.objectsOnMap.GetContents(area))
             {
                 T elementAsT = mapObj.Owner as T;
@@ -291,7 +294,7 @@ namespace RC.Engine.Simulator.Engine
         /// <param name="position">The given position.</param>
         /// <param name="searchRadius">The radius of the search area given in quadratic tiles.</param>
         /// <returns>A list that contains the scenario elements of the given type that are attached to the map inside the search area.</returns>
-        public HashSet<T> GetElementsOnMap<T>(RCNumVector position, int searchRadius) where T : ScenarioElement
+        public RCSet<T> GetElementsOnMap<T>(RCNumVector position, int searchRadius) where T : ScenarioElement
         {
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
             if (searchRadius <= 0) { throw new ArgumentOutOfRangeException("searchRadius", "The radius of the search area shall be greater than 0!"); }
@@ -301,7 +304,7 @@ namespace RC.Engine.Simulator.Engine
             RCIntVector bottomRightQuadCoord = quadCoordAtPosition + new RCIntVector(searchRadius - 1, searchRadius - 1);
             RCIntRectangle quadRect = new RCIntRectangle(topLeftQuadCoord, bottomRightQuadCoord - topLeftQuadCoord + new RCIntVector(1, 1));
 
-            HashSet<T> retList = new HashSet<T>();
+            RCSet<T> retList = new RCSet<T>();
             foreach (MapObject mapObj in this.objectsOnMap.GetContents((RCNumRectangle)this.Map.QuadToCellRect(quadRect) - new RCNumVector(1, 1) / 2))
             {
                 T elementAsT = mapObj.Owner as T;
@@ -315,7 +318,7 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <param name="area">The area to search.</param>
         /// <returns>A list that contains the map objects inside the given area.</returns>
-        public HashSet<MapObject> GetMapObjects(RCNumRectangle area)
+        public RCSet<MapObject> GetMapObjects(RCNumRectangle area)
         {
             if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
             return this.objectsOnMap.GetContents(area);
@@ -353,19 +356,17 @@ namespace RC.Engine.Simulator.Engine
             this.addRemoveElementForbidden = true;
 
             /// Update the command executions.
-            HashSet<CmdExecutionBase> commandExecutionsCopy = new HashSet<CmdExecutionBase>(this.commandExecutions);
+            List<CmdExecutionBase> commandExecutionsCopy = new List<CmdExecutionBase>(this.commandExecutions);
             foreach (CmdExecutionBase cmdExecution in commandExecutionsCopy) { cmdExecution.Continue(); }
 
             /// Update the scenario elements.
-            HashSet<ScenarioElement> elementsToAdd = new HashSet<ScenarioElement>();
-            HashSet<ScenarioElement> elementsToRemove = new HashSet<ScenarioElement>();
-            foreach (ScenarioElement element in this.scenarioElements.Values)
+            RCSet<ScenarioElement> elementsToAdd = new RCSet<ScenarioElement>();
+            RCSet<ScenarioElement> elementsToRemove = new RCSet<ScenarioElement>();
+            foreach (ScenarioElement element in this.scenarioElements)
             {
-                HashSet<ScenarioElement> addedElements = element.UpdateState();
+                RCSet<ScenarioElement> addedElements = element.UpdateState();
                 if (addedElements != null) { elementsToAdd.UnionWith(addedElements); }
                 else { elementsToRemove.Add(element); }
-
-                element.UpdateAnimations();
             }
             this.currentFrameIndex.Write(this.currentFrameIndex.Read() + 1);
             this.addRemoveElementForbidden = false;
@@ -409,7 +410,7 @@ namespace RC.Engine.Simulator.Engine
         protected override void DisposeImpl()
         {
             /// Destroy command executions
-            HashSet<CmdExecutionBase> commandExecutionsCopy = new HashSet<CmdExecutionBase>(this.commandExecutions);
+            RCSet<CmdExecutionBase> commandExecutionsCopy = new RCSet<CmdExecutionBase>(this.commandExecutions);
             foreach (CmdExecutionBase cmdExecution in commandExecutionsCopy) { cmdExecution.Dispose(); }
             this.commandExecutions.Clear();
 
@@ -424,7 +425,7 @@ namespace RC.Engine.Simulator.Engine
             }
 
             /// Destroy scenario elements.
-            HashSet<ScenarioElement> elementSetCopy = new HashSet<ScenarioElement>(this.scenarioElements.Values);
+            List<ScenarioElement> elementSetCopy = new List<ScenarioElement>(this.scenarioElements);
             foreach (ScenarioElement element in elementSetCopy)
             {
                 if (element.HasMapObject) { element.DetachFromMap(); }
@@ -480,13 +481,19 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// The command executions currently in progress.
         /// </summary>
-        private readonly HashSet<CmdExecutionBase> commandExecutions;
+        private readonly RCSet<CmdExecutionBase> commandExecutions;
 
         /// <summary>
         /// The elements of the scenario mapped by their IDs.
         /// </summary>
-        /// TODO: store these entities also in a HeapedArray!
-        private readonly Dictionary<int, ScenarioElement> scenarioElements;
+        /// TODO: store these objects also in a HeapedArray!
+        private readonly Dictionary<int, ScenarioElement> idToScenarioElementMap;
+
+        /// <summary>
+        /// The elements of the scenario.
+        /// </summary>
+        /// TODO: store these objects also in a HeapedArray!
+        private readonly RCSet<ScenarioElement> scenarioElements;
 
         /// <summary>
         /// Reference to the player initializer component.

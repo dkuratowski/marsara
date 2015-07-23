@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
+using RC.Common;
 using RC.Common.Diagnostics;
 
 namespace RC.UI.XnaPlugin
@@ -17,7 +18,7 @@ namespace RC.UI.XnaPlugin
         /// </summary>
         public XnaKeyboardInputDevice()
         {
-            this.pressedKeys = new HashSet<UIKey>();
+            this.pressedKeys = new RCSet<UIKey>();
         }
 
         /// <summary>
@@ -27,7 +28,7 @@ namespace RC.UI.XnaPlugin
         {
             KeyboardState keyboardState = Keyboard.GetState();
             Keys[] pressedKeys = keyboardState.GetPressedKeys();
-            HashSet<UIKey> pressedKeysCopy = new HashSet<UIKey>();
+            RCSet<UIKey> pressedKeysCopy = new RCSet<UIKey>();
             for (int i = 0; i < pressedKeys.Length; i++) { pressedKeysCopy.Add((UIKey)pressedKeys[i]); }
             if (!this.pressedKeys.SetEquals(pressedKeysCopy))
             {
@@ -39,7 +40,7 @@ namespace RC.UI.XnaPlugin
         #region IUIKeyboardAccess methods
 
         /// <see cref="IUIKeyboardAccess.PressedKeys"/>
-        public HashSet<UIKey> PressedKeys { get { return new HashSet<UIKey>(this.pressedKeys); } }
+        public RCSet<UIKey> PressedKeys { get { return new RCSet<UIKey>(this.pressedKeys); } }
 
         /// <see cref="IUIKeyboardAccess.StateChanged"/>
         public event Action StateChanged;
@@ -49,6 +50,6 @@ namespace RC.UI.XnaPlugin
         /// <summary>
         /// Set of the currently pressed keys.
         /// </summary>
-        private HashSet<UIKey> pressedKeys;
+        private RCSet<UIKey> pressedKeys;
     }
 }

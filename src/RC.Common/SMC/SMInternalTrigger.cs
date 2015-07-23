@@ -12,13 +12,13 @@ namespace RC.Common.SMC
             if (op == null) { throw new ArgumentNullException("op"); }
 
             //this.sourceStateIsCurrent = false;
-            HashSet<ISMState> neededStatesSet = new HashSet<ISMState>();
+            RCSet<ISMState> neededStatesSet = new RCSet<ISMState>();
             op.CollectAllStates(ref neededStatesSet);
             this.operatorToCheck = op;
 
             this.neededStates = new Dictionary<ISMState, bool>();
 
-            //HashSet<StateMachine> sms = new HashSet<StateMachine>();
+            //RCSet<StateMachine> sms = new RCSet<StateMachine>();
             foreach (ISMState s in neededStatesSet)
             {
                 SMState state = this.sourceState.SM.StateObjectMap.GetStateObject(s);

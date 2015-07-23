@@ -22,7 +22,7 @@ namespace RC.UI.XnaPlugin
             this.firstUpdateHappened = false;
             this.isFormActive = true;
             this.platform = platform;
-            this.pressedButtons = new HashSet<UIMouseButton>();
+            this.pressedButtons = new RCSet<UIMouseButton>();
             this.scrollWheelPos = 0;
         }
 
@@ -43,7 +43,7 @@ namespace RC.UI.XnaPlugin
                 MouseState mouseState = Mouse.GetState();
                 this.delta = new RCIntVector(mouseState.X, mouseState.Y) - this.systemMousePos;
 
-                HashSet<UIMouseButton> pressedButtons = new HashSet<UIMouseButton>();
+                RCSet<UIMouseButton> pressedButtons = new RCSet<UIMouseButton>();
                 if (mouseState.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed) { pressedButtons.Add(UIMouseButton.Left); }
                 if (mouseState.MiddleButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed) { pressedButtons.Add(UIMouseButton.Middle); }
                 if (mouseState.RightButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed) { pressedButtons.Add(UIMouseButton.Right); }
@@ -70,7 +70,7 @@ namespace RC.UI.XnaPlugin
         public RCIntVector Delta { get { return this.delta; } }
 
         /// <see cref="IUIMouseAccess.PressedButtons"/>
-        public HashSet<UIMouseButton> PressedButtons { get { return this.pressedButtons; } }
+        public RCSet<UIMouseButton> PressedButtons { get { return this.pressedButtons; } }
 
         /// <see cref="IUIMouseAccess.ScrollWheelPos"/>
         public int ScrollWheelPos { get { return this.scrollWheelPos; } }
@@ -141,7 +141,7 @@ namespace RC.UI.XnaPlugin
         /// <summary>
         /// Set of the pressed buttons in the previous update.
         /// </summary>
-        private HashSet<UIMouseButton> pressedButtons;
+        private RCSet<UIMouseButton> pressedButtons;
 
         /// <summary>
         /// The position of the mouse scroll wheel in the previous update.

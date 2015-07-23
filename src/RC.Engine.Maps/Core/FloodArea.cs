@@ -18,7 +18,7 @@ namespace RC.Engine.Maps.Core
         /// </summary>
         public FloodArea()
         {
-            this.coordsInside = new HashSet<RCIntVector>();
+            this.coordsInside = new RCSet<RCIntVector>();
             this.enlargements = new List<int>();
             this.currentRadius = 1;
             this.tmpFloodItems = null;
@@ -346,7 +346,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// List of the coordinates of the isometric tiles inside the flood area relative to the center.
         /// </summary>
-        private HashSet<RCIntVector> coordsInside;
+        private RCSet<RCIntVector> coordsInside;
 
         /// <summary>
         /// The current radius of the flood area.

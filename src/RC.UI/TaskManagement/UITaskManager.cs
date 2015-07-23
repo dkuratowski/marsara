@@ -213,7 +213,7 @@ namespace RC.UI
         /// <summary>
         /// List of the running time sharing tasks.
         /// </summary>
-        private static HashSet<UITimeSharingTask> runningTimeSharingTasks = new HashSet<UITimeSharingTask>();
+        private static RCSet<UITimeSharingTask> runningTimeSharingTasks = new RCSet<UITimeSharingTask>();
 
         /// <summary>
         /// Reference to the UI-thread. The UI-thread is the first thread that calls UITaskManager.StartParallelTask,

@@ -18,7 +18,7 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="targetPosition">The target position.</param>
         /// <param name="targetEntityID">The ID of the entity to follow or -1 if no such entity is defined.</param>
         public MoveExecution(Entity recipientEntity, RCNumVector targetPosition, int targetEntityID)
-            : base(new HashSet<Entity> { recipientEntity })
+            : base(new RCSet<Entity> { recipientEntity })
         {
             this.targetPosition = this.ConstructField<RCNumVector>("targetPosition");
             this.targetEntityID = this.ConstructField<int>("targetEntityID");
@@ -49,7 +49,7 @@ namespace RC.Engine.Simulator.Commands
             if (this.targetEntity.Read() == null)
             {
                 /// No target to follow -> simple move operation without any target entity.
-                return !this.recipientEntity.Read().IsMoving;
+                return !this.recipientEntity.Read().MotionControl.IsMoving;
             }
 
             /// Continue follow the target.
@@ -70,21 +70,21 @@ namespace RC.Engine.Simulator.Commands
             if (this.targetEntity.Read() == null)
             {
                 /// Target entity is not defined or could not be located -> simply move to the target position.
-                this.recipientEntity.Read().StartMoving(this.targetPosition.Read());
+                this.recipientEntity.Read().MotionControl.StartMoving(this.targetPosition.Read());
             }
             else
             {
                 /// Target entity is defined and could be located -> calculate its distance from the recipient entity.
-                RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().Position, this.targetEntity.Read().Position);
+                RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().Area, this.targetEntity.Read().Area);
                 if (distance <= MAX_DISTANCE)
                 {
                     /// Close enough -> not necessary to start approaching.
-                    this.recipientEntity.Read().StopMoving();
+                    this.recipientEntity.Read().MotionControl.StopMoving();
                 }
                 else
                 {
                     /// Too far -> start approaching
-                    this.recipientEntity.Read().StartMoving(this.targetEntity.Read().PositionValue.Read());
+                    this.recipientEntity.Read().MotionControl.StartMoving(this.targetEntity.Read().MotionControl.PositionVector.Read());
                 }
             }
         }
@@ -105,16 +105,16 @@ namespace RC.Engine.Simulator.Commands
             if (this.targetEntity.Read() == null) { return; }
 
             /// Calculate its distance from the recipient entity.
-            RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().Position, this.targetEntity.Read().Position);
+            RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().Area, this.targetEntity.Read().Area);
             if (distance <= MAX_DISTANCE)
             {
                 /// Close enough -> stop the recipient entity.
-                this.recipientEntity.Read().StopMoving();
+                this.recipientEntity.Read().MotionControl.StopMoving();
             }
             else
             {
                 /// Too far -> start approaching again.
-                this.recipientEntity.Read().StartMoving(this.targetEntity.Read().PositionValue.Read());
+                this.recipientEntity.Read().MotionControl.StartMoving(this.targetEntity.Read().MotionControl.PositionVector.Read());
             }
         }
 

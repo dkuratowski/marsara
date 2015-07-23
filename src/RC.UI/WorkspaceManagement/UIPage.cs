@@ -42,8 +42,8 @@ namespace RC.UI
                                                              UIWorkspace.Instance.WorkspaceSize.Y))
         {
             this.currentStatus = Status.Inactive;
-            this.registeredPanels = new HashSet<UIPanel>();
-            this.visiblePanels = new HashSet<UIPanel>();
+            this.registeredPanels = new RCSet<UIPanel>();
+            this.visiblePanels = new RCSet<UIPanel>();
         }
 
         /// <summary>
@@ -178,11 +178,11 @@ namespace RC.UI
         /// <summary>
         /// List of the UIPanels registered to this UIPage.
         /// </summary>
-        private HashSet<UIPanel> registeredPanels;
+        private RCSet<UIPanel> registeredPanels;
 
         /// <summary>
         /// List of the registered UIPanels that are not in Hidden state.
         /// </summary>
-        private HashSet<UIPanel> visiblePanels;
+        private RCSet<UIPanel> visiblePanels;
     }
 }

@@ -51,11 +51,11 @@ namespace RC.DssServices
             this.eventLoopThread = RCThread.CurrentThread;
 
             /// Create the preprocessor list and register a default preprocessor.
-            this.eventPreprocessors = new HashSet<DssEventPreprocessor>();
+            this.eventPreprocessors = new RCSet<DssEventPreprocessor>();
             //this.eventPreprocessors.Add(new DssEventPreprocessor());
 
             /// Create the event handler list and register a default handler.
-            this.eventHandlers = new HashSet<DssEventHandler>();
+            this.eventHandlers = new RCSet<DssEventHandler>();
             //this.eventHandlers.Add(new DssEventHandler());
 
             this.currentLineStates = null;
@@ -657,12 +657,12 @@ namespace RC.DssServices
         /// <summary>
         /// The registered event preprocessors.
         /// </summary>
-        private HashSet<DssEventPreprocessor> eventPreprocessors;
+        private RCSet<DssEventPreprocessor> eventPreprocessors;
 
         /// <summary>
         /// The registered event handlers.
         /// </summary>
-        private HashSet<DssEventHandler> eventHandlers;
+        private RCSet<DssEventHandler> eventHandlers;
 
         /// <summary>
         /// The semaphore that is opened when the event queue is not empty.

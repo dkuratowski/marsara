@@ -162,7 +162,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             /// Collect the currently visible entities inside the given window.
             RCNumRectangle cellWindow = (RCNumRectangle)this.ActiveScenario.Map.QuadToCellRect(quadWindow) - new RCNumVector(1, 1) / 2;
-            HashSet<MapObject> mapObjectsOnMap = this.ActiveScenario.GetMapObjects(cellWindow);
+            RCSet<MapObject> mapObjectsOnMap = this.ActiveScenario.GetMapObjects(cellWindow);
             foreach (MapObject mapObject in mapObjectsOnMap)
             {
                 if (this.runningFowsCount == 0)
@@ -228,7 +228,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.runningFowsCount == 0) { return; }
 
             int remainingEntitiesInCurrIteration = MAX_ENTITIES_PER_ITERATION;
-            HashSet<FogOfWar> fowsProcessedInCurrIteration = new HashSet<FogOfWar>();
+            RCSet<FogOfWar> fowsProcessedInCurrIteration = new RCSet<FogOfWar>();
             while (remainingEntitiesInCurrIteration > 0)
             {
                 /// Search the first running FOW starting from the current index.
@@ -276,10 +276,10 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             /// Collect the isometric & quadratic tiles that need to be updated.
             IMapAccess map = this.ActiveScenario.Map;
-            HashSet<IIsoTile> isoTilesToUpdate = new HashSet<IIsoTile>();
-            HashSet<IQuadTile> quadTilesToUpdate = new HashSet<IQuadTile>();
-            HashSet<ITerrainObject> terrainObjectsToUpdate = new HashSet<ITerrainObject>();
-            HashSet<EntitySnapshot> entitySnapshotsToUpdate = new HashSet<EntitySnapshot>();
+            RCSet<IIsoTile> isoTilesToUpdate = new RCSet<IIsoTile>();
+            RCSet<IQuadTile> quadTilesToUpdate = new RCSet<IQuadTile>();
+            RCSet<ITerrainObject> terrainObjectsToUpdate = new RCSet<ITerrainObject>();
+            RCSet<EntitySnapshot> entitySnapshotsToUpdate = new RCSet<EntitySnapshot>();
             for (int column = this.quadTileWindow.Left; column < this.quadTileWindow.Right; column++)
             {
                 for (int row = this.quadTileWindow.Top; row < this.quadTileWindow.Bottom; row++)
@@ -305,8 +305,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
 
             /// Collect the currently visible map objects.
-            HashSet<MapObject> objectsOnMap = this.ActiveScenario.GetMapObjects(this.mapWindowBC.AttachedWindow.WindowMapCoords);
-            HashSet<MapObject> mapObjectsToUpdate = new HashSet<MapObject>();
+            RCSet<MapObject> objectsOnMap = this.ActiveScenario.GetMapObjects(this.mapWindowBC.AttachedWindow.WindowMapCoords);
+            RCSet<MapObject> mapObjectsToUpdate = new RCSet<MapObject>();
             foreach (MapObject mapObj in objectsOnMap)
             {
                 bool breakLoop = false;
@@ -343,8 +343,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             /// Collect the isometric & quadratic tiles that need to be updated.
             IMapAccess map = this.ActiveScenario.Map;
-            HashSet<IIsoTile> isoTilesToUpdate = new HashSet<IIsoTile>();
-            HashSet<ITerrainObject> terrainObjectsToUpdate = new HashSet<ITerrainObject>();
+            RCSet<IIsoTile> isoTilesToUpdate = new RCSet<IIsoTile>();
+            RCSet<ITerrainObject> terrainObjectsToUpdate = new RCSet<ITerrainObject>();
             for (int column = this.quadTileWindow.Left; column < this.quadTileWindow.Right; column++)
             {
                 for (int row = this.quadTileWindow.Top; row < this.quadTileWindow.Bottom; row++)
@@ -358,7 +358,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
 
             /// Collect the currently visible map objects.
-            HashSet<MapObject> mapObjectsToUpdate = this.ActiveScenario.GetMapObjects(this.mapWindowBC.AttachedWindow.WindowMapCoords);
+            RCSet<MapObject> mapObjectsToUpdate = this.ActiveScenario.GetMapObjects(this.mapWindowBC.AttachedWindow.WindowMapCoords);
 
             /// Create the calculated visibility info.
             return new FowVisibilityInfo
@@ -377,7 +377,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <param name="isoTile">The isometric tile to add.</param>
         /// <param name="isoTileUpdateList">The isometric update list.</param>
         /// <param name="quadTileUpdateList">The quadratic update list.</param>
-        private void AddIsoTileToUpdate(IIsoTile isoTile, HashSet<IIsoTile> isoTileUpdateList, HashSet<IQuadTile> quadTileUpdateList)
+        private void AddIsoTileToUpdate(IIsoTile isoTile, RCSet<IIsoTile> isoTileUpdateList, RCSet<IQuadTile> quadTileUpdateList)
         {
             if (isoTile != null && isoTileUpdateList.Add(isoTile))
             {
@@ -399,7 +399,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <param name="terrainObj">The terrain object to add.</param>
         /// <param name="terrainObjUpdateList">The terrain object update list.</param>
         /// <param name="quadTileUpdateList">The quadratic update list.</param>
-        private void AddTerrainObjectToUpdate(ITerrainObject terrainObj, HashSet<ITerrainObject> terrainObjUpdateList, HashSet<IQuadTile> quadTileUpdateList)
+        private void AddTerrainObjectToUpdate(ITerrainObject terrainObj, RCSet<ITerrainObject> terrainObjUpdateList, RCSet<IQuadTile> quadTileUpdateList)
         {
             if (terrainObj != null && terrainObjUpdateList.Add(terrainObj))
             {
@@ -425,7 +425,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <param name="snapshot">The entity snapshot to add.</param>
         /// <param name="snapshotUpdateList">The snapshot update list.</param>
         /// <param name="quadTileUpdateList">The quadratic update list.</param>
-        private void AddEntitySnapshotToUpdate(EntitySnapshot snapshot, HashSet<EntitySnapshot> snapshotUpdateList, HashSet<IQuadTile> quadTileUpdateList)
+        private void AddEntitySnapshotToUpdate(EntitySnapshot snapshot, RCSet<EntitySnapshot> snapshotUpdateList, RCSet<IQuadTile> quadTileUpdateList)
         {
             if (snapshot != null && snapshotUpdateList.Add(snapshot))
             {
@@ -451,7 +451,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <param name="mapObj">The map object to add.</param>
         /// <param name="mapObjectUpdateList">The map object update list.</param>
         /// <param name="quadTileUpdateList">The quadratic update list.</param>
-        private void AddMapObjectToUpdate(MapObject mapObj, HashSet<MapObject> mapObjectUpdateList, HashSet<IQuadTile> quadTileUpdateList)
+        private void AddMapObjectToUpdate(MapObject mapObj, RCSet<MapObject> mapObjectUpdateList, RCSet<IQuadTile> quadTileUpdateList)
         {
             if (mapObj != null && mapObjectUpdateList.Add(mapObj))
             {

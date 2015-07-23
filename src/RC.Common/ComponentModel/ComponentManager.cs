@@ -29,7 +29,7 @@ namespace RC.Common.ComponentModel
                 if (registeredComponents.ContainsKey(name)) { throw new ComponentModelException(string.Format("Component with name '{0}' has already been registered!", name)); }
 
                 registeredComponents.Add(name, assembly);
-                if (!componentAssemblies.ContainsKey(assembly)) { componentAssemblies.Add(assembly, new HashSet<string>()); }
+                if (!componentAssemblies.ContainsKey(assembly)) { componentAssemblies.Add(assembly, new RCSet<string>()); }
                 componentAssemblies[assembly].Add(name);
             }
         }
@@ -77,7 +77,7 @@ namespace RC.Common.ComponentModel
             onlyInterfaceQueryIsAllowed = true;
 
             /// Instantiate every registered components.
-            foreach (KeyValuePair<string, HashSet<string>> compAssembly in componentAssemblies)
+            foreach (KeyValuePair<string, RCSet<string>> compAssembly in componentAssemblies)
             {
                 try
                 {
@@ -103,7 +103,7 @@ namespace RC.Common.ComponentModel
             }
 
             /// Call IPlugin.Install on plugins implementing the IPlugin interface.
-            foreach (KeyValuePair<Type, HashSet<object>> pluginsOfComponent in createdPlugins)
+            foreach (KeyValuePair<Type, RCSet<object>> pluginsOfComponent in createdPlugins)
             {
                 foreach (object plugin in pluginsOfComponent.Value)
                 {
@@ -169,7 +169,7 @@ namespace RC.Common.ComponentModel
             componentsAreRunning = false;
 
             /// Call IPlugin.Uninstall on plugins implementing the IPlugin interface.
-            foreach (KeyValuePair<Type, HashSet<object>> pluginsOfComponent in createdPlugins)
+            foreach (KeyValuePair<Type, RCSet<object>> pluginsOfComponent in createdPlugins)
             {
                 foreach (object plugin in pluginsOfComponent.Value)
                 {
@@ -224,7 +224,7 @@ namespace RC.Common.ComponentModel
         /// </summary>
         /// <param name="assembly">The assembly of the components.</param>
         /// <param name="components">The components to create.</param>
-        private static void CreateComponentsFromAssembly(string assembly, HashSet<string> components)
+        private static void CreateComponentsFromAssembly(string assembly, RCSet<string> components)
         {
             TraceManager.WriteAllTrace(string.Format("Creating components of assembly '{0}'.", assembly), ComponentManager.COMPONENT_MGR_INFO);
 
@@ -266,7 +266,7 @@ namespace RC.Common.ComponentModel
                     if (!componentIfaces.ContainsKey(pluginAttr.ComponentInterface)) { continue; }
 
                     object pluginInstance = Activator.CreateInstance(type);
-                    if (!createdPlugins.ContainsKey(pluginAttr.ComponentInterface)) { createdPlugins.Add(pluginAttr.ComponentInterface, new HashSet<object>()); }
+                    if (!createdPlugins.ContainsKey(pluginAttr.ComponentInterface)) { createdPlugins.Add(pluginAttr.ComponentInterface, new RCSet<object>()); }
                     createdPlugins[pluginAttr.ComponentInterface].Add(pluginInstance);
                 }
             }
@@ -421,12 +421,12 @@ namespace RC.Common.ComponentModel
         /// <summary>
         /// List of the registered components groupped by the assemblies where they are implemented.
         /// </summary>
-        private static Dictionary<string, HashSet<string>> componentAssemblies = new Dictionary<string, HashSet<string>>();
+        private static Dictionary<string, RCSet<string>> componentAssemblies = new Dictionary<string, RCSet<string>>();
 
         /// <summary>
         /// List of the registered plugin assemblies.
         /// </summary>
-        private static HashSet<string> pluginAssemblies = new HashSet<string>();
+        private static RCSet<string> pluginAssemblies = new RCSet<string>();
 
         /// <summary>
         /// List of the created components mapped by their name.
@@ -436,7 +436,7 @@ namespace RC.Common.ComponentModel
         /// <summary>
         /// List of the created plugins mapped by the component interfaces they extend.
         /// </summary>
-        private static Dictionary<Type, HashSet<object>> createdPlugins = new Dictionary<Type, HashSet<object>>();
+        private static Dictionary<Type, RCSet<object>> createdPlugins = new Dictionary<Type, RCSet<object>>();
 
         /// <summary>
         /// List of the created components mapped by the component interfaces they implement.

@@ -81,12 +81,12 @@ namespace RC.Engine.Maps.Core
         public ITileSet Tileset { get { return this.tileset; } }
 
         /// <see cref="ITerrainObjectConstraint.Check"/>
-        public HashSet<RCIntVector> Check(IMapAccess map, RCIntVector position)
+        public RCSet<RCIntVector> Check(IMapAccess map, RCIntVector position)
         {
             if (map == null) { throw new ArgumentNullException("map"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
+            RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
             RCIntVector absQuadCoords = position + this.quadCoords;
             if (absQuadCoords.X >= 0 && absQuadCoords.X < map.Size.X &&
                 absQuadCoords.Y >= 0 && absQuadCoords.Y < map.Size.Y)

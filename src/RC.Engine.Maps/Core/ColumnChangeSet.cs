@@ -25,9 +25,9 @@ namespace RC.Engine.Maps.Core
         }
 
         /// <see cref="CellDataChangeSetBase.CollectTargetSet"/>
-        protected override HashSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
+        protected override RCSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
         {
-            HashSet<RCIntVector> targetset = new HashSet<RCIntVector>();
+            RCSet<RCIntVector> targetset = new RCSet<RCIntVector>();
             for (int y = 0; y < target.CellSize.Y; y++)
             {
                 RCIntVector index = new RCIntVector(this.targetCol, y);

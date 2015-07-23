@@ -5,7 +5,7 @@
       <area>0.75;0.75</area>
       <speed>8.0</speed>
     </generalData>
-    <launchAnimation>Launch</launchAnimation>
+    <launchAnimation launchDelay="2">Launch</launchAnimation>
     <flyingAnimation>Flying</flyingAnimation>
     <trailAnimation frequency="5">Trail</trailAnimation>
     <impactAnimation>Impact</impactAnimation>
@@ -39,6 +39,7 @@
       </animation>
       <animation name="Flying">
         <frame sprites="Flying" />
+		<repeat/>
       </animation>
       <animation name="Trail">
         <frame sprites="Trail0" duration="2" />

@@ -13,15 +13,19 @@
     <animationPalette>
       <animation name="Amount_Full" isPreview="true">
         <frame sprites="Amount_Full" />
+		<repeat/>
       </animation>
       <animation name="Amount_0_200">
         <frame sprites="Amount_0_200" />
+		<repeat/>
       </animation>
       <animation name="Amount_200_400">
         <frame sprites="Amount_200_400" />
+		<repeat/>
       </animation>
       <animation name="Amount_400_700">
         <frame sprites="Amount_400_700" />
+		<repeat/>
       </animation>
     </animationPalette>
   </customType>
@@ -52,18 +56,16 @@
     </spritePalette>
     <animationPalette>
       <animation name="Normal" isPreview="true">
-        <label name="Begin" />
         <frame sprites="Crater,NormalSmokeL0,NormalSmokeM0,NormalSmokeR0" duration="10" />
         <frame sprites="Crater,NormalSmokeL1,NormalSmokeM1,NormalSmokeR1" duration="10" />
         <frame sprites="Crater,NormalSmokeL2,NormalSmokeM2,NormalSmokeR2" duration="10" />
-        <goto label="Begin" />
+		<repeat/>
       </animation>
       <animation name="Depleted">
-        <label name="Begin" />
         <frame sprites="Crater,DepletedSmokeL0,DepletedSmokeM0,DepletedSmokeR0" duration="10" />
         <frame sprites="Crater,DepletedSmokeL1,DepletedSmokeM1,DepletedSmokeR1" duration="10" />
         <frame sprites="Crater,DepletedSmokeL2,DepletedSmokeM2,DepletedSmokeR2" duration="10" />
-        <goto label="Begin" />
+		<repeat/>
       </animation>
     </animationPalette>
   </customType>
@@ -77,6 +79,7 @@
     <animationPalette>
       <animation name="Show" isPreview="true">
         <frame sprites="StartLocation" />
+		<repeat/>
       </animation>
     </animationPalette>
   </customType>

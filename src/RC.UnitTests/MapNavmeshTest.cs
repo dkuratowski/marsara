@@ -198,10 +198,10 @@ namespace RC.UnitTests
             {
                 this.ComparePolygons(nodesA[nodeIdx].Polygon, nodesB[nodeIdx].Polygon);
 
-                HashSet<int> neighbourIndicesA = new HashSet<int>(
+                RCSet<int> neighbourIndicesA = new RCSet<int>(
                     from neighbour in nodesA[nodeIdx].Neighbours
                     select nodesA.IndexOf(neighbour));
-                HashSet<int> neighbourIndicesB = new HashSet<int>(
+                RCSet<int> neighbourIndicesB = new RCSet<int>(
                     from neighbour in nodesB[nodeIdx].Neighbours
                     select nodesB.IndexOf(neighbour));
 

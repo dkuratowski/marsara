@@ -176,7 +176,7 @@ namespace RC.Engine.Maps.Core
         /// <returns>The list of the vertices in the given navmesh.</returns>
         private List<RCNumVector> CreateVertexListFromNavmesh(INavMesh navmesh)
         {
-            HashSet<RCNumVector> vertices = new HashSet<RCNumVector>();
+            RCSet<RCNumVector> vertices = new RCSet<RCNumVector>();
             List<RCNumVector> vertexList = new List<RCNumVector>();
             foreach (INavMeshNode node in navmesh.Nodes)
             {

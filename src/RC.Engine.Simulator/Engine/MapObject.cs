@@ -7,6 +7,7 @@ using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Commands;
 using RC.Engine.Simulator.ComponentInterfaces;
+using RC.Engine.Simulator.Core;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.MotionControl;
 using RC.Engine.Simulator.PublicInterfaces;
@@ -16,32 +17,28 @@ namespace RC.Engine.Simulator.Engine
     /// <summary>
     /// Represents a visualization of a scenario element.
     /// </summary>
-    public class MapObject : HeapedObject, ISearchTreeContent
+    public class MapObject : ISearchTreeContent
     {
         /// <summary>
         /// Constructs a MapObject instance.
         /// </summary>
-        /// <param name="owner">Reference to the scenario element that owns this visualization.</param>
+        /// <param name="owner">Reference to the scenario element that owns this map object.</param>
         public MapObject(ScenarioElement owner)
         {
             if (owner == null) { throw new ArgumentNullException("owner"); }
 
-            this.owner = this.ConstructField<ScenarioElement>("owner");
-            this.location = this.ConstructField<RCNumRectangle>("location");
-
             this.currentAnimations = new List<AnimationPlayer>();
             this.quadraticPositionCache = new CachedValue<RCIntRectangle>(() =>
             {
-                if (this.location.Read() == RCNumRectangle.Undefined) { return RCIntRectangle.Undefined; }
-                RCIntVector topLeft = this.location.Read().Location.Round();
-                RCIntVector bottomRight = (this.location.Read().Location + this.location.Read().Size).Round();
+                if (this.location == RCNumRectangle.Undefined) { return RCIntRectangle.Undefined; }
+                RCIntVector topLeft = this.location.Location.Round();
+                RCIntVector bottomRight = (this.location.Location + this.location.Size).Round();
                 RCIntRectangle cellRect = new RCIntRectangle(topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y);
-                return this.owner.Read().Scenario.Map.CellToQuadRect(cellRect);
+                return this.owner.Scenario.Map.CellToQuadRect(cellRect);
             });
 
-            this.owner.Write(owner);
-            this.location.Write(RCNumRectangle.Undefined);
-            this.location.ValueChanged += (sender, args) => this.quadraticPositionCache.Invalidate();
+            this.owner = owner;
+            this.location = RCNumRectangle.Undefined;
         }
 
         #region Public interface
@@ -59,7 +56,7 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Gets the reference to the scenario element that owns this map object.
         /// </summary>
-        public ScenarioElement Owner { get { return this.owner.Read(); } }
+        public ScenarioElement Owner { get { return this.owner; } }
 
         /// <summary>
         /// Sets the location of this map object.
@@ -69,53 +66,45 @@ namespace RC.Engine.Simulator.Engine
         {
             if (newLocation == RCNumRectangle.Undefined) { throw new ArgumentNullException("newLocation"); }
 
-            if (this.BoundingBoxChanging != null) { this.BoundingBoxChanging(this); }
-            this.location.Write(newLocation);
-            if (this.BoundingBoxChanged != null) { this.BoundingBoxChanged(this); }
+            if (this.location != newLocation)
+            {
+                if (this.BoundingBoxChanging != null) { this.BoundingBoxChanging(this); }
+                this.location = newLocation;
+                this.quadraticPositionCache.Invalidate();
+                if (this.BoundingBoxChanged != null) { this.BoundingBoxChanged(this); }
+            }
         }
 
         /// <summary>
-        /// Sets the current animation of this map object with undefined direction.
+        /// Sets the current animation of this map object with the given heading vector.
         /// </summary>
         /// <param name="animationName">The name of the animation to play.</param>
-        public void SetCurrentAnimation(string animationName)
-        {
-            this.SetCurrentAnimation(animationName, MapDirection.Undefined);
-        }
-
-        /// <summary>
-        /// Sets the current animation of this map object with the given direction.
-        /// </summary>
-        /// <param name="animationName">The name of the animation to play.</param>
-        /// <param name="direction">The direction of the animation.</param>
-        public void SetCurrentAnimation(string animationName, MapDirection direction)
+        /// <param name="headingVector">The heading vector.</param>
+        public void SetCurrentAnimation(string animationName, IValueRead<RCNumVector> headingVector)
         {
             if (animationName == null) { throw new ArgumentNullException("animationName"); }
-            this.SetCurrentAnimations(new List<string>() { animationName }, direction);
+            if (headingVector == null) { throw new ArgumentNullException("headingVector"); }
+            this.SetCurrentAnimations(new List<Tuple<string, IValueRead<RCNumVector>>>() { Tuple.Create(animationName, headingVector) });
         }
 
         /// <summary>
-        /// Sets the current animations of this map object with undefined direction.
+        /// Sets the current animations of this map object with the given heading vectors.
         /// </summary>
-        /// <param name="animationNames">The names of the animations to play.</param>
-        public void SetCurrentAnimations(List<string> animationNames)
+        /// <param name="animations">The names and the heading vectors of the animations to play.</param>
+        public void SetCurrentAnimations(List<Tuple<string, IValueRead<RCNumVector>>> animations)
         {
-            this.SetCurrentAnimations(animationNames, MapDirection.Undefined);
-        }
-
-        /// <summary>
-        /// Sets the current animations of this map object with the given direction.
-        /// </summary>
-        /// <param name="animationNames">The names of the animations to play.</param>
-        /// <param name="direction">The direction of the animations.</param>
-        public void SetCurrentAnimations(List<string> animationNames, MapDirection direction)
-        {
-            if (animationNames == null) { throw new ArgumentNullException("animationNames"); }
+            if (animations == null) { throw new ArgumentNullException("animations"); }
 
             this.currentAnimations.Clear();
-            foreach (string name in animationNames)
+            foreach (Tuple<string, IValueRead<RCNumVector>> animation in animations)
             {
-                this.currentAnimations.Add(new AnimationPlayer(this.owner.Read().ElementType.AnimationPalette.GetAnimation(name), direction));
+                if (animation.Item1 == null) { throw new ArgumentException("Name of an animation cannot be null.", "animations"); }
+                if (animation.Item2 == null) { throw new ArgumentException("Heading vector of an animation cannot be null.", "animations"); }
+
+                this.currentAnimations.Add(
+                    new AnimationPlayer(
+                        this.owner.ElementType.AnimationPalette.GetAnimation(animation.Item1),
+                        new MapDirValueSrcWrapper(new HeadingToMapDirConverter(animation.Item2))));
             }
         }
 
@@ -126,7 +115,7 @@ namespace RC.Engine.Simulator.Engine
         /// <see cref="ISearchTreeContent.BoundingBox"/>
         public RCNumRectangle BoundingBox
         {
-            get { return this.location.Read(); }
+            get { return this.location; }
         }
 
         /// <see cref="ISearchTreeContent.BoundingBoxChanging"/>
@@ -137,19 +126,15 @@ namespace RC.Engine.Simulator.Engine
 
         #endregion ISearchTreeContent members
 
-        #region Heaped members
-
         /// <summary>
         /// The location of this map object on the map.
         /// </summary>
-        private readonly HeapedValue<RCNumRectangle> location;
+        private RCNumRectangle location;
 
         /// <summary>
         /// Reference to the scenario element that owns this map object.
         /// </summary>
-        private readonly HeapedValue<ScenarioElement> owner;
-
-        #endregion Heaped members
+        private readonly ScenarioElement owner;
 
         /// <summary>
         /// The player of the currently active animations of this map object.

@@ -56,12 +56,12 @@
       </animation>
       <animation name="Normal" isPreview="true">
         <frame sprites="LeftLeg,RightLeg,MainPart" />
+		<repeat/>
       </animation>
       <animation name="Producing">
-		<label name="Begin" />
         <frame sprites="LeftLeg,RightLeg,MainPart,WindowLight" duration="24" />
         <frame sprites="LeftLeg,RightLeg,MainPart" duration="10" />
-		<goto label="Begin" />
+		<repeat/>
       </animation>
       <animation name="TakingOff">
         <frame sprites="LeftLeg,RightLeg,MainPart,Door_Closing0" duration="12" />
@@ -71,6 +71,7 @@
       </animation>
       <animation name="Flying">
         <frame sprites="MainPart,Door_Closed" />
+		<repeat/>
       </animation>
       <animation name="Landing">
         <frame sprites="LeftLeg_TakingOff2,RightLeg_TakingOff2,MainPart,Door_Closed" duration="20" />
@@ -95,16 +96,14 @@
         <frame sprites="DestructionBurn5" duration="4" />
       </animation>
 	  <animation name="SmallBurn">
-		<label name="Begin" />
 		<frame sprites="FlameL0,FlameR0" duration="10" />
 		<frame sprites="FlameL1,FlameR1" duration="10" />
-		<goto label="Begin" />
+		<repeat/>
 	  </animation>
 	  <animation name="HeavyBurn">
-		<label name="Begin" />
 		<frame sprites="FlameLL0,FlameL0,FlameM0,FlameR0,FlameRR0" duration="10" />
 		<frame sprites="FlameLL1,FlameL1,FlameM1,FlameR1,FlameRR1" duration="10" />
-		<goto label="Begin" />
+		<repeat/>
 	  </animation>
     </animationPalette>
   </buildingType>

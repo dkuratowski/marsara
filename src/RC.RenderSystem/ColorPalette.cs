@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using RC.Common;
 
 namespace RC.RenderSystem
 {
@@ -37,7 +38,7 @@ namespace RC.RenderSystem
             }
 
             /// Saving the color palette.
-            HashSet<Color> paletteSet = new HashSet<Color>();
+            RCSet<Color> paletteSet = new RCSet<Color>();
             foreach (Color c in palette)
             {
                 if (!paletteSet.Contains(c))
@@ -81,7 +82,7 @@ namespace RC.RenderSystem
             /// Saving the special colors.
             if (null != specialColors)
             {
-                HashSet<Color> specColorSet = new HashSet<Color>();
+                RCSet<Color> specColorSet = new RCSet<Color>();
                 foreach (Color c in specialColors)
                 {
                     if (!specColorSet.Contains(c))

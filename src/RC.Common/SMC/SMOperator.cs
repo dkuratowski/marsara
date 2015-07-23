@@ -138,7 +138,7 @@ namespace RC.Common.SMC
         /// Collects all included states from this operator and the included operators.
         /// </summary>
         /// <param name="states">This set will contain the states.</param>
-        public void CollectAllStates(ref HashSet<ISMState> states)
+        public void CollectAllStates(ref RCSet<ISMState> states)
         {
             if (states == null) { throw new ArgumentNullException("states"); }
 
@@ -162,7 +162,7 @@ namespace RC.Common.SMC
 
             int numOfOperands = 0;
 
-            this.includedStates = new HashSet<ISMState>();
+            this.includedStates = new RCSet<ISMState>();
             if (null != inclStates)
             {
                 foreach (ISMState state in inclStates)
@@ -171,7 +171,7 @@ namespace RC.Common.SMC
                 }
                 numOfOperands += this.includedStates.Count;
             }
-            this.includedOperators = new HashSet<SMOperator>();
+            this.includedOperators = new RCSet<SMOperator>();
             if (null != inclOperators)
             {
                 foreach (SMOperator op in inclOperators)
@@ -200,12 +200,12 @@ namespace RC.Common.SMC
         /// <summary>
         /// The included states of this operator.
         /// </summary>
-        private HashSet<ISMState> includedStates;
+        private RCSet<ISMState> includedStates;
 
         /// <summary>
         /// The included operators of this operator.
         /// </summary>
-        private HashSet<SMOperator> includedOperators;
+        private RCSet<SMOperator> includedOperators;
 
         /// <summary>
         /// The type of this operator.

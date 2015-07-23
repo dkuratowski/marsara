@@ -30,13 +30,13 @@ namespace RC.Engine.Simulator.Engine
         /// Locates the entities that are in the sight-range of the owner entity.
         /// </summary>
         /// <returns>The entities that are in the sight-range of the owner entity.</returns>
-        public HashSet<Entity> LocateEntities()
+        public RCSet<Entity> LocateEntities()
         {
             /// Collect the entities in sight-range.
-            HashSet<Entity> retList = new HashSet<Entity>();
-            HashSet<Entity> entitiesToCheck = this.owner.Read().Scenario.GetElementsOnMap<Entity>(this.owner.Read().PositionValue.Read(), this.GetSightRangeOfOwner());
+            RCSet<Entity> retList = new RCSet<Entity>();
+            RCSet<Entity> entitiesToCheck = this.owner.Read().Scenario.GetElementsOnMap<Entity>(this.owner.Read().MotionControl.PositionVector.Read(), this.GetSightRangeOfOwner());
             entitiesToCheck.Remove(this.owner.Read());
-            HashSet<RCIntVector> visibleQuadCoords = this.VisibleQuadCoords;
+            RCSet<RCIntVector> visibleQuadCoords = this.VisibleQuadCoords;
             foreach (Entity entity in entitiesToCheck)
             {
                 bool breakFlag = false;
@@ -71,9 +71,9 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <param name="searchAreaRadius">The radius of the search area given in quadratic tiles.</param>
         /// <returns>The entities that are in the search area.</returns>
-        public HashSet<Entity> SearchNearbyEntities(int searchAreaRadius)
+        public RCSet<Entity> SearchNearbyEntities(int searchAreaRadius)
         {
-            HashSet<Entity> nearbyEntities = this.owner.Read().Scenario.GetElementsOnMap<Entity>(this.owner.Read().PositionValue.Read(), searchAreaRadius);
+            RCSet<Entity> nearbyEntities = this.owner.Read().Scenario.GetElementsOnMap<Entity>(this.owner.Read().MotionControl.PositionVector.Read(), searchAreaRadius);
             nearbyEntities.Remove(this.owner.Read());
             return nearbyEntities;
         }
@@ -82,17 +82,17 @@ namespace RC.Engine.Simulator.Engine
         /// Gets the coordinates of the quadratic tiles that are currently visible by this entity.
         /// </summary>
         /// TODO: sight-range can vary based on the upgrades!
-        public HashSet<RCIntVector> VisibleQuadCoords
+        public RCSet<RCIntVector> VisibleQuadCoords
         {
             get
             {
-                IQuadTile currentQuadTile = this.owner.Read().Scenario.Map.GetCell(this.owner.Read().PositionValue.Read().Round()).ParentQuadTile;
+                IQuadTile currentQuadTile = this.owner.Read().Scenario.Map.GetCell(this.owner.Read().MotionControl.PositionVector.Read().Round()).ParentQuadTile;
                 if (this.sightRangeCache == null || this.sightRangeCache.Item1 != currentQuadTile)
                 {
-                    this.sightRangeCache = new Tuple<IQuadTile, HashSet<RCIntVector>>(currentQuadTile, this.CalculateVisibleQuadCoords());
+                    this.sightRangeCache = new Tuple<IQuadTile, RCSet<RCIntVector>>(currentQuadTile, this.CalculateVisibleQuadCoords());
                 }
 
-                return new HashSet<RCIntVector>(this.sightRangeCache.Item2);
+                return new RCSet<RCIntVector>(this.sightRangeCache.Item2);
             }
         }
 
@@ -100,10 +100,10 @@ namespace RC.Engine.Simulator.Engine
         /// Calculates the quadratic coordinates currently visible by the owner entity.
         /// </summary>
         /// <returns>The quadratic coordinates currently visible by the owner entity.</returns>
-        private HashSet<RCIntVector> CalculateVisibleQuadCoords()
+        private RCSet<RCIntVector> CalculateVisibleQuadCoords()
         {
-            IQuadTile currentQuadTile = this.owner.Read().Scenario.Map.GetCell(this.owner.Read().PositionValue.Read().Round()).ParentQuadTile;
-            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
+            IQuadTile currentQuadTile = this.owner.Read().Scenario.Map.GetCell(this.owner.Read().MotionControl.PositionVector.Read().Round()).ParentQuadTile;
+            RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
             foreach (RCIntVector relativeQuadCoord in this.owner.Read().ElementType.RelativeQuadCoordsInSight)
             {
                 RCIntVector otherQuadCoords = currentQuadTile.MapCoords + relativeQuadCoord;
@@ -138,6 +138,6 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Data structure to store the calculated sight range of the owner entity for the last known quadratic tile.
         /// </summary>
-        private Tuple<IQuadTile, HashSet<RCIntVector>> sightRangeCache;
+        private Tuple<IQuadTile, RCSet<RCIntVector>> sightRangeCache;
     }
 }

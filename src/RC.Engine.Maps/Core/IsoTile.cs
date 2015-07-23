@@ -31,8 +31,8 @@ namespace RC.Engine.Maps.Core
             this.neighbours = new IsoTile[8];
             this.detachedNeighbours = new List<Tuple<IsoTile, MapDirection>>();
             this.detachedCells = new List<Cell>();
-            this.cuttingQuadTiles = new HashSet<QuadTile>();
-            this.detachedCuttingQuadTiles = new HashSet<QuadTile>();
+            this.cuttingQuadTiles = new RCSet<QuadTile>();
+            this.detachedCuttingQuadTiles = new RCSet<QuadTile>();
 
             this.cells = new Cell[MapStructure.QUAD_PER_ISO_VERT * MapStructure.NAVCELL_PER_QUAD,
                                         MapStructure.QUAD_PER_ISO_HORZ * MapStructure.NAVCELL_PER_QUAD];
@@ -500,12 +500,12 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// List of all quadratic tiles that cuts this isometric tile.
         /// </summary>
-        private HashSet<QuadTile> cuttingQuadTiles;
+        private RCSet<QuadTile> cuttingQuadTiles;
 
         /// <summary>
         /// List of the detached quadratic tiles that cuts this isometric tile.
         /// </summary>
-        private HashSet<QuadTile> detachedCuttingQuadTiles;
+        private RCSet<QuadTile> detachedCuttingQuadTiles;
 
         /// <summary>
         /// List of the detached neighbours and their direction.

@@ -23,7 +23,7 @@ namespace RC.Engine.Maps.Core
 
             /// Create the necessary data structures for the segments.
             this.segmentQueue = new Queue<PolylineSegment>();
-            this.segmentQueueSet = new HashSet<PolylineSegment>();
+            this.segmentQueueSet = new RCSet<PolylineSegment>();
             this.segmentList = new Dictionary<List<RCNumVector>, Dictionary<int, PolylineSegment>>();
             RCNumber minX = 0, maxX = 0, minY = 0, maxY = 0;
             bool firstIteration = true;
@@ -162,7 +162,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// This set contains the segments that are currently in the FIFO list.
         /// </summary>
-        private HashSet<PolylineSegment> segmentQueueSet;
+        private RCSet<PolylineSegment> segmentQueueSet;
 
         /// <summary>
         /// The list of the collected segments.

@@ -20,16 +20,16 @@ namespace RC.Engine.Simulator.Commands
         public string EntityType { get { return this.entityType; } }
 
         /// <see cref="ICommandExecutionFactory.GetCommandAvailability"/>
-        public AvailabilityEnum GetCommandAvailability(HashSet<Entity> entitySet)
+        public AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitySet)
         {
-            HashSet<T> entitiesToHandle = this.CollectEntitiesToHandle(entitySet);
+            RCSet<T> entitiesToHandle = this.CollectEntitiesToHandle(entitySet);
             return this.GetCommandAvailability(entitiesToHandle, entitySet);
         }
 
         /// <see cref="ICommandExecutionFactory.StartCommandExecution"/>
-        public void StartCommandExecution(HashSet<Entity> entitySet, RCNumVector targetPosition, int targetEntityID, string parameter)
+        public void StartCommandExecution(RCSet<Entity> entitySet, RCNumVector targetPosition, int targetEntityID, string parameter)
         {
-            HashSet<T> entitiesToHandle = this.CollectEntitiesToHandle(entitySet);
+            RCSet<T> entitiesToHandle = this.CollectEntitiesToHandle(entitySet);
             foreach (CmdExecutionBase commandExecution in this.CreateCommandExecutions(entitiesToHandle, entitySet, targetPosition, targetEntityID, parameter))
             {
                 commandExecution.AttachToScenario();
@@ -60,7 +60,7 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="entitiesToHandle">The subset of the full entity set that this factory has to handle.</param>
         /// <param name="fullEntitySet">The full entity set.</param>
         /// <returns>The availability of the command from the point of view of this factory for the given entity set.</returns>
-        protected abstract AvailabilityEnum GetCommandAvailability(HashSet<T> entitiesToHandle, HashSet<Entity> fullEntitySet);
+        protected abstract AvailabilityEnum GetCommandAvailability(RCSet<T> entitiesToHandle, RCSet<Entity> fullEntitySet);
 
         /// <summary>
         /// Creates the appropriate command executions on the given entity set with the given parameters.
@@ -70,7 +70,7 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="targetPosition">The target position.</param>
         /// <param name="targetEntityID">The ID of the target entity or -1 if undefined.</param>
         /// <param name="parameter">The optional parameter.</param>
-        protected abstract IEnumerable<CmdExecutionBase> CreateCommandExecutions(HashSet<T> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID, string parameter);
+        protected abstract IEnumerable<CmdExecutionBase> CreateCommandExecutions(RCSet<T> entitiesToHandle, RCSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID, string parameter);
 
         #endregion Overridables
 
@@ -79,9 +79,9 @@ namespace RC.Engine.Simulator.Commands
         /// </summary>
         /// <param name="entitySet">The entity set.</param>
         /// <returns>The collected entities to be handled by this factory.</returns>
-        private HashSet<T> CollectEntitiesToHandle(HashSet<Entity> entitySet)
+        private RCSet<T> CollectEntitiesToHandle(RCSet<Entity> entitySet)
         {
-            HashSet<T> entitiesToHandle = new HashSet<T>();
+            RCSet<T> entitiesToHandle = new RCSet<T>();
             foreach (Entity entity in entitySet)
             {
                 if (entity.ElementType.Name == this.entityType) { entitiesToHandle.Add((T)entity); }

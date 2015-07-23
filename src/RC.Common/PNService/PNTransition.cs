@@ -18,7 +18,7 @@ namespace RC.Common.PNService
             this.index = index;
             this.group = group;
             this.outputEdges = new Dictionary<PNPlace, int>();
-            this.inputEdges = new HashSet<PNPlace>();
+            this.inputEdges = new RCSet<PNPlace>();
             this.fireConditions = new Dictionary<PNPlace, bool>();
         }
 
@@ -139,7 +139,7 @@ namespace RC.Common.PNService
         /// <summary>
         /// List of the source places of this transition.
         /// </summary>
-        private HashSet<PNPlace> inputEdges;
+        private RCSet<PNPlace> inputEdges;
 
         /// <summary>
         /// This map tells whether or not there are enough tokens at the input places to fire this transition.

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using RC.Common;
 using RC.Common.SMC;
 using RC.Common.Diagnostics;
 
@@ -77,7 +78,7 @@ namespace RC.DssServices
             {
                 this.Engaging.AddInternalTrigger(this.Engaged,
                                                  this.StopConnReqTimeout,
-                                                 new HashSet<ISMState>(new ISMState[1] { this.session.SendingSetupStepRQ }));
+                                                 new RCSet<ISMState>(new ISMState[1] { this.session.SendingSetupStepRQ }));
 
                 this.internalTriggersCreated = true;
             }

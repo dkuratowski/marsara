@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 
 namespace RC.App.PresLogic
 {
@@ -24,8 +25,8 @@ namespace RC.App.PresLogic
             if (firstConnector == null) { throw new ArgumentNullException("firstConnector"); }
             if (furtherConnectors == null) { throw new ArgumentNullException("furtherConnectors"); }
 
-            this.connectedConnectors = new HashSet<IGameConnector>();
-            this.disconnectedConnectors = new HashSet<IGameConnector>();
+            this.connectedConnectors = new RCSet<IGameConnector>();
+            this.disconnectedConnectors = new RCSet<IGameConnector>();
 
             /// Handle the first connector.
             if (firstConnector.ConnectionStatus != ConnectionStatusEnum.Offline) { throw new ArgumentException("All aggregated connectors shall be in the state ConnectionStatusEnum.Offline!", "firstConnector"); }
@@ -146,12 +147,12 @@ namespace RC.App.PresLogic
         /// <summary>
         /// List of the connected connectors.
         /// </summary>
-        private readonly HashSet<IGameConnector> connectedConnectors;
+        private readonly RCSet<IGameConnector> connectedConnectors;
 
         /// <summary>
         /// List of the disconnected connectors.
         /// </summary>
-        private readonly HashSet<IGameConnector> disconnectedConnectors;
+        private readonly RCSet<IGameConnector> disconnectedConnectors;
 
         /// <summary>
         /// The current status of this connector.

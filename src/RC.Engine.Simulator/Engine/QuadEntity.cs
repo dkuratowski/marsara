@@ -53,7 +53,7 @@ namespace RC.Engine.Simulator.Engine
             if (attachedToMap)
             {
                 this.lastKnownQuadCoords.Write(topLeftTile.MapCoords);
-                this.PositionValue.ValueChanged += this.OnPositionChanged;
+                this.MotionControl.PositionVector.ValueChanged += this.OnPositionChanged;
                 this.isBoundToGrid.Write(0x01);
 
                 for (int col = this.MapObject.QuadraticPosition.Left; col < this.MapObject.QuadraticPosition.Right; col++)
@@ -94,10 +94,10 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         private void OnPositionChanged(object sender, EventArgs args)
         {
-            if (this.PositionValue.Read() != RCNumVector.Undefined) { throw new InvalidOperationException("Position of a QuadEntity cannot be changed while it is bound to the quadratic grid of the map!"); }
+            if (this.MotionControl.PositionVector.Read() != RCNumVector.Undefined) { throw new InvalidOperationException("Position of a QuadEntity cannot be changed while it is bound to the quadratic grid of the map!"); }
 
             /// Position became RCNumVector.Undefined -> entity removed from the map so we have to unsubscribe.
-            this.PositionValue.ValueChanged -= this.OnPositionChanged;
+            this.MotionControl.PositionVector.ValueChanged -= this.OnPositionChanged;
             this.isBoundToGrid.Write(0x00);
         }
 

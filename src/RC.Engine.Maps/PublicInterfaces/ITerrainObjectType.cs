@@ -56,7 +56,7 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// The list of the quadratic coordinates (relative to the top-left corner) violating the placement constraints
         /// of this terrain object type at the given position on the given map.
         /// </returns>
-        HashSet<RCIntVector> CheckConstraints(IMapAccess map, RCIntVector position);
+        RCSet<RCIntVector> CheckConstraints(IMapAccess map, RCIntVector position);
 
         /// <summary>
         /// Collects all the quadratic coordinates of this terrain object type that intersects any of the terrain objects on the given map
@@ -68,7 +68,7 @@ namespace RC.Engine.Maps.PublicInterfaces
         /// The list of the quadratic coordinates (relative to the top-left corner) of this terrain object type that intersects any of the
         /// terrain objects on the map at the given position.
         /// </returns>
-        HashSet<RCIntVector> CheckTerrainObjectIntersections(IMapAccess map, RCIntVector position);
+        RCSet<RCIntVector> CheckTerrainObjectIntersections(IMapAccess map, RCIntVector position);
 
         /// <summary>
         /// Checks whether the given quadratic position is excluded from this terrain object type or not.

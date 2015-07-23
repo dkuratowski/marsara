@@ -49,7 +49,7 @@ namespace RC.UI
             this.mouseSensor = new UIMouseSensor(this);
 
             this.sensitiveChildren = new List<UISensitiveObject>();
-            this.sensitiveChildrenSet = new HashSet<UISensitiveObject>();
+            this.sensitiveChildrenSet = new RCSet<UISensitiveObject>();
 
             this.absSensitivePositionCache = new CachedValue<RCIntVector>(this.ComputeAbsSensitivePosition);
             this.absSensitiveClipCache = new CachedValue<RCIntRectangle>(this.ComputeAbsSensitiveClip);
@@ -573,7 +573,7 @@ namespace RC.UI
         /// <remarks>
         /// Just for easily check whether a UISensitiveObject is already a sensitive child of this UISensitiveObject or not.
         /// </remarks>
-        private HashSet<UISensitiveObject> sensitiveChildrenSet;
+        private RCSet<UISensitiveObject> sensitiveChildrenSet;
 
         /// <summary>
         /// The cache of the position of this UISensitiveObject in the coordinate-system of the sensitive-root.

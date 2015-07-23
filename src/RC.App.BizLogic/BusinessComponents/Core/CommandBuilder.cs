@@ -32,7 +32,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             if (this.commandType == null) { throw new InvalidOperationException("Undefined command type!"); }
 
-            HashSet<int> recipientEntities = this.selectionManager.CurrentSelection;
+            RCSet<int> recipientEntities = this.selectionManager.CurrentSelection;
             /// TODO: check if all the recipient entities belong to the local player!
 
             return new RCCommand(this.commandType,

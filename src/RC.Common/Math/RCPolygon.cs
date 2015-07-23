@@ -29,7 +29,7 @@ namespace RC.Common
             this.isConvexCache = new CachedValue<bool>(this.CalculateConvexity);
             this.boundingBoxCache = new CachedValue<RCNumRectangle>(this.CalculateBoundingBox);
 
-            HashSet<RCNumVector> vertexSet = new HashSet<RCNumVector>();
+            RCSet<RCNumVector> vertexSet = new RCSet<RCNumVector>();
             this.vertices = new List<RCNumVector>() { vertex0, vertex1, vertex2 };
             if (!vertexSet.Add(vertex0)) { throw new ArgumentException("Duplicated vertices!"); }
             if (!vertexSet.Add(vertex1)) { throw new ArgumentException("Duplicated vertices!"); }
@@ -61,7 +61,7 @@ namespace RC.Common
             this.isConvexCache = new CachedValue<bool>(this.CalculateConvexity);
             this.boundingBoxCache = new CachedValue<RCNumRectangle>(this.CalculateBoundingBox);
 
-            HashSet<RCNumVector> vertexSet = new HashSet<RCNumVector>();
+            RCSet<RCNumVector> vertexSet = new RCSet<RCNumVector>();
             this.vertices = new List<RCNumVector>();
             foreach (RCNumVector vertex in vertexList)
             {

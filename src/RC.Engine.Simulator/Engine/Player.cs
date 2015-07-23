@@ -30,10 +30,10 @@ namespace RC.Engine.Simulator.Engine
 
             this.playerIndex.Write(playerIndex);
             this.startLocation.Write(startLocation);
-            this.startPosition.Write(startLocation.PositionValue.Read());
+            this.startPosition.Write(startLocation.MotionControl.PositionVector.Read());
 
-            this.buildings = new HashSet<Building>();
-            this.units = new HashSet<Unit>();
+            this.buildings = new RCSet<Building>();
+            this.units = new RCSet<Unit>();
         }
 
         /// <summary>
@@ -148,13 +148,13 @@ namespace RC.Engine.Simulator.Engine
         /// The buildings of the player.
         /// </summary>
         /// TODO: store the buildings also in a HeapedArray!
-        private HashSet<Building> buildings;
+        private RCSet<Building> buildings;
 
         /// <summary>
         /// The units of the player.
         /// </summary>
         /// TODO: store the units also in a HeapedArray!
-        private HashSet<Unit> units;
+        private RCSet<Unit> units;
 
         /// <summary>
         /// The maximum number of players.

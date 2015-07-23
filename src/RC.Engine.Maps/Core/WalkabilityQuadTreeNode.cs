@@ -56,7 +56,7 @@ namespace RC.Engine.Maps.Core
             }
 
             /// Search the neighbours of the leaf nodes.
-            HashSet<WalkabilityQuadTreeNode> leafNodes = new HashSet<WalkabilityQuadTreeNode>();
+            RCSet<WalkabilityQuadTreeNode> leafNodes = new RCSet<WalkabilityQuadTreeNode>();
             rootNode.CollectLeafNodes(leafNodes);
             foreach (WalkabilityQuadTreeNode leafNode in leafNodes)
             {
@@ -198,7 +198,7 @@ namespace RC.Engine.Maps.Core
         /// Collects all the leaf nodes from the quad-tree that are below this node.
         /// </summary>
         /// <param name="leafNodes">The list that contains the collected leaf nodes.</param>
-        internal void CollectLeafNodes(HashSet<WalkabilityQuadTreeNode> leafNodes)
+        internal void CollectLeafNodes(RCSet<WalkabilityQuadTreeNode> leafNodes)
         {
             if (this.walkability != Walkability.Mixed)
             {
@@ -277,7 +277,7 @@ namespace RC.Engine.Maps.Core
         /// </summary>
         private void SetNeighbours()
         {
-            this.neighbours = new HashSet<WalkabilityQuadTreeNode>();
+            this.neighbours = new RCSet<WalkabilityQuadTreeNode>();
 
             /// Search above this node if necessary.
             if (this.areaOnGrid.Top != this.root.areaOnGrid.Top)
@@ -378,7 +378,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// Reference to the neighbours of this node.
         /// </summary>
-        private HashSet<WalkabilityQuadTreeNode> neighbours;
+        private RCSet<WalkabilityQuadTreeNode> neighbours;
 
         /// <summary>
         /// This flag indicates whether this node has already been visited or not.

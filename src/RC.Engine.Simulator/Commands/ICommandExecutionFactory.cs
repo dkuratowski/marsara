@@ -26,7 +26,7 @@ namespace RC.Engine.Simulator.Commands
         /// </summary>
         /// <param name="entitySet">The entity set.</param>
         /// <returns>The availability of the command from the point of view of this factory for the given entity set.</returns>
-        AvailabilityEnum GetCommandAvailability(HashSet<Entity> entitySet);
+        AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitySet);
 
         /// <summary>
         /// Starts a command execution on the given entity set with the given parameters.
@@ -35,6 +35,6 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="targetPosition">The target position.</param>
         /// <param name="targetEntityID">The ID of the target entity or -1 if not defined.</param>
         /// <param name="parameter">The optional parameter.</param>
-        void StartCommandExecution(HashSet<Entity> entitySet, RCNumVector targetPosition, int targetEntityID, string parameter);
+        void StartCommandExecution(RCSet<Entity> entitySet, RCNumVector targetPosition, int targetEntityID, string parameter);
     }
 }

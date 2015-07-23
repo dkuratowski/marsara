@@ -17,7 +17,7 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="targetPosition">The target position.</param>
         /// <param name="targetEntityID">The ID of the entity to attack or -1 if no such entity is defined.</param>
         public AttackExecution(Entity recipientEntity, RCNumVector targetPosition, int targetEntityID)
-            : base(new HashSet<Entity> { recipientEntity })
+            : base(new RCSet<Entity> { recipientEntity })
         {
             this.recipientEntity = this.ConstructField<Entity>("recipientEntity");
             this.targetPosition = this.ConstructField<RCNumVector>("targetPosition");
@@ -78,7 +78,7 @@ namespace RC.Engine.Simulator.Commands
                 if (this.targetEntityID.Read() != -1)
                 {
                     /// ...in case of attack execution -> start move to the target position.
-                    this.recipientEntity.Read().StartMoving(this.targetPosition.Read());
+                    this.recipientEntity.Read().MotionControl.StartMoving(this.targetPosition.Read());
                     return;
                 }
 
@@ -87,7 +87,7 @@ namespace RC.Engine.Simulator.Commands
                 if (this.attackedEntity.Read() == null)
                 {
                     /// No enemy could be selected -> start move to the target position.
-                    this.recipientEntity.Read().StartMoving(this.targetPosition.Read());
+                    this.recipientEntity.Read().MotionControl.StartMoving(this.targetPosition.Read());
                     return;
                 }
             }
@@ -97,12 +97,12 @@ namespace RC.Engine.Simulator.Commands
             if (this.recipientEntity.Read().Armour.Target != null)
             {
                 /// Close enough -> not necessary to start approaching.
-                this.recipientEntity.Read().StopMoving();
+                this.recipientEntity.Read().MotionControl.StopMoving();
                 return;
             }
 
             /// Too far -> start approaching.
-            this.recipientEntity.Read().StartMoving(this.attackedEntity.Read().PositionValue.Read());
+            this.recipientEntity.Read().MotionControl.StartMoving(this.attackedEntity.Read().MotionControl.PositionVector.Read());
         }
 
         /// <see cref="CmdExecutionBase.CommandBeingExecuted"/>
@@ -131,19 +131,19 @@ namespace RC.Engine.Simulator.Commands
                 if (this.recipientEntity.Read().Armour.Target != null)
                 {
                     /// Still in attack range -> continue attack with a standard weapon.
-                    this.recipientEntity.Read().StopMoving();
+                    this.recipientEntity.Read().MotionControl.StopMoving();
                     return false;
                 }
 
                 /// Too far -> start approaching again.
-                this.recipientEntity.Read().StartMoving(this.attackedEntity.Read().PositionValue.Read());
+                this.recipientEntity.Read().MotionControl.StartMoving(this.attackedEntity.Read().MotionControl.PositionVector.Read());
                 return false;
             }
 
             /// If target entity is given but target position is not visible -> check if we are still moving towards the target position.
             if (!this.LocatePosition(this.targetPosition.Read()))
             {
-                if (!this.recipientEntity.Read().IsMoving)
+                if (!this.recipientEntity.Read().MotionControl.IsMoving)
                 {
                     /// Was unable to reach the target position -> attack execution finished.
                     return true;
@@ -164,12 +164,12 @@ namespace RC.Engine.Simulator.Commands
                     if (this.recipientEntity.Read().Armour.Target != null)
                     {
                         /// Close enough -> not necessary to start approaching.
-                        this.recipientEntity.Read().StopMoving();
+                        this.recipientEntity.Read().MotionControl.StopMoving();
                         return false;
                     }
 
                     /// Too far -> start approaching.
-                    this.recipientEntity.Read().StartMoving(this.attackedEntity.Read().PositionValue.Read());
+                    this.recipientEntity.Read().MotionControl.StartMoving(this.attackedEntity.Read().MotionControl.PositionVector.Read());
                     return false;
                 }
             }
@@ -191,7 +191,7 @@ namespace RC.Engine.Simulator.Commands
                 if (this.attackedEntity.Read() == null)
                 {
                     /// Attacked entity cannot be located anymore -> continue attack-move towards the target position.
-                    this.recipientEntity.Read().StartMoving(this.targetPosition.Read());
+                    this.recipientEntity.Read().MotionControl.StartMoving(this.targetPosition.Read());
                     return false;
                 }
 
@@ -200,17 +200,17 @@ namespace RC.Engine.Simulator.Commands
                 if (this.recipientEntity.Read().Armour.Target != null)
                 {
                     /// Still in attack range -> continue attack with a standard weapon.
-                    this.recipientEntity.Read().StopMoving();
+                    this.recipientEntity.Read().MotionControl.StopMoving();
                     return false;
                 }
 
                 /// Too far -> start approaching again.
-                this.recipientEntity.Read().StartMoving(this.attackedEntity.Read().PositionValue.Read());
+                this.recipientEntity.Read().MotionControl.StartMoving(this.attackedEntity.Read().MotionControl.PositionVector.Read());
                 return false;
             }
 
             /// No entity to be attacked -> check if we have reached the target position.
-            if (!this.recipientEntity.Read().IsMoving)
+            if (!this.recipientEntity.Read().MotionControl.IsMoving)
             {
                 /// Target position reached or unable to reach -> attack execution finished.
                 return true;
@@ -221,7 +221,7 @@ namespace RC.Engine.Simulator.Commands
             if (this.attackedEntity.Read() == null)
             {
                 /// No enemy could be selected -> continue move to the target position.
-                this.recipientEntity.Read().StartMoving(this.targetPosition.Read());
+                this.recipientEntity.Read().MotionControl.StartMoving(this.targetPosition.Read());
                 return false;
             }
 
@@ -230,12 +230,12 @@ namespace RC.Engine.Simulator.Commands
             if (this.recipientEntity.Read().Armour.Target != null)
             {
                 /// Close enough -> not necessary to start approaching.
-                this.recipientEntity.Read().StopMoving();
+                this.recipientEntity.Read().MotionControl.StopMoving();
                 return false;
             }
 
             /// Too far -> start approaching.
-            this.recipientEntity.Read().StartMoving(this.attackedEntity.Read().PositionValue.Read());
+            this.recipientEntity.Read().MotionControl.StartMoving(this.attackedEntity.Read().MotionControl.PositionVector.Read());
             return false;
         }
 

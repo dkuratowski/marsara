@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using RC.App.BizLogic.BusinessComponents;
+using RC.Common;
 using RC.Common.ComponentModel;
 using RC.UI;
 
@@ -17,7 +18,7 @@ namespace RC.App.PresLogic
         /// </summary>
         public TaskManagerBC()
         {
-            this.updateHandlers = new HashSet<SystemUpdateHdl>();
+            this.updateHandlers = new RCSet<SystemUpdateHdl>();
         }
 
         /// <see cref="ITaskManager.StartTask"/>
@@ -70,7 +71,7 @@ namespace RC.App.PresLogic
         {
             int timeSinceLastUpdate = UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceLastUpdate;
             int timeSinceStart = UIRoot.Instance.GraphicsPlatform.RenderLoop.TimeSinceStart;
-            HashSet<SystemUpdateHdl> updateHandlersCopy = new HashSet<SystemUpdateHdl>(this.updateHandlers);
+            RCSet<SystemUpdateHdl> updateHandlersCopy = new RCSet<SystemUpdateHdl>(this.updateHandlers);
             foreach (SystemUpdateHdl updateHdl in updateHandlersCopy)
             {
                 updateHdl(timeSinceLastUpdate, timeSinceStart);
@@ -80,7 +81,7 @@ namespace RC.App.PresLogic
         /// <summary>
         /// The handlers subscribed for system update events.
         /// </summary>
-        private HashSet<SystemUpdateHdl> updateHandlers;
+        private RCSet<SystemUpdateHdl> updateHandlers;
     }
 
     /// <summary>

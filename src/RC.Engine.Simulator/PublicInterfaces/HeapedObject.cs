@@ -16,7 +16,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
     /// </summary>
     public abstract class HeapedObject : IDisposable
     {
-        //private static HashSet<HeapedObject> objects = new HashSet<HeapedObject>(); // TODO: remove
+        //private static RCSet<HeapedObject> objects = new RCSet<HeapedObject>(); // TODO: remove
 
         /// <summary>
         /// Constructs a HeapedObject instance.

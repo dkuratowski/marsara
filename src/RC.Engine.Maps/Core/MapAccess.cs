@@ -25,7 +25,7 @@ namespace RC.Engine.Maps.Core
 
             this.mapName = mapName;
             this.mapStructure = mapStructure;
-            this.terrainObjects = new HashSet<ITerrainObject>();
+            this.terrainObjects = new RCSet<ITerrainObject>();
         }
 
         #region IMapAccess methods
@@ -140,6 +140,6 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// The list of the terrain objects attached to this map.
         /// </summary>
-        private HashSet<ITerrainObject> terrainObjects;
+        private RCSet<ITerrainObject> terrainObjects;
     }
 }

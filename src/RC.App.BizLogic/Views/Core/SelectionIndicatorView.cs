@@ -25,7 +25,7 @@ namespace RC.App.BizLogic.Views.Core
         /// <see cref="ISelectionIndicatorView.GetVisibleSelIndicators"/>
         public List<SelIndicatorInst> GetVisibleSelIndicators()
         {
-            HashSet<int> currentSelection = this.selectionManager.CurrentSelection;
+            RCSet<int> currentSelection = this.selectionManager.CurrentSelection;
             if (currentSelection.Count == 0) { return new List<SelIndicatorInst>(); }
 
             /// Display the selection indicators of the currently visible entities inside the currently visible window of quadratic tiles.
@@ -42,7 +42,7 @@ namespace RC.App.BizLogic.Views.Core
                     retList.Add(new SelIndicatorInst()
                     {
                         SelIndicatorType = indicatorType,
-                        IndicatorRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entity.Position),
+                        IndicatorRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entity.Area),
                         HpNorm = (RCNumber)1, // TODO: must base on real data
                         ShieldNorm = (RCNumber)1, // TODO: must base on real data
                         EnergyNorm = (RCNumber)1 // TODO: must base on real data

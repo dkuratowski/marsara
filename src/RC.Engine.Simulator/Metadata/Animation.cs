@@ -55,7 +55,7 @@ namespace RC.Engine.Simulator.Metadata
         /// Constructs a new animation instance.
         /// </summary>
         /// <param name="instructions">The instructions defined for the animation.</param>
-        public Animation(List<IInstruction> instructions)
+        public Animation(IEnumerable<IInstruction> instructions)
         {
             if (instructions == null) { throw new ArgumentNullException("instructions"); }
             this.instructions = new List<IInstruction>(instructions);
@@ -68,12 +68,19 @@ namespace RC.Engine.Simulator.Metadata
         /// <returns>
         /// The instruction at the given index or null if no instruction exists with the given index.
         /// </returns>
-        public IInstruction this[int index] { get { return index < 0 || index >= this.instructions.Count ? null : this.instructions[index]; } }
+        public IInstruction this[int index]
+        {
+            get
+            {
+                if (index < 0) { throw new ArgumentOutOfRangeException("index", "Instruction index must be greater than 0!"); }
+                return index < this.instructions.Count ? this.instructions[index] : null;
+            }
+        }
 
         /// <summary>
         /// The instructions of the animation.
         /// </summary>
-        private List<IInstruction> instructions;
+        private readonly List<IInstruction> instructions;
     }
 
     /// <summary>
@@ -105,7 +112,11 @@ namespace RC.Engine.Simulator.Metadata
         /// <see cref="Animation.IInstruction.Execute"/>
         public bool Execute(Animation.IInstructionContext ctx)
         {
-            if (ctx[0] == 0) { ctx.SetFrame(this.spriteIndices[ctx.Direction]); }
+            MapDirection direction = ctx.Direction;
+            if (direction == MapDirection.Undefined) { throw new InvalidOperationException("IInstructionContext.Direction returned MapDirection.Undefined!"); }
+
+            ctx.SetFrame(this.spriteIndices[ctx.Direction]);
+            //if (ctx[0] == 0) { ctx.SetFrame(this.spriteIndices[ctx.Direction]); }
             ctx[0]++;
             if (ctx[0] >= this.duration) { ctx.InstructionPointer++; }
             return true;
@@ -116,12 +127,12 @@ namespace RC.Engine.Simulator.Metadata
         /// <summary>
         /// The indices of the sprites to be displayed mapped by the corresponding map directions.
         /// </summary>
-        private Dictionary<MapDirection, int[]> spriteIndices;
+        private readonly Dictionary<MapDirection, int[]> spriteIndices;
 
         /// <summary>
         /// The waiting time in frames.
         /// </summary>
-        private int duration;
+        private readonly int duration;
     }
 
     /// <summary>
@@ -153,6 +164,23 @@ namespace RC.Engine.Simulator.Metadata
         /// <summary>
         /// The index of the target instruction.
         /// </summary>
-        private int targetInstructionIdx;
+        private readonly int targetInstructionIdx;
+    }
+
+    /// <summary>
+    /// Represents an animation instruction that jumps back to the first instruction.
+    /// </summary>
+    class RepeatInstruction : Animation.IInstruction
+    {
+        #region Animation.IInstruction members
+
+        /// <see cref="Animation.IInstruction.Execute"/>
+        public bool Execute(Animation.IInstructionContext ctx)
+        {
+            ctx.InstructionPointer = 0;
+            return false;
+        }
+
+        #endregion Animation.IInstruction members
     }
 }

@@ -24,7 +24,7 @@ namespace RC.Engine.Simulator.Core
             this.heap = null;
             this.typeIDs = new Dictionary<string, short>();
             this.types = new List<HeapType>();
-            this.heapTypeContainers = new HashSet<Assembly>();
+            this.heapTypeContainers = new RCSet<Assembly>();
             this.heapTypeContainers.Add(this.GetType().Assembly);
             this.inheritenceTree = new Dictionary<string, IHeapType[]>();
 
@@ -551,7 +551,7 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// List of the assemblies that contains the heap types.
         /// </summary>
-        private HashSet<Assembly> heapTypeContainers;
+        private RCSet<Assembly> heapTypeContainers;
 
         /// <summary>
         /// The inheritence path of all registered types mapped by their names starting from the base type.

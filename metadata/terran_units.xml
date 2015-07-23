@@ -20,24 +20,24 @@
       <damageType>Normal</damageType>
       <cooldown>15</cooldown>
       <missile type="Rocket">
-        <launch direction="North" relativePosition="-0.75;-1.25" />
-        <launch direction="NorthEast" relativePosition="0.75;-1.5" />
-        <launch direction="East" relativePosition="2.25;-0.75" />
-        <launch direction="SouthEast" relativePosition="2.75;1.0" />
-        <launch direction="South" relativePosition="1.75;2.25" />
-        <launch direction="SouthWest" relativePosition="0.0;2.75" />
-        <launch direction="West" relativePosition="-1.25;1.75" />
-        <launch direction="NorthWest" relativePosition="-1.75;0.0" />
+        <launch direction="North" relativePosition="-1.5;-2.0" />
+        <launch direction="NorthEast" relativePosition="0.0;-2.25" />
+        <launch direction="East" relativePosition="1.5;-1.5" />		
+        <launch direction="SouthEast" relativePosition="1.75;0.0" />		
+        <launch direction="South" relativePosition="1.0;1.5" />		
+        <launch direction="SouthWest" relativePosition="-2.5;0.0" />		
+        <launch direction="West" relativePosition="-2.0;-1.5" />		
+        <launch direction="NorthWest" relativePosition="-2.5;-0.75" />
       </missile>
       <missile type="Rocket">
-        <launch direction="North" relativePosition="1.75;-1.25" />
-        <launch direction="NorthEast" relativePosition="2.5;0.25" />
-        <launch direction="East" relativePosition="2.25;1.75" />
-        <launch direction="SouthEast" relativePosition="1.0;2.75" />
-        <launch direction="South" relativePosition="-0.75;2.25" />
-        <launch direction="SouthWest" relativePosition="-1.75;1.0" />
-        <launch direction="West" relativePosition="-1.25;-0.75" />
-        <launch direction="NorthWest" relativePosition="0.0;-1.75" />
+        <launch direction="North" relativePosition="1.0;-2.0" />
+        <launch direction="NorthEast" relativePosition="1.75;-0.5" />
+        <launch direction="East" relativePosition="1.5;1.0" />		
+        <launch direction="SouthEast" relativePosition="0.0;1.75" />		
+        <launch direction="South" relativePosition="-1.5;1.5" />		
+        <launch direction="SouthWest" relativePosition="-0.75;1.75" />		
+        <launch direction="West" relativePosition="-2.0;1.0" />		
+        <launch direction="NorthWest" relativePosition="-0.75;-2.5" />
       </missile>
     </groundWeapon>
     <createdIn>CommandCenter</createdIn>
@@ -100,21 +100,24 @@
 	<animationPalette>
 		<animation name="Stopped" isPreview="true">
 			<frame sprites="Body" />
+			<repeat/>
 		</animation>
 		<animation name="Moving">
 			<frame sprites="Body,Engine" />
+			<repeat/>
 		</animation>
 		<animation name="BringingMinerals">
 			<frame sprites="Minerals" />
+			<repeat/>
 		</animation>
 		<animation name="BringingGas">
 			<frame sprites="Gas" />
+			<repeat/>
 		</animation>
 		<animation name="Working">
-			<label name="Begin"/>
 			<frame sprites="Sparkling0" duration="5"/>
 			<frame sprites="Sparkling1" duration="5"/>
-			<goto label="Begin"/>
+			<repeat/>
 		</animation>
 		<animation name="Dying">
 			<frame sprites="Dying0" duration="4"/>
@@ -220,20 +223,19 @@
 	<animationPalette>
 		<animation name="Standing" isPreview="true">
 			<frame sprites="Standing" />
+			<repeat/>
 		</animation>
 		<animation name="Shooting">
-			<label name="Begin"/>
 			<frame sprites="Shooting0" duration="4"/>
 			<frame sprites="Shooting1" duration="4"/>
-			<goto label="Begin"/>
+			<repeat/>
 		</animation>
 		<animation name="Walking">
-			<label name="Begin"/>
 			<frame sprites="Walking0" duration="4" />
 			<frame sprites="Walking1" duration="4" />
 			<frame sprites="Walking2" duration="4" />
 			<frame sprites="Walking3" duration="4" />
-			<goto label="Begin"/>
+			<repeat/>
 		</animation>
 		<animation name="Dying">
 			<frame sprites="Dying0" duration="4"/>

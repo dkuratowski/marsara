@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Engine;
@@ -28,7 +29,7 @@ namespace RC.Engine.Simulator.Commands
         public AvailabilityEnum GetCommandAvailability(Scenario scenario, string commandType, IEnumerable<int> entityIDs)
         {
             /// Get all the existing entities from the scenario that are currently attached to the map.
-            HashSet<Entity> entitySet = this.GetEntitiesOnMap(scenario, entityIDs);
+            RCSet<Entity> entitySet = this.GetEntitiesOnMap(scenario, entityIDs);
             if (entitySet.Count == 0) { return AvailabilityEnum.Unavailable; }
 
             /// Select the factories to be used and get the availability of the command from the selected factories
@@ -65,7 +66,7 @@ namespace RC.Engine.Simulator.Commands
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
             if (command == null) { throw new ArgumentNullException("command"); }
 
-            HashSet<Entity> entitySet = this.GetEntitiesOnMap(scenario, command.RecipientEntities);
+            RCSet<Entity> entitySet = this.GetEntitiesOnMap(scenario, command.RecipientEntities);
             foreach (ICommandExecutionFactory factory in this.SelectFactories(command.CommandType, entitySet))
             {
                 factory.StartCommandExecution(entitySet, command.TargetPosition, command.TargetEntity, command.Parameter);
@@ -73,12 +74,12 @@ namespace RC.Engine.Simulator.Commands
         }
 
         /// <see cref="ICommandExecutor.GetCommandsBeingExecuted"/>
-        public HashSet<string> GetCommandsBeingExecuted(Scenario scenario, IEnumerable<int> entityIDs)
+        public RCSet<string> GetCommandsBeingExecuted(Scenario scenario, IEnumerable<int> entityIDs)
         {
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
 
-            HashSet<string> retList = new HashSet<string>();
-            HashSet<Entity> entitySet = this.GetEntitiesOnMap(scenario, entityIDs);
+            RCSet<string> retList = new RCSet<string>();
+            RCSet<Entity> entitySet = this.GetEntitiesOnMap(scenario, entityIDs);
             foreach (Entity entity in entitySet)
             {
                 if (entity.CommandBeingExecuted != null) { retList.Add(entity.CommandBeingExecuted); }
@@ -151,9 +152,9 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="scenario">The scenario.</param>
         /// <param name="entityIDs">The IDs of the entities to get.</param>
         /// <returns>All the existing entities that are currently attached to the map.</returns>
-        private HashSet<Entity> GetEntitiesOnMap(Scenario scenario, IEnumerable<int> entityIDs)
+        private RCSet<Entity> GetEntitiesOnMap(Scenario scenario, IEnumerable<int> entityIDs)
         {
-            HashSet<Entity> entitySet = new HashSet<Entity>();
+            RCSet<Entity> entitySet = new RCSet<Entity>();
             foreach (int entityId in entityIDs)
             {
                 Entity entity = scenario.GetElementOnMap<Entity>(entityId);
@@ -173,13 +174,13 @@ namespace RC.Engine.Simulator.Commands
         /// </returns>
         private IEnumerable<ICommandExecutionFactory> SelectFactories(string commandType, IEnumerable<Entity> entitySet)
         {
-            if (!this.commandExecutionFactories.ContainsKey(commandType)) { return new HashSet<ICommandExecutionFactory>(); }
+            if (!this.commandExecutionFactories.ContainsKey(commandType)) { return new RCSet<ICommandExecutionFactory>(); }
 
             Dictionary<string, ICommandExecutionFactory> factoriesPerTypes = this.commandExecutionFactories[commandType];
-            HashSet<ICommandExecutionFactory> retList = new HashSet<ICommandExecutionFactory>();
+            RCSet<ICommandExecutionFactory> retList = new RCSet<ICommandExecutionFactory>();
             foreach (Entity entity in entitySet)
             {
-                if (!factoriesPerTypes.ContainsKey(entity.ElementType.Name)) { return new HashSet<ICommandExecutionFactory>(); }
+                if (!factoriesPerTypes.ContainsKey(entity.ElementType.Name)) { return new RCSet<ICommandExecutionFactory>(); }
                 ICommandExecutionFactory factory = factoriesPerTypes[entity.ElementType.Name];
                 retList.Add(factory);
             }

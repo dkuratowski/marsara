@@ -77,7 +77,7 @@ namespace RC.UnitTests
             /// Check that 2 UISprite instances are the same if and only if they images have the same bytes.
             PrivateObject spriteGroupObj = new PrivateObject(spriteGroup, new PrivateType(typeof(SpriteGroup)));
             List<UISprite> fowSprites = (List<UISprite>)spriteGroupObj.GetField("spriteList");
-            HashSet<UISprite> savedFowSprites = new HashSet<UISprite>();
+            RCSet<UISprite> savedFowSprites = new RCSet<UISprite>();
             for (int indexA = 0; indexA < fowSprites.Count - 1; indexA++)
             {
                 if (fowSprites[indexA] == null) { continue; }

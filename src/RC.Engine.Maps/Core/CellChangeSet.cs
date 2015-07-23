@@ -25,10 +25,10 @@ namespace RC.Engine.Maps.Core
         }
 
         /// <see cref="CellDataChangeSetBase.CollectTargetSet"/>
-        protected override HashSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
+        protected override RCSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
         {
-            return target.GetCell(this.targetCell) != null ? new HashSet<RCIntVector>() { this.targetCell }
-                                                              : new HashSet<RCIntVector>();
+            return target.GetCell(this.targetCell) != null ? new RCSet<RCIntVector>() { this.targetCell }
+                                                              : new RCSet<RCIntVector>();
         }
 
         /// <summary>

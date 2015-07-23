@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
@@ -11,35 +12,8 @@ namespace RC.Engine.Simulator.MotionControl
     /// <summary>
     /// The common base class of entity path tracker implementations.
     /// </summary>
-    public abstract class PathTrackerBase : HeapedObject, IMotionControlEnvironment
+    public abstract class PathTrackerBase : HeapedObject
     {
-        /// <summary>
-        /// Constructs a PathTrackerBase instance.
-        /// </summary>
-        /// <param name="controlledEntity">The entity that this path tracker controls.</param>
-        public PathTrackerBase(Entity controlledEntity)
-        {
-            if (controlledEntity == null) { throw new ArgumentNullException("controlledEntity"); }
-
-            this.currentPathFromCoords = this.ConstructField<RCNumVector>("currentPathFromCoords");
-            this.currentPathToCoords = this.ConstructField<RCNumVector>("currentPathToCoords");
-            this.closestDistanceToTarget = this.ConstructField<RCNumber>("closestDistanceToTarget");
-            this.timeSinceClosestDistanceReached = this.ConstructField<short>("timeSinceClosestDistanceReached");
-            this.controlledEntity = this.ConstructField<Entity>("controlledEntity");
-
-            this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
-
-            this.currentPath = null;
-            this.preferredVelocityCache = new CachedValue<RCNumVector>(this.CalculatePreferredVelocity);
-            this.dynamicObstaclesCache = new CachedValue<IEnumerable<DynamicObstacleInfo>>(this.CollectNearbyDynamicObstacles);
-
-            this.currentPathFromCoords.Write(RCNumVector.Undefined);
-            this.currentPathToCoords.Write(RCNumVector.Undefined);
-            this.closestDistanceToTarget.Write(-1);
-            this.timeSinceClosestDistanceReached.Write(0);
-            this.controlledEntity.Write(controlledEntity);
-        }
-
         /// <summary>
         /// Gets or sets the target position that this path tracker has to move its target. Set the value of this property to
         /// RCNumVector.Undefined to inactivate the path-tracker.
@@ -63,7 +37,7 @@ namespace RC.Engine.Simulator.MotionControl
                 else
                 {
                     /// Start searching a new path.
-                    this.currentPathFromCoords.Write(this.ControlledEntity.PositionValue.Read());
+                    this.currentPathFromCoords.Write(this.ControlledEntity.MotionControl.PositionVector.Read());
                     this.currentPath = this.pathFinder.StartPathSearching(this.currentPathFromCoords.Read(),
                                                                           this.currentPathToCoords.Read(),
                                                                           PATHFINDING_ITERATION_LIMIT);
@@ -75,6 +49,43 @@ namespace RC.Engine.Simulator.MotionControl
         /// Gets whether this path-tracker is currently active or not.
         /// </summary>
         public bool IsActive { get { return this.currentPath != null && this.currentPath.IsReadyForUse; } }
+
+        /// <summary>
+        /// Gets the currently preferred velocity.
+        /// </summary>
+        public RCNumVector PreferredVelocity
+        {
+            get
+            {
+                if (!this.IsActive) { throw new InvalidOperationException("Path-tracker is inactive!"); }
+                return this.preferredVelocityCache.Value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the list of the dynamic obstacles in the environment of the controlled target.
+        /// </summary>
+        /// <returns>A list that contains the dynamic obstacles in the environment of the controlled target.</returns>
+        public IEnumerable<DynamicObstacleInfo> DynamicObstacles
+        {
+            get
+            {
+                if (!this.IsActive) { throw new InvalidOperationException("Path-tracker is inactive!"); }
+                return this.dynamicObstaclesCache.Value;
+            }
+        }
+
+        /// <summary>
+        /// Checks whether the controlled target remains inside the followed path with the given velocity.
+        /// </summary>
+        /// <param name="velocity">The velocity to be check.</param>
+        /// <returns>True if the given velocity is valid; otherwise false.</returns>
+        public bool ValidateVelocity(RCNumVector velocity)
+        {
+            if (velocity == RCNumVector.Undefined) { throw new ArgumentNullException("velocity"); }
+            if (!this.IsActive) { throw new InvalidOperationException("Path-tracker is inactive!"); }
+            return this.ValidateVelocityImpl(velocity);
+        }
 
         /// <summary>
         /// Updates the state of this path-tracker.
@@ -100,39 +111,33 @@ namespace RC.Engine.Simulator.MotionControl
             this.dynamicObstaclesCache.Invalidate();
         }
 
-        #region IMotionControlEnvironment members
-
-        /// <see cref="IMotionControlEnvironment.PreferredVelocity"/>
-        public RCNumVector PreferredVelocity
-        {
-            get
-            {
-                if (!this.IsActive) { throw new InvalidOperationException("Path-tracker is inactive!"); }
-                return this.preferredVelocityCache.Value;
-            }
-        }
-
-        /// <see cref="IMotionControlEnvironment.DynamicObstacles"/>
-        public IEnumerable<DynamicObstacleInfo> DynamicObstacles
-        {
-            get
-            {
-                if (!this.IsActive) { throw new InvalidOperationException("Path-tracker is inactive!"); }
-                return this.dynamicObstaclesCache.Value;
-            }
-        }
-
-        /// <see cref="IMotionControlEnvironment.ValidateVelocity"/>
-        public bool ValidateVelocity(RCNumVector velocity)
-        {
-            if (velocity == RCNumVector.Undefined) { throw new ArgumentNullException("velocity"); }
-            if (!this.IsActive) { throw new InvalidOperationException("Path-tracker is inactive!"); }
-            return this.ValidateVelocityImpl(velocity);
-        }
-
-        #endregion IMotionControlEnvironment members
-
         #region Overridable methods
+
+        /// <summary>
+        /// Checks whether the given position is valid for the controlled entity.
+        /// </summary>
+        /// <param name="position">The position to be checked.</param>
+        /// <returns>True if the given position is valid for the controlled entity; otherwise false.</returns>
+        /// <remarks>Can be overriden in the derived classes.</remarks>
+        /// TODO: Override this method in the derived classes! This is only a temporary solution.
+        public virtual bool ValidatePosition(RCNumVector position)
+        {
+            if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            if (this.pathFinder.GetNavMeshNode(position) == null)
+            {
+                /// The entity wants to go to a non-walkable position on the map -> invalid position
+                return false;
+            }
+
+            /// Detect collision with other entities.
+            RCNumRectangle newEntityArea =
+                new RCNumRectangle(position - this.ControlledEntity.ElementType.Area.Read() / 2, this.ControlledEntity.ElementType.Area.Read());
+            bool collision = this.ControlledEntity.Scenario.GetElementsOnMap<Entity>(newEntityArea).Any(collidingEntity => collidingEntity != this.ControlledEntity);
+
+            /// Return true if there is no collision with other entities.
+            return !collision;
+        }
 
         /// <summary>
         /// Collects the nearby dynamic obstacles on the map.
@@ -161,12 +166,40 @@ namespace RC.Engine.Simulator.MotionControl
         protected virtual bool CheckInactivationCriteria()
         {
             /// TODO: replace this with a more sophisticated inactivation criteria if necessary!
-            return this.ControlledEntity.Position.Contains(this.TargetPosition) || this.timeSinceClosestDistanceReached.Read() > 100;
+            return this.ControlledEntity.Area.Contains(this.TargetPosition) || this.timeSinceClosestDistanceReached.Read() > 100;
         }
 
         #endregion Overridable methods
 
         #region Protected members for the derived classes
+
+        /// <summary>
+        /// Constructs a PathTrackerBase instance.
+        /// </summary>
+        /// <param name="controlledEntity">The entity that this path tracker controls.</param>
+        protected PathTrackerBase(Entity controlledEntity)
+        {
+            if (controlledEntity == null) { throw new ArgumentNullException("controlledEntity"); }
+
+            this.currentPathFromCoords = this.ConstructField<RCNumVector>("currentPathFromCoords");
+            this.currentPathToCoords = this.ConstructField<RCNumVector>("currentPathToCoords");
+            this.closestDistanceToTarget = this.ConstructField<RCNumber>("closestDistanceToTarget");
+            this.timeSinceClosestDistanceReached = this.ConstructField<short>("timeSinceClosestDistanceReached");
+            this.controlledEntity = this.ConstructField<Entity>("controlledEntity");
+
+            this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
+
+            this.currentPath = null;
+            this.preferredVelocityCache = new CachedValue<RCNumVector>(this.CalculatePreferredVelocity);
+            this.dynamicObstaclesCache = new CachedValue<IEnumerable<DynamicObstacleInfo>>(this.CollectNearbyDynamicObstacles);
+
+            this.currentPathFromCoords.Write(RCNumVector.Undefined);
+            this.currentPathToCoords.Write(RCNumVector.Undefined);
+            this.closestDistanceToTarget.Write(-1);
+            this.timeSinceClosestDistanceReached.Write(0);
+            this.controlledEntity.Write(controlledEntity);
+        }
+
 
         /// <summary>
         /// Gets a reference to the controlled entity of the path-tracker.
@@ -211,7 +244,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <returns>The calculated preferred velocity.</returns>
         private RCNumVector CalculatePreferredVelocity()
         {
-            RCNumVector currentPosition = this.ControlledEntity.PositionValue.Read();
+            RCNumVector currentPosition = this.ControlledEntity.MotionControl.PositionVector.Read();
             INavMeshNode currentNode = this.pathFinder.GetNavMeshNode(currentPosition);
             if (currentNode == null) { throw new InvalidOperationException("Entity position is out of the walkable area of the map!"); }
             int currentNodeIdxOnPath = this.currentPath.IndexOf(currentNode);
@@ -273,7 +306,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <summary>
         /// Reference to the RC.Engine.Simulator.PathFinder component.
         /// </summary>
-        private IPathFinder pathFinder;
+        private readonly IPathFinder pathFinder;
 
         /// <summary>
         /// Cache that stores the calculated preferred velocity during an update procedure.

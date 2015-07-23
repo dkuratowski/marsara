@@ -137,7 +137,7 @@ namespace RC.UI
 
             this.parent = null;
             this.children = new List<UIObject>();
-            this.childrenSet = new HashSet<UIObject>();
+            this.childrenSet = new RCSet<UIObject>();
 
             this.position = position;
             this.absPositionCache = new CachedValue<RCIntVector>(this.ComputeAbsolutePosition);
@@ -790,7 +790,7 @@ namespace RC.UI
         /// <remarks>
         /// Just for easily check whether a UIObject is already a child of this UIObject or not.
         /// </remarks>
-        private HashSet<UIObject> childrenSet;
+        private RCSet<UIObject> childrenSet;
 
         /// <summary>
         /// The position of this UIObject. See the corresponding property for more informations.

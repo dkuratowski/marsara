@@ -139,7 +139,7 @@ namespace RC.Engine.Maps.Core
         /// <see cref="ICellDataChangeSet.Apply"/>
         public void Apply(ICellDataChangeSetTarget target)
         {
-            HashSet<RCIntVector> targetset = this.CollectTargetSet(target);
+            RCSet<RCIntVector> targetset = this.CollectTargetSet(target);
             foreach (RCIntVector targetCell in targetset)
             {
                 ICell cell = target.GetCell(targetCell);
@@ -151,7 +151,7 @@ namespace RC.Engine.Maps.Core
         /// <see cref="ICellDataChangeSet.Undo"/>
         public void Undo(ICellDataChangeSetTarget target)
         {
-            HashSet<RCIntVector> targetset = this.CollectTargetSet(target);
+            RCSet<RCIntVector> targetset = this.CollectTargetSet(target);
             foreach (RCIntVector targetCell in targetset)
             {
                 ICell cell = target.GetCell(targetCell);
@@ -170,9 +170,9 @@ namespace RC.Engine.Maps.Core
         /// </summary>
         /// <param name="target">The target of the changeset.</param>
         /// <returns>The collected coordinates.</returns>
-        protected virtual HashSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
+        protected virtual RCSet<RCIntVector> CollectTargetSet(ICellDataChangeSetTarget target)
         {
-            HashSet<RCIntVector> targetset = new HashSet<RCIntVector>();
+            RCSet<RCIntVector> targetset = new RCSet<RCIntVector>();
             for (int x = 0; x < target.CellSize.X; x++)
             {
                 for (int y = 0; y < target.CellSize.Y; y++)

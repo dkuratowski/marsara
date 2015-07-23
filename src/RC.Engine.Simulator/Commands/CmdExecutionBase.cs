@@ -81,7 +81,7 @@ namespace RC.Engine.Simulator.Commands
         /// Constructs a command execution instance.
         /// </summary>
         /// <param name="recipientEntities">The recipient entities of this command execution.</param>
-        protected CmdExecutionBase(HashSet<Entity> recipientEntities)
+        protected CmdExecutionBase(RCSet<Entity> recipientEntities)
         {
             if (recipientEntities == null) { throw new ArgumentNullException("recipientEntities"); }
             if (recipientEntities.Count == 0) { throw new ArgumentException("No recipient entities for command execution!", "recipientEntities"); }
@@ -96,7 +96,7 @@ namespace RC.Engine.Simulator.Commands
             this.parentExecution.Write(null);
             this.subExecution.Write(null);
             this.isInitialized.Write(0x00);
-            this.recipientEntities = new HashSet<Entity>();
+            this.recipientEntities = new RCSet<Entity>();
 
             IScenarioElementType typeOfRecipientEntities = null;
             foreach (Entity entity in recipientEntities)
@@ -289,7 +289,7 @@ namespace RC.Engine.Simulator.Commands
         /// <summary>
         /// Gets the recipient entities of this command execution.
         /// </summary>
-        private HashSet<Entity> RecipientEntities
+        private RCSet<Entity> RecipientEntities
         {
             get
             {
@@ -366,7 +366,7 @@ namespace RC.Engine.Simulator.Commands
         /// Reference to the recipient entities of this command execution.
         /// </summary>
         /// TODO: store these entities in a HeapedArray!
-        private HashSet<Entity> recipientEntities;
+        private RCSet<Entity> recipientEntities;
 
         /// <summary>
         /// Reference to the scenario of the recipient entities.

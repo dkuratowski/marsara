@@ -22,10 +22,12 @@ namespace RC.Engine.Simulator.Engine
 
             this.owner = this.ConstructField<Entity>("owner");
             this.target = this.ConstructField<Entity>("target");
+            this.targetVector = this.ConstructField<RCNumVector>("targetVector");
             this.standardWeapons = new List<Weapon>();
 
             this.owner.Write(owner);
             this.target.Write(null);
+            this.targetVector.Write(RCNumVector.Undefined);
             foreach (IWeaponData weapon in this.owner.Read().ElementType.StandardWeapons)
             {
                 this.standardWeapons.Add(new StandardWeapon(weapon));
@@ -71,7 +73,7 @@ namespace RC.Engine.Simulator.Engine
                 if (nearestEnemy == null) { nearestEnemy = locatedEntity; }
                 else
                 {
-                    RCNumber distance = MapUtils.ComputeDistance(this.owner.Read().Position, locatedEntity.Position);
+                    RCNumber distance = MapUtils.ComputeDistance(this.owner.Read().Area, locatedEntity.Area);
                     if (distance < nearestEnemyDistance) { nearestEnemy = locatedEntity; }
                 }
             }
@@ -100,6 +102,16 @@ namespace RC.Engine.Simulator.Engine
         public Entity Target { get { return this.target.Read(); } }
 
         /// <summary>
+        /// Gets the current target vector.
+        /// </summary>
+        public IValueRead<RCNumVector> TargetVector { get { return this.targetVector; } }
+
+        /// <summary>
+        /// Gets the weapons of the owner entity.
+        /// </summary>
+        public IEnumerable<Weapon> Weapons { get { return this.standardWeapons; } }
+
+        /// <summary>
         /// Reference to the owner of this armour.
         /// </summary>
         private readonly HeapedValue<Entity> owner;
@@ -108,6 +120,11 @@ namespace RC.Engine.Simulator.Engine
         /// Reference to the current target or null if there is no target currently.
         /// </summary>
         private readonly HeapedValue<Entity> target;
+
+        /// <summary>
+        /// The current target vector or RCNumVector.Undefined if there is no target currently.
+        /// </summary>
+        private readonly HeapedValue<RCNumVector> targetVector;
 
         /// <summary>
         /// The list of the standard weapons of the owner entity.

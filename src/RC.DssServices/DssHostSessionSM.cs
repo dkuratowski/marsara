@@ -67,7 +67,7 @@ namespace RC.DssServices
                 {
                     this.Inactive.AddInternalTrigger(this.WaitingConnectionRQ,
                                                    null,
-                                                   new HashSet<ISMState>(new ISMState[1] { this.channel.Engaging }));
+                                                   new RCSet<ISMState>(new ISMState[1] { this.channel.Engaging }));
 
                     this.internalTriggersCreated = true;
                 }

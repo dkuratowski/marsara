@@ -26,10 +26,10 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <see cref="EntityConstraint.CheckImpl"/>
-        protected override HashSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position)
+        protected override RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position)
         {
             RCIntRectangle objArea = new RCIntRectangle(position, scenario.Map.CellToQuadSize(this.EntityType.Area.Read()));
-            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
+            RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
             for (int absY = objArea.Top; absY < objArea.Bottom; absY++)
             {
                 for (int absX = objArea.Left; absX < objArea.Right; absX++)
@@ -40,7 +40,7 @@ namespace RC.Engine.Simulator.Engine
                     {
                         RCIntRectangle checkedQuadRect = new RCIntRectangle(absQuadCoords - this.minimumDistance, this.checkedQuadRectSize);
                         RCNumRectangle checkedArea = (RCNumRectangle)scenario.Map.QuadToCellRect(checkedQuadRect) - new RCNumVector(1, 1) / 2;
-                        HashSet<T> objectsTooClose = scenario.GetElementsOnMap<T>(checkedArea);
+                        RCSet<T> objectsTooClose = scenario.GetElementsOnMap<T>(checkedArea);
                         if (objectsTooClose.Count > 0) { retList.Add(absQuadCoords - position); }
                     }
                 }

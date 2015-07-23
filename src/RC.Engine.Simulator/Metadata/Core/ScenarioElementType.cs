@@ -102,13 +102,13 @@ namespace RC.Engine.Simulator.Metadata.Core
         #endregion General data properties
 
         /// <see cref="IScenarioElementType.CheckConstraints"/>
-        public HashSet<RCIntVector> CheckConstraints(Scenario scenario, RCIntVector position)
+        public RCSet<RCIntVector> CheckConstraints(Scenario scenario, RCIntVector position)
         {
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             /// Check against the constraints defined by this scenario element type.
-            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
+            RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
             foreach (EntityConstraint constraint in this.placementConstraints)
             {
                 retList.UnionWith(constraint.Check(scenario, position));
@@ -305,7 +305,7 @@ namespace RC.Engine.Simulator.Metadata.Core
 
             /// TODO: later the sight range will depend on the upgrades of the players!
             RCIntVector nullVector = new RCIntVector(0, 0);
-            this.relativeQuadCoordsInSight = new HashSet<RCIntVector>();
+            this.relativeQuadCoordsInSight = new RCSet<RCIntVector>();
             for (int x = -this.sightRange.Read(); x <= this.sightRange.Read(); x++)
             {
                 for (int y = -this.sightRange.Read(); y <= this.sightRange.Read(); y++)
@@ -465,6 +465,6 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// The quadratic coordinates relative to the origin that are inside the sight range or null if this element type has no sight range defined.
         /// </summary>
         /// TODO: later the sight range will depend on the upgrades of the players!
-        private HashSet<RCIntVector> relativeQuadCoordsInSight;
+        private RCSet<RCIntVector> relativeQuadCoordsInSight;
     }
 }

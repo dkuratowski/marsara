@@ -34,7 +34,7 @@ namespace RC.Engine.Simulator.Engine
         public override bool AttachToMap(RCNumVector position)
         {
             bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess) { this.MapObject.SetCurrentAnimation(ANIMATION_NAME); }
+            if (attachToMapSuccess) { this.MapObject.SetCurrentAnimation(ANIMATION_NAME, this.MotionControl.VelocityVector); }
             return attachToMapSuccess;
         }
 

@@ -113,7 +113,7 @@ namespace RC.App.BizLogic.BusinessComponents
         /// <summary>
         /// Gets the IDs of the currently selected entities.
         /// </summary>
-        HashSet<int> CurrentSelection { get; }
+        RCSet<int> CurrentSelection { get; }
 
         /// <summary>
         /// Gets the index of the local player or PlayerEnum.Neutral if the selection manager has not yet been initialized.

@@ -51,7 +51,7 @@ namespace RC.UnitTests
         {
             if (this.isValidated) { return; }
 
-            HashSet<NavMeshNode> allNodes = new HashSet<NavMeshNode>();
+            RCSet<NavMeshNode> allNodes = new RCSet<NavMeshNode>();
             List<TessellationHelper> helperList = this.GetCopyOfHelperList();
             Assert.IsNotNull(helperList, "The navmesh is not a generated but a loaded navmesh!");
             foreach (TessellationHelper helper in helperList)
@@ -61,7 +61,7 @@ namespace RC.UnitTests
                 CheckNeighbourhood(helper);
                 foreach (NavMeshNode node in helper.Nodes) { CheckNeighbourEdgeMatching(node); }
 
-                HashSet<NavMeshNode> commonNodesWithPreviousSectors = new HashSet<NavMeshNode>(helper.Nodes);
+                RCSet<NavMeshNode> commonNodesWithPreviousSectors = new RCSet<NavMeshNode>(helper.Nodes);
                 commonNodesWithPreviousSectors.IntersectWith(allNodes);
                 Assert.AreEqual(0, commonNodesWithPreviousSectors.Count);
                 allNodes.UnionWith(helper.Nodes);
@@ -136,7 +136,7 @@ namespace RC.UnitTests
         /// <param name="helper">The tessellation helper to be checked.</param>
         private static void CheckTessellationHelper(TessellationHelper helper)
         {
-            Dictionary<RCNumVector, HashSet<NavMeshNode>> vertexMap = GetCopyOfVertexMap(helper);
+            Dictionary<RCNumVector, RCSet<NavMeshNode>> vertexMap = GetCopyOfVertexMap(helper);
             foreach (NavMeshNode node in helper.Nodes)
             {
                 for (int i = 0; i < node.Polygon.VertexCount; ++i)
@@ -155,7 +155,7 @@ namespace RC.UnitTests
         /// <param name="helper">The tessellation helper to check.</param>
         private static void CheckSectorInterconnection(TessellationHelper helper)
         {
-            HashSet<NavMeshNode> nodesOfSector = new HashSet<NavMeshNode>(helper.Nodes);
+            RCSet<NavMeshNode> nodesOfSector = new RCSet<NavMeshNode>(helper.Nodes);
             CollectReachableNodes(nodesOfSector.First(), ref nodesOfSector);
             Assert.AreEqual(0, nodesOfSector.Count);
         }
@@ -166,14 +166,14 @@ namespace RC.UnitTests
         /// <param name="sector">The sector to check.</param>
         private static void CheckNeighbourhood(TessellationHelper sector)
         {
-            Dictionary<RCNumVector, HashSet<NavMeshNode>> vertexMap = GetCopyOfVertexMap(sector);
+            Dictionary<RCNumVector, RCSet<NavMeshNode>> vertexMap = GetCopyOfVertexMap(sector);
             foreach (NavMeshNode node in sector.Nodes)
             {
                 for (int i = 0; i < node.Polygon.VertexCount; i++)
                 {
                     RCNumVector edgeBegin = node.Polygon[i];
                     RCNumVector edgeEnd = node.Polygon[(i + 1) % node.Polygon.VertexCount];
-                    HashSet<NavMeshNode> matchingNodesCopy = vertexMap[edgeBegin];
+                    RCSet<NavMeshNode> matchingNodesCopy = vertexMap[edgeBegin];
                     matchingNodesCopy.IntersectWith(vertexMap[edgeEnd]);
                     if (matchingNodesCopy.Count == 2)
                     {
@@ -192,7 +192,7 @@ namespace RC.UnitTests
         private static void CheckNeighbourEdgeMatching(NavMeshNode node)
         {
             /// Collect the edges of the current node.
-            HashSet<Tuple<RCNumVector, RCNumVector>> nodeEdges = new HashSet<Tuple<RCNumVector, RCNumVector>>();
+            RCSet<Tuple<RCNumVector, RCNumVector>> nodeEdges = new RCSet<Tuple<RCNumVector, RCNumVector>>();
             for (int i = 0; i < node.Polygon.VertexCount; i++)
             {
                 nodeEdges.Add(new Tuple<RCNumVector, RCNumVector>(node.Polygon[i], node.Polygon[(i + 1) % node.Polygon.VertexCount]));
@@ -202,7 +202,7 @@ namespace RC.UnitTests
             foreach (NavMeshNode neighbour in node.Neighbours)
             {
                 /// Collect the edges of the current neighbour.
-                HashSet<Tuple<RCNumVector, RCNumVector>> neighbourEdges = new HashSet<Tuple<RCNumVector, RCNumVector>>();
+                RCSet<Tuple<RCNumVector, RCNumVector>> neighbourEdges = new RCSet<Tuple<RCNumVector, RCNumVector>>();
                 for (int i = 0; i < neighbour.Polygon.VertexCount; i++)
                 {
                     neighbourEdges.Add(new Tuple<RCNumVector, RCNumVector>(neighbour.Polygon[(i + 1) % neighbour.Polygon.VertexCount], neighbour.Polygon[i]));
@@ -222,7 +222,7 @@ namespace RC.UnitTests
         /// </summary>
         /// <param name="initialNode">The node to start from.</param>
         /// <param name="unvisitedNodes">List of the unvisited nodes.</param>
-        private static void CollectReachableNodes(NavMeshNode initialNode, ref HashSet<NavMeshNode> unvisitedNodes)
+        private static void CollectReachableNodes(NavMeshNode initialNode, ref RCSet<NavMeshNode> unvisitedNodes)
         {
             Assert.IsTrue(unvisitedNodes.Remove(initialNode));
             foreach (NavMeshNode neighbour in initialNode.Neighbours)
@@ -242,16 +242,16 @@ namespace RC.UnitTests
         /// </summary>
         /// <param name="helper">The tessellation helper.</param>
         /// <returns>The created copy of the vertex-map of the given tessellation helper.</returns>
-        private static Dictionary<RCNumVector, HashSet<NavMeshNode>> GetCopyOfVertexMap(TessellationHelper helper)
+        private static Dictionary<RCNumVector, RCSet<NavMeshNode>> GetCopyOfVertexMap(TessellationHelper helper)
         {
             PrivateObject helperObj = new PrivateObject(helper);
-            Dictionary<RCNumVector, HashSet<NavMeshNode>> originalMap =
-                (Dictionary<RCNumVector, HashSet<NavMeshNode>>)helperObj.GetField("vertexMap");
+            Dictionary<RCNumVector, RCSet<NavMeshNode>> originalMap =
+                (Dictionary<RCNumVector, RCSet<NavMeshNode>>)helperObj.GetField("vertexMap");
 
-            Dictionary<RCNumVector, HashSet<NavMeshNode>> mapCopy = new Dictionary<RCNumVector, HashSet<NavMeshNode>>();
-            foreach (KeyValuePair<RCNumVector, HashSet<NavMeshNode>> item in originalMap)
+            Dictionary<RCNumVector, RCSet<NavMeshNode>> mapCopy = new Dictionary<RCNumVector, RCSet<NavMeshNode>>();
+            foreach (KeyValuePair<RCNumVector, RCSet<NavMeshNode>> item in originalMap)
             {
-                mapCopy.Add(item.Key, new HashSet<NavMeshNode>(item.Value));
+                mapCopy.Add(item.Key, new RCSet<NavMeshNode>(item.Value));
             }
             return mapCopy;
         }

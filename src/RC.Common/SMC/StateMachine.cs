@@ -45,7 +45,7 @@ namespace RC.Common.SMC
             this.name = name;
             this.smController = smc;
             this.states = new Dictionary<string, SMState>();
-            this.registeredTriggers = new HashSet<SMTrigger>();
+            this.registeredTriggers = new RCSet<SMTrigger>();
             this.currentState = null;
             this.commissioned = false;
             this.stateMethodCalled = false;
@@ -280,7 +280,7 @@ namespace RC.Common.SMC
         /// <summary>
         /// List of the triggers registered to this state machine.
         /// </summary>
-        private HashSet<SMTrigger> registeredTriggers;
+        private RCSet<SMTrigger> registeredTriggers;
 
         /// <summary>
         /// Reference to the initial state.

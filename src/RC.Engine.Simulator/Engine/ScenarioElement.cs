@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 using RC.Common.ComponentModel;
+using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.PublicInterfaces;
@@ -71,17 +72,17 @@ namespace RC.Engine.Simulator.Engine
         /// list is empty, then no new elements will be added to the scenario. Returning a null reference indicates that this scenario element
         /// has finished its lifecycle and can be removed from the scenario after the current simulation frame update.
         /// </returns>
-        public abstract HashSet<ScenarioElement> UpdateState();
-
-        /// <summary>
-        /// Updates the animations of this scenario element if it has any map objects.
-        /// </summary>
-        public void UpdateAnimations()
+        public RCSet<ScenarioElement> UpdateState()
         {
-            foreach (MapObject mapObject in this.mapObjectsOfThisElement)
+            if (this.scenario.Read() == null) { throw new InvalidOperationException("This scenario element doesn't not belong to a scenario!"); }
+
+            RCSet<ScenarioElement> retList = this.UpdateStateImpl();
+            if (retList != null)
             {
-                foreach (AnimationPlayer animation in mapObject.CurrentAnimations) { animation.Step(); }
+                this.UpdateMapObjectsImpl();
+                this.StepAnimations();
             }
+            return retList;
         }
 
         #endregion Public interface
@@ -100,7 +101,7 @@ namespace RC.Engine.Simulator.Engine
             this.id = this.ConstructField<int>("id");
             this.owner = this.ConstructField<Player>("owner");
             this.scenario = this.ConstructField<Scenario>("scenario");
-            this.mapObjectsOfThisElement = new HashSet<MapObject>();
+            this.mapObjectsOfThisElement = new RCSet<MapObject>();
 
             this.typeID.Write(this.elementType.ID);
             this.id.Write(-1);
@@ -109,7 +110,23 @@ namespace RC.Engine.Simulator.Engine
             this.mapContext = null;
         }
 
-        #region Protected members for the derived classes
+        #region Protected members
+
+        /// <summary>
+        /// Updates the state of this scenario element.
+        /// </summary>
+        /// <returns>
+        /// The list of new scenario elements that shall be added to the scenario after the current simulation frame update. If the returned
+        /// list is empty, then no new elements will be added to the scenario. Returning a null reference indicates that this scenario element
+        /// has finished its lifecycle and can be removed from the scenario after the current simulation frame update.
+        /// </returns>
+        protected abstract RCSet<ScenarioElement> UpdateStateImpl();
+
+        /// <summary>
+        /// Updates the map objects of this scenario element.
+        /// </summary>
+        /// <remarks>Can be overriden in the derived classes. The default implementation does nothing.</remarks>
+        protected virtual void UpdateMapObjectsImpl() { }
 
         /// <summary>
         /// Creates a map object for this scenario element to the given location on the map.
@@ -140,7 +157,16 @@ namespace RC.Engine.Simulator.Engine
 
             this.mapObjectsOfThisElement.Remove(mapObject);
             this.mapContext.MapObjects.DetachContent(mapObject);
-            mapObject.Dispose();
+        }
+
+        /// <summary>
+        /// Calculates the area of this scenario element from the given position vector.
+        /// </summary>
+        /// <param name="position">The position vector.</param>
+        /// <returns>The area of this scenario element.</returns>
+        protected RCNumRectangle CalculateArea(RCNumVector position)
+        {
+            return new RCNumRectangle(position - this.ElementType.Area.Read() / 2, this.ElementType.Area.Read());
         }
 
         /// <summary>
@@ -148,7 +174,7 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         protected ScenarioMapContext MapContext { get { return this.mapContext; } }
 
-        #endregion Protected members for the derived classes
+        #endregion Protected members
 
         #region Internal members
 
@@ -204,6 +230,24 @@ namespace RC.Engine.Simulator.Engine
 
         #endregion Internal members
 
+        #region Private members
+
+        /// <summary>
+        /// Steps the animations of this scenario element if it has any map objects.
+        /// </summary>
+        private void StepAnimations()
+        {
+            foreach (MapObject mapObject in this.mapObjectsOfThisElement)
+            {
+                foreach (AnimationPlayer animation in mapObject.CurrentAnimations)
+                {
+                    animation.Step();
+                }
+            }
+        }
+
+        #endregion Private members
+
         #region Heaped members
 
         /// <summary>
@@ -237,7 +281,7 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// The list of map objects of this scenario element.
         /// </summary>
-        private readonly HashSet<MapObject> mapObjectsOfThisElement;
+        private readonly RCSet<MapObject> mapObjectsOfThisElement;
 
         /// <summary>
         /// Reference to the type of this scenario element.

@@ -40,14 +40,14 @@ namespace RC.Engine.Simulator.Commands
         }
 
         /// <see cref="CommandExecutionFactoryBase.GetCommandAvailability"/>
-        protected override AvailabilityEnum GetCommandAvailability(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet)
+        protected override AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitiesToHandle, RCSet<Entity> fullEntitySet)
         {
             /// TODO: implement this method!
             return AvailabilityEnum.Enabled;
         }
 
         /// <see cref="CommandExecutionFactoryBase.CreateCommandExecutions"/>
-        protected override IEnumerable<CmdExecutionBase> CreateCommandExecutions(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID, string parameter)
+        protected override IEnumerable<CmdExecutionBase> CreateCommandExecutions(RCSet<Entity> entitiesToHandle, RCSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID, string parameter)
         {
             switch (this.commandType)
             {
@@ -71,7 +71,7 @@ namespace RC.Engine.Simulator.Commands
         /// Creates stop executions for the given entities.
         /// </summary>
         /// <param name="entitiesToHandle">The entities to stop.</param>
-        private IEnumerable<CmdExecutionBase> CreateStopExecutions(HashSet<Entity> entitiesToHandle)
+        private IEnumerable<CmdExecutionBase> CreateStopExecutions(RCSet<Entity> entitiesToHandle)
         {
             foreach (Entity entity in entitiesToHandle) { yield return new StopExecution(entity); }
         }
@@ -80,7 +80,7 @@ namespace RC.Engine.Simulator.Commands
         /// Creates hold executions for the given entities.
         /// </summary>
         /// <param name="entitiesToHandle">The entities to hold.</param>
-        private IEnumerable<CmdExecutionBase> CreateHoldExecutions(HashSet<Entity> entitiesToHandle)
+        private IEnumerable<CmdExecutionBase> CreateHoldExecutions(RCSet<Entity> entitiesToHandle)
         {
             foreach (Entity entity in entitiesToHandle) { yield return new HoldExecution(entity); }
         }
@@ -92,7 +92,7 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="fullEntitySet">The set of selected entities.</param>
         /// <param name="targetPosition">The target position.</param>
         /// <param name="targetEntityID">The ID of the target entity or -1 if undefined.</param>
-        private IEnumerable<CmdExecutionBase> CreateMoveExecutions(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID)
+        private IEnumerable<CmdExecutionBase> CreateMoveExecutions(RCSet<Entity> entitiesToHandle, RCSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID)
         {
             MagicBox magicBox = new MagicBox(fullEntitySet, targetPosition);
             foreach (Entity entity in entitiesToHandle) { yield return new MoveExecution(entity, magicBox.GetTargetPosition(entity), targetEntityID); }
@@ -105,7 +105,7 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="fullEntitySet">The set of selected entities.</param>
         /// <param name="targetPosition">The target position.</param>
         /// <param name="targetEntityID">The ID of the target entity or -1 if undefined.</param>
-        private IEnumerable<CmdExecutionBase> CreateAttackExecutions(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID)
+        private IEnumerable<CmdExecutionBase> CreateAttackExecutions(RCSet<Entity> entitiesToHandle, RCSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID)
         {
             MagicBox magicBox = new MagicBox(fullEntitySet, targetPosition);
             foreach (Entity entity in entitiesToHandle) { yield return new AttackExecution(entity, magicBox.GetTargetPosition(entity), targetEntityID); }
@@ -117,7 +117,7 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="entitiesToHandle">The entities to patrol.</param>
         /// <param name="fullEntitySet">The set of selected entities.</param>
         /// <param name="targetPosition">The target position.</param>
-        private IEnumerable<CmdExecutionBase> CreatePatrolExecutions(HashSet<Entity> entitiesToHandle, HashSet<Entity> fullEntitySet, RCNumVector targetPosition)
+        private IEnumerable<CmdExecutionBase> CreatePatrolExecutions(RCSet<Entity> entitiesToHandle, RCSet<Entity> fullEntitySet, RCNumVector targetPosition)
         {
             MagicBox magicBox = new MagicBox(fullEntitySet, targetPosition);
             foreach (Entity entity in entitiesToHandle) { yield return new PatrolExecution(entity, magicBox.GetTargetPosition(entity)); }

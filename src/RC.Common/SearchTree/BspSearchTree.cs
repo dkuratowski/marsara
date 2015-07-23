@@ -22,7 +22,7 @@ namespace RC.Common
             if (nodeCapacity <= 0) { throw new ArgumentOutOfRangeException("nodeCapacity", "Node capacity must be greater than 0!"); }
             if (minNodeSize <= 0) { throw new ArgumentOutOfRangeException("minNodeSize", "Minimum BSP-node size must be positive!"); }
 
-            this.attachedContents = new HashSet<T>();
+            this.attachedContents = new RCSet<T>();
             this.rootNode = new BspSearchTreeNode<T>(area, nodeCapacity, minNodeSize);
         }
 
@@ -40,27 +40,27 @@ namespace RC.Common
         #region ISearchTree<T> methods
 
         /// <see cref="ISearchTree<T>.GetContents"/>
-        public HashSet<T> GetContents()
+        public RCSet<T> GetContents()
         {
-            return new HashSet<T>(this.attachedContents);
+            return new RCSet<T>(this.attachedContents);
         }
 
         /// <see cref="ISearchTree<T>.GetContents"/>
-        public HashSet<T> GetContents(RCNumVector position)
+        public RCSet<T> GetContents(RCNumVector position)
         {
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            HashSet<T> retList = new HashSet<T>();
+            RCSet<T> retList = new RCSet<T>();
             this.rootNode.CollectContents(position, ref retList);
             return retList;
         }
 
         /// <see cref="ISearchTree<T>.GetContents"/>
-        public HashSet<T> GetContents(RCNumRectangle area)
+        public RCSet<T> GetContents(RCNumRectangle area)
         {
             if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
 
-            HashSet<T> retList = new HashSet<T>();
+            RCSet<T> retList = new RCSet<T>();
             this.rootNode.CollectContents(area, ref retList);
             return retList;
         }
@@ -114,7 +114,7 @@ namespace RC.Common
         /// <summary>
         /// List of the contents attached to this search tree.
         /// </summary>
-        private HashSet<T> attachedContents;
+        private RCSet<T> attachedContents;
 
         /// <summary>
         /// Reference to the root of the BSP-tree.

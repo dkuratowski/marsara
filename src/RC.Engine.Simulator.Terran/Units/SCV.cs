@@ -16,15 +16,15 @@ namespace RC.Engine.Simulator.Terran.Units
         public SCV()
             : base(SCV_TYPE_NAME)
         {
-            this.SetActuator(new GroundUnitActuator(this.VelocityValue, this.UnitType.Speed));
-            this.SetPathTracker(new GroundUnitPathTracker(this));
+            this.MotionControl.SetVelocityGraph(new OctagonalVelocityGraph(this.UnitType.Speed.Read()));
+            this.MotionControl.SetPathTracker(new GroundUnitPathTracker(this));
         }
 
         /// <see cref="ScenarioElement.AttachToMap"/>
         public override bool AttachToMap(RCNumVector position)
         {
             bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess) { this.MapObject.SetCurrentAnimation("Stopped", (MapDirection)RandomService.DefaultGenerator.Next(8)); }
+            if (attachToMapSuccess) { this.MapObject.SetCurrentAnimation("Stopped", this.MotionControl.VelocityVector); }
             return attachToMapSuccess;
         }
 

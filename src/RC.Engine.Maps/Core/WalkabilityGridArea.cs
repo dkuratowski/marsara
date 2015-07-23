@@ -25,13 +25,13 @@ namespace RC.Engine.Maps.Core
             if (!startingNode.IsLeafNode) { throw new ArgumentException("The starting node must be a leaf node in the walkability quad-tree!", "startingNode"); }
 
             this.children = new List<WalkabilityGridArea>();
-            this.containedNodes = new HashSet<WalkabilityQuadTreeNode>();
+            this.containedNodes = new RCSet<WalkabilityQuadTreeNode>();
             this.isWalkable = startingNode.IsWalkable;
             this.topLeftCell = startingNode.AreaOnGrid.Location;
 
             /// Visit the reachable nodes from the starting node and collect the candidates for the child areas.
-            HashSet<WalkabilityQuadTreeNode> childAreaCandidates = new HashSet<WalkabilityQuadTreeNode>();
-            HashSet<WalkabilityQuadTreeNode> nodesToVisit = new HashSet<WalkabilityQuadTreeNode>() { startingNode };
+            RCSet<WalkabilityQuadTreeNode> childAreaCandidates = new RCSet<WalkabilityQuadTreeNode>();
+            RCSet<WalkabilityQuadTreeNode> nodesToVisit = new RCSet<WalkabilityQuadTreeNode>() { startingNode };
             while (nodesToVisit.Count > 0)
             {
                 WalkabilityQuadTreeNode currNode = nodesToVisit.First();
@@ -314,7 +314,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// The nodes of this area.
         /// </summary>
-        private HashSet<WalkabilityQuadTreeNode> containedNodes;
+        private RCSet<WalkabilityQuadTreeNode> containedNodes;
 
         /// <summary>
         /// List of the child areas that are completely contained by this area.

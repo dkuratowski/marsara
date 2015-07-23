@@ -20,8 +20,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (owner == null) { throw new ArgumentNullException("owner"); }
 
             this.owner = owner;
-            this.processedEntities = new HashSet<int>();
-            this.monitoredEntities = new HashSet<int>();
+            this.processedEntities = new RCSet<int>();
+            this.monitoredEntities = new RCSet<int>();
             this.fowExpirationTimes = new int[owner.Scenario.Map.Size.X, owner.Scenario.Map.Size.Y];
             this.entitySnapshots = new EntitySnapshot[owner.Scenario.Map.Size.X, owner.Scenario.Map.Size.Y];
             for (int col = 0; col < this.owner.Scenario.Map.Size.X; col++)
@@ -228,12 +228,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// The IDs of the already processed entities.
         /// </summary>
-        private readonly HashSet<int> processedEntities;
+        private readonly RCSet<int> processedEntities;
 
         /// <summary>
         /// The IDs of the currently quadratic entities being monitored.
         /// </summary>
-        private readonly HashSet<int> monitoredEntities;
+        private readonly RCSet<int> monitoredEntities;
 
         /// <summary>
         /// Reference to the owner of this FogOfWar instance.

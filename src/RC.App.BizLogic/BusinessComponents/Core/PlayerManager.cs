@@ -23,8 +23,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             this.targetScenario = scenario;
             this.isLocked = false;
-            this.freeStartLocations = new HashSet<StartLocation>(this.targetScenario.GetAllElements<StartLocation>());
-            this.freePlayerIndices = new HashSet<PlayerEnum>()
+            this.freeStartLocations = new RCSet<StartLocation>(this.targetScenario.GetAllElements<StartLocation>());
+            this.freePlayerIndices = new RCSet<PlayerEnum>()
             {
                 PlayerEnum.Player0, PlayerEnum.Player1, PlayerEnum.Player2, PlayerEnum.Player3,
                 PlayerEnum.Player4, PlayerEnum.Player5, PlayerEnum.Player6, PlayerEnum.Player7,
@@ -136,12 +136,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// Set of the free start locations of the target scenario.
         /// </summary>
-        private HashSet<StartLocation> freeStartLocations;
+        private RCSet<StartLocation> freeStartLocations;
 
         /// <summary>
         /// Set of the free player indices.
         /// </summary>
-        private HashSet<PlayerEnum> freePlayerIndices;
+        private RCSet<PlayerEnum> freePlayerIndices;
 
         /// <summary>
         /// The list of the player slots.

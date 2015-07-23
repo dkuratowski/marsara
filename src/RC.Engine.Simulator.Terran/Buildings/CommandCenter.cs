@@ -20,7 +20,7 @@ namespace RC.Engine.Simulator.Terran.Buildings
         public override bool AttachToMap(RCNumVector position)
         {
             bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess) { this.MapObject.SetCurrentAnimation("Normal"); }
+            if (attachToMapSuccess) { this.MapObject.SetCurrentAnimation("Normal", this.MotionControl.VelocityVector); }
             return attachToMapSuccess;
         }
 

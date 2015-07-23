@@ -15,7 +15,7 @@ namespace RC.Engine.Simulator.Commands
         /// </summary>
         /// <param name="recipientEntities">The recipient entities.</param>
         /// <param name="targetPosition">The target position.</param>
-        public MagicBox(HashSet<Entity> recipientEntities, RCNumVector targetPosition)
+        public MagicBox(RCSet<Entity> recipientEntities, RCNumVector targetPosition)
         {
             this.commonTargetPosition = RCNumVector.Undefined;
             this.targetPositions = new Dictionary<Entity, RCNumVector>();
@@ -27,7 +27,7 @@ namespace RC.Engine.Simulator.Commands
                 RCNumVector boundingBoxCenter = (2 * boundingBox.Location + boundingBox.Size) / 2;
                 foreach (Entity entity in recipientEntities)
                 {
-                    RCNumVector boxLocationToEntityVector = entity.PositionValue.Read() - boundingBox.Location;
+                    RCNumVector boxLocationToEntityVector = entity.MotionControl.PositionVector.Read() - boundingBox.Location;
                     RCNumVector magicBox = entity.IsFlying ? AIR_MAGIC_BOX : GROUND_MAGIC_BOX;
                     if (boxLocationToEntityVector.X > magicBox.X || boxLocationToEntityVector.Y > magicBox.Y)
                     {
@@ -37,7 +37,7 @@ namespace RC.Engine.Simulator.Commands
                     }
 
                     /// Calculate the target position of the entity.
-                    this.targetPositions[entity] = targetPosition + entity.PositionValue.Read() - boundingBoxCenter;
+                    this.targetPositions[entity] = targetPosition + entity.MotionControl.PositionVector.Read() - boundingBoxCenter;
                 }
             }
             else
@@ -65,12 +65,12 @@ namespace RC.Engine.Simulator.Commands
         /// </summary>
         /// <param name="entities">The entities.</param>
         /// <returns>The bounding box of the given entities.</returns>
-        private RCNumRectangle CalculateBoundingBox(HashSet<Entity> entities)
+        private RCNumRectangle CalculateBoundingBox(RCSet<Entity> entities)
         {
             RCNumber top = -1, left = -1, bottom = -1, right = -1;
             foreach (Entity entity in entities)
             {
-                RCNumVector entityPosition = entity.PositionValue.Read();
+                RCNumVector entityPosition = entity.MotionControl.PositionVector.Read();
                 if (top == -1 || entityPosition.Y < top) { top = entityPosition.Y; }
                 if (left == -1 || entityPosition.X < left) { left = entityPosition.X; }
                 if (bottom == -1 || entityPosition.Y > bottom) { bottom = entityPosition.Y; }

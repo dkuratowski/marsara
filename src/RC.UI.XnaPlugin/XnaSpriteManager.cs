@@ -24,7 +24,7 @@ namespace RC.UI.XnaPlugin
         public XnaSpriteManager(XnaGraphicsPlatform platform)
         {
             this.platform = platform;
-            this.sprites = new HashSet<XnaSprite>();
+            this.sprites = new RCSet<XnaSprite>();
             this.renderContexts = new Dictionary<XnaSprite, XnaSpriteRenderContext>();
         }
 
@@ -397,7 +397,7 @@ namespace RC.UI.XnaPlugin
         /// <summary>
         /// List of the sprites created by this sprite manager.
         /// </summary>
-        private HashSet<XnaSprite> sprites;
+        private RCSet<XnaSprite> sprites;
 
         /// <summary>
         /// List of the sprite render contexts created by this sprite manager.

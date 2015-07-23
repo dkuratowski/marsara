@@ -97,12 +97,12 @@ namespace RC.Engine.Simulator.Metadata
         ConstValue<int> SightRange { get; }
 
         /// <summary>
-        /// Gets the size of the corresponding element type or null if this element type has no gas cost defined.
+        /// Gets the size of the corresponding element type or null if this element type has no size defined.
         /// </summary>
         ConstValue<SizeEnum> Size { get; }
 
         /// <summary>
-        /// Gets the speed of the corresponding element type or null if this element type has no gas cost defined.
+        /// Gets the speed of the corresponding element type or null if this element type has no speed defined.
         /// </summary>
         ConstValue<RCNumber> Speed { get; }
 
@@ -127,6 +127,6 @@ namespace RC.Engine.Simulator.Metadata
         /// <returns>
         /// The list of the quadratic coordinates (relative to the top-left corner) violating the constraints of this entity type.
         /// </returns>
-        HashSet<RCIntVector> CheckConstraints(Scenario scenario, RCIntVector position);
+        RCSet<RCIntVector> CheckConstraints(Scenario scenario, RCIntVector position);
     }
 }

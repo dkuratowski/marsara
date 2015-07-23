@@ -31,8 +31,8 @@ namespace RC.Engine.Simulator.PublicInterfaces
                 if (!this.centralEntity.HasMapObject) { throw new InvalidOperationException("The given entity is not placed on the map!"); }
                 
                 /// Calculate the initial processed area.
-                RCIntVector bbTopLeft = this.centralEntity.Position.Location.Round();
-                RCIntVector bbBottomRight = (this.centralEntity.Position.Location + this.centralEntity.Position.Size).Round();
+                RCIntVector bbTopLeft = this.centralEntity.Area.Location.Round();
+                RCIntVector bbBottomRight = (this.centralEntity.Area.Location + this.centralEntity.Area.Size).Round();
                 RCIntRectangle processedArea = new RCIntRectangle(bbTopLeft, (bbBottomRight - bbTopLeft) + new RCIntVector(1, 1));
                 for (int layerIdx = 0; layerIdx < LAYER_COUNT; layerIdx++)
                 {

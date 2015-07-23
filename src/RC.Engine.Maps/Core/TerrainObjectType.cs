@@ -38,7 +38,7 @@ namespace RC.Engine.Maps.Core
             this.constraints = new List<ITerrainObjectConstraint>();
             this.cellDataChangesets = new List<ICellDataChangeSet>();
 
-            this.includedQuadCoords = new HashSet<RCIntVector>();
+            this.includedQuadCoords = new RCSet<RCIntVector>();
             for (int x = 0; x < quadraticSize.X; x++)
             {
                 for (int y = 0; y < quadraticSize.Y; y++)
@@ -139,13 +139,13 @@ namespace RC.Engine.Maps.Core
         public int Index { get { return this.index; } }
 
         /// <see cref="ITerrainObjectType.CheckConstraints"/>
-        public HashSet<RCIntVector> CheckConstraints(IMapAccess map, RCIntVector position)
+        public RCSet<RCIntVector> CheckConstraints(IMapAccess map, RCIntVector position)
         {
             if (map == null) { throw new ArgumentNullException("map"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             /// Check against the constraints defined by this terrain object type.
-            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
+            RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
             foreach (ITerrainObjectConstraint contraint in this.constraints)
             {
                 retList.UnionWith(contraint.Check(map, position));
@@ -170,12 +170,12 @@ namespace RC.Engine.Maps.Core
         }
 
         /// <see cref="ITerrainObjectType.CheckTerrainObjectIntersections"/>
-        public HashSet<RCIntVector> CheckTerrainObjectIntersections(IMapAccess map, RCIntVector position)
+        public RCSet<RCIntVector> CheckTerrainObjectIntersections(IMapAccess map, RCIntVector position)
         {
             if (map == null) { throw new ArgumentNullException("map"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
+            RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
             for (int quadX = 0; quadX < this.quadraticSize.X; quadX++)
             {
                 for (int quadY = 0; quadY < this.quadraticSize.Y; quadY++)
@@ -239,7 +239,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// List of the quadratic coordinates that are included in this TerrainObjectType.
         /// </summary>
-        private HashSet<RCIntVector> includedQuadCoords;
+        private RCSet<RCIntVector> includedQuadCoords;
 
         /// <summary>
         /// List of the cell data changesets of this terrain object type.

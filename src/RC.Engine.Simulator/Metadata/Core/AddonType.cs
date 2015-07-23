@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Metadata.Core
@@ -19,7 +20,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         public AddonType(string name, ScenarioMetadata metadata)
             : base(name, metadata)
         {
-            this.upgradeTypes = new HashSet<UpgradeType>();
+            this.upgradeTypes = new RCSet<UpgradeType>();
             this.mainBuilding = null;
         }
 
@@ -62,7 +63,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// List of the upgrade types that are performed in addons of this type.
         /// </summary>
-        private HashSet<UpgradeType> upgradeTypes;
+        private RCSet<UpgradeType> upgradeTypes;
 
         /// <summary>
         /// The name of the building type that creates this type of addon or null if no such a building type exists.

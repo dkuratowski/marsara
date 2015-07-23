@@ -178,7 +178,7 @@ namespace RC.Common.PNService
             if (externalTransitions == null || externalTransitions.Length == 0) { throw new ArgumentNullException("externalTransitions"); }
             if (callbackFunctions == null || callbackFunctions.Count == 0) { throw new ArgumentNullException("callbackFunctions"); }
 
-            HashSet<PNTransition> extTransitions = new HashSet<PNTransition>();
+            RCSet<PNTransition> extTransitions = new RCSet<PNTransition>();
             Dictionary<PNTransition, PNCallback> callbacks = new Dictionary<PNTransition, PNCallback>();
             PNTransition firstExt = null;
 

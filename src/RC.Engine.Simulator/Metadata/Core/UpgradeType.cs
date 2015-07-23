@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Metadata.Core
@@ -98,9 +99,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         {
             if (potentialPreviousLevel.nextLevel != null) { throw new SimulatorException(string.Format("UpgradeType '{0}' already has a next level!", potentialPreviousLevel.Name)); }
 
-            HashSet<UpgradeType> levelPath = new HashSet<UpgradeType>();
-            levelPath.Add(this);
-            levelPath.Add(potentialPreviousLevel);
+            RCSet<UpgradeType> levelPath = new RCSet<UpgradeType> { this, potentialPreviousLevel };
             UpgradeType currPathNode = potentialPreviousLevel;
             while (currPathNode.previousLevel != null)
             {

@@ -13,10 +13,10 @@ namespace RC.Engine.Simulator.Engine
     public class BuildableAreaConstraint : EntityConstraint
     {
         /// <see cref="EntityConstraint.CheckImpl"/>
-        protected override HashSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position)
+        protected override RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position)
         {
             RCIntRectangle objArea = new RCIntRectangle(position, scenario.Map.CellToQuadSize(this.EntityType.Area.Read()));
-            HashSet<RCIntVector> retList = new HashSet<RCIntVector>();
+            RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
             for (int absY = objArea.Top; absY < objArea.Bottom; absY++)
             {
                 for (int absX = objArea.Left; absX < objArea.Right; absX++)

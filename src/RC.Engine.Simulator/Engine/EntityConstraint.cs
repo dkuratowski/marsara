@@ -43,7 +43,7 @@ namespace RC.Engine.Simulator.Engine
         /// <returns>
         /// The list of the quadratic coordinates (relative to the top-left corner) violating the constraint.
         /// </returns>
-        public HashSet<RCIntVector> Check(Scenario scenario, RCIntVector position)
+        public RCSet<RCIntVector> Check(Scenario scenario, RCIntVector position)
         {
             if (this.entityType == null) { throw new SimulatorException("Entity type has not yet been set for constraint!"); }
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
@@ -55,7 +55,7 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// The internal implementation of the Check method that must be overriden in the derived classes.
         /// </summary>
-        protected abstract HashSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position);
+        protected abstract RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position);
 
         /// <summary>
         /// Gets the entity type that this constraint belongs to.

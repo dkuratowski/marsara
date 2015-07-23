@@ -117,6 +117,7 @@
     <Compile Include="Fifo.cs" />
     <Compile Include="FifoException.cs" />
     <Compile Include="Math\RCPolygon.cs" />
+    <Compile Include="RCSet.cs" />
     <Compile Include="RCColor.cs" />
     <Compile Include="SearchTree\BspSearchTree.cs" />
     <Compile Include="SearchTree\BspSearchTreeNode.cs" />

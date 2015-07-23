@@ -139,7 +139,7 @@ namespace RC.Engine.PathFinder.Test
                 this.searchResultImg = new Bitmap(this.pathfinder.Navmesh.GridSize.X * CELL_SIZE, this.pathfinder.Navmesh.GridSize.Y * CELL_SIZE, PixelFormat.Format24bppRgb);
                 Graphics outputGC = Graphics.FromImage(this.searchResultImg);
                 outputGC.Clear(Color.FromArgb(255, 0, 255));
-                HashSet<RCPolygon> nodesOnPath = new HashSet<RCPolygon>();
+                RCSet<RCPolygon> nodesOnPath = new RCSet<RCPolygon>();
                 foreach (RC.Engine.Simulator.MotionControl.Path path in this.computedPaths)
                 {
                     for (int i = 0; i < path.Length; ++i)

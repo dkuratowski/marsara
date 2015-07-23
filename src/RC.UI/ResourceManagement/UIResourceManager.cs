@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 using RC.Common.Diagnostics;
 using System.Diagnostics;
 
@@ -33,7 +34,7 @@ namespace RC.UI
             if (!resourceGroups.ContainsKey(group))
             {
                 /// A new resource group has to be created.
-                resourceGroups.Add(group, new HashSet<string>());
+                resourceGroups.Add(group, new RCSet<string>());
             }
 
             /// Register the resource loader.
@@ -90,7 +91,7 @@ namespace RC.UI
             if (!resourceGroups.ContainsKey(group)) { throw new UIException(string.Format("Resource group '{0}' doesn't exist!", group)); }
 
             string[] resourcesToLoad = new string[resourceGroups[group].Count];
-            resourceGroups[group].CopyTo(resourcesToLoad);
+            resourceGroups[group].CopyTo(resourcesToLoad, 0);
             IUIBackgroundTask loaderTask = UITaskManager.StartParallelTask(LoadResourceGroupAsync_i, "ResourceLoadingTask", resourcesToLoad);
             return loaderTask;
         }
@@ -188,13 +189,13 @@ namespace RC.UI
         /// <summary>
         /// List of the resource groups.
         /// </summary>
-        private static Dictionary<string, HashSet<string>> resourceGroups =
-            new Dictionary<string, HashSet<string>>();
+        private static Dictionary<string, RCSet<string>> resourceGroups =
+            new Dictionary<string, RCSet<string>>();
 
         /// <summary>
         /// List of the every registered resource loaders.
         /// </summary>
-        private static HashSet<UIResourceLoader> registeredLoaders = new HashSet<UIResourceLoader>();
+        private static RCSet<UIResourceLoader> registeredLoaders = new RCSet<UIResourceLoader>();
 
         /// <summary>
         /// Object used as mutex.

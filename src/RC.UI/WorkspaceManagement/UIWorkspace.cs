@@ -61,7 +61,7 @@ namespace RC.UI
 
             this.activePage = null;
             this.openedDialog = null;
-            this.registeredPages = new HashSet<UIPage>();
+            this.registeredPages = new RCSet<UIPage>();
 
             /// Construct the underlying objects.
             RCIntVector pixelScaling = new RCIntVector(displaySize.X / workspaceSize.X, displaySize.Y / workspaceSize.Y);
@@ -362,7 +362,7 @@ namespace RC.UI
         /// <summary>
         /// List of the registered pages.
         /// </summary>
-        private HashSet<UIPage> registeredPages;
+        private RCSet<UIPage> registeredPages;
 
         /// <summary>
         /// Reference to the currently opened UIDialog.

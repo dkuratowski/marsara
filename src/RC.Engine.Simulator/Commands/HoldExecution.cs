@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using RC.Common;
 using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
 
@@ -14,7 +15,7 @@ namespace RC.Engine.Simulator.Commands
         /// </summary>
         /// <param name="recipientEntity">The recipient entity of this command execution.</param>
         public HoldExecution(Entity recipientEntity)
-            : base(new HashSet<Entity> { recipientEntity })
+            : base(new RCSet<Entity> { recipientEntity })
         {
             this.recipientEntity = this.ConstructField<Entity>("recipientEntity");
             this.attackedEntity = this.ConstructField<Entity>("attackedEntity");
@@ -78,7 +79,7 @@ namespace RC.Engine.Simulator.Commands
         protected override void Initialize()
         {
             this.recipientEntity.Read().Armour.StopAttack();
-            this.recipientEntity.Read().StopMoving();
+            this.recipientEntity.Read().MotionControl.StopMoving();
 
             /// Select a nearby enemy to attack if possible.
             this.attackedEntity.Write(this.recipientEntity.Read().Armour.SelectEnemy());

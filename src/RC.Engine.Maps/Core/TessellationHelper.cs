@@ -37,10 +37,10 @@ namespace RC.Engine.Maps.Core
             this.holes = new List<RCPolygon>(holes);
 
             NavMeshNode superTriangle = new NavMeshNode(SUPERTRIANGLE_VERTEX0, SUPERTRIANGLE_VERTEX1, SUPERTRIANGLE_VERTEX2, idSource);
-            this.vertexMap = new Dictionary<RCNumVector, HashSet<NavMeshNode>>();
-            this.vertexMap.Add(SUPERTRIANGLE_VERTEX0, new HashSet<NavMeshNode>() { superTriangle });
-            this.vertexMap.Add(SUPERTRIANGLE_VERTEX1, new HashSet<NavMeshNode>() { superTriangle });
-            this.vertexMap.Add(SUPERTRIANGLE_VERTEX2, new HashSet<NavMeshNode>() { superTriangle });
+            this.vertexMap = new Dictionary<RCNumVector, RCSet<NavMeshNode>>();
+            this.vertexMap.Add(SUPERTRIANGLE_VERTEX0, new RCSet<NavMeshNode>() { superTriangle });
+            this.vertexMap.Add(SUPERTRIANGLE_VERTEX1, new RCSet<NavMeshNode>() { superTriangle });
+            this.vertexMap.Add(SUPERTRIANGLE_VERTEX2, new RCSet<NavMeshNode>() { superTriangle });
             this.nodeSearchTree = new BspSearchTree<NavMeshNode>(superTriangle.BoundingBox, BSP_NODE_CAPACITY, BSP_MIN_NODE_SIZE);
             this.nodeSearchTree.AttachContent(superTriangle);
 
@@ -68,7 +68,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// Gets all nodes created by this TessellationHelper.
         /// </summary>
-        public HashSet<NavMeshNode> Nodes { get { return this.nodeSearchTree.GetContents(); } }
+        public RCSet<NavMeshNode> Nodes { get { return this.nodeSearchTree.GetContents(); } }
 
         #region Tessellation methods
 
@@ -90,7 +90,7 @@ namespace RC.Engine.Maps.Core
             if (containingNode == null) { throw new ArgumentOutOfRangeException("vertex", "Vertex must be contained within at least 1 existing NavMeshNode!"); }
 
             /// Collect the NavMeshNodes whose circumcircle contains the new vertex.
-            HashSet<NavMeshNode> nodesToMerge = new HashSet<NavMeshNode>() { containingNode };
+            RCSet<NavMeshNode> nodesToMerge = new RCSet<NavMeshNode>() { containingNode };
             TessellationHelper.CollectViolatingNodes(vertex, containingNode, ref nodesToMerge);
 
             /// Merge the collected nodes.
@@ -123,7 +123,7 @@ namespace RC.Engine.Maps.Core
                 /// Check if the current constraint edge is already the part of this tessellation.
                 RCNumVector edgeBegin = constraint[constraintEdgeIdx];
                 RCNumVector edgeEnd = constraint[(constraintEdgeIdx + 1) % constraint.VertexCount];
-                HashSet<NavMeshNode> matchingNodesCopy = new HashSet<NavMeshNode>(this.vertexMap[edgeBegin]);
+                RCSet<NavMeshNode> matchingNodesCopy = new RCSet<NavMeshNode>(this.vertexMap[edgeBegin]);
                 matchingNodesCopy.IntersectWith(this.vertexMap[edgeEnd]);
                 if (matchingNodesCopy.Count == 2) { continue; }
                 else if (matchingNodesCopy.Count != 0) { new InvalidOperationException("Constraint edge matches to only 1 node!"); }
@@ -132,7 +132,7 @@ namespace RC.Engine.Maps.Core
                 if (!this.vertexMap.ContainsKey(edgeEnd)) { throw new ArgumentException(string.Format("Vertex {0} in constraint polygon has not been added to the tessellation!", edgeEnd), string.Format("constraint[{0}]", (constraintEdgeIdx + 1) % constraint.VertexCount)); }
                 
                 /// Collect the NavMeshNodes that has intersection with the current edge.
-                HashSet<NavMeshNode> nodesToMerge = new HashSet<NavMeshNode>();
+                RCSet<NavMeshNode> nodesToMerge = new RCSet<NavMeshNode>();
                 foreach (NavMeshNode checkedNode in this.vertexMap[edgeBegin])
                 {
                     if (TessellationHelper.CheckSegmentPolygonIntersection(edgeBegin, edgeEnd, checkedNode.Polygon))
@@ -161,7 +161,7 @@ namespace RC.Engine.Maps.Core
         /// Merges the given nodes to one common node.
         /// </summary>
         /// <param name="nodesToMerge">The nodes to be merged. This list will contain only the merged node after the merge operation.</param>
-        private void MergeNodes(ref HashSet<NavMeshNode> nodesToMerge)
+        private void MergeNodes(ref RCSet<NavMeshNode> nodesToMerge)
         {
             if (nodesToMerge.Count == 0) { throw new ArgumentException("Empty node list!", "nodesToMerge"); }
 
@@ -226,10 +226,10 @@ namespace RC.Engine.Maps.Core
         /// <param name="borderOrHole">The given border/hole.</param>
         private void DropNonWalkableNodes(RCPolygon borderOrHole)
         {
-            HashSet<NavMeshNode> collectPathStartNodes = new HashSet<NavMeshNode>();
+            RCSet<NavMeshNode> collectPathStartNodes = new RCSet<NavMeshNode>();
             for (int vertexIdx = 0; vertexIdx < borderOrHole.VertexCount; vertexIdx++)
             {
-                HashSet<NavMeshNode> matchingNodesCopy = new HashSet<NavMeshNode>(this.vertexMap[borderOrHole[vertexIdx]]);
+                RCSet<NavMeshNode> matchingNodesCopy = new RCSet<NavMeshNode>(this.vertexMap[borderOrHole[vertexIdx]]);
                 matchingNodesCopy.IntersectWith(this.vertexMap[borderOrHole[(vertexIdx + 1) % borderOrHole.VertexCount]]);
                 if (matchingNodesCopy.Count == 2)
                 {
@@ -253,10 +253,10 @@ namespace RC.Engine.Maps.Core
                 }
             }
 
-            HashSet<NavMeshNode> nodesToDrop = new HashSet<NavMeshNode>();
+            RCSet<NavMeshNode> nodesToDrop = new RCSet<NavMeshNode>();
             while (collectPathStartNodes.Count != 0)
             {
-                HashSet<NavMeshNode> collectedNodes = new HashSet<NavMeshNode>();
+                RCSet<NavMeshNode> collectedNodes = new RCSet<NavMeshNode>();
                 collectPathStartNodes.First().CollectReachableNodes(ref collectedNodes);
                 collectPathStartNodes.ExceptWith(collectedNodes);
                 nodesToDrop.UnionWith(collectedNodes);
@@ -296,7 +296,7 @@ namespace RC.Engine.Maps.Core
         {
             for (int i = 0; i < node.Polygon.VertexCount; i++)
             {
-                if (!this.vertexMap.ContainsKey(node.Polygon[i])) { this.vertexMap.Add(node.Polygon[i], new HashSet<NavMeshNode>()); }
+                if (!this.vertexMap.ContainsKey(node.Polygon[i])) { this.vertexMap.Add(node.Polygon[i], new RCSet<NavMeshNode>()); }
                 this.vertexMap[node.Polygon[i]].Add(node);
             }
         }
@@ -307,11 +307,11 @@ namespace RC.Engine.Maps.Core
         /// <param name="newVertex">The new vertex.</param>
         /// <param name="currNode">The node whose neighbours shall be checked.</param>
         /// <param name="collectedNodes">The list of the violating nodes.</param>
-        private static void CollectViolatingNodes(RCNumVector newVertex, NavMeshNode currNode, ref HashSet<NavMeshNode> collectedNodes)
+        private static void CollectViolatingNodes(RCNumVector newVertex, NavMeshNode currNode, ref RCSet<NavMeshNode> collectedNodes)
         {
             if (currNode.Polygon.VertexCount != 3) { throw new ArgumentException("Node shall be a triangle!", "currNode"); }
 
-            HashSet<NavMeshNode> neighboursToContinue = new HashSet<NavMeshNode>();
+            RCSet<NavMeshNode> neighboursToContinue = new RCSet<NavMeshNode>();
             foreach (NavMeshNode neighbour in currNode.Neighbours)
             {
                 if (!collectedNodes.Contains(neighbour))
@@ -357,9 +357,9 @@ namespace RC.Engine.Maps.Core
         /// <param name="edgeEnd">The vertex at the end of the edge.</param>
         /// <param name="currNode">The node whose neighbours shall be checked.</param>
         /// <param name="collectedNodes">The list of the nodes that have intersection with the given edge.</param>
-        private static void CollectIntersectingNodes(RCNumVector edgeBegin, RCNumVector edgeEnd, NavMeshNode currNode, ref HashSet<NavMeshNode> collectedNodes)
+        private static void CollectIntersectingNodes(RCNumVector edgeBegin, RCNumVector edgeEnd, NavMeshNode currNode, ref RCSet<NavMeshNode> collectedNodes)
         {
-            HashSet<NavMeshNode> neighboursToContinue = new HashSet<NavMeshNode>();
+            RCSet<NavMeshNode> neighboursToContinue = new RCSet<NavMeshNode>();
             foreach (NavMeshNode neighbour in currNode.Neighbours)
             {
                 if (!collectedNodes.Contains(neighbour))
@@ -484,7 +484,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// The vertex-map of the tessellation that stores the incident NavMeshNodes for each vertex.
         /// </summary>
-        private Dictionary<RCNumVector, HashSet<NavMeshNode>> vertexMap;
+        private Dictionary<RCNumVector, RCSet<NavMeshNode>> vertexMap;
 
         /// <summary>
         /// Search-tree for searching NavMeshNodes.

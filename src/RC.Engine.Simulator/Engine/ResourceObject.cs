@@ -79,10 +79,10 @@ namespace RC.Engine.Simulator.Engine
         {
             if (this.ResourceAmount.Read() == 0) { throw new InvalidOperationException("The amount of minerals in a mineral field cannot be 0!"); }
 
-            if (this.ResourceAmount.Read() <= 200) { this.MapObject.SetCurrentAnimation("Amount_0_200"); }
-            else if (this.ResourceAmount.Read() <= 400) { this.MapObject.SetCurrentAnimation("Amount_200_400"); }
-            else if (this.ResourceAmount.Read() <= 700) { this.MapObject.SetCurrentAnimation("Amount_400_700"); }
-            else { this.MapObject.SetCurrentAnimation("Amount_Full"); }
+            if (this.ResourceAmount.Read() <= 200) { this.MapObject.SetCurrentAnimation("Amount_0_200", this.MotionControl.VelocityVector); }
+            else if (this.ResourceAmount.Read() <= 400) { this.MapObject.SetCurrentAnimation("Amount_200_400", this.MotionControl.VelocityVector); }
+            else if (this.ResourceAmount.Read() <= 700) { this.MapObject.SetCurrentAnimation("Amount_400_700", this.MotionControl.VelocityVector); }
+            else { this.MapObject.SetCurrentAnimation("Amount_Full", this.MotionControl.VelocityVector); }
         }
 
         /// <summary>
@@ -117,8 +117,8 @@ namespace RC.Engine.Simulator.Engine
         /// <see cref="ResourceObject.SetAnimationsImpl"/>
         protected override void SetAnimationsImpl()
         {
-            if (this.ResourceAmount.Read() == 0) { this.MapObject.SetCurrentAnimation("Depleted"); }
-            else { this.MapObject.SetCurrentAnimation("Normal"); }
+            if (this.ResourceAmount.Read() == 0) { this.MapObject.SetCurrentAnimation("Depleted", this.MotionControl.VelocityVector); }
+            else { this.MapObject.SetCurrentAnimation("Normal", this.MotionControl.VelocityVector); }
         }
 
         /// <summary>

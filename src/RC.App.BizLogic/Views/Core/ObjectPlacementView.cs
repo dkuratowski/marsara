@@ -53,7 +53,7 @@ namespace RC.App.BizLogic.Views.Core
                 LegalParts = new List<RCIntRectangle>()
             };
 
-            HashSet<RCIntVector> violatingQuadCoords = this.CheckObjectConstraints(topLeftQuadCoords);
+            RCSet<RCIntVector> violatingQuadCoords = this.CheckObjectConstraints(topLeftQuadCoords);
             for (int x = 0; x < objectQuadraticSize.X; x++)
             {
                 for (int y = 0; y < objectQuadraticSize.Y; y++)
@@ -96,7 +96,7 @@ namespace RC.App.BizLogic.Views.Core
         /// The list of the quadratic coordinates (relative to the top-left corner) violating the placement constraints
         /// of the object at the given position on the map.
         /// </returns>
-        protected abstract HashSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords);
+        protected abstract RCSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords);
 
         /// <summary>
         /// Gets the sprites of the object to be displayed.

@@ -47,7 +47,7 @@ namespace RC.Engine.DrawTerrain.Test
 
             this.draw = new IsoDraw();
 
-            this.replacedTiles = new HashSet<IIsoTile>();
+            this.replacedTiles = new RCSet<IIsoTile>();
             this.terrainTypes = new List<string>();
             foreach (ITerrainType terrainType in tileset.TerrainTypes)
             {
@@ -67,7 +67,7 @@ namespace RC.Engine.DrawTerrain.Test
 
         private IsoDraw draw;
 
-        private HashSet<IIsoTile> replacedTiles;
+        private RCSet<IIsoTile> replacedTiles;
 
         private List<string> terrainTypes;
 

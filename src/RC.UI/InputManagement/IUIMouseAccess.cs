@@ -32,7 +32,7 @@ namespace RC.UI
         /// <summary>
         /// Gets the list of the mouse buttons that are currently being pressed.
         /// </summary>
-        HashSet<UIMouseButton> PressedButtons { get; }
+        RCSet<UIMouseButton> PressedButtons { get; }
 
         /// <summary>
         /// Gets the position of the mouse scroll wheel.

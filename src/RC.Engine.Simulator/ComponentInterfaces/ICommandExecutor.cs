@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Simulator.Commands;
 using RC.Engine.Simulator.Engine;
@@ -44,6 +45,6 @@ namespace RC.Engine.Simulator.ComponentInterfaces
         /// <param name="scenario">The scenario of the entities</param>
         /// <param name="entityIDs">The IDs of the entities.</param>
         /// <returns>The commands that are currently being executed by the given set of entities.</returns>
-        HashSet<string> GetCommandsBeingExecuted(Scenario scenario, IEnumerable<int> entityIDs);
+        RCSet<string> GetCommandsBeingExecuted(Scenario scenario, IEnumerable<int> entityIDs);
     }
 }

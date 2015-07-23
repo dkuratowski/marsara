@@ -41,7 +41,7 @@ namespace RC.Common.SMC
         }
 
         /// <see cref="ISMState.AddInternalTrigger"/>
-        public void AddInternalTrigger(ISMState targetState, StateMachineController.TransitionHandler handler, HashSet<ISMState> neededStates)
+        public void AddInternalTrigger(ISMState targetState, StateMachineController.TransitionHandler handler, RCSet<ISMState> neededStates)
         {
             if (this.stateMachine.Commissioned) { throw new SMException("Unable to add trigger to a commissioned state machine"); }
             if (targetState == null) { throw new ArgumentNullException("targetState"); }
@@ -57,7 +57,7 @@ namespace RC.Common.SMC
                     neededStatesArray[i] = st;
                     i++;
                 }
-                //HashSet<SMState> neededStateObjects = new HashSet<SMState>();
+                //RCSet<SMState> neededStateObjects = new RCSet<SMState>();
                 //foreach (ISMState s in neededStates)
                 //{
                 //    SMState sObj = this.stateMachine.StateObjectMap.GetStateObject(s);

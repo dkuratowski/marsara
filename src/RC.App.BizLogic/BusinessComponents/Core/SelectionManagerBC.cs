@@ -47,11 +47,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (localPlayer == PlayerEnum.Neutral) { throw new ArgumentException("Local player cannot be PlayerEnum.Neutral!", "localPlayer"); }
 
             this.localPlayer = localPlayer;
-            this.currentSelection = new HashSet<int>();
-            this.savedSelections = new HashSet<int>[CAPACITY];
+            this.currentSelection = new RCSet<int>();
+            this.savedSelections = new RCSet<int>[CAPACITY];
             for (int i = 0; i < CAPACITY; i++)
             {
-                this.savedSelections[i] = new HashSet<int>();
+                this.savedSelections[i] = new RCSet<int>();
             }
         }
 
@@ -200,7 +200,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="ISelectionManagerBC.CurrentSelection"/>
-        public HashSet<int> CurrentSelection
+        public RCSet<int> CurrentSelection
         {
             get
             {
@@ -208,7 +208,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
                 this.Update();
-                return new HashSet<int>(this.currentSelection);
+                return new RCSet<int>(this.currentSelection);
             }
         }
 
@@ -230,13 +230,13 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private void Update()
         {
             /// Collect the IDs to be removed.
-            HashSet<int> idsToRemove = new HashSet<int>();
+            RCSet<int> idsToRemove = new RCSet<int>();
             foreach (int id in this.currentSelection)
             {
                 Entity entity = this.ActiveScenario.GetElement<Entity>(id);
                 if (entity == null) { idsToRemove.Add(id); }
             }
-            foreach (HashSet<int> savedSelection in this.savedSelections)
+            foreach (RCSet<int> savedSelection in this.savedSelections)
             {
                 foreach (int id in savedSelection)
                 {
@@ -249,7 +249,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             foreach (int idToRemove in idsToRemove)
             {
                 this.currentSelection.Remove(idToRemove);
-                foreach (HashSet<int> savedSelection in this.savedSelections)
+                foreach (RCSet<int> savedSelection in this.savedSelections)
                 {
                     savedSelection.Remove(idToRemove);
                 }
@@ -269,12 +269,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// The current selection that contains the IDs of the selected entities.
         /// </summary>
-        private HashSet<int> currentSelection;
+        private RCSet<int> currentSelection;
 
         /// <summary>
         /// List of the saved selections mapped by their indices.
         /// </summary>
-        private HashSet<int>[] savedSelections;
+        private RCSet<int>[] savedSelections;
 
         /// <summary>
         /// The maximum number of selections that can be saved.

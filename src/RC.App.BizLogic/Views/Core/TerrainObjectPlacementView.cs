@@ -28,9 +28,9 @@ namespace RC.App.BizLogic.Views.Core
         #region ObjectPlacementView overrides
 
         /// <see cref="ObjectPlacementView.CheckObjectConstraints"/>
-        protected override HashSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords)
+        protected override RCSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords)
         {
-            HashSet<RCIntVector> violatingQuadCoords = this.terrainObjectType.CheckConstraints(this.Map, topLeftCoords);
+            RCSet<RCIntVector> violatingQuadCoords = this.terrainObjectType.CheckConstraints(this.Map, topLeftCoords);
             violatingQuadCoords.UnionWith(this.terrainObjectType.CheckTerrainObjectIntersections(this.Map, topLeftCoords));
             return violatingQuadCoords;
         }

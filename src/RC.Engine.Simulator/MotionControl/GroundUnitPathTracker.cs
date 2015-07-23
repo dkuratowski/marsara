@@ -24,13 +24,13 @@ namespace RC.Engine.Simulator.MotionControl
         {
             /// TODO: change this method to return only ground units as dynamic obstacles!
             List<DynamicObstacleInfo> retList = new List<DynamicObstacleInfo>();
-            HashSet<Entity> entitiesInRange = this.ControlledEntity.Locator.SearchNearbyEntities(ENVIRONMENT_SIGHT_RANGE);
+            RCSet<Entity> entitiesInRange = this.ControlledEntity.Locator.SearchNearbyEntities(ENVIRONMENT_SIGHT_RANGE);
             foreach (Entity entityInRange in entitiesInRange)
             {
                 retList.Add(new DynamicObstacleInfo()
                 {
-                    Position = entityInRange.Position,
-                    Velocity = entityInRange.Velocity
+                    Position = entityInRange.Area,
+                    Velocity = entityInRange.MotionControl.VelocityVector.Read()
                 });
             }
             return retList;
@@ -40,7 +40,7 @@ namespace RC.Engine.Simulator.MotionControl
         protected override RCNumber CalculateDistanceToTarget()
         {
             /// Search the index of the node on the current path based on the position of the entity.
-            RCNumVector currentPosition = this.ControlledEntity.PositionValue.Read();
+            RCNumVector currentPosition = this.ControlledEntity.MotionControl.PositionVector.Read();
             INavMeshNode currentNode = this.PathFinder.GetNavMeshNode(currentPosition);
             if (currentNode == null) { throw new InvalidOperationException("Entity position is out of the walkable area of the map!"); }
             int currentNodeIdxOnPath = this.CurrentPath.IndexOf(currentNode);
@@ -66,7 +66,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <see cref="PathTrackerBase.ValidateVelocityImpl"/>
         protected override bool ValidateVelocityImpl(RCNumVector velocity)
         {
-            INavMeshNode node = this.PathFinder.GetNavMeshNode(this.ControlledEntity.PositionValue.Read() + velocity);
+            INavMeshNode node = this.PathFinder.GetNavMeshNode(this.ControlledEntity.MotionControl.PositionVector.Read() + velocity);
             return node != null && this.CurrentPath.IndexOf(node) != -1;
         }
 

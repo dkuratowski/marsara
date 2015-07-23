@@ -170,7 +170,7 @@ namespace RC.DssServices.Test
         /// </summary>
         private void ProcessGuestChannels(IDssGuestChannel[] channelsToGuests)
         {
-            HashSet<int> newGuests = new HashSet<int>();
+            RCSet<int> newGuests = new RCSet<int>();
 
             /// First collect the new guests
             for (int i = 0; i < this.previousChannelStates.Length; i++)

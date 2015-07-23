@@ -243,7 +243,7 @@ namespace RC.Engine.Maps.Core
         {
             if (this.status != MapStatus.Opened) { throw new InvalidOperationException(string.Format("Invalid operation! Map status: {0}", this.status)); }
 
-            this.tmpReplacedTiles = new HashSet<IsoTile>();
+            this.tmpReplacedTiles = new RCSet<IsoTile>();
             this.status = MapStatus.ExchangingTiles;
         }
 
@@ -781,6 +781,6 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// Temporary list of isometric tiles whose type has been exchanged during a tile exchanging operation.
         /// </summary>
-        private HashSet<IsoTile> tmpReplacedTiles;
+        private RCSet<IsoTile> tmpReplacedTiles;
     }
 }

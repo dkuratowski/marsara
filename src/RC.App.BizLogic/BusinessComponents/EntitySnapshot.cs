@@ -28,7 +28,7 @@ namespace RC.App.BizLogic.BusinessComponents
             /// Copy some properties of the source entity.
             this.id = sourceEntity.ID.Read();
             this.timeStamp = sourceEntity.Scenario.CurrentFrameIndex;
-            this.position = sourceEntity.Position;
+            this.position = sourceEntity.Area;
             this.entityType = sourceEntity.ElementType;
             this.quadraticPosition = sourceEntity.MapObject.QuadraticPosition;
 

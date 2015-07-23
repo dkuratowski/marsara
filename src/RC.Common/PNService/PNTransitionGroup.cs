@@ -23,7 +23,7 @@ namespace RC.Common.PNService
             this.releaseEvent = new AutoResetEvent(false);
             this.threadAttached = new Semaphore(1, 1);
             this.transitions = new Dictionary<PNTransition, PetriNet.PNTransitionType>();
-            this.fireableTransitions = new HashSet<PNTransition>();
+            this.fireableTransitions = new RCSet<PNTransition>();
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace RC.Common.PNService
         }
 
         /// <see cref="PetriNet.AttachThread"/>
-        public void AttachThread(HashSet<PNTransition> extTransitions, Dictionary<PNTransition, PetriNet.PNCallback> callbacks)
+        public void AttachThread(RCSet<PNTransition> extTransitions, Dictionary<PNTransition, PetriNet.PNCallback> callbacks)
         {
             if (this.threadAttached.WaitOne(0))
             {
@@ -179,7 +179,7 @@ namespace RC.Common.PNService
         /// Checks the parameters when a thread is being attached to the Petri-network.
         /// </summary>
         /// <exception cref="PetriNetException">If the parameters are wrong.</exception>
-        private void CheckThreadAttachParameters(HashSet<PNTransition> extTransitions, Dictionary<PNTransition, PetriNet.PNCallback> callbacks)
+        private void CheckThreadAttachParameters(RCSet<PNTransition> extTransitions, Dictionary<PNTransition, PetriNet.PNCallback> callbacks)
         {
             /// All given external transitions have to exist in this transition group.
             foreach (PNTransition tr in extTransitions)
@@ -217,7 +217,7 @@ namespace RC.Common.PNService
         /// <summary>
         /// Set of the transitions that are currently fireables.
         /// </summary>
-        private HashSet<PNTransition> fireableTransitions;
+        private RCSet<PNTransition> fireableTransitions;
 
         /// <summary>
         /// Reference to the lock object of the Petri-network.

@@ -14,21 +14,21 @@ namespace RC.Common
         /// Gets every content attached to this search tree.
         /// </summary>
         /// <returns>A list that contains every content attached to this search tree.</returns>
-        HashSet<T> GetContents();
+        RCSet<T> GetContents();
 
         /// <summary>
         /// Gets every content at the given position.
         /// </summary>
         /// <param name="position">The position to check.</param>
         /// <returns>A list that contains every content at the given position.</returns>
-        HashSet<T> GetContents(RCNumVector position);
+        RCSet<T> GetContents(RCNumVector position);
 
         /// <summary>
         /// Gets every content inside the given rectangular area.
         /// </summary>
         /// <param name="area">The rectangular area.</param>
         /// <returns>A list that contains every content inside the given rectangular area.</returns>
-        HashSet<T> GetContents(RCNumRectangle area);
+        RCSet<T> GetContents(RCNumRectangle area);
 
         /// <summary>
         /// Attaches the given content to this search tree.

@@ -192,7 +192,7 @@ namespace RC.Engine.Simulator.Core
         {
             if (types == null) { throw new ArgumentNullException("types"); }
 
-            HashSet<short> triedTypeIDs = new HashSet<short>();
+            RCSet<short> triedTypeIDs = new RCSet<short>();
             this.ComputeFieldOffsetsInternal(types, ref triedTypeIDs);
         }
 
@@ -225,7 +225,7 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="types">The list of the types.</param>
         /// <param name="triedTypeIDs">Used to avoid infinite loop.</param>
-        private void ComputeFieldOffsetsInternal(List<HeapType> types, ref HashSet<short> triedTypeIDs)
+        private void ComputeFieldOffsetsInternal(List<HeapType> types, ref RCSet<short> triedTypeIDs)
         {
             if (this.fieldIndices == null) { return; }
 

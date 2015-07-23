@@ -188,7 +188,7 @@ namespace RC.App.BizLogic.Services.Core
             if (objectType.CheckConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords).Count != 0) { return false; }
 
             /// Check if a start location with the given player index already exists.
-            HashSet<StartLocation> startLocations = this.scenarioManager.ActiveScenario.GetAllElements<StartLocation>();
+            RCSet<StartLocation> startLocations = this.scenarioManager.ActiveScenario.GetAllElements<StartLocation>();
             StartLocation startLocation = null;
             foreach (StartLocation sl in startLocations)
             {

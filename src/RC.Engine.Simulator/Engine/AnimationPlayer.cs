@@ -1,6 +1,7 @@
 ﻿using RC.Engine.Maps.PublicInterfaces;
 using System;
 using RC.Engine.Simulator.Metadata;
+using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Engine
 {
@@ -13,17 +14,22 @@ namespace RC.Engine.Simulator.Engine
         /// Constructs an animation player that plays the given animation in the given direction.
         /// </summary>
         /// <param name="animation">The animation to be played.</param>
-        /// <param name="direction">The direction of the animation.</param>
-        public AnimationPlayer(Animation animation, MapDirection direction)
+        /// <param name="dirValueSrc">The direction value source of the animation being played.</param>
+        public AnimationPlayer(Animation animation, IValueRead<MapDirection> dirValueSrc)
         {
             if (animation == null) { throw new ArgumentNullException("animation"); }
-            this.direction = direction;
+            this.directionValueSrc = dirValueSrc;
             this.instructionPointer = 0;
             this.animation = animation;
             this.registers = new int[REGISTER_COUNT];
             this.currentFrame = new int[0];
             this.Step();
         }
+
+        /// <summary>
+        /// Gets whether this AnimationPlayer has reached the end of the animation.
+        /// </summary>
+        public bool IsFinished { get { return this.animation[this.instructionPointer] == null; } }
 
         /// <summary>
         /// Gets the indices of the sprites that shall be displayed in the current frame.
@@ -39,16 +45,17 @@ namespace RC.Engine.Simulator.Engine
             while (!stepComplete)
             {
                 Animation.IInstruction currInstruction = this.animation[this.instructionPointer];
-                stepComplete = currInstruction != null ? currInstruction.Execute(this) : true;
+                if (currInstruction == null) { throw new InvalidOperationException("AnimationPlayer has reached the end of the animation!"); }
+                stepComplete = currInstruction.Execute(this);
             }
         }
 
         #region Animation.IInstructionContext members
 
         /// <see cref="Animation.IInstructionContext.Direction"/>
-        public MapDirection Direction { get { return this.direction; } }
+        public MapDirection Direction { get { return this.directionValueSrc.Read(); } }
 
-        /// <see cref="Animation.IInstructionContext.SetInstructionPointer"/>
+        /// <see cref="Animation.IInstructionContext.InstructionPointer"/>
         int Animation.IInstructionContext.InstructionPointer
         {
             get { return this.instructionPointer;}
@@ -59,7 +66,7 @@ namespace RC.Engine.Simulator.Engine
             }
         }
 
-        /// <see cref="Animation.IInstructionContext.SetInstructionPointer"/>
+        /// <see cref="Animation.IInstructionContext.SetFrame"/>
         void Animation.IInstructionContext.SetFrame(int[] frame)
         {
             if (frame == null) { throw new ArgumentNullException("frame"); }
@@ -67,7 +74,7 @@ namespace RC.Engine.Simulator.Engine
             for (int i = 0; i < frame.Length; i++) { this.currentFrame[i] = frame[i]; }
         }
 
-        /// <see cref="Animation.IInstructionContext.this[]"/>
+        /// <see cref="Animation.IInstructionContext.this"/>
         int Animation.IInstructionContext.this[int regIdx]
         {
             get { return this.registers[regIdx]; }
@@ -77,9 +84,9 @@ namespace RC.Engine.Simulator.Engine
         #endregion Animation.IInstructionContext members
 
         /// <summary>
-        /// The direction of the animation being played.
+        /// The direction value source of the animation being played.
         /// </summary>
-        private MapDirection direction;
+        private readonly IValueRead<MapDirection> directionValueSrc;
 
         /// <summary>
         /// The index of the next instruction.
@@ -99,7 +106,7 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// The animation to be played.
         /// </summary>
-        private Animation animation;
+        private readonly Animation animation;
 
         /// <summary>
         /// The number of registers.

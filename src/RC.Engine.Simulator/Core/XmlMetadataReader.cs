@@ -163,7 +163,13 @@ namespace RC.Engine.Simulator.Core
             LoadScenarioElementType(missileTypeElem, missileType, metadata);
 
             XElement launchAnimElem = missileTypeElem.Element(XmlMetadataConstants.LAUNCHANIMATION_ELEM);
-            if (launchAnimElem != null) { missileType.SetLaunchAnimation(launchAnimElem.Value); }
+            if (launchAnimElem != null)
+            {
+                XAttribute launchDelayAttr = launchAnimElem.Attribute(XmlMetadataConstants.LAUNCH_DELAY_ATTR);
+                if (launchDelayAttr == null) { throw new SimulatorException("Launch delay not defined for missile type!"); }
+                int launchDelay = XmlHelper.LoadInt(launchDelayAttr.Value);
+                missileType.SetLaunchAnimation(launchAnimElem.Value, launchDelay);
+            }
 
             XElement flyingAnimElem = missileTypeElem.Element(XmlMetadataConstants.FLYINGANIMATION_ELEM);
             if (flyingAnimElem != null) { missileType.SetFlyingAnimation(flyingAnimElem.Value); }
@@ -261,7 +267,7 @@ namespace RC.Engine.Simulator.Core
                 if (animNameAttr == null) { throw new SimulatorException("Animation name not defined in animation palette!"); }
 
                 XAttribute isPreviewAttr = animElem.Attribute(XmlMetadataConstants.ANIMATION_ISPREVIEW_ATTR);
-                animPalette.AddAnimation(animNameAttr.Value, LoadAnimation(animElem, spritePalette), isPreviewAttr != null ? XmlHelper.LoadBool(isPreviewAttr.Value) : false);
+                animPalette.AddAnimation(animNameAttr.Value, LoadAnimation(animElem, spritePalette), isPreviewAttr != null && XmlHelper.LoadBool(isPreviewAttr.Value));
             }
             return animPalette;
         }
@@ -304,6 +310,10 @@ namespace RC.Engine.Simulator.Core
                 {
                     instructions.Add(LoadGotoInstruction(instructionElem, labels));
                 }
+                else if (instructionElem.Name == XmlMetadataConstants.REPEAT_ELEM)
+                {
+                    instructions.Add(new RepeatInstruction());
+                }
             }
 
             /// Create the animation object.
@@ -327,7 +337,6 @@ namespace RC.Engine.Simulator.Core
 
             Dictionary<MapDirection, int[]> spriteIndices = new Dictionary<MapDirection, int[]>
             {
-                { MapDirection.Undefined, new int[spriteNames.Length] },
                 { MapDirection.North, new int[spriteNames.Length] },
                 { MapDirection.NorthEast, new int[spriteNames.Length] },
                 { MapDirection.East, new int[spriteNames.Length] },
@@ -338,11 +347,18 @@ namespace RC.Engine.Simulator.Core
                 { MapDirection.NorthWest, new int[spriteNames.Length] },
             };
 
+            /// Search the appropriate sprite indices for each directions from the sprite palette.
             foreach (KeyValuePair<MapDirection, int[]> item in spriteIndices)
             {
+                MapDirection direction = item.Key;
                 for (int i = 0; i < spriteNames.Length; i++)
                 {
-                    spriteIndices[item.Key][i] = spritePalette.GetSpriteIndex(spriteNames[i], item.Key);
+                    /// Get the sprite index for the current direction or for MapDirection.Undefined if not found.
+                    int spriteIndex = spritePalette.GetSpriteIndex(spriteNames[i], direction);
+                    if (spriteIndex == -1) { spriteIndex = spritePalette.GetSpriteIndex(spriteNames[i], MapDirection.Undefined); }
+
+                    if (spriteIndex == -1) { throw new SimulatorException(string.Format("Sprite '{0}' not defined for neither {1} nor {2}!", spriteNames[i], direction, MapDirection.Undefined)); }
+                    spriteIndices[direction][i] = spriteIndex;
                 }
             }
 

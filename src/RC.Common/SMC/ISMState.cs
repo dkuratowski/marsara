@@ -26,7 +26,7 @@ namespace RC.Common.SMC
         /// <param name="neededStates">
         /// The list of the states needed to be active for firing the created internal trigger.
         /// </param>
-        void AddInternalTrigger(ISMState targetState, StateMachineController.TransitionHandler handler, HashSet<ISMState> neededStates);
+        void AddInternalTrigger(ISMState targetState, StateMachineController.TransitionHandler handler, RCSet<ISMState> neededStates);
 
         /// <summary>
         /// Adds an internal trigger to this state. This internal trigger will be fired automatically when the given operator

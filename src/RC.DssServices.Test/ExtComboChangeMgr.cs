@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
+using RC.Common;
 
 namespace RC.DssServices.Test
 {
@@ -14,7 +15,7 @@ namespace RC.DssServices.Test
         /// </summary>
         public ExtComboChangeMgr()
         {
-            this.changedFromOutside = new HashSet<ComboBox>();
+            this.changedFromOutside = new RCSet<ComboBox>();
         }
 
         /// <summary>
@@ -47,6 +48,6 @@ namespace RC.DssServices.Test
         /// <summary>
         /// List of the color selector comboboxes that has been changed not by the user.
         /// </summary>
-        private HashSet<ComboBox> changedFromOutside;
+        private RCSet<ComboBox> changedFromOutside;
     }
 }

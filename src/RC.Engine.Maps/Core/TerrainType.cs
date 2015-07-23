@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Maps.Core
@@ -24,7 +25,7 @@ namespace RC.Engine.Maps.Core
             this.name = name;
             this.tileset = tileset;
             this.parent = null;
-            this.children = new HashSet<TerrainType>();
+            this.children = new RCSet<TerrainType>();
             this.transitionLength = 0;
         }
 
@@ -219,7 +220,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// The children of this terrain type.
         /// </summary>
-        private HashSet<TerrainType> children;
+        private RCSet<TerrainType> children;
 
         /// <summary>
         /// Indicates the transition length from the parent to this terrain type. 

@@ -304,7 +304,7 @@ namespace RC.Engine.Maps.Core
             isotileList.WriteStringArray(0, terrainTypeList.ToArray());
 
             /// Create the packages of the isometric tiles.
-            HashSet<IIsoTile> processedIsoTiles = new HashSet<IIsoTile>();
+            RCSet<IIsoTile> processedIsoTiles = new RCSet<IIsoTile>();
             List<RCPackage> isotilePackages = new List<RCPackage>();
             int isotileInfoLength = 0;
             for (int row = 0; row < map.Size.Y; row++)

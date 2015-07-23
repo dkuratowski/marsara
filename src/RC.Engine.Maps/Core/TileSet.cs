@@ -27,7 +27,7 @@ namespace RC.Engine.Maps.Core
             this.simpleTileTypes = new Dictionary<string, IsoTileType>();
             this.terrainObjectTypes = new Dictionary<string, TerrainObjectType>();
             this.mixedTileTypes = new Dictionary<Tuple<string, string, TerrainCombination>, IsoTileType>();
-            this.allTileVariants = new HashSet<IsoTileVariant>();
+            this.allTileVariants = new RCSet<IsoTileVariant>();
             this.allTileVariantList = new List<IsoTileVariant>();
             this.allTerrainObjectList = new List<TerrainObjectType>();
         }
@@ -277,7 +277,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// Set of all tile variants defined by this tileset.
         /// </summary>
-        private HashSet<IsoTileVariant> allTileVariants;
+        private RCSet<IsoTileVariant> allTileVariants;
 
         /// <summary>
         /// List of all tile variants defined by this tileset.

@@ -22,8 +22,8 @@ namespace RC.Engine.BspMapContentMgr.Test
         private void Form1_Load(object sender, EventArgs e)
         {
             this.contentManager = new BspSearchTree<TestContent>(new RCNumRectangle(0, 0, this.Size.Width, this.Size.Height), 5, 10);
-            this.nonSelectedContents = new HashSet<TestContent>();
-            this.selectedContents = new HashSet<TestContent>();
+            this.nonSelectedContents = new RCSet<TestContent>();
+            this.selectedContents = new RCSet<TestContent>();
             this.currentMode = Mode.None;
             this.beginPos = RCNumVector.Undefined;
             this.currentPos = RCNumVector.Undefined;
@@ -59,8 +59,8 @@ namespace RC.Engine.BspMapContentMgr.Test
 
         private BspSearchTree<TestContent> contentManager;
 
-        private HashSet<TestContent> nonSelectedContents;
-        private HashSet<TestContent> selectedContents;
+        private RCSet<TestContent> nonSelectedContents;
+        private RCSet<TestContent> selectedContents;
 
         private enum Mode
         {
@@ -84,7 +84,7 @@ namespace RC.Engine.BspMapContentMgr.Test
                 this.currentPos = new RCNumVector(e.X, e.Y);
 
                 this.stopwatch.Reset(); this.stopwatch.Start();
-                HashSet<TestContent> draggedContents = this.contentManager.GetContents(this.beginPos);
+                RCSet<TestContent> draggedContents = this.contentManager.GetContents(this.beginPos);
                 this.stopwatch.Stop(); this.avgGetContentAtPos.NewItem((int)this.stopwatch.ElapsedMilliseconds);
 
                 bool isDragging = false;
@@ -140,7 +140,7 @@ namespace RC.Engine.BspMapContentMgr.Test
                     RCNumRectangle selBox = new RCNumRectangle(this.beginPos, sizeVect);
 
                     this.stopwatch.Reset(); this.stopwatch.Start();
-                    HashSet<TestContent> contents = this.contentManager.GetContents(selBox);
+                    RCSet<TestContent> contents = this.contentManager.GetContents(selBox);
                     this.stopwatch.Stop(); this.avgGetContentInBox.NewItem((int)this.stopwatch.ElapsedMilliseconds);
 
                     foreach (TestContent content in contents)

@@ -29,6 +29,7 @@ namespace RC.Engine.Simulator.Core
         public const string PREVIOUSLEVEL_ELEM = "previousLevel";
         public const string REQUIRES_ELEM = "requires";
         public const string LAUNCHANIMATION_ELEM = "launchAnimation";
+        public const string LAUNCH_DELAY_ATTR = "launchDelay";
         public const string FLYINGANIMATION_ELEM = "flyingAnimation";
         public const string TRAILANIMATION_ELEM = "trailAnimation";
         public const string TRAILANIMATION_FREQUENCY_ATTR = "frequency";
@@ -45,6 +46,7 @@ namespace RC.Engine.Simulator.Core
         public const string LABEL_NAME_ATTR = "name";
         public const string GOTO_ELEM = "goto";
         public const string GOTO_LABEL_ATTR = "label";
+        public const string REPEAT_ELEM = "repeat";
         public const string GENDATA_AREA_ELEM = "area";
         public const string GENDATA_ARMOR_ELEM = "armor";
         public const string GENDATA_MAXENERGY_ELEM = "maxEnergy";

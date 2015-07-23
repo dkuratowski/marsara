@@ -29,7 +29,7 @@ namespace RC.App.BizLogic.Views.Core
         public List<SpriteInst> GetIsoTileSprites()
         {
             /// Collect the isometric tiles that need to be rendered.
-            HashSet<IIsoTile> isoTilesToRender = new HashSet<IIsoTile>();
+            RCSet<IIsoTile> isoTilesToRender = new RCSet<IIsoTile>();
             List<SpriteInst> retList = new List<SpriteInst>();
             for (int column = this.MapWindowBC.FullWindow.QuadTileWindow.Left; column < this.MapWindowBC.FullWindow.QuadTileWindow.Right; column++)
             {
@@ -54,7 +54,7 @@ namespace RC.App.BizLogic.Views.Core
         public List<SpriteInst> GetTerrainObjectSprites()
         {
             /// Collect the terrain objects that need to be rendered.
-            HashSet<ITerrainObject> terrainObjectsToRender = new HashSet<ITerrainObject>();
+            RCSet<ITerrainObject> terrainObjectsToRender = new RCSet<ITerrainObject>();
             List<SpriteInst> retList = new List<SpriteInst>();
             for (int column = this.MapWindowBC.FullWindow.QuadTileWindow.Left; column < this.MapWindowBC.FullWindow.QuadTileWindow.Right; column++)
             {

@@ -24,8 +24,8 @@ namespace RC.Engine.Maps.Core
             if (maxError < 0) { throw new ArgumentOutOfRangeException("maxError", "The maximum error shall not be negative!"); }
 
             this.walkabilityHash = 0;
-            this.walkabilityHashSet = false;
-            this.nodes = new HashSet<NavMeshNode>();
+            this.walkabilityHashHasBeenSet = false;
+            this.nodes = new RCSet<NavMeshNode>();
             this.gridSize = new RCIntVector(grid.Width, grid.Height);
 
             this.helpers = new List<TessellationHelper>();
@@ -57,20 +57,20 @@ namespace RC.Engine.Maps.Core
             if (gridSize.X <= 0 || gridSize.Y <= 0) { throw new ArgumentOutOfRangeException("gridSize", "Size of the walkability grid must be greater than 0 in both dimensions!"); }
 
             this.walkabilityHash = 0;
-            this.walkabilityHashSet = false;
-            this.nodes = new HashSet<NavMeshNode>();
+            this.walkabilityHashHasBeenSet = false;
+            this.nodes = new RCSet<NavMeshNode>();
             this.helpers = null;
             this.gridSize = gridSize;
 
             /// Create a temporary vertex map that is used for setting the neighbourhood relationships between the nodes.
-            Dictionary<RCNumVector, HashSet<NavMeshNode>> vertexMap = new Dictionary<RCNumVector, HashSet<NavMeshNode>>();
+            Dictionary<RCNumVector, RCSet<NavMeshNode>> vertexMap = new Dictionary<RCNumVector, RCSet<NavMeshNode>>();
             IEnumerator<int> idSource = this.IDSourceMethod();
             foreach (RCPolygon nodePolygon in nodePolygons)
             {
                 NavMeshNode node = new NavMeshNode(nodePolygon, idSource);
                 for (int vertexIdx = 0; vertexIdx < nodePolygon.VertexCount; vertexIdx++)
                 {
-                    if (!vertexMap.ContainsKey(nodePolygon[vertexIdx])) { vertexMap.Add(nodePolygon[vertexIdx], new HashSet<NavMeshNode>()); }
+                    if (!vertexMap.ContainsKey(nodePolygon[vertexIdx])) { vertexMap.Add(nodePolygon[vertexIdx], new RCSet<NavMeshNode>()); }
                     vertexMap[nodePolygon[vertexIdx]].Add(node);
                 }
                 this.nodes.Add(node);
@@ -83,7 +83,7 @@ namespace RC.Engine.Maps.Core
                 {
                     RCNumVector edgeBegin = node.Polygon[edgeIdx];
                     RCNumVector edgeEnd = node.Polygon[(edgeIdx + 1) % node.Polygon.VertexCount];
-                    HashSet<NavMeshNode> matchingNodesCopy = new HashSet<NavMeshNode>(vertexMap[edgeBegin]);
+                    RCSet<NavMeshNode> matchingNodesCopy = new RCSet<NavMeshNode>(vertexMap[edgeBegin]);
                     matchingNodesCopy.IntersectWith(vertexMap[edgeEnd]);
                     if (matchingNodesCopy.Count == 2)
                     {
@@ -109,7 +109,7 @@ namespace RC.Engine.Maps.Core
         {
             get
             {
-                if (!this.walkabilityHashSet) { throw new InvalidOperationException("Walkability hash value has not yet been set for this navmesh!"); }
+                if (!this.walkabilityHashHasBeenSet) { throw new InvalidOperationException("Walkability hash value has not yet been set for this navmesh!"); }
                 return this.walkabilityHash;
             }
         }
@@ -128,9 +128,9 @@ namespace RC.Engine.Maps.Core
         /// <param name="hashValue">The value of the walkability hash.</param>
         internal void SetWalkabilityHash(int hashValue)
         {
-            if (this.walkabilityHashSet) { throw new InvalidOperationException("Walkability hash value has already been set for this navmesh!"); }
+            if (this.walkabilityHashHasBeenSet) { throw new InvalidOperationException("Walkability hash value has already been set for this navmesh!"); }
             this.walkabilityHash = hashValue;
-            this.walkabilityHashSet = true;
+            this.walkabilityHashHasBeenSet = true;
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// The list of the nodes of this navigation mesh.
         /// </summary>
-        private HashSet<NavMeshNode> nodes;
+        private RCSet<NavMeshNode> nodes;
 
         /// <summary>
         /// The size of the walkability grid that this navmesh is based on.
@@ -205,7 +205,7 @@ namespace RC.Engine.Maps.Core
         /// <summary>
         /// This flag indicates whether the walkability hash has been set for this navmesh.
         /// </summary>
-        private bool walkabilityHashSet;
+        private bool walkabilityHashHasBeenSet;
 
         /// <summary>
         /// The maximum size of the walkability grid.

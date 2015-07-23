@@ -6,6 +6,7 @@ using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.Metadata;
 using RC.Common.ComponentModel;
 using RC.App.BizLogic.BusinessComponents;
+using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -26,7 +27,7 @@ namespace RC.App.BizLogic.Views.Core
             if (this.objectType.AnimationPalette != null)
             {
                 Animation previewAnimDef = this.objectType.AnimationPalette.PreviewAnimation;
-                if (previewAnimDef != null) { this.previewAnimation = new AnimationPlayer(previewAnimDef, MapDirection.Undefined); }
+                if (previewAnimDef != null) { this.previewAnimation = new AnimationPlayer(previewAnimDef, new ConstValue<MapDirection>(MapDirection.NorthEast)); }
             }
         }
 
@@ -39,7 +40,7 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="ObjectPlacementView.CheckObjectConstraints"/>
-        protected override HashSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords)
+        protected override RCSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords)
         {
             return this.objectType.CheckConstraints(this.Scenario, topLeftCoords);
         }

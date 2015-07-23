@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 using System.Diagnostics;
+using RC.Common;
 
 namespace RC.RenderSystem
 {
@@ -456,7 +457,7 @@ namespace RC.RenderSystem
                 this.frameBufferAccess = null;
 
                 this.renderSemaphore = new Semaphore(1, 1);
-                this.renderLoopListeners = new HashSet<IRenderLoopListener>();
+                this.renderLoopListeners = new RCSet<IRenderLoopListener>();
                 this.viewPorts = new List<ViewPort>();
                 this.vpRefreshers = new List<ViewPortRefreshMgr>();
                 this.invalidate = true;
@@ -931,7 +932,7 @@ namespace RC.RenderSystem
         /// <summary>
         /// List of the frame listeners registered to the Display object.
         /// </summary>
-        private HashSet<IRenderLoopListener> renderLoopListeners;
+        private RCSet<IRenderLoopListener> renderLoopListeners;
 
         /// <summary>
         /// List of the ViewPort added to this Display.
