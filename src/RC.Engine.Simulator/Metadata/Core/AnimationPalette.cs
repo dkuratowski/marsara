@@ -63,15 +63,14 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <param name="name">The name of the animation to add.</param>
         /// <param name="animation">The animation to add.</param>
         /// <param name="isPreview">Flag indicating whether the animation can be used as a preview or not.</param>
-        public void AddAnimation(string name, Animation animation, bool isPreview)
+        public void AddAnimation(Animation animation)
         {
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
-            if (name == null) { throw new ArgumentNullException("name"); }
             if (animation == null) { throw new ArgumentNullException("animation"); }
-            if (this.animations.ContainsKey(name)) { throw new SimulatorException(string.Format("Animation with name '{0}' already exists!", name)); }
+            if (this.animations.ContainsKey(animation.Name)) { throw new SimulatorException(string.Format("Animation with name '{0}' already exists!", animation.Name)); }
 
-            this.animations.Add(name, animation);
-            if (isPreview) { this.previewAnimations.Add(animation); }
+            this.animations.Add(animation.Name, animation);
+            if (animation.IsPreview) { this.previewAnimations.Add(animation); }
         }
 
         /// <summary>

@@ -10,6 +10,7 @@
       <size>Small</size>
       <area>1.75;1.75</area>
       <maxHP>60</maxHP>
+      <armor>0</armor>
       <sightRange>7</sightRange>
       <speed>0.625</speed>
     </generalData>
@@ -19,25 +20,26 @@
       <rangeMax>5</rangeMax>
       <damageType>Normal</damageType>
       <cooldown>15</cooldown>
+      <!--cooldown>50</cooldown-->
       <missile type="Rocket">
-        <launch direction="North" relativePosition="-1.5;-2.0" />
-        <launch direction="NorthEast" relativePosition="0.0;-2.25" />
-        <launch direction="East" relativePosition="1.5;-1.5" />		
-        <launch direction="SouthEast" relativePosition="1.75;0.0" />		
-        <launch direction="South" relativePosition="1.0;1.5" />		
-        <launch direction="SouthWest" relativePosition="-2.5;0.0" />		
-        <launch direction="West" relativePosition="-2.0;-1.5" />		
-        <launch direction="NorthWest" relativePosition="-2.5;-0.75" />
+        <launch direction="North" relativePosition="-1.25;-1.75" />
+        <launch direction="NorthEast" relativePosition="0.25;-2.0" />
+        <launch direction="East" relativePosition="1.75;-1.25" />		
+        <launch direction="SouthEast" relativePosition="2.0;0.25" />		
+        <launch direction="South" relativePosition="1.25;1.75" />		
+        <launch direction="SouthWest" relativePosition="-2.25;0.25" />		
+        <launch direction="West" relativePosition="-1.75;-1.25" />		
+        <launch direction="NorthWest" relativePosition="-2.25;-0.5" />
       </missile>
       <missile type="Rocket">
-        <launch direction="North" relativePosition="1.0;-2.0" />
-        <launch direction="NorthEast" relativePosition="1.75;-0.5" />
-        <launch direction="East" relativePosition="1.5;1.0" />		
-        <launch direction="SouthEast" relativePosition="0.0;1.75" />		
-        <launch direction="South" relativePosition="-1.5;1.5" />		
-        <launch direction="SouthWest" relativePosition="-0.75;1.75" />		
-        <launch direction="West" relativePosition="-2.0;1.0" />		
-        <launch direction="NorthWest" relativePosition="-0.75;-2.5" />
+        <launch direction="North" relativePosition="1.25;-1.75" />
+        <launch direction="NorthEast" relativePosition="2.0;-0.25" />
+        <launch direction="East" relativePosition="1.75;1.25" />		
+        <launch direction="SouthEast" relativePosition="0.25;2.0" />		
+        <launch direction="South" relativePosition="-1.25;1.75" />		
+        <launch direction="SouthWest" relativePosition="-0.5;2.0" />		
+        <launch direction="West" relativePosition="-1.75;1.25" />		
+        <launch direction="NorthWest" relativePosition="-0.5;-2.25" />
       </missile>
     </groundWeapon>
     <createdIn>CommandCenter</createdIn>
@@ -140,6 +142,7 @@
       <size>Small</size>
       <area>1.75;1.5</area>
       <maxHP>40</maxHP>
+      <armor>0</armor>
       <sightRange>7</sightRange>
       <speed>0.5</speed>
     </generalData>
@@ -285,6 +288,7 @@
       <size>Small</size>
       <area>1.0;1.0</area>
       <maxHP>45</maxHP>
+      <armor>0</armor>
       <maxEnergy>200</maxEnergy>
       <sightRange>9</sightRange>
       <speed>0.5</speed>
@@ -318,6 +322,7 @@
       <size>Medium</size>
       <area>1.0;1.0</area>
       <maxHP>80</maxHP>
+      <armor>0</armor>
       <sightRange>8</sightRange>
       <speed>0.834</speed>
     </generalData>
@@ -403,6 +408,7 @@
       <size>Large</size>
       <area>1.0;1.0</area>
       <maxHP>120</maxHP>
+      <armor>0</armor>
       <maxEnergy>200</maxEnergy>
       <sightRange>7</sightRange>
       <speed>0.834</speed>

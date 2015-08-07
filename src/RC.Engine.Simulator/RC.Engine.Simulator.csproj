@@ -97,11 +97,14 @@
     <Compile Include="ComponentInterfaces\IPlayerInitializer.cs" />
     <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
     <Compile Include="Core\HeadingToMapDirConverter.cs" />
+    <Compile Include="Engine\Biometrics.cs" />
+    <Compile Include="Engine\EntityWreck.cs" />
     <Compile Include="Engine\MapObject.cs" />
     <Compile Include="Engine\Missile.cs" />
     <Compile Include="Engine\MotionControl.cs" />
     <Compile Include="Engine\ScenarioElement.cs" />
     <Compile Include="Engine\ScenarioMapContext.cs" />
+    <Compile Include="Engine\StandardWeapon.cs" />
     <Compile Include="Engine\Weapon.cs" />
     <Compile Include="Metadata\Core\MissileData.cs" />
     <Compile Include="Metadata\IMissileData.cs" />

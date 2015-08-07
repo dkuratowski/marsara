@@ -24,9 +24,12 @@ namespace RC.Engine.Simulator.Terran.Units
         public override bool AttachToMap(RCNumVector position)
         {
             bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess) { this.MapObject.SetCurrentAnimation("Stopped", this.MotionControl.VelocityVector); }
+            if (attachToMapSuccess) { this.MapObject.SetCurrentAnimation("Stopped", this.MotionControl.VelocityVector, this.Armour.TargetVector); }
             return attachToMapSuccess;
         }
+
+        /// <see cref="Entity.DestructionAnimationName"/>
+        protected override string DestructionAnimationName { get { return "Dying"; } }
 
         /// <summary>
         /// The name of the SCV element type.

@@ -103,12 +103,14 @@ namespace RC.App.BizLogic.Views.Core
                 Entity entity = mapObject.Owner as Entity;
                 if (entity != null)
                 {
-                    this.AddEntityInfo(mapObject.QuadraticPosition, BizLogicHelpers.GetMapObjectOwner(mapObject), pixelInfos);
+                    bool attackSignal = entity.Biometrics.FrameIndexOfLastEnemyDamage != -1 &&
+                                        entity.Scenario.CurrentFrameIndex - entity.Biometrics.FrameIndexOfLastEnemyDamage <= ATTACK_INDICATION_DURATION;
+                    this.AddEntityInfo(mapObject.QuadraticPosition, BizLogicHelpers.GetMapObjectOwner(mapObject), attackSignal, pixelInfos);
                 }
             }
             foreach (EntitySnapshot entitySnapshot in this.fogOfWarBC.GetEntitySnapshotsInWindow(scannedQuadWindow))
             {
-                this.AddEntityInfo(entitySnapshot.QuadraticPosition, entitySnapshot.Owner, pixelInfos);
+                this.AddEntityInfo(entitySnapshot.QuadraticPosition, entitySnapshot.Owner, false, pixelInfos);
             }
         }
 
@@ -186,8 +188,9 @@ namespace RC.App.BizLogic.Views.Core
         /// </summary>
         /// <param name="quadraticPosition">The quadratic position of the entity.</param>
         /// <param name="owner">The owner of the entity.</param>
+        /// <param name="attackSignal">A flag indicating that the corresponding pixels shall contain attack indication signal.</param>
         /// <param name="pixelInfos">The 2D array of the minimap pixels.</param>
-        private void AddEntityInfo(RCIntRectangle quadraticPosition, PlayerEnum owner, MinimapPixelInfo[,] pixelInfos)
+        private void AddEntityInfo(RCIntRectangle quadraticPosition, PlayerEnum owner, bool attackSignal, MinimapPixelInfo[,] pixelInfos)
         {
             for (int quadTileY = quadraticPosition.Top; quadTileY < quadraticPosition.Bottom; quadTileY++)
             {
@@ -196,8 +199,8 @@ namespace RC.App.BizLogic.Views.Core
                     IMinimapPixel pixelAtQuadTile = this.MapWindowBC.Minimap.GetMinimapPixelAtQuadTile(new RCIntVector(quadTileX, quadTileY));
                     if (this.selectionManagerBC.LocalPlayer != PlayerEnum.Neutral && owner == this.selectionManagerBC.LocalPlayer)
                     {
-                        /// TODO: distinguish between friendly and attacked-friendly entities!
-                        pixelInfos[pixelAtQuadTile.PixelCoords.X, pixelAtQuadTile.PixelCoords.Y].EntityIndicatorType = MinimapPixelInfo.EntityIndicatorTypeEnum.Friendly;
+                        pixelInfos[pixelAtQuadTile.PixelCoords.X, pixelAtQuadTile.PixelCoords.Y].EntityIndicatorType =
+                            attackSignal ? MinimapPixelInfo.EntityIndicatorTypeEnum.AttackedFriendly : MinimapPixelInfo.EntityIndicatorTypeEnum.Friendly;
                     }
                     else
                     {
@@ -218,5 +221,10 @@ namespace RC.App.BizLogic.Views.Core
         /// TODO: Only needed to get the local player! Remove this dependency when possible!
         /// </summary>
         private readonly ISelectionManagerBC selectionManagerBC;
+
+        /// <summary>
+        /// The duration of attack indications on the minimap.
+        /// </summary>
+        private const int ATTACK_INDICATION_DURATION = 50;
     }
 }

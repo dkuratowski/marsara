@@ -72,6 +72,7 @@ namespace RC.Engine.Simulator.Engine
         public void StopMoving()
         {
             if (this.pathTracker.Read() != null) { this.pathTracker.Read().TargetPosition = RCNumVector.Undefined; }
+            this.velocity.Write(new RCNumVector(0, 0));
         }
         
         /// <summary>

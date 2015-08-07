@@ -54,12 +54,28 @@ namespace RC.Engine.Simulator.Metadata
         /// <summary>
         /// Constructs a new animation instance.
         /// </summary>
+        /// <param name="name">The name of the animation.</param>
+        /// <param name="isPreview">Flag indicating whether the animation can be used as a preview or not.</param>
         /// <param name="instructions">The instructions defined for the animation.</param>
-        public Animation(IEnumerable<IInstruction> instructions)
+        public Animation(string name, bool isPreview, IEnumerable<IInstruction> instructions)
         {
+            if (name == null) { throw new ArgumentNullException("name"); }
             if (instructions == null) { throw new ArgumentNullException("instructions"); }
+
+            this.name = name;
+            this.isPreview = isPreview;
             this.instructions = new List<IInstruction>(instructions);
         }
+
+        /// <summary>
+        /// Gets the name of this animation.
+        /// </summary>
+        public string Name { get { return this.name; } }
+
+        /// <summary>
+        /// Gets whether this animation can be used as a preview or not.
+        /// </summary>
+        public bool IsPreview { get { return this.isPreview; } }
 
         /// <summary>
         /// Gets the instruction at the given index or null if no instruction exists with the given index.
@@ -76,6 +92,16 @@ namespace RC.Engine.Simulator.Metadata
                 return index < this.instructions.Count ? this.instructions[index] : null;
             }
         }
+
+        /// <summary>
+        /// The name of this animation.
+        /// </summary>
+        private readonly string name;
+
+        /// <summary>
+        /// Flag indicating whether this animation can be used as a preview or not.
+        /// </summary>
+        private readonly bool isPreview;
 
         /// <summary>
         /// The instructions of the animation.

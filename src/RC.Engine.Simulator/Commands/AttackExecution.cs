@@ -56,8 +56,8 @@ namespace RC.Engine.Simulator.Commands
             return new StopExecution(this.recipientEntity.Read());
         }
 
-        /// <see cref="CmdExecutionBase.Initialize"/>
-        protected override void Initialize()
+        /// <see cref="CmdExecutionBase.InitializeImpl"/>
+        protected override void InitializeImpl()
         {
             /// If target entity is not given -> this is an attack-move execution.
             if (this.targetEntityID.Read() == -1) { return; }
@@ -97,7 +97,7 @@ namespace RC.Engine.Simulator.Commands
             if (this.recipientEntity.Read().Armour.Target != null)
             {
                 /// Close enough -> not necessary to start approaching.
-                this.recipientEntity.Read().MotionControl.StopMoving();
+                //this.recipientEntity.Read().MotionControl.StopMoving(); // StopMoving already called in CmdExecutionBase.Initialize
                 return;
             }
 

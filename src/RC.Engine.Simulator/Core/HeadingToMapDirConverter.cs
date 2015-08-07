@@ -16,23 +16,33 @@ namespace RC.Engine.Simulator.Core
         /// <summary>
         /// Constructs a HeadingToMapDirConverter instance.
         /// </summary>
-        /// <param name="headingVector">The heading vector.</param>
-        public HeadingToMapDirConverter(IValueRead<RCNumVector> headingVector)
+        /// <param name="headingVectors">The heading vectors in priority order.</param>
+        public HeadingToMapDirConverter(params IValueRead<RCNumVector>[] headingVectors)
         {
-            if (headingVector == null) { throw new ArgumentNullException("headingVector"); }
+            if (headingVectors == null) { throw new ArgumentNullException("headingVectors"); }
+            if (headingVectors.Any(v => v == null)) { throw new ArgumentException("None of the items in the heading vector list can be null!", "headingVectors"); }
 
-            this.headingVector = headingVector;
+            this.headingVectors = new List<IValueRead<RCNumVector>>(headingVectors);
             this.lastKnownHeadingVector = RCNumVector.Undefined;
             this.cachedMapDirection = MapDirection.Undefined;
         }
+
+        private int id = nextId++;
+
+        private static int nextId = 0;
 
         #region IValueRead<MapDirection> methods
 
         /// <see cref="IValueRead&lt;MapDirection&gt;.Read"/>
         public MapDirection Read()
         {
-            RCNumVector currentHeadingVector = this.headingVector.Read();
-            if (currentHeadingVector == RCNumVector.Undefined) { throw new InvalidOperationException("Heading vector cannot be RCNumVector.Undefined!"); }
+            RCNumVector currentHeadingVector = new RCNumVector(0, 0);
+            foreach (IValueRead<RCNumVector> headingVector in this.headingVectors)
+            {
+                currentHeadingVector = headingVector.Read();
+                if (currentHeadingVector == RCNumVector.Undefined) { throw new InvalidOperationException("Heading vector cannot be RCNumVector.Undefined!"); }
+                if (currentHeadingVector != new RCNumVector(0, 0)) { break; }
+            }
 
             if (currentHeadingVector != this.lastKnownHeadingVector)
             {
@@ -93,9 +103,9 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// The heading vector.
+        /// The heading vectors in priority order.
         /// </summary>
-        private readonly IValueRead<RCNumVector> headingVector;
+        private readonly List<IValueRead<RCNumVector>> headingVectors;
 
         /// <summary>
         /// The last known heading vector.

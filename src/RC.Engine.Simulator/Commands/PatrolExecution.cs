@@ -68,8 +68,8 @@ namespace RC.Engine.Simulator.Commands
             return false;
         }
 
-        /// <see cref="CmdExecutionBase.Initialize"/>
-        protected override void Initialize()
+        /// <see cref="CmdExecutionBase.InitializeImpl"/>
+        protected override void InitializeImpl()
         {
             this.recipientEntity.Read().MotionControl.StartMoving(this.targetPosition.Read());
         }

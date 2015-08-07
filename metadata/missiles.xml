@@ -3,7 +3,7 @@
 	<missileType name="Rocket">
     <generalData>
       <area>0.75;0.75</area>
-      <speed>8.0</speed>
+      <speed>2.0</speed>
     </generalData>
     <launchAnimation launchDelay="2">Launch</launchAnimation>
     <flyingAnimation>Flying</flyingAnimation>
@@ -47,12 +47,12 @@
         <frame sprites="Trail2" duration="2" />
       </animation>
       <animation name="Impact">
-        <frame sprites="Impact0" duration="3" />
-        <frame sprites="Impact1" duration="3" />
-        <frame sprites="Impact2" duration="3" />
-        <frame sprites="Impact3" duration="3" />
-        <frame sprites="Impact4" duration="3" />
-        <frame sprites="Impact5" duration="3" />
+        <frame sprites="Impact0" duration="2" />
+        <frame sprites="Impact1" duration="2" />
+        <frame sprites="Impact2" duration="2" />
+        <frame sprites="Impact3" duration="2" />
+        <frame sprites="Impact4" duration="2" />
+        <frame sprites="Impact5" duration="2" />
       </animation>
     </animationPalette>
 	</missileType>

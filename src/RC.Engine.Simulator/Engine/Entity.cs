@@ -28,6 +28,7 @@ namespace RC.Engine.Simulator.Engine
             this.affectingCmdExecution = this.ConstructField<CmdExecutionBase>("affectingCmdExecution");
             this.locator = this.ConstructField<Locator>("locator");
             this.armour = this.ConstructField<Armour>("armour");
+            this.biometrics = this.ConstructField<Biometrics>("biometrics");
             this.motionControl = this.ConstructField<MotionControl>("motionControl");
 
             this.mapObject = null;
@@ -35,6 +36,7 @@ namespace RC.Engine.Simulator.Engine
             this.affectingCmdExecution.Write(null);
             this.locator.Write(new Locator(this));
             this.armour.Write(new Armour(this));
+            this.biometrics.Write(new Biometrics(this));
             this.motionControl.Write(new MotionControl(this));
         }
 
@@ -106,6 +108,11 @@ namespace RC.Engine.Simulator.Engine
         public Armour Armour { get { return this.armour.Read(); } }
 
         /// <summary>
+        /// Gets the biometrics of this entity.
+        /// </summary>
+        public Biometrics Biometrics { get { return this.biometrics.Read(); } }
+
+        /// <summary>
         /// Gets the motion control of this entity.
         /// </summary>
         public MotionControl MotionControl { get { return this.motionControl.Read(); } }
@@ -119,11 +126,24 @@ namespace RC.Engine.Simulator.Engine
 
         #region Overrides
 
+        /// <summary>
+        /// Gets the name of the destruction animation of this entity.
+        /// </summary>
+        /// <remarks>Can be overriden in the derived classes.</remarks>
+        protected virtual string DestructionAnimationName { get { throw new NotSupportedException("Entity.DestructionAnimationName not supported for this entity!"); } }
+
         /// <see cref="ScenarioElement.UpdateStateImpl"/>
-        protected override RCSet<ScenarioElement> UpdateStateImpl()
+        protected override void UpdateStateImpl()
         {
+            /// Check if this entity is still alive.
+            if (this.Biometrics.HP == 0)
+            {
+                this.OnDestroying();
+                return;
+            }
+
             this.motionControl.Read().UpdateState();
-            return new RCSet<ScenarioElement>();
+            this.armour.Read().ContinueAttack();
         }
 
         /// <see cref="HeapedObject.DisposeImpl"/>
@@ -140,6 +160,8 @@ namespace RC.Engine.Simulator.Engine
             this.locator.Write(null);
             this.armour.Read().Dispose();
             this.armour.Write(null);
+            this.biometrics.Read().Dispose();
+            this.biometrics.Write(null);
             this.motionControl.Read().Dispose();
             this.motionControl.Write(null);
         }
@@ -187,6 +209,20 @@ namespace RC.Engine.Simulator.Engine
             }
         }
 
+        /// <summary>
+        /// This method is called when this entity is being destroyed.
+        /// </summary>
+        private void OnDestroying()
+        {
+            EntityWreck wreck = new EntityWreck(this, this.DestructionAnimationName);
+            this.Scenario.AddElementToScenario(wreck);
+            wreck.AttachToMap(this.MotionControl.PositionVector.Read());
+
+            if (this.Owner != null) { this.Owner.RemoveEntity(this); }
+            this.DetachFromMap();
+            this.Scenario.RemoveElementFromScenario(this);
+        }
+
         #endregion Internal members
 
         #region Heaped members
@@ -211,6 +247,11 @@ namespace RC.Engine.Simulator.Engine
         /// Reference to the armour of this entity.
         /// </summary>
         private readonly HeapedValue<Armour> armour;
+
+        /// <summary>
+        /// Reference to the biometrics of this entity.
+        /// </summary>
+        private readonly HeapedValue<Biometrics> biometrics;
 
         /// <summary>
         /// Reference to the motion control of this entity.

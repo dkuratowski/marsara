@@ -29,7 +29,7 @@ namespace RC.Engine.Simulator.Engine
         public IValueRead<int> ID { get { return this.id; } }
 
         /// <summary>
-        /// Gets the owner of this entity or null if this entity is neutral or is a start location.
+        /// Gets the owner of this scenario element or null if this scenario element is neutral or is a start location.
         /// </summary>
         public Player Owner { get { return this.owner.Read(); } }
 
@@ -67,22 +67,16 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Updates the state of this scenario element.
         /// </summary>
-        /// <returns>
-        /// The list of new scenario elements that shall be added to the scenario after the current simulation frame update. If the returned
-        /// list is empty, then no new elements will be added to the scenario. Returning a null reference indicates that this scenario element
-        /// has finished its lifecycle and can be removed from the scenario after the current simulation frame update.
-        /// </returns>
-        public RCSet<ScenarioElement> UpdateState()
+        public void UpdateState()
         {
             if (this.scenario.Read() == null) { throw new InvalidOperationException("This scenario element doesn't not belong to a scenario!"); }
 
-            RCSet<ScenarioElement> retList = this.UpdateStateImpl();
-            if (retList != null)
+            this.UpdateStateImpl();
+            if (this.Scenario != null)
             {
                 this.UpdateMapObjectsImpl();
                 this.StepAnimations();
             }
-            return retList;
         }
 
         #endregion Public interface
@@ -115,12 +109,7 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Updates the state of this scenario element.
         /// </summary>
-        /// <returns>
-        /// The list of new scenario elements that shall be added to the scenario after the current simulation frame update. If the returned
-        /// list is empty, then no new elements will be added to the scenario. Returning a null reference indicates that this scenario element
-        /// has finished its lifecycle and can be removed from the scenario after the current simulation frame update.
-        /// </returns>
-        protected abstract RCSet<ScenarioElement> UpdateStateImpl();
+        protected abstract void UpdateStateImpl();
 
         /// <summary>
         /// Updates the map objects of this scenario element.
@@ -157,6 +146,7 @@ namespace RC.Engine.Simulator.Engine
 
             this.mapObjectsOfThisElement.Remove(mapObject);
             this.mapContext.MapObjects.DetachContent(mapObject);
+            mapObject.Dispose();
         }
 
         /// <summary>
@@ -186,6 +176,9 @@ namespace RC.Engine.Simulator.Engine
         /// <param name="mapContext">Allows access to map functionalities.</param>
         internal void OnAddedToScenario(Scenario scenario, int id, ScenarioMapContext mapContext)
         {
+            if (scenario == null) { throw new ArgumentNullException("scenario"); }
+            if (id < 0) { throw new ArgumentOutOfRangeException("id", "Scenario element ID cannot be negative!"); }
+            if (mapContext == null) { throw new ArgumentNullException("mapContext"); }
             if (this.scenario.Read() != null) { throw new InvalidOperationException("This scenario element already belongs to a scenario!"); }
 
             this.scenario.Write(scenario);
@@ -200,6 +193,7 @@ namespace RC.Engine.Simulator.Engine
         {
             if (this.scenario.Read() == null) { throw new InvalidOperationException("This scenario element doesn't not belong to a scenario!"); }
             if (this.HasMapObject) { throw new InvalidOperationException("This scenario element has still some map objects attached to the map!"); }
+            if (this.owner.Read() != null) { throw new InvalidOperationException("This scenario element is still added to a player!"); }
 
             /// Reset the scenario context.
             this.scenario.Write(null);
@@ -213,6 +207,7 @@ namespace RC.Engine.Simulator.Engine
         /// <param name="owner">The player that owns this scenario element.</param>
         internal void OnAddedToPlayer(Player owner)
         {
+            if (owner == null) { throw new ArgumentNullException("owner"); }
             if (this.scenario.Read() == null) { throw new InvalidOperationException("The scenario element doesn't not belong to a scenario!"); }
             if (this.owner.Read() != null) { throw new InvalidOperationException("The scenario element is already added to a player!"); }
             this.owner.Write(owner);

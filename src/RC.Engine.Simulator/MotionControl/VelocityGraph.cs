@@ -24,15 +24,19 @@ namespace RC.Engine.Simulator.MotionControl
             {
                 /// Search the velocity that has a minimum difference to the current velocity.
                 RCNumber minDiff = 0;
+                RCNumVector closestVelocity = RCNumVector.Undefined;
                 foreach (RCNumVector velocity in this.velocityGraph.Keys)
                 {
                     RCNumber diff = MapUtils.ComputeDistance(currentVelocity, velocity);
-                    if (minDiff == 0 || diff < minDiff)
+                    if (closestVelocity == RCNumVector.Undefined || diff < minDiff)
                     {
                         minDiff = diff;
-                        currentVelocity = velocity;
+                        closestVelocity = velocity;
                     }
                 }
+
+                if (closestVelocity == RCNumVector.Undefined) { throw new InvalidOperationException("Impossible case!"); }
+                currentVelocity = closestVelocity;
             }
 
             return new List<RCNumVector>(this.velocityGraph[currentVelocity]);

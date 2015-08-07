@@ -59,12 +59,12 @@ namespace RC.Engine.Simulator.Commands
                 this.enemyToAttack.Read().ID.Read());
         }
 
-        /// <see cref="CmdExecutionBase.Initialize"/>
-        protected override void Initialize()
-        {
-            this.recipientEntity.Read().Armour.StopAttack();
-            this.recipientEntity.Read().MotionControl.StopMoving();
-        }
+        ///// <see cref="CmdExecutionBase.InitializeImpl"/>
+        //protected override void InitializeImpl()
+        //{
+        //    this.recipientEntity.Read().Armour.StopAttack(); // StopAttack already called in CmdExecutionBase.Initialize
+        //    this.recipientEntity.Read().MotionControl.StopMoving(); // StopMoving already called in CmdExecutionBase.Initialize
+        //}
 
         /// <see cref="CmdExecutionBase.CommandBeingExecuted"/>
         protected override string GetCommandBeingExecuted() { return "Stop"; }

@@ -17,7 +17,7 @@ namespace RC.Engine.Simulator.Engine
     /// <summary>
     /// Represents a visualization of a scenario element.
     /// </summary>
-    public class MapObject : ISearchTreeContent
+    public class MapObject : ISearchTreeContent, IDisposable
     {
         /// <summary>
         /// Constructs a MapObject instance.
@@ -33,7 +33,7 @@ namespace RC.Engine.Simulator.Engine
                 if (this.location == RCNumRectangle.Undefined) { return RCIntRectangle.Undefined; }
                 RCIntVector topLeft = this.location.Location.Round();
                 RCIntVector bottomRight = (this.location.Location + this.location.Size).Round();
-                RCIntRectangle cellRect = new RCIntRectangle(topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y);
+                RCIntRectangle cellRect = new RCIntRectangle(topLeft.X, topLeft.Y, Math.Max(1, bottomRight.X - topLeft.X), Math.Max(1, bottomRight.Y - topLeft.Y));
                 return this.owner.Scenario.Map.CellToQuadRect(cellRect);
             });
 
@@ -46,17 +46,43 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Gets the players of the currently active animations of this map object.
         /// </summary>
-        public IEnumerable<AnimationPlayer> CurrentAnimations { get { return this.currentAnimations; } }
+        public IEnumerable<AnimationPlayer> CurrentAnimations
+        {
+            get
+            {
+                if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
+                return this.currentAnimations;
+            }
+        }
 
         /// <summary>
         /// Gets the quadratic position of this map object or RCIntRectangle.Undefined if this map object is not attached to the map.
         /// </summary>
-        public RCIntRectangle QuadraticPosition { get { return this.quadraticPositionCache.Value; } }
+        public RCIntRectangle QuadraticPosition
+        {
+            get
+            {
+                if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
+                return this.quadraticPositionCache.Value;
+            }
+        }
 
         /// <summary>
         /// Gets the reference to the scenario element that owns this map object.
         /// </summary>
-        public ScenarioElement Owner { get { return this.owner; } }
+        public ScenarioElement Owner
+        {
+            get
+            {
+                if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
+                return this.owner;
+            }
+        }
+
+        /// <summary>
+        /// Gets whether this map object is destroyed or not.
+        /// </summary>
+        public bool IsDestroyed { get { return this.owner == null; } }
 
         /// <summary>
         /// Sets the location of this map object.
@@ -64,6 +90,7 @@ namespace RC.Engine.Simulator.Engine
         /// <param name="newLocation">The new location of this map object.</param>
         public void SetLocation(RCNumRectangle newLocation)
         {
+            if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
             if (newLocation == RCNumRectangle.Undefined) { throw new ArgumentNullException("newLocation"); }
 
             if (this.location != newLocation)
@@ -79,27 +106,30 @@ namespace RC.Engine.Simulator.Engine
         /// Sets the current animation of this map object with the given heading vector.
         /// </summary>
         /// <param name="animationName">The name of the animation to play.</param>
-        /// <param name="headingVector">The heading vector.</param>
-        public void SetCurrentAnimation(string animationName, IValueRead<RCNumVector> headingVector)
+        /// <param name="headingVectors">The heading vectors in priority order.</param>
+        public void SetCurrentAnimation(string animationName, params IValueRead<RCNumVector>[] headingVectors)
         {
+            if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
             if (animationName == null) { throw new ArgumentNullException("animationName"); }
-            if (headingVector == null) { throw new ArgumentNullException("headingVector"); }
-            this.SetCurrentAnimations(new List<Tuple<string, IValueRead<RCNumVector>>>() { Tuple.Create(animationName, headingVector) });
+            if (headingVectors == null) { throw new ArgumentNullException("headingVectors"); }
+
+            this.SetCurrentAnimations(Tuple.Create(animationName, headingVectors));
         }
 
         /// <summary>
         /// Sets the current animations of this map object with the given heading vectors.
         /// </summary>
         /// <param name="animations">The names and the heading vectors of the animations to play.</param>
-        public void SetCurrentAnimations(List<Tuple<string, IValueRead<RCNumVector>>> animations)
+        public void SetCurrentAnimations(params Tuple<string, IValueRead<RCNumVector>[]>[] animations)
         {
+            if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
             if (animations == null) { throw new ArgumentNullException("animations"); }
 
             this.currentAnimations.Clear();
-            foreach (Tuple<string, IValueRead<RCNumVector>> animation in animations)
+            foreach (Tuple<string, IValueRead<RCNumVector>[]> animation in animations)
             {
                 if (animation.Item1 == null) { throw new ArgumentException("Name of an animation cannot be null.", "animations"); }
-                if (animation.Item2 == null) { throw new ArgumentException("Heading vector of an animation cannot be null.", "animations"); }
+                if (animation.Item2 == null) { throw new ArgumentException("Heading vectors of an animation cannot be null.", "animations"); }
 
                 this.currentAnimations.Add(
                     new AnimationPlayer(
@@ -110,12 +140,23 @@ namespace RC.Engine.Simulator.Engine
 
         #endregion Public interface
 
+        #region IDisposable members
+
+        /// <see cref="IDisposable.Dispose"/>
+        public void Dispose() { this.owner = null; }
+
+        #endregion IDisposable members
+
         #region ISearchTreeContent members
 
         /// <see cref="ISearchTreeContent.BoundingBox"/>
         public RCNumRectangle BoundingBox
         {
-            get { return this.location; }
+            get
+            {
+                if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
+                return this.location;
+            }
         }
 
         /// <see cref="ISearchTreeContent.BoundingBoxChanging"/>
@@ -134,7 +175,7 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Reference to the scenario element that owns this map object.
         /// </summary>
-        private readonly ScenarioElement owner;
+        private ScenarioElement owner;
 
         /// <summary>
         /// The player of the currently active animations of this map object.

@@ -65,7 +65,7 @@ namespace RC.Engine.Simulator.Engine
         public void RemoveBuilding(Building building)
         {
             if (building == null) { throw new ArgumentNullException("building"); }
-            this.buildings.Remove(building);
+            if (!this.buildings.Remove(building)) { throw new InvalidOperationException("The given building is not added to this player!"); }
             building.OnRemovedFromPlayer();
         }
 
@@ -76,8 +76,27 @@ namespace RC.Engine.Simulator.Engine
         public void RemoveUnit(Unit unit)
         {
             if (unit == null) { throw new ArgumentNullException("unit"); }
-            this.units.Remove(unit);
+            if (!this.units.Remove(unit)) { throw new InvalidOperationException("The given unit is not added to this player!"); }
             unit.OnRemovedFromPlayer();
+        }
+
+        /// <summary>
+        /// Removes an entity from this player.
+        /// </summary>
+        /// <param name="entity">The entity to be removed.</param>
+        public void RemoveEntity(Entity entity)
+        {
+            if (entity == null) { throw new ArgumentNullException("entity"); }
+
+            Unit entityAsUnit = entity as Unit;
+            Building entityAsBuilding = entity as Building;
+
+            if (entityAsUnit != null) { this.RemoveUnit(entityAsUnit); }
+            else if (entityAsBuilding != null) { this.RemoveBuilding(entityAsBuilding); }
+            else
+            {
+                throw new InvalidOperationException("The given entity is neither a unit nor a building!");
+            }
         }
 
         /// <summary>
@@ -148,13 +167,13 @@ namespace RC.Engine.Simulator.Engine
         /// The buildings of the player.
         /// </summary>
         /// TODO: store the buildings also in a HeapedArray!
-        private RCSet<Building> buildings;
+        private readonly RCSet<Building> buildings;
 
         /// <summary>
         /// The units of the player.
         /// </summary>
         /// TODO: store the units also in a HeapedArray!
-        private RCSet<Unit> units;
+        private readonly RCSet<Unit> units;
 
         /// <summary>
         /// The maximum number of players.

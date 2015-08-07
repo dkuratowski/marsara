@@ -278,9 +278,9 @@ namespace RC.Engine.Simulator.Commands
         protected virtual CmdExecutionBase GetContinuation() { return null; }
 
         /// <summary>
-        /// When overriden in a derived class this method shall initialize the state of this command execution.
+        /// When overriden in a derived class this method shall execute additional initialization procedures.
         /// </summary>
-        protected virtual void Initialize() { }
+        protected virtual void InitializeImpl() { }
 
         #endregion Overridables
 
@@ -358,6 +358,20 @@ namespace RC.Engine.Simulator.Commands
 
             /// Not finished yet.
             return false;
+        }
+
+        /// <summary>
+        /// Initializes the state of this command execution.
+        /// </summary>
+        private void Initialize()
+        {
+            foreach (Entity recipientEntity in this.recipientEntities)
+            {
+                recipientEntity.Armour.StopAttack();
+                recipientEntity.MotionControl.StopMoving();
+            }
+
+            this.InitializeImpl();
         }
 
         #endregion Private methods

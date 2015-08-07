@@ -18,12 +18,19 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         public static PlayerEnum GetMapObjectOwner(MapObject mapObject)
         {
             Entity entity = mapObject.Owner as Entity;
-            if (entity == null) { return PlayerEnum.Neutral; }
-            StartLocation entityAsStartLoc = entity as StartLocation;
-            PlayerEnum owner = entityAsStartLoc != null
-                             ? (PlayerEnum)entityAsStartLoc.PlayerIndex
-                             : (entity.Owner != null ? (PlayerEnum)entity.Owner.PlayerIndex : PlayerEnum.Neutral);
-            return owner;
+            if (entity != null)
+            {
+                StartLocation entityAsStartLoc = entity as StartLocation;
+                PlayerEnum owner = entityAsStartLoc != null
+                    ? (PlayerEnum) entityAsStartLoc.PlayerIndex
+                    : (entity.Owner != null ? (PlayerEnum) entity.Owner.PlayerIndex : PlayerEnum.Neutral);
+                return owner;
+            }
+
+            EntityWreck entityWreck = mapObject.Owner as EntityWreck;
+            if (entityWreck != null) { return (PlayerEnum)entityWreck.PlayerIndex; }
+
+            return PlayerEnum.Neutral;
         }
     }
 

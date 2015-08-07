@@ -263,11 +263,8 @@ namespace RC.Engine.Simulator.Core
             /// Load the animations.
             foreach (XElement animElem in animPaletteElem.Elements(XmlMetadataConstants.ANIMATION_ELEM))
             {
-                XAttribute animNameAttr = animElem.Attribute(XmlMetadataConstants.ANIMATION_NAME_ATTR);
-                if (animNameAttr == null) { throw new SimulatorException("Animation name not defined in animation palette!"); }
-
-                XAttribute isPreviewAttr = animElem.Attribute(XmlMetadataConstants.ANIMATION_ISPREVIEW_ATTR);
-                animPalette.AddAnimation(animNameAttr.Value, LoadAnimation(animElem, spritePalette), isPreviewAttr != null && XmlHelper.LoadBool(isPreviewAttr.Value));
+                Animation animation = LoadAnimation(animElem, spritePalette);
+                animPalette.AddAnimation(animation);
             }
             return animPalette;
         }
@@ -277,9 +274,13 @@ namespace RC.Engine.Simulator.Core
         /// </summary>
         /// <param name="animElem">The XML node to load from.</param>
         /// <param name="spritePalette">The sprite palette that the animation is based on.</param>
+        /// <param name="animName">The name of the animation to be loaded.</param>
         /// <returns>The constructed animation definition.</returns>
         private static Animation LoadAnimation(XElement animElem, ISpritePalette<MapDirection> spritePalette)
         {
+            XAttribute animNameAttr = animElem.Attribute(XmlMetadataConstants.ANIMATION_NAME_ATTR);
+            if (animNameAttr == null) { throw new SimulatorException("Animation name not defined in animation palette!"); }
+
             /// Collect the labels.
             Dictionary<string, int> labels = new Dictionary<string, int>();
             int i = 0;
@@ -316,8 +317,10 @@ namespace RC.Engine.Simulator.Core
                 }
             }
 
+            XAttribute isPreviewAttr = animElem.Attribute(XmlMetadataConstants.ANIMATION_ISPREVIEW_ATTR);
+            
             /// Create the animation object.
-            return new Animation(instructions);
+            return new Animation(animNameAttr.Value, isPreviewAttr != null && XmlHelper.LoadBool(isPreviewAttr.Value), instructions);
         }
 
         /// <summary>

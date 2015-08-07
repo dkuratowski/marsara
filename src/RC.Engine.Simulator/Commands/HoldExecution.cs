@@ -75,12 +75,9 @@ namespace RC.Engine.Simulator.Commands
             return false;
         }
 
-        /// <see cref="CmdExecutionBase.Initialize"/>
-        protected override void Initialize()
+        /// <see cref="CmdExecutionBase.InitializeImpl"/>
+        protected override void InitializeImpl()
         {
-            this.recipientEntity.Read().Armour.StopAttack();
-            this.recipientEntity.Read().MotionControl.StopMoving();
-
             /// Select a nearby enemy to attack if possible.
             this.attackedEntity.Write(this.recipientEntity.Read().Armour.SelectEnemy());
             if (this.attackedEntity.Read() == null)

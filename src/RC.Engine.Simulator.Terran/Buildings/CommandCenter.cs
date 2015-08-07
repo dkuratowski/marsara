@@ -24,6 +24,9 @@ namespace RC.Engine.Simulator.Terran.Buildings
             return attachToMapSuccess;
         }
 
+        /// <see cref="Entity.DestructionAnimationName"/>
+        protected override string DestructionAnimationName { get { return this.IsFlying ? "DestructionFlying" : "DestructionNormal"; } }
+
         /// <summary>
         /// The name of the Command Center element type.
         /// </summary>

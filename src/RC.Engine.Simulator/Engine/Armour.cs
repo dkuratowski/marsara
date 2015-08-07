@@ -27,10 +27,10 @@ namespace RC.Engine.Simulator.Engine
 
             this.owner.Write(owner);
             this.target.Write(null);
-            this.targetVector.Write(RCNumVector.Undefined);
+            this.targetVector.Write(new RCNumVector(0, 0));
             foreach (IWeaponData weapon in this.owner.Read().ElementType.StandardWeapons)
             {
-                this.standardWeapons.Add(new StandardWeapon(weapon));
+                this.standardWeapons.Add(new StandardWeapon(owner, weapon));
             }
         }
 
@@ -82,18 +82,70 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
-        /// Starts attacking the given target entity with a standard weapon if its in attack range.
+        /// Starts attacking the given target entity with the standard weapons if its in attack range. Otherwise this function has no effect.
         /// </summary>
         /// <param name="targetID">The ID of the target entity.</param>
         public void StartAttack(int targetID)
         {
+            /// Check if target entity is still on the map.
+            Entity targetEntity = this.owner.Read().Scenario.GetElementOnMap<Entity>(targetID);
+            if (targetEntity == null) { return; }
+
+            /// Check if target entity is in attack range.
+            foreach (Weapon weapon in this.standardWeapons)
+            {
+                if (weapon.IsEntityInRange(targetEntity))
+                {
+                    this.target.Write(targetEntity);
+                    this.targetVector.Write(targetEntity.MotionControl.PositionVector.Read() - this.owner.Read().MotionControl.PositionVector.Read());
+                    return;
+                }
+            }
+
+            /// Target entity is out of attack range.
+            this.target.Write(null);
         }
 
         /// <summary>
-        /// Stops attacking the target entity currently being attacked.
+        /// Continues to attack the given target entity with the standard weapons if its still in attack range.
+        /// </summary>
+        public void ContinueAttack()
+        {
+            if (this.target.Read() == null) { return; }
+
+            bool isTargetStillInRange = false;
+            if (this.target.Read().HasMapObject)
+            {
+                this.targetVector.Write(this.target.Read().MotionControl.PositionVector.Read() -
+                                        this.owner.Read().MotionControl.PositionVector.Read());
+
+                foreach (Weapon weapon in this.standardWeapons)
+                {
+                    if (weapon.LaunchMissiles(this.target.Read())) { isTargetStillInRange = true; }
+                }
+            }
+
+            if (!isTargetStillInRange) { this.target.Write(null); }
+        }
+
+        /// <summary>
+        /// Stops attacking the target entity currently being attacked. If there is no entity currently being attacked then this function
+        /// has no effect.
         /// </summary>
         public void StopAttack()
         {
+            this.target.Write(null);
+        }
+
+        /// <summary>
+        /// Detaches all the weapons from this armour.
+        /// </summary>
+        /// <returns>The list of the detached weapons.</returns>
+        public List<Weapon> DetachWeapons()
+        {
+            List<Weapon> retList = new List<Weapon>(this.standardWeapons);
+            this.standardWeapons.Clear();
+            return retList;
         }
 
         /// <summary>
@@ -102,14 +154,16 @@ namespace RC.Engine.Simulator.Engine
         public Entity Target { get { return this.target.Read(); } }
 
         /// <summary>
-        /// Gets the current target vector.
+        /// Gets the current target vector or RCNumVector.Undefined of there is no target currently.
         /// </summary>
         public IValueRead<RCNumVector> TargetVector { get { return this.targetVector; } }
 
-        /// <summary>
-        /// Gets the weapons of the owner entity.
-        /// </summary>
-        public IEnumerable<Weapon> Weapons { get { return this.standardWeapons; } }
+        /// <see cref="HeapedObject.DisposeImpl"/>
+        protected override void DisposeImpl()
+        {
+            foreach (Weapon weapon in this.standardWeapons) { weapon.Dispose(); }
+            this.standardWeapons.Clear();
+        }
 
         /// <summary>
         /// Reference to the owner of this armour.

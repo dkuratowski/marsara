@@ -52,9 +52,12 @@ namespace RC.Engine.Simulator.Engine
                                            ConstantsTable.Get<int>("RC.Engine.Maps.BspMinNodeSize"));
             this.idToScenarioElementMap = new Dictionary<int, ScenarioElement>();
             this.scenarioElements = new RCSet<ScenarioElement>();
+            this.elementsToAddAfterUpdate = new RCSet<ScenarioElement>();
+            this.elementsToRemoveAfterUpdate = new RCSet<ScenarioElement>();
             this.boundQuadEntities = new QuadEntity[this.map.Size.X, this.map.Size.Y];
             this.commandExecutions = new RCSet<CmdExecutionBase>();
             this.addRemoveElementForbidden = false;
+            this.updateInProgress = false;
         }
 
         #region Public members: Player management
@@ -164,6 +167,14 @@ namespace RC.Engine.Simulator.Engine
             RCSet<T> retList = new RCSet<T>();
             foreach (ScenarioElement element in this.scenarioElements)
             {
+                if (this.elementsToRemoveAfterUpdate.Contains(element)) { continue; }
+
+                T elementAsT = element as T;
+                if (elementAsT != null) { retList.Add(elementAsT); }
+            }
+
+            foreach (ScenarioElement element in this.elementsToAddAfterUpdate)
+            {
                 T elementAsT = element as T;
                 if (elementAsT != null) { retList.Add(elementAsT); }
             }
@@ -182,7 +193,16 @@ namespace RC.Engine.Simulator.Engine
             int id = this.nextID.Read();
             this.nextID.Write(id + 1);
             this.idToScenarioElementMap.Add(id, element);
-            this.scenarioElements.Add(element);
+
+            if (!this.updateInProgress)
+            {
+                this.scenarioElements.Add(element);
+            }
+            else
+            {
+                this.elementsToRemoveAfterUpdate.Remove(element);
+                this.elementsToAddAfterUpdate.Add(element);
+            }
             this.addRemoveElementForbidden = true;
             element.OnAddedToScenario(this, id, new ScenarioMapContext(this.objectsOnMap, this.boundQuadEntities));
             this.addRemoveElementForbidden = false;
@@ -192,13 +212,27 @@ namespace RC.Engine.Simulator.Engine
         /// Remove the given element from this scenario.
         /// </summary>
         /// <param name="element">The element to be removed.</param>
+        /// <remarks>
+        /// Disposing the removed element is always the responsibility of the caller, except when the element is removed during a
+        /// scenario update procedure.
+        /// </remarks>
         public void RemoveElementFromScenario(ScenarioElement element)
         {
             if (this.addRemoveElementForbidden) { throw new InvalidOperationException("Removing element from this scenario is currently forbidden!"); }
             if (element == null) { throw new ArgumentNullException("element"); }
             
             this.idToScenarioElementMap.Remove(element.ID.Read());
-            this.scenarioElements.Remove(element);
+
+            if (!this.updateInProgress)
+            {
+                this.scenarioElements.Remove(element);
+            }
+            else
+            {
+                this.elementsToRemoveAfterUpdate.Add(element);
+                this.elementsToAddAfterUpdate.Remove(element);
+            }
+
             this.addRemoveElementForbidden = true;
             element.OnRemovedFromScenario();
             this.addRemoveElementForbidden = false;
@@ -351,33 +385,35 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         public void Update()
         {
-            if (this.addRemoveElementForbidden) { throw new InvalidOperationException("Updating the scenario is currently forbidden!"); }
+            if (this.updateInProgress) { throw new InvalidOperationException("Updating the scenario is currently forbidden!"); }
 
-            this.addRemoveElementForbidden = true;
+            this.updateInProgress = true;
 
             /// Update the command executions.
             List<CmdExecutionBase> commandExecutionsCopy = new List<CmdExecutionBase>(this.commandExecutions);
             foreach (CmdExecutionBase cmdExecution in commandExecutionsCopy) { cmdExecution.Continue(); }
 
             /// Update the scenario elements.
-            RCSet<ScenarioElement> elementsToAdd = new RCSet<ScenarioElement>();
-            RCSet<ScenarioElement> elementsToRemove = new RCSet<ScenarioElement>();
             foreach (ScenarioElement element in this.scenarioElements)
             {
-                RCSet<ScenarioElement> addedElements = element.UpdateState();
-                if (addedElements != null) { elementsToAdd.UnionWith(addedElements); }
-                else { elementsToRemove.Add(element); }
+                if (this.elementsToRemoveAfterUpdate.Contains(element)) { continue; }
+                element.UpdateState();
             }
             this.currentFrameIndex.Write(this.currentFrameIndex.Read() + 1);
-            this.addRemoveElementForbidden = false;
+            this.updateInProgress = false;
 
             /// Perform element additions and removals.
-            foreach (ScenarioElement elementToRemove in elementsToRemove)
+            foreach (ScenarioElement elementToRemove in this.elementsToRemoveAfterUpdate)
             {
-                this.RemoveElementFromScenario(elementToRemove);
-                elementToRemove.Dispose();
+                this.scenarioElements.Remove(elementToRemove);
+                elementToRemove.Dispose();  // Automatically dispose elements added during the update procedure.
             }
-            foreach (ScenarioElement elementToAdd in elementsToAdd) { this.AddElementToScenario(elementToAdd); }
+            foreach (ScenarioElement elementToAdd in this.elementsToAddAfterUpdate)
+            {
+                this.scenarioElements.Add(elementToAdd);
+            }
+            this.elementsToRemoveAfterUpdate.Clear();
+            this.elementsToAddAfterUpdate.Clear();
         }
 
         #endregion Public members: Simulation management
@@ -409,6 +445,8 @@ namespace RC.Engine.Simulator.Engine
         /// <see cref="HeapedObject.DisposeImpl"/>
         protected override void DisposeImpl()
         {
+            if (this.updateInProgress) { throw new InvalidOperationException("Updating the scenario is currently in progress!"); }
+
             /// Destroy command executions
             RCSet<CmdExecutionBase> commandExecutionsCopy = new RCSet<CmdExecutionBase>(this.commandExecutions);
             foreach (CmdExecutionBase cmdExecution in commandExecutionsCopy) { cmdExecution.Dispose(); }
@@ -496,6 +534,16 @@ namespace RC.Engine.Simulator.Engine
         private readonly RCSet<ScenarioElement> scenarioElements;
 
         /// <summary>
+        /// Temporary set of elements to add after the current update procedure has finished.
+        /// </summary>
+        private readonly RCSet<ScenarioElement> elementsToAddAfterUpdate;
+
+        /// <summary>
+        /// Temporary set of elements to remove after the current update procedure has finished.
+        /// </summary>
+        private readonly RCSet<ScenarioElement> elementsToRemoveAfterUpdate;
+
+        /// <summary>
         /// Reference to the player initializer component.
         /// </summary>
         private readonly IPlayerInitializer playerInitializer;
@@ -504,5 +552,10 @@ namespace RC.Engine.Simulator.Engine
         /// This flag indicates if adding and removing scenario elements is currently forbidden or not.
         /// </summary>
         private bool addRemoveElementForbidden;
+
+        /// <summary>
+        /// This flag indicates if updating this scenario is currently in progress.
+        /// </summary>
+        private bool updateInProgress;
     }
 }
