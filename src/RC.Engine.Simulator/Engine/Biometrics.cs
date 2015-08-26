@@ -42,7 +42,7 @@ namespace RC.Engine.Simulator.Engine
         public int FrameIndexOfLastEnemyDamage { get { return this.frameIndexOfLastEnemyDamage.Read(); } }
 
         /// <summary>
-        /// Makes a damage on the owner of this biometrics.
+        /// Makes a damage on the owner of this biometrics based on the given damage type and value.
         /// </summary>
         /// <param name="damageType">The type of the damage.</param>
         /// <param name="damageValue">The amount of the damage.</param>
@@ -66,6 +66,21 @@ namespace RC.Engine.Simulator.Engine
 
             this.hp.Write(newHP);
             if (!isFriendlyDamage) { this.frameIndexOfLastEnemyDamage.Write(this.owner.Read().Scenario.CurrentFrameIndex); }
+        }
+
+        /// <summary>
+        /// Makes an absolute damage on the owner of this biometrics.
+        /// </summary>
+        /// <param name="damageValue">The amount of the damage.</param>
+        public void Damage(RCNumber damageValue)
+        {
+            if (this.owner.Read().ElementType.Size == null) { throw new InvalidOperationException("Unable to make damage on non-attackable entities!"); }
+            if (this.owner.Read().ElementType.Armor == null) { throw new InvalidOperationException("Unable to make damage on non-attackable entities!"); }
+            if (this.hp.Read() == -1) { throw new InvalidOperationException("Unable to make damage on non-attackable entities!"); }
+            
+            RCNumber newHP = this.hp.Read() - damageValue;
+            if (newHP < 0) { newHP = 0; }
+            this.hp.Write(newHP);
         }
 
         /// <summary>

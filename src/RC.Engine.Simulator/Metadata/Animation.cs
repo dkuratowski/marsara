@@ -55,14 +55,16 @@ namespace RC.Engine.Simulator.Metadata
         /// Constructs a new animation instance.
         /// </summary>
         /// <param name="name">The name of the animation.</param>
+        /// <param name="layerIndex">The index of the render layer of this animation.</param>
         /// <param name="isPreview">Flag indicating whether the animation can be used as a preview or not.</param>
         /// <param name="instructions">The instructions defined for the animation.</param>
-        public Animation(string name, bool isPreview, IEnumerable<IInstruction> instructions)
+        public Animation(string name, int layerIndex, bool isPreview, IEnumerable<IInstruction> instructions)
         {
             if (name == null) { throw new ArgumentNullException("name"); }
             if (instructions == null) { throw new ArgumentNullException("instructions"); }
 
             this.name = name;
+            this.layerIndex = layerIndex;
             this.isPreview = isPreview;
             this.instructions = new List<IInstruction>(instructions);
         }
@@ -71,6 +73,11 @@ namespace RC.Engine.Simulator.Metadata
         /// Gets the name of this animation.
         /// </summary>
         public string Name { get { return this.name; } }
+
+        /// <summary>
+        /// Gets the index of the render layer of this animation.
+        /// </summary>
+        public int LayerIndex { get { return this.layerIndex; } }
 
         /// <summary>
         /// Gets whether this animation can be used as a preview or not.
@@ -97,6 +104,11 @@ namespace RC.Engine.Simulator.Metadata
         /// The name of this animation.
         /// </summary>
         private readonly string name;
+
+        /// <summary>
+        /// The index of the render layer of this animation.
+        /// </summary>
+        private readonly int layerIndex;
 
         /// <summary>
         /// Flag indicating whether this animation can be used as a preview or not.

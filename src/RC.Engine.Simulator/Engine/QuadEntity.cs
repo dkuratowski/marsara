@@ -18,9 +18,9 @@ namespace RC.Engine.Simulator.Engine
         /// Constructs a QuadEntity instance.
         /// </summary>
         /// <param name="elementTypeName">The name of the element type of this entity.</param>
-        /// <param name="quadCoords">The quadratic coordinates of the entity.</param>
-        public QuadEntity(string elementTypeName)
-            : base(elementTypeName)
+        /// <param name="behaviors">The list of behaviors of this entity.</param>
+        protected QuadEntity(string elementTypeName, params EntityBehavior[] behaviors)
+            : base(elementTypeName, behaviors)
         {
             this.lastKnownQuadCoords = this.ConstructField<RCIntVector>("lastKnownQuadCoords");
             this.isBoundToGrid = this.ConstructField<byte>("isBoundToGrid");

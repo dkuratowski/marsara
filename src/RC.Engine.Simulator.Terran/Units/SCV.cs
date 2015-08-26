@@ -24,7 +24,7 @@ namespace RC.Engine.Simulator.Terran.Units
         public override bool AttachToMap(RCNumVector position)
         {
             bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess) { this.MapObject.SetCurrentAnimation("Stopped", this.MotionControl.VelocityVector, this.Armour.TargetVector); }
+            if (attachToMapSuccess) { this.MapObject.StartAnimation("Stopped", this.MotionControl.VelocityVector, this.Armour.TargetVector); }
             return attachToMapSuccess;
         }
 

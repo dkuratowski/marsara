@@ -12,7 +12,7 @@ namespace RC.Engine.Simulator.Terran.Buildings
         /// Constructs a Terran Command Center instance.
         /// </summary>
         public CommandCenter()
-            : base(COMMANDCENTER_TYPE_NAME)
+            : base(COMMANDCENTER_TYPE_NAME, new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000))
         {
         }
 
@@ -20,7 +20,7 @@ namespace RC.Engine.Simulator.Terran.Buildings
         public override bool AttachToMap(RCNumVector position)
         {
             bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess) { this.MapObject.SetCurrentAnimation("Normal", this.MotionControl.VelocityVector); }
+            if (attachToMapSuccess) { this.MapObject.StartAnimation("Normal", this.MotionControl.VelocityVector); }
             return attachToMapSuccess;
         }
 

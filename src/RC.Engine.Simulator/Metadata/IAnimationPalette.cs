@@ -23,5 +23,10 @@ namespace RC.Engine.Simulator.Metadata
         /// <param name="animationName">The name of the animation to get.</param>
         /// <returns>The animation with the given name.</returns>
         Animation GetAnimation(string animationName);
+
+        /// <summary>
+        /// Gets the total number of animations defined in this animation palette.
+        /// </summary>
+        int Count { get; }
     }
 }

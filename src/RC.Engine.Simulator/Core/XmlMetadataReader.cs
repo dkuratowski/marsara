@@ -263,7 +263,7 @@ namespace RC.Engine.Simulator.Core
             /// Load the animations.
             foreach (XElement animElem in animPaletteElem.Elements(XmlMetadataConstants.ANIMATION_ELEM))
             {
-                Animation animation = LoadAnimation(animElem, spritePalette);
+                Animation animation = LoadAnimation(animElem, animPalette.Count, spritePalette);
                 animPalette.AddAnimation(animation);
             }
             return animPalette;
@@ -273,10 +273,11 @@ namespace RC.Engine.Simulator.Core
         /// Loads an animation definition from the given XML node.
         /// </summary>
         /// <param name="animElem">The XML node to load from.</param>
+        /// <param name="layerIndex">The index of the render layer of this animation.</param>
         /// <param name="spritePalette">The sprite palette that the animation is based on.</param>
         /// <param name="animName">The name of the animation to be loaded.</param>
         /// <returns>The constructed animation definition.</returns>
-        private static Animation LoadAnimation(XElement animElem, ISpritePalette<MapDirection> spritePalette)
+        private static Animation LoadAnimation(XElement animElem, int layerIndex, ISpritePalette<MapDirection> spritePalette)
         {
             XAttribute animNameAttr = animElem.Attribute(XmlMetadataConstants.ANIMATION_NAME_ATTR);
             if (animNameAttr == null) { throw new SimulatorException("Animation name not defined in animation palette!"); }
@@ -320,7 +321,7 @@ namespace RC.Engine.Simulator.Core
             XAttribute isPreviewAttr = animElem.Attribute(XmlMetadataConstants.ANIMATION_ISPREVIEW_ATTR);
             
             /// Create the animation object.
-            return new Animation(animNameAttr.Value, isPreviewAttr != null && XmlHelper.LoadBool(isPreviewAttr.Value), instructions);
+            return new Animation(animNameAttr.Value, layerIndex, isPreviewAttr != null && XmlHelper.LoadBool(isPreviewAttr.Value), instructions);
         }
 
         /// <summary>

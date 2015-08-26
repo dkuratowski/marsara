@@ -108,14 +108,6 @@
 			<frame sprites="Body,Engine" />
 			<repeat/>
 		</animation>
-		<animation name="BringingMinerals">
-			<frame sprites="Minerals" />
-			<repeat/>
-		</animation>
-		<animation name="BringingGas">
-			<frame sprites="Gas" />
-			<repeat/>
-		</animation>
 		<animation name="Working">
 			<frame sprites="Sparkling0" duration="5"/>
 			<frame sprites="Sparkling1" duration="5"/>
@@ -128,6 +120,14 @@
 			<frame sprites="Dying3" duration="4"/>
 			<frame sprites="Dying4" duration="4"/>
 			<frame sprites="Dying5" duration="4"/>
+		</animation>
+		<animation name="BringingMinerals">
+			<frame sprites="Minerals" />
+			<repeat/>
+		</animation>
+		<animation name="BringingGas">
+			<frame sprites="Gas" />
+			<repeat/>
 		</animation>
 	</animationPalette>
   </unitType>

@@ -27,11 +27,6 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
-        /// Gets whether this AnimationPlayer has reached the end of the animation.
-        /// </summary>
-        public bool IsFinished { get { return this.animation[this.instructionPointer] == null; } }
-
-        /// <summary>
         /// Gets the indices of the sprites that shall be displayed in the current frame.
         /// </summary>
         public int[] CurrentFrame { get { return this.currentFrame; } }
@@ -82,6 +77,15 @@ namespace RC.Engine.Simulator.Engine
         }
 
         #endregion Animation.IInstructionContext members
+
+        #region Internal members
+
+        /// <summary>
+        /// Gets whether this AnimationPlayer has reached the end of the animation.
+        /// </summary>
+        internal bool IsFinished { get { return this.animation[this.instructionPointer] == null; } }
+
+        #endregion Internal members
 
         /// <summary>
         /// The direction value source of the animation being played.

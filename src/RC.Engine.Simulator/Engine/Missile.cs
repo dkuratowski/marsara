@@ -172,7 +172,7 @@ namespace RC.Engine.Simulator.Engine
             else if (this.launchIndicator != null && !this.launchIndicator.IsDestroyed)
             {
                 /// Remove the launch indicator if any of its animations has finished.
-                if (this.launchIndicator.CurrentAnimations.Any(anim => anim.IsFinished))
+                if (!this.launchIndicator.HasAnyAnimations)
                 {
                     this.DestroyMapObject(this.launchIndicator);
                 }
@@ -180,7 +180,7 @@ namespace RC.Engine.Simulator.Engine
             }
 
             /// Remove the impact indicator if any of its animations has finished.
-            if (this.impactIndicator != null && !this.impactIndicator.IsDestroyed && this.impactIndicator.CurrentAnimations.Any(anim => anim.IsFinished))
+            if (this.impactIndicator != null && !this.impactIndicator.IsDestroyed && !this.impactIndicator.HasAnyAnimations)
             {
                 this.DestroyMapObject(this.impactIndicator);
             }
@@ -210,7 +210,7 @@ namespace RC.Engine.Simulator.Engine
             if (this.launchIndicator == null && this.missileData.MissileType.LaunchAnimation != null)
             {
                 this.launchIndicator = this.CreateMapObject(this.CalculateArea(this.CalculateLaunchPosition()));
-                this.launchIndicator.SetCurrentAnimation(this.missileData.MissileType.LaunchAnimation, this.sourceEntity.Read().Armour.TargetVector);
+                this.launchIndicator.StartAnimation(this.missileData.MissileType.LaunchAnimation, this.sourceEntity.Read().Armour.TargetVector);
             }
 
             /// Launch the missile if the timer reached the launch delay; otherwise increment the timer.
@@ -270,7 +270,7 @@ namespace RC.Engine.Simulator.Engine
             if (this.missileIndicator == null && this.missileData.MissileType.FlyingAnimation != null)
             {
                 this.missileIndicator = this.CreateMapObject(this.CalculateArea(this.missilePosition.Read()));
-                this.missileIndicator.SetCurrentAnimation(this.missileData.MissileType.FlyingAnimation, this.missileVelocity);
+                this.missileIndicator.StartAnimation(this.missileData.MissileType.FlyingAnimation, this.missileVelocity);
             }
             else if (this.missileIndicator != null && !this.missileIndicator.IsDestroyed)
             {
@@ -295,7 +295,7 @@ namespace RC.Engine.Simulator.Engine
                     ? this.missilePosition.Read()
                     : this.lastKnownTargetEntityPos.Read();
                 this.impactIndicator = this.CreateMapObject(this.CalculateArea(impactIndicatorPos));
-                this.impactIndicator.SetCurrentAnimation(this.missileData.MissileType.ImpactAnimation, this.missileVelocity);
+                this.impactIndicator.StartAnimation(this.missileData.MissileType.ImpactAnimation, this.missileVelocity);
             }
 
             /// Check if the lifecycle of this missile has already ended.

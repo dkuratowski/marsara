@@ -232,13 +232,7 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         private void StepAnimations()
         {
-            foreach (MapObject mapObject in this.mapObjectsOfThisElement)
-            {
-                foreach (AnimationPlayer animation in mapObject.CurrentAnimations)
-                {
-                    animation.Step();
-                }
-            }
+            foreach (MapObject mapObject in this.mapObjectsOfThisElement) { mapObject.StepAnimations(); }
         }
 
         #endregion Private members

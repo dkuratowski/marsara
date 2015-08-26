@@ -22,8 +22,11 @@ namespace RC.Engine.Simulator.Engine
         /// Constructs an entity instance.
         /// </summary>
         /// <param name="elementTypeName">The name of the element type of this entity.</param>
-        protected Entity(string elementTypeName) : base(elementTypeName)
+        /// <param name="behaviors">The list of behaviors of this entity.</param>
+        protected Entity(string elementTypeName, params EntityBehavior[] behaviors) : base(elementTypeName)
         {
+            if (behaviors == null) { throw new ArgumentNullException("behaviors"); }
+
             this.isFlying = this.ConstructField<byte>("isFlying");
             this.affectingCmdExecution = this.ConstructField<CmdExecutionBase>("affectingCmdExecution");
             this.locator = this.ConstructField<Locator>("locator");
@@ -38,6 +41,7 @@ namespace RC.Engine.Simulator.Engine
             this.armour.Write(new Armour(this));
             this.biometrics.Write(new Biometrics(this));
             this.motionControl.Write(new MotionControl(this));
+            this.behaviors = new RCSet<EntityBehavior>(behaviors);
         }
 
         #region Public interface
@@ -60,10 +64,13 @@ namespace RC.Engine.Simulator.Engine
         public override RCNumVector DetachFromMap()
         {
             RCNumVector currentPosition = this.MotionControl.PositionVector.Read();
-            this.MotionControl.PositionVector.ValueChanged -= this.OnPositionChanged;
-            this.MotionControl.SetPosition(RCNumVector.Undefined);
-            this.DestroyMapObject(this.mapObject);
-            this.mapObject = null;
+            if (currentPosition != RCNumVector.Undefined)
+            {
+                this.MotionControl.PositionVector.ValueChanged -= this.OnPositionChanged;
+                this.MotionControl.SetPosition(RCNumVector.Undefined);
+                this.DestroyMapObject(this.mapObject);
+                this.mapObject = null;
+            }
             return currentPosition;
         }
 
@@ -133,7 +140,7 @@ namespace RC.Engine.Simulator.Engine
         protected virtual string DestructionAnimationName { get { throw new NotSupportedException("Entity.DestructionAnimationName not supported for this entity!"); } }
 
         /// <see cref="ScenarioElement.UpdateStateImpl"/>
-        protected override void UpdateStateImpl()
+        protected sealed override void UpdateStateImpl()
         {
             /// Check if this entity is still alive.
             if (this.Biometrics.HP == 0)
@@ -142,8 +149,18 @@ namespace RC.Engine.Simulator.Engine
                 return;
             }
 
+            /// Ask the behaviors to perform additional updates on this entity.
+            foreach (EntityBehavior behavior in this.behaviors) { behavior.UpdateState(this); }
+
             this.motionControl.Read().UpdateState();
             this.armour.Read().ContinueAttack();
+        }
+
+        /// <see cref="ScenarioElement.UpdateMapObjectsImpl"/>
+        protected sealed override void UpdateMapObjectsImpl()
+        {
+            /// Ask the behaviors to update the map object of this entity.
+            foreach (EntityBehavior behavior in this.behaviors) { behavior.UpdateMapObject(this); }
         }
 
         /// <see cref="HeapedObject.DisposeImpl"/>
@@ -259,6 +276,12 @@ namespace RC.Engine.Simulator.Engine
         private readonly HeapedValue<MotionControl> motionControl;
 
         #endregion Heaped members
+
+        /// <summary>
+        /// The behaviors of this entity.
+        /// </summary>
+        /// TODO: store these objects also in a HeapedArray!
+        private RCSet<EntityBehavior> behaviors;
 
         /// <summary>
         /// Reference to the map object that represents this entity on the map or null if this entity is not currently

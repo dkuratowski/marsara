@@ -98,6 +98,8 @@
     <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
     <Compile Include="Core\HeadingToMapDirConverter.cs" />
     <Compile Include="Engine\Biometrics.cs" />
+    <Compile Include="Engine\BurndownBehavior.cs" />
+    <Compile Include="Engine\EntityBehavior.cs" />
     <Compile Include="Engine\EntityWreck.cs" />
     <Compile Include="Engine\MapObject.cs" />
     <Compile Include="Engine\Missile.cs" />

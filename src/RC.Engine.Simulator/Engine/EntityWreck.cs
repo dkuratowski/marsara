@@ -41,7 +41,7 @@ namespace RC.Engine.Simulator.Engine
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
 
             this.destructionMapObject = this.CreateMapObject(this.CalculateArea(position));
-            this.destructionMapObject.SetCurrentAnimation(this.destructionAnimationName);
+            this.destructionMapObject.StartAnimation(this.destructionAnimationName);
             return true;
         }
 
@@ -49,7 +49,7 @@ namespace RC.Engine.Simulator.Engine
         protected override void UpdateStateImpl()
         {
             /// Destroy the destruction map object if it finished playing its animation.
-            if (this.destructionMapObject.CurrentAnimations.Any(anim => anim.IsFinished))
+            if (!this.destructionMapObject.HasAnyAnimations)
             {
                 this.DestroyMapObject(this.destructionMapObject);
             }

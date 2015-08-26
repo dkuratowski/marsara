@@ -18,8 +18,9 @@ namespace RC.Engine.Simulator.Engine
         /// Constructs a Building instance.
         /// </summary>
         /// <param name="buildingTypeName">The name of the type of this building.</param>
-        public Building(string buildingTypeName)
-            : base(buildingTypeName)
+        /// <param name="behaviors">The list of behaviors of this entity.</param>
+        protected Building(string buildingTypeName, params EntityBehavior[] behaviors)
+            : base(buildingTypeName, behaviors)
         {
             this.buildingType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetBuildingType(buildingTypeName);
         }

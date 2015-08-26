@@ -33,7 +33,7 @@
       <sprite name="Door_Closing2" sourceRegion="157;78;10;13" offset="28;30" />
       <sprite name="Door_Closed" sourceRegion="168;50;10;13" offset="28;30" />
       <sprite name="FlameLL0" sourceRegion="64;50;6;19" offset="9;1" />
-      <sprite name="FlameLL1" sourceRegion="64;70;80;20" offset="7;0" />
+      <sprite name="FlameLL1" sourceRegion="64;70;8;20" offset="7;0" />
       <sprite name="FlameL0" sourceRegion="71;50;6;19" offset="19;0" />
       <sprite name="FlameL1" sourceRegion="73;70;5;20" offset="20;-1" />
       <sprite name="FlameM0" sourceRegion="78;50;6;19" offset="28;2" />

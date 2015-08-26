@@ -466,7 +466,7 @@ namespace RC.Engine.Simulator.Engine
             List<ScenarioElement> elementSetCopy = new List<ScenarioElement>(this.scenarioElements);
             foreach (ScenarioElement element in elementSetCopy)
             {
-                if (element.HasMapObject) { element.DetachFromMap(); }
+                element.DetachFromMap();
                 this.RemoveElementFromScenario(element);
                 element.Dispose();
             }

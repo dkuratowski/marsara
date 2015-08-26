@@ -43,6 +43,9 @@ namespace RC.Engine.Simulator.Metadata.Core
             return this.animations[animationName];
         }
 
+        /// <see cref="IAnimationPalette.Count"/>
+        public int Count { get { return this.animations.Count; } }
+
         #endregion IAnimationPalette members
 
         /// <summary>

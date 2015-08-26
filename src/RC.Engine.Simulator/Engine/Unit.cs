@@ -19,10 +19,9 @@ namespace RC.Engine.Simulator.Engine
         /// Constructs a Unit instance.
         /// </summary>
         /// <param name="unitTypeName">The name of the type of this unit.</param>
-        /// <param name="actuator">The actuator of the unit.</param>
-        /// <param name="pathTracker">The path-tracker of the unit.</param>
-        public Unit(string unitTypeName)
-            : base(unitTypeName)
+        /// <param name="behaviors">The list of behaviors of this entity.</param>
+        protected Unit(string unitTypeName, params EntityBehavior[] behaviors)
+            : base(unitTypeName, behaviors)
         {
             this.unitType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetUnitType(unitTypeName);
         }
