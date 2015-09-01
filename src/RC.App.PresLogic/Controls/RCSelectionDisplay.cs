@@ -29,9 +29,22 @@ namespace RC.App.PresLogic.Controls
             this.greenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.yellowBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Yellow, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.redBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Red, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.lightGreenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.LightGreen, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.lightBlueBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.LightBlue, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
+            this.lightMagentaBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.LightMagenta, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.greenBrush.Upload();
             this.yellowBrush.Upload();
             this.redBrush.Upload();
+            this.lightGreenBrush.Upload();
+            this.lightBlueBrush.Upload();
+            this.lightMagentaBrush.Upload();
+
+            this.hpConditionBrushes = new Dictionary<MapObjectConditionEnum, UISprite>
+            {
+                {MapObjectConditionEnum.Excellent, this.lightGreenBrush},
+                {MapObjectConditionEnum.Moderate, this.yellowBrush},
+                {MapObjectConditionEnum.Critical, this.redBrush},
+            };
         }
         
         #region Overrides
@@ -56,6 +69,7 @@ namespace RC.App.PresLogic.Controls
             List<SelIndicatorInst> selectionIndicators = this.selectionIndicatorView.GetVisibleSelIndicators();
             foreach (SelIndicatorInst selIndicator in selectionIndicators)
             {
+                /// Render the indicator rectangle.
                 if (selIndicator.SelIndicatorType == SelIndicatorTypeEnum.Friendly)
                 {
                     renderContext.RenderRectangle(this.greenBrush, selIndicator.IndicatorRect);
@@ -68,7 +82,51 @@ namespace RC.App.PresLogic.Controls
                 {
                     renderContext.RenderRectangle(this.redBrush, selIndicator.IndicatorRect);
                 }
-                /// TODO: render the HP, energy & shield values under the selection indicator
+
+                /// Render the shield if exists.
+                int indicatorIndex = 0;
+                if (selIndicator.ShieldNorm != -1)
+                {
+                    int lineWidth = (int)(selIndicator.IndicatorRect.Width * selIndicator.ShieldNorm);
+                    if (lineWidth > 0)
+                    {
+                        renderContext.RenderRectangle(this.lightBlueBrush,
+                            new RCIntRectangle(selIndicator.IndicatorRect.Left,
+                                               selIndicator.IndicatorRect.Bottom + indicatorIndex,
+                                               (int)(selIndicator.IndicatorRect.Width * selIndicator.ShieldNorm),
+                                               1));
+                    }
+                    indicatorIndex++;
+                }
+
+                /// Render the HP if exists.
+                if (selIndicator.HpNorm != -1)
+                {
+                    int lineWidth = (int)(selIndicator.IndicatorRect.Width * selIndicator.HpNorm);
+                    if (lineWidth > 0)
+                    {
+                        renderContext.RenderRectangle(this.hpConditionBrushes[selIndicator.HpCondition],
+                            new RCIntRectangle(selIndicator.IndicatorRect.Left,
+                                               selIndicator.IndicatorRect.Bottom + indicatorIndex,
+                                               (int)(selIndicator.IndicatorRect.Width * selIndicator.HpNorm),
+                                               1));
+                    }
+                    indicatorIndex++;
+                }
+
+                /// Render the energy if exists in case of friendly objects.
+                if (selIndicator.EnergyNorm != -1 && selIndicator.SelIndicatorType == SelIndicatorTypeEnum.Friendly)
+                {
+                    int lineWidth = (int)(selIndicator.IndicatorRect.Width * selIndicator.EnergyNorm);
+                    if (lineWidth > 0)
+                    {
+                        renderContext.RenderRectangle(this.lightMagentaBrush,
+                            new RCIntRectangle(selIndicator.IndicatorRect.Left,
+                                               selIndicator.IndicatorRect.Bottom + indicatorIndex,
+                                               (int)(selIndicator.IndicatorRect.Width * selIndicator.EnergyNorm),
+                                               1));
+                    }
+                }
             }
         }
 
@@ -82,8 +140,16 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// Resources for rendering.
         /// </summary>
-        private UISprite greenBrush;
-        private UISprite yellowBrush;
-        private UISprite redBrush;
+        private readonly UISprite greenBrush;
+        private readonly UISprite yellowBrush;
+        private readonly UISprite redBrush;
+        private readonly UISprite lightGreenBrush;
+        private readonly UISprite lightBlueBrush;
+        private readonly UISprite lightMagentaBrush;
+
+        /// <summary>
+        /// The brushes for rendering HP mapped by the corresponding conditions.
+        /// </summary>
+        private readonly Dictionary<MapObjectConditionEnum, UISprite> hpConditionBrushes;
     }
 }

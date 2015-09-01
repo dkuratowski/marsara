@@ -1,0 +1,96 @@
+Terran Command Center
+Terran Supply Depot
+Terran Refinery
+Terran Barracks
+Terran Academy
+Terran Factory
+Terran Starport
+Terran Science Facility
+Terran Engineering Bay
+Terran Armory
+Terran Missile Turret
+Terran Bunker
+Terran Comsat Station
+Terran Nuclear Silo
+Terran Control Tower
+Terran Covert Ops
+Terran Physics Lab
+Terran Machine Shop
+Terran Battlecruiser
+Terran Dropship
+Terran Firebat
+Terran Ghost
+Terran Goliath
+Terran Marine
+Terran Medic
+Terran Science Vessel
+Terran SCV
+Terran Siege Tank
+Terran Valkyrie
+Terran Vulture
+Terran Wraith
+Terran Bunker
+Terran Spider Mine
+Zerg Creep Colony
+Zerg Defiler Mound
+Zerg Evolution Chamber
+Zerg Extractor
+Zerg Greater Spire
+Zerg Hatchery
+Zerg Hive
+Zerg Hydralisk Den
+Infested Command Center
+Zerg Lair
+Zerg Nydus Canal
+Zerg Queen's Nest
+Zerg Spawning Pool
+Zerg Spire
+Zerg Spore Colony
+Zerg Sunken Colony
+Zerg Broodling
+Zerg Defiler
+Zerg Devourer
+Zerg Drone
+Zerg Egg
+Zerg Guardian
+Zerg Hydralisk
+Zerg Infested Terran
+Zerg Larva
+Zerg Lurker
+Zerg Mutalisk
+Zerg Overlord
+Zerg Queen
+Zerg Scourge
+Zerg Ultralisk
+Zerg Zergling
+Zerg Zergling
+Protoss Arbiter Tribunal
+Protoss Assimilator
+Protoss Citadel Of Adun
+Protoss Cybernetics Core
+Protoss Fleet Beacon
+Protoss Forge
+Protoss Gateway
+Protoss Nexus
+Protoss Observatory
+Protoss Photon Cannon
+Protoss Pylon
+Protoss Robotics Facility
+Protoss Robotics Support Bay
+Protoss Shield Battery
+Protoss Stargate
+Protoss Templar Archives
+Protoss Arbiter
+Protoss Archon
+Protoss Carrier
+Protoss Corsair
+Protoss Dark Archon
+Protoss Dark Templar
+Protoss Dragoon
+Protoss High Templar
+Protoss Observer
+Protoss Probe
+Protoss Reaver
+Protoss Scout
+Protoss Shuttle
+Protoss Zealot

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.App.PresLogic.Controls;
+using RC.App.PresLogic.SpriteGroups;
 using RC.Common.ComponentModel;
 using RC.App.PresLogic.Panels;
 using RC.Common;
@@ -75,7 +76,7 @@ namespace RC.App.PresLogic.Pages
 
             this.gameConnection = new SequentialGameConnector(
                 new ConcurrentGameConnector(isoTileSpriteGroupLoader, terrainObjectSpriteGroupLoader),
-                new ConcurrentGameConnector(this.mapDisplay, this.commandPanel, this.minimapPanel));
+                new ConcurrentGameConnector(this.mapDisplay, this.commandPanel, this.minimapPanel, this.detailsPanel));
         }
 
         #region IGameConnector methods

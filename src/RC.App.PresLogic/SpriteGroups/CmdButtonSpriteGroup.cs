@@ -6,7 +6,7 @@ using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.UI;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.SpriteGroups
 {
     /// <summary>
     /// This sprite group loads the sprites defined for the command buttons and masks them to a target color corresponding

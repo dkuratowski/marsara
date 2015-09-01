@@ -5,6 +5,7 @@ using System.Text;
 using RC.App.BizLogic.Services;
 using RC.App.BizLogic.Views;
 using RC.App.PresLogic.Controls;
+using RC.App.PresLogic.SpriteGroups;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.UI;
@@ -161,7 +162,7 @@ namespace RC.App.PresLogic.Panels
         /// the second coordinate defines the column in which the button is located. The first row is the row at the top,
         /// the first column is the column at the left side of the panel.
         /// </summary>
-        private RCCommandButton[,] buttonArray;
+        private readonly RCCommandButton[,] buttonArray;
 
         /// <summary>
         /// The size of the command button array.
@@ -177,6 +178,6 @@ namespace RC.App.PresLogic.Panels
         /// <summary>
         /// List of the command button sprite groups mapped by the appropriate button state.
         /// </summary>
-        private Dictionary<CommandButtonStateEnum, SpriteGroup> commandButtonSprites;
+        private readonly Dictionary<CommandButtonStateEnum, SpriteGroup> commandButtonSprites;
     }
 }

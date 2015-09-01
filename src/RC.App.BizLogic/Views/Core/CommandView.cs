@@ -10,9 +10,8 @@ using RC.Common.Configuration;
 namespace RC.App.BizLogic.Views.Core
 {
     /// <summary>
-    /// Views of the commands.
+    /// View for the commands.
     /// </summary>
-    /// TODO: implement this view!
     class CommandView : ICommandView
     {
         /// <summary>
@@ -68,6 +67,6 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Reference to the command manager business component.
         /// </summary>
-        private ICommandManagerBC commandManager;
+        private readonly ICommandManagerBC commandManager;
     }
 }

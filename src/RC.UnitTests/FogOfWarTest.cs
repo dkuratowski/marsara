@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RC.App.BizLogic.Views;
 using RC.App.PresLogic;
+using RC.App.PresLogic.SpriteGroups;
 using RC.Common;
 using RC.Common.Configuration;
 using RC.UI;

@@ -7,7 +7,7 @@ using RC.App.PresLogic.Controls;
 using RC.Common;
 using RC.App.BizLogic.Views;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.SpriteGroups
 {
     /// <summary>
     /// This sprite group loads the sprites defined in the simulation metadata and masks them to a target color that
@@ -32,7 +32,7 @@ namespace RC.App.PresLogic
         #region Overriden from MaskedSpriteGroup
 
         /// <see cref="MaskedSpriteGroup.SpriteDefinitions"/>
-        protected override IEnumerable<SpriteDef> SpriteDefinitions { get { return this.metadataView.GetMapObjectTypes(); } }
+        protected override IEnumerable<SpriteDef> SpriteDefinitions { get { return this.metadataView.GetMapObjectSpriteDefs(); } }
 
         /// <see cref="MaskedSpriteGroup.IsMaskingForced"/>
         protected override bool IsMaskingForced { get { return this.owner == PlayerEnum.Neutral; } }
@@ -45,11 +45,11 @@ namespace RC.App.PresLogic
         /// <summary>
         /// Reference to a view on the metadata of the game engine.
         /// </summary>
-        private IMetadataView metadataView;
+        private readonly IMetadataView metadataView;
 
         /// <summary>
         /// The owner of the map objects in this group.
         /// </summary>
-        private PlayerEnum owner;
+        private readonly PlayerEnum owner;
     }
 }

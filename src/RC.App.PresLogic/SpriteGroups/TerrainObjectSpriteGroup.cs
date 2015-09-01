@@ -7,18 +7,18 @@ using RC.App.PresLogic.Controls;
 using RC.App.BizLogic.Views;
 using RC.Common;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.SpriteGroups
 {
     /// <summary>
-    /// The sprite-group of the isometric tiles.
+    /// The sprite-group of the terrain objects.
     /// </summary>
-    class IsoTileSpriteGroup : SpriteGroup
+    class TerrainObjectSpriteGroup : SpriteGroup
     {
         /// <summary>
-        /// Constructs an IsoTileSpriteGroup instance.
+        /// Constructs a TerrainObjectSpriteGroup instance.
         /// </summary>
         /// <param name="tilesetView">Reference to a view on the tileset.</param>
-        public IsoTileSpriteGroup(ITileSetView tilesetView)
+        public TerrainObjectSpriteGroup(ITileSetView tilesetView)
             : base()
         {
             if (tilesetView == null) { throw new ArgumentNullException("tilesetView"); }
@@ -29,12 +29,14 @@ namespace RC.App.PresLogic
         protected override List<UISprite> Load_i()
         {
             List<UISprite> retList = new List<UISprite>();
-            foreach (SpriteDef tileType in this.tilesetView.GetIsoTileTypes())
+            foreach (SpriteDef terrainObjectType in this.tilesetView.GetTerrainObjectTypes())
             {
-                UISprite tile = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(tileType.ImageData, UIWorkspace.Instance.PixelScaling);
-                tile.TransparentColor = tileType.TransparentColor != RCColor.Undefined ? tileType.TransparentColor : PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
-                tile.Upload();
-                retList.Add(tile);
+                UISprite terrainObject = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(terrainObjectType.ImageData, UIWorkspace.Instance.PixelScaling);
+                terrainObject.TransparentColor = terrainObjectType.TransparentColor != RCColor.Undefined
+                                               ? terrainObjectType.TransparentColor
+                                               : PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
+                terrainObject.Upload();
+                retList.Add(terrainObject);
             }
             return retList;
         }

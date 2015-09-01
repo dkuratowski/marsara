@@ -35,6 +35,7 @@ namespace RC.Engine.Simulator.Core
         public const string TRAILANIMATION_FREQUENCY_ATTR = "frequency";
         public const string IMPACTANIMATION_ELEM = "impactAnimation";
         public const string SPRITEPALETTE_ELEM = "spritePalette";
+        public const string HPICONPALETTE_ELEM = "hpIconPalette";
         public const string ANIMPALETTE_ELEM = "animationPalette";
         public const string ANIMATION_ELEM = "animation";
         public const string ANIMATION_NAME_ATTR = "name";

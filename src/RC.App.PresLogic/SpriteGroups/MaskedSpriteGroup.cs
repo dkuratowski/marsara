@@ -6,7 +6,7 @@ using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.UI;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.SpriteGroups
 {
     /// <summary>
     /// Base class of SpriteGroups in which the sprites are masked to a target color.

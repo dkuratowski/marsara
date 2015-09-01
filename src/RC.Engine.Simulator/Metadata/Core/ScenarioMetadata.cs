@@ -352,14 +352,20 @@ namespace RC.Engine.Simulator.Metadata.Core
             foreach (ScenarioElementType customType in this.customTypes.Values) { customType.BuildupReferences(); }
 
             /// Finalize all object types and set the sprite palette indices.
-            int currIdx = 0;
+            int currSpritePaletteIdx = 0;
+            int currHPIconPaletteIdx = 0;
             foreach (ScenarioElementType objType in this.allTypes)
             {
-                ISpritePalette<MapDirection> spritePalette = objType.SpritePalette;
-                if (spritePalette != null)
+                if (objType.SpritePalette != null)
                 {
-                    spritePalette.SetIndex(currIdx);
-                    currIdx++;
+                    objType.SpritePalette.SetIndex(currSpritePaletteIdx);
+                    currSpritePaletteIdx++;
+                }
+
+                if (objType.HPIconPalette != null)
+                {
+                    objType.HPIconPalette.SetIndex(currHPIconPaletteIdx);
+                    currHPIconPaletteIdx++;
                 }
 
                 objType.CheckAndFinalize();

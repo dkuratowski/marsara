@@ -7,7 +7,7 @@ using RC.Common;
 using RC.Common.Configuration;
 using RC.UI;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.SpriteGroups
 {
     /// <summary>
     /// The sprite-group for drawing the quadratic tiles of the map based on the current state of the Fog Of War.

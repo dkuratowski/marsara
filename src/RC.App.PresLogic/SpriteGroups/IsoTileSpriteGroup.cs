@@ -7,18 +7,18 @@ using RC.App.PresLogic.Controls;
 using RC.App.BizLogic.Views;
 using RC.Common;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.SpriteGroups
 {
     /// <summary>
-    /// The sprite-group of the terrain objects.
+    /// The sprite-group of the isometric tiles.
     /// </summary>
-    class TerrainObjectSpriteGroup : SpriteGroup
+    class IsoTileSpriteGroup : SpriteGroup
     {
         /// <summary>
-        /// Constructs a TerrainObjectSpriteGroup instance.
+        /// Constructs an IsoTileSpriteGroup instance.
         /// </summary>
         /// <param name="tilesetView">Reference to a view on the tileset.</param>
-        public TerrainObjectSpriteGroup(ITileSetView tilesetView)
+        public IsoTileSpriteGroup(ITileSetView tilesetView)
             : base()
         {
             if (tilesetView == null) { throw new ArgumentNullException("tilesetView"); }
@@ -29,14 +29,12 @@ namespace RC.App.PresLogic
         protected override List<UISprite> Load_i()
         {
             List<UISprite> retList = new List<UISprite>();
-            foreach (SpriteDef terrainObjectType in this.tilesetView.GetTerrainObjectTypes())
+            foreach (SpriteDef tileType in this.tilesetView.GetIsoTileTypes())
             {
-                UISprite terrainObject = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(terrainObjectType.ImageData, UIWorkspace.Instance.PixelScaling);
-                terrainObject.TransparentColor = terrainObjectType.TransparentColor != RCColor.Undefined
-                                               ? terrainObjectType.TransparentColor
-                                               : PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
-                terrainObject.Upload();
-                retList.Add(terrainObject);
+                UISprite tile = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(tileType.ImageData, UIWorkspace.Instance.PixelScaling);
+                tile.TransparentColor = tileType.TransparentColor != RCColor.Undefined ? tileType.TransparentColor : PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;
+                tile.Upload();
+                retList.Add(tile);
             }
             return retList;
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.App.BizLogic.Services;
 using RC.App.BizLogic.Views;
+using RC.App.PresLogic.SpriteGroups;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.UI;
@@ -74,22 +75,22 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// Reference to the command panel view.
         /// </summary>
-        private ICommandView commandPanelView;
+        private readonly ICommandView commandPanelView;
 
         /// <summary>
         /// Reference to the command service.
         /// </summary>
-        private ICommandService commandService;
+        private readonly ICommandService commandService;
 
         /// <summary>
         /// The coordinates of the slot of this button on the command panel (row; col).
         /// </summary>
-        private RCIntVector slotCoords;
+        private readonly RCIntVector slotCoords;
 
         /// <summary>
         /// List of the command button sprite groups mapped by the appropriate button state.
         /// </summary>
-        private Dictionary<CommandButtonStateEnum, SpriteGroup> commandButtonSprites;
+        private readonly Dictionary<CommandButtonStateEnum, SpriteGroup> commandButtonSprites;
 
         /// <summary>
         /// The position of the command buttons inside the command panel based on their position.

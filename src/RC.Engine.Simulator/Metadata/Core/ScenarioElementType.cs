@@ -29,6 +29,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.hasOwner = false;
             this.metadata = metadata;
             this.spritePalette = null;
+            this.hpIconPalette = null;
             this.animationPalette = null;
             this.relativeQuadCoordsInSight = null; /// TODO: later the sight range will depend on the upgrades of the players!
             this.placementConstraints = new List<EntityConstraint>();
@@ -49,6 +50,9 @@ namespace RC.Engine.Simulator.Metadata.Core
 
         /// <see cref="IScenarioElementType.SpritePalette"/>
         public ISpritePalette<MapDirection> SpritePalette { get { return this.spritePalette; } }
+
+        /// <see cref="IScenarioElementType.HPIconPalette"/>
+        public ISpritePalette HPIconPalette { get { return this.hpIconPalette; } }
 
         /// <see cref="IScenarioElementType.AnimationPalette"/>
         public IAnimationPalette AnimationPalette { get { return this.animationPalette; } }
@@ -166,6 +170,17 @@ namespace RC.Engine.Simulator.Metadata.Core
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (spritePalette == null) { throw new ArgumentNullException("spritePalette"); }
             this.spritePalette = spritePalette;
+        }
+
+        /// <summary>
+        /// Sets the HP indicator icon palette of this element type.
+        /// </summary>
+        /// <param name="hpIconPalette">The HP indicator icon palette of this element type.</param>
+        public void SetHPIconPalette(ISpritePalette hpIconPalette)
+        {
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (hpIconPalette == null) { throw new ArgumentNullException("hpIconPalette"); }
+            this.hpIconPalette = hpIconPalette;
         }
 
         /// <summary>
@@ -416,6 +431,11 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// The sprite palette of this element type.
         /// </summary>
         private ISpritePalette<MapDirection> spritePalette;
+
+        /// <summary>
+        /// The HP indicator icon palette of this element type.
+        /// </summary>
+        private ISpritePalette hpIconPalette;
 
         /// <summary>
         /// The animation palette of this element type.

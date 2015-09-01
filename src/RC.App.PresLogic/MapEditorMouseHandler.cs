@@ -5,6 +5,7 @@ using System.Text;
 using RC.App.BizLogic.Services;
 using RC.App.BizLogic.Views;
 using RC.App.PresLogic.Controls;
+using RC.App.PresLogic.SpriteGroups;
 using RC.Common.ComponentModel;
 using RC.UI;
 

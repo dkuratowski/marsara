@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.App.PresLogic.SpriteGroups;
 using RC.UI;
 using RC.Common;
 using RC.Common.Diagnostics;

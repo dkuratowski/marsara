@@ -5,7 +5,7 @@ using System.Text;
 using RC.Common;
 using RC.UI;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.SpriteGroups
 {
     /// <summary>
     /// Common base class of a sprite-group. Sprite-groups can be used to handle loading/unloading a group of sprites that are not

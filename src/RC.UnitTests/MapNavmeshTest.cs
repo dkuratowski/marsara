@@ -23,8 +23,8 @@ namespace RC.UnitTests
         [AssemblyInitialize]
         public static void AssemblyInitialize(TestContext context)
         {
-            ConfigurationManager.Initialize("..\\..\\..\\..\\..\\config\\RC.Engine.Simulator\\RC.Engine.Simulator.node");
-            ConstantsTable.Add("RC.App.Version", "1.0.0.0", "STRING");
+            //ConfigurationManager.Initialize("..\\..\\..\\..\\config\\RC.Engine.Simulator\\RC.Engine.Simulator.node");
+            //ConstantsTable.Add("RC.App.Version", "1.0.0.0", "STRING");
             tilesets = new Dictionary<string, ITileSet>();
         }
 

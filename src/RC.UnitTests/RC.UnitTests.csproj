@@ -90,6 +90,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="InfoPanelTextWidthTest.cs" />
     <Compile Include="NavmeshPainter.cs" />
     <Compile Include="NavmeshGeneratorTest.cs" />
     <Compile Include="NavmeshValidator.cs" />
@@ -99,6 +100,9 @@
     <Compile Include="FogOfWarTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="InfoPanelTextWidthTest_in\entity_type_names.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="NavmeshGeneratorTest_in\grid0.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -151,6 +155,7 @@
       <Name>RC.UI</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

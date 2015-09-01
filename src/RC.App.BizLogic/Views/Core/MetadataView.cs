@@ -21,8 +21,8 @@ namespace RC.App.BizLogic.Views.Core
 
         #region IMetadataView members
 
-        /// <see cref="IMetadataView.GetMapObjectTypes"/>
-        public List<SpriteDef> GetMapObjectTypes()
+        /// <see cref="IMetadataView.GetMapObjectSpriteDefs"/>
+        public List<SpriteDef> GetMapObjectSpriteDefs()
         {
             List<SpriteDef> retList = new List<SpriteDef>();
             foreach (IScenarioElementType objType in this.metadata.AllTypes)
@@ -36,6 +36,27 @@ namespace RC.App.BizLogic.Views.Core
                     info.TransparentColor = objType.SpritePalette.TransparentColor;
                     info.MaskColor = objType.SpritePalette.MaskColor;
                     info.IsMaskableSprite = objType.HasOwner;
+                    retList.Add(info);
+                }
+            }
+            return retList;
+        }
+
+        /// <see cref="IMetadataView.GetMapObjectHPIconDefs"/>
+        public List<SpriteDef> GetMapObjectHPIconDefs()
+        {
+            List<SpriteDef> retList = new List<SpriteDef>();
+            foreach (IScenarioElementType objType in this.metadata.AllTypes)
+            {
+                if (objType.HPIconPalette != null)
+                {
+                    byte[] imageData = new byte[objType.HPIconPalette.ImageData.Length];
+                    Array.Copy(objType.HPIconPalette.ImageData, imageData, objType.HPIconPalette.ImageData.Length);
+                    SpriteDef info = new SpriteDef();
+                    info.ImageData = imageData;
+                    info.TransparentColor = objType.HPIconPalette.TransparentColor;
+                    info.MaskColor = objType.HPIconPalette.MaskColor;
+                    info.IsMaskableSprite = true;
                     retList.Add(info);
                 }
             }

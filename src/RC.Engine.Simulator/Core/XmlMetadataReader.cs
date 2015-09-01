@@ -210,6 +210,14 @@ namespace RC.Engine.Simulator.Core
                 elementType.SetSpritePalette(spritePalette);
             }
 
+            /// Load the HP indicator icon palette of this element type.
+            XElement hpIconPaletteElem = elementTypeElem.Element(XmlMetadataConstants.HPICONPALETTE_ELEM);
+            if (hpIconPaletteElem != null)
+            {
+                ISpritePalette hpIconPalette = XmlHelper.LoadSpritePalette(hpIconPaletteElem, tmpImageDir);
+                elementType.SetHPIconPalette(hpIconPalette);
+            }
+
             /// Load the animation palette of the element type.
             XElement animPaletteElem = elementTypeElem.Element(XmlMetadataConstants.ANIMPALETTE_ELEM);
             if (animPaletteElem != null)

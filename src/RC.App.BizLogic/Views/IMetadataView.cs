@@ -14,6 +14,12 @@ namespace RC.App.BizLogic.Views
         /// Gets the sprite definitions for each map object types defined in the game engine metadata.
         /// </summary>
         /// <returns>The list of the sprite definitions for the map object types.</returns>
-        List<SpriteDef> GetMapObjectTypes();
+        List<SpriteDef> GetMapObjectSpriteDefs();
+
+        /// <summary>
+        /// Gets the HP indicator icon definition for each map object types defined in the game engine metadata.
+        /// </summary>
+        /// <returns>The list of HP indicator icon definitions for the map object types.</returns>
+        List<SpriteDef> GetMapObjectHPIconDefs();
     }
 }

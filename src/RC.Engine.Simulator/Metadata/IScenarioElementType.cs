@@ -47,6 +47,11 @@ namespace RC.Engine.Simulator.Metadata
         ISpritePalette<MapDirection> SpritePalette { get; }
 
         /// <summary>
+        /// Gets the HP indicator icon palette of this element type or null if this element type has no HP indicator icon palette.
+        /// </summary>
+        ISpritePalette HPIconPalette { get; }
+
+        /// <summary>
         /// Gets the animation palette of this element type or null if this element type has no animation palette.
         /// </summary>
         IAnimationPalette AnimationPalette { get; }

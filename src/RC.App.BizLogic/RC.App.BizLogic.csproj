@@ -129,6 +129,7 @@
     <Compile Include="BusinessComponents\Core\PlayerManager.cs" />
     <Compile Include="BusinessComponents\Core\PlayerSlot.cs" />
     <Compile Include="Views\Core\CommandView.cs" />
+    <Compile Include="Views\Core\DetailsView.cs" />
     <Compile Include="Views\Core\FogOfWarView.cs" />
     <Compile Include="Views\Core\MinimapView.cs" />
     <Compile Include="Views\Core\SelectionIndicatorView.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="BusinessComponents\Core\TriggeredScheduler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\IMapEditorService.cs" />
+    <Compile Include="Views\IDetailsView.cs" />
     <Compile Include="Views\IFogOfWarView.cs" />
     <Compile Include="Views\IMapObjectDataView.cs" />
     <Compile Include="Views\IMapObjectView.cs" />
@@ -166,6 +168,7 @@
     <Compile Include="Views\ISelectionIndicatorView.cs" />
     <Compile Include="Views\MinimapPixelInfo.cs" />
     <Compile Include="Views\ObjectInst.cs" />
+    <Compile Include="Views\MapObjectConditionEnum.cs" />
     <Compile Include="Views\SelIndicatorInst.cs" />
     <Compile Include="Views\SpriteInst.cs" />
     <Compile Include="Views\SpriteDef.cs" />

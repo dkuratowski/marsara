@@ -24,19 +24,24 @@ namespace RC.App.BizLogic.Views
         /// <summary>
         /// The value of the shield of the object normalized between 0 and 1.
         /// </summary>
-        /// <remarks>Set this property to 0 if the shield value shall not be displayed.</remarks>
+        /// <remarks>Set this property to -1 if the shield value shall not be displayed.</remarks>
         public RCNumber ShieldNorm { get; set; }
 
         /// <summary>
         /// The value of the energy of the object normalized between 0 and 1.
         /// </summary>
-        /// <remarks>Set this property to 0 if the energy value shall not be displayed.</remarks>
+        /// <remarks>Set this property to -1 if the energy value shall not be displayed.</remarks>
         public RCNumber EnergyNorm { get; set; }
 
         /// <summary>
         /// The value of the HP of the object normalized between 0 and 1.
         /// </summary>
-        /// <remarks>Set this property to 0 if the HP value shall not be displayed.</remarks>
+        /// <remarks>Set this property to -1 if the HP value shall not be displayed.</remarks>
         public RCNumber HpNorm { get; set; }
+
+        /// <summary>
+        /// The condition of the HP of the object. This property shall be ignored if the HP value shall not be displayed.
+        /// </summary>
+        public MapObjectConditionEnum HpCondition { get; set; }
     }
 }

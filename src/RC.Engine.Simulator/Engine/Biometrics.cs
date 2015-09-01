@@ -23,10 +23,12 @@ namespace RC.Engine.Simulator.Engine
 
             this.owner = this.ConstructField<Entity>("owner");
             this.hp = this.ConstructField<RCNumber>("hp");
+            this.energy = this.ConstructField<RCNumber>("energy");
             this.frameIndexOfLastEnemyDamage = this.ConstructField<int>("frameIndexOfLastEnemyDamage");
 
             this.owner.Write(owner);
             this.hp.Write(owner.ElementType.MaxHP != null ? owner.ElementType.MaxHP.Read() : -1);
+            this.energy.Write(owner.ElementType.MaxEnergy != null ? owner.ElementType.MaxEnergy.Read() : -1);
             this.frameIndexOfLastEnemyDamage.Write(-1);
         }
 
@@ -34,6 +36,11 @@ namespace RC.Engine.Simulator.Engine
         /// Gets the HP of the owner entity or -1 if the owner entity is not attackable.
         /// </summary>
         public RCNumber HP { get { return this.hp.Read(); } }
+
+        /// <summary>
+        /// Gets the energy of the owner entity or -1 if the owner entity has no energy.
+        /// </summary>
+        public RCNumber Energy { get { return this.energy.Read(); } }
 
         /// <summary>
         /// Gets the index of the frame in which the owner of this biometrics has been damaged by an enemy or -1 if the owner has
@@ -92,6 +99,11 @@ namespace RC.Engine.Simulator.Engine
         /// The HP of the owner entity.
         /// </summary>
         private readonly HeapedValue<RCNumber> hp;
+
+        /// <summary>
+        /// The energy of the owner entity.
+        /// </summary>
+        private readonly HeapedValue<RCNumber> energy; 
 
         /// <summary>
         /// The index of the frame in which the owner of this biometrics has been damaged by an enemy or -1 if the owner has

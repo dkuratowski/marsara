@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using RC.App.BizLogic.Services;
 using RC.App.BizLogic.Views;
+using RC.App.PresLogic.SpriteGroups;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Common.Diagnostics;

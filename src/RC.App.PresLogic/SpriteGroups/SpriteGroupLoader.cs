@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.UI;
 
-namespace RC.App.PresLogic
+namespace RC.App.PresLogic.SpriteGroups
 {
     /// <summary>
     /// Represents a sprite group loader.

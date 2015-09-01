@@ -87,7 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConcurrentGameConnector.cs" />
-    <Compile Include="CmdButtonSpriteGroup.cs" />
+    <Compile Include="SpriteGroups\CmdButtonSpriteGroup.cs" />
     <Compile Include="Controls\IMapDisplay.cs" />
     <Compile Include="Controls\RCCommandButton.cs" />
     <Compile Include="Controls\RCFogOfWarDisplay.cs" />
@@ -102,19 +102,20 @@
     <Compile Include="Controls\RCObjectPlacementDisplay.cs" />
     <Compile Include="Controls\RCResourceAmountDisplay.cs" />
     <Compile Include="Controls\RCSelectionBoxDisplay.cs" />
+    <Compile Include="Controls\RCSelectionButton.cs" />
     <Compile Include="Controls\RCSelectionDisplay.cs" />
-    <Compile Include="FOWSpriteGroup.cs" />
+    <Compile Include="SpriteGroups\FOWSpriteGroup.cs" />
     <Compile Include="IGameConnector.cs" />
     <Compile Include="IMinimapBackgroundJob.cs" />
-    <Compile Include="IsoTileSpriteGroup.cs" />
-    <Compile Include="ISpriteGroup.cs" />
+    <Compile Include="SpriteGroups\IsoTileSpriteGroup.cs" />
+    <Compile Include="SpriteGroups\ISpriteGroup.cs" />
     <Compile Include="MapEditorMouseHandler.cs" />
-    <Compile Include="MapObjectSpriteGroup.cs" />
+    <Compile Include="SpriteGroups\MapObjectSpriteGroup.cs" />
     <Compile Include="MinimapMouseHandler.cs" />
     <Compile Include="MinimapScanner.cs" />
     <Compile Include="MinimapSpriteBuffer.cs" />
     <Compile Include="MinimapTerrainRenderJob.cs" />
-    <Compile Include="MaskedSpriteGroup.cs" />
+    <Compile Include="SpriteGroups\MaskedSpriteGroup.cs" />
     <Compile Include="NormalMouseHandler.cs" />
     <Compile Include="PresLogicConstants.cs" />
     <Compile Include="MouseHandlerBase.cs" />
@@ -124,9 +125,10 @@
     <Compile Include="Panels\RCMinimapPanel.cs" />
     <Compile Include="Panels\RCResourceBar.cs" />
     <Compile Include="Panels\RCTooltipBar.cs" />
+    <Compile Include="SpriteGroups\HPIconSpriteGroup.cs" />
     <Compile Include="SelectTargetMouseHandler.cs" />
     <Compile Include="SequentialGameConnector.cs" />
-    <Compile Include="SpriteGroup.cs" />
+    <Compile Include="SpriteGroups\SpriteGroup.cs" />
     <Compile Include="Controls\RCMapDisplay.cs" />
     <Compile Include="Controls\RCScrollBar.cs" />
     <Compile Include="Pages\RCMapEditorPage.cs" />
@@ -152,9 +154,9 @@
     <Compile Include="Pages\RCSelectGamePage.cs" />
     <Compile Include="Panels\RCSelectGamePanel.cs" />
     <Compile Include="Panels\RCSelectMapPanel.cs" />
-    <Compile Include="SpriteGroupLoader.cs" />
+    <Compile Include="SpriteGroups\SpriteGroupLoader.cs" />
     <Compile Include="TaskManagerBC.cs" />
-    <Compile Include="TerrainObjectSpriteGroup.cs" />
+    <Compile Include="SpriteGroups\TerrainObjectSpriteGroup.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.App.BizLogic\RC.App.BizLogic.csproj">
