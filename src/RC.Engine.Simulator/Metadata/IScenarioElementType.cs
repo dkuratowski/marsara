@@ -31,6 +31,11 @@ namespace RC.Engine.Simulator.Metadata
         string Name { get; }
 
         /// <summary>
+        /// Gets the displayed name of this element type.
+        /// </summary>
+        string DisplayedName { get; }
+
+        /// <summary>
         /// Get the ID of this element type.
         /// </summary>
         int ID { get; }

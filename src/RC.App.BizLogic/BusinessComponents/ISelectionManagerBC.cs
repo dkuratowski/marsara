@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using RC.App.BizLogic.Views;
 using RC.Common;
 using RC.Common.ComponentModel;
@@ -33,9 +34,9 @@ namespace RC.App.BizLogic.BusinessComponents
         /// <param name="selectionBox">The selection box in which to select the entities (in map coordinates).</param>
         /// <remarks>
         /// The selection will happen in the following priority order:
-        ///     - All the units of the owner inside the box.
-        ///     - One of the buildings of the owner inside the box.
-        ///     - One of the addons of the owner inside the box.
+        ///     - All the units of the local player inside the box.
+        ///     - One of the buildings of the local player inside the box.
+        ///     - One of the addons of the local player inside the box.
         ///     - One of the units of another player inside the box.
         ///     - One of the buildings of another player inside the box.
         ///     - One of the addons of another player inside the box.
@@ -49,28 +50,30 @@ namespace RC.App.BizLogic.BusinessComponents
         /// </summary>
         /// <param name="position">The position at which to select an entity (in map coordinates).</param>
         /// <remarks>
-        /// The selection will happen in the following priority order:
-        ///     - One of the units of the owner at the given position.
-        ///     - One of the buildings of the owner at the given position.
-        ///     - One of the addons of the owner at the given position.
-        ///     - One of the units of another player at the given position.
-        ///     - One of the buildings of another player at the given position.
-        ///     - One of the addons of another player at the given position.
-        ///     - One of the other entity at the given position.
         /// If there is no entity at the given position then calling this function has no effect.
         /// </remarks>
         void SelectEntity(RCNumVector position);
+
+        /// <summary>
+        /// Select the entity with the given ID.
+        /// </summary>
+        /// <param name="entityID">The ID of the entity to be selected.</param>
+        /// <exception cref="InvalidOperationException">
+        /// If there is no object with the given ID.
+        /// </exception>
+        void SelectEntity(int entityID);
 
         /// <summary>
         /// Adds or remove the entity at the given position to or from the current selection.
         /// </summary>
         /// <param name="position">The given position (in map coordinates).</param>
         /// <remarks>
-        /// If the entity at the given position cannot be added to the current selection for any reason then this
-        /// function has no effect. The possible reasons are the followings:
+        /// If there is no entity at the given position or if the entity at the given position cannot be added
+        /// to the current selection for any reason then this function has no effect.
+        /// The possible reasons are the followings:
         ///     - A building or an addon is currently selected.
-        ///     - Some units of the owner is currently selected and the entity is a building or an addon.
-        ///     - Some units of the owner is currently selected and the entity is owned by another player.
+        ///     - Some units of the local player is currently selected and the entity is a building or an addon.
+        ///     - Some units of the local player is currently selected and the entity is owned by another player.
         ///     - An entity of another player is currently selected.
         /// </remarks>
         void AddRemoveEntityToSelection(RCNumVector position);
@@ -83,11 +86,39 @@ namespace RC.App.BizLogic.BusinessComponents
         /// Only entities inside the given selection box that can be added to the current selection will be added.
         /// The possible reasons why an entity cannot be added to the current selection are the followings:
         ///     - A building or an addon is currently selected.
-        ///     - Some units of the owner is currently selected and the entity is a building or an addon.
-        ///     - Some units of the owner is currently selected and the entity is owned by another player.
+        ///     - Some units of the local player is currently selected and the entity is a building or an addon.
+        ///     - Some units of the local player is currently selected and the entity is owned by another player.
         ///     - An entity of another player is currently selected.
         /// </remarks>
         void AddEntitiesToSelection(RCNumRectangle selectionBox);
+
+        /// <summary>
+        /// Removes the entity with the given ID from the current selection.
+        /// </summary>
+        /// <param name="entityID">The ID of the entity to be removed from the current selection.</param>
+        /// <exception cref="InvalidOperationException">
+        /// If there is no entity with the given ID or the entity is not selected.
+        /// </exception>
+        void RemoveEntityFromSelection(int entityID);
+
+        /// <summary>
+        /// Select entities inside the given selection box that has the same type as the entity at the given position.
+        /// </summary>
+        /// <param name="position">The given position (in map coordinates).</param>
+        /// <param name="selectionBox">The selection box in which to select the entities (in map coordinates).</param>
+        /// <remarks>
+        /// If the entity is not a unit of the local player, then this method will select only that entity.
+        /// </remarks>
+        void SelectEntitiesOfTheSameType(RCNumVector position, RCNumRectangle selectionBox);
+
+        /// <summary>
+        /// Select entities from the current selection that have the same type as the given entity.
+        /// </summary>
+        /// <param name="entityID">The ID of the given entity.</param>
+        /// <exception cref="InvalidOperationException">
+        /// If there is no entity with the given ID or the given entity is not selected.
+        /// </exception>
+        void SelectEntitiesOfTheSameTypeFromCurrentSelection(int entityID);
 
         /// <summary>
         /// Loads the selection that were saved with the given index.

@@ -184,16 +184,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
-        /// Creates a view of type IMapObjectDataView.
+        /// Creates a view of type IMapObjectDetailsView.
         /// </summary>
-        /// <param name="objectID">The ID of the map object to read.</param>
         /// <returns>The created view.</returns>
-        private IMapObjectDataView CreateMapObjectDataView(int objectID)
+        private IMapObjectDetailsView CreateMapObjectDetailsView()
         {
             if (this.activeScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
-            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
 
-            return new MapObjectDataView(objectID);
+            return new MapObjectDetailsView();
         }
 
         /// <summary>
@@ -248,12 +246,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
-        /// Creates a view of type IDetailsView.
+        /// Creates a view of type ISelectionDetailsView.
         /// </summary>
         /// <returns>The created view.</returns>
-        private IDetailsView CreateDetailsView()
+        private ISelectionDetailsView CreateSelectionDetailsView()
         {
-            return new DetailsView();
+            return new SelectionDetailsView();
         }
 
         /// <summary>
@@ -269,8 +267,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateSelIndicatorView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateCommandView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMinimapView);
-            this.viewFactoryRegistry.RegisterViewFactory(this.CreateDetailsView);
-            this.viewFactoryRegistry.RegisterViewFactory<IMapObjectDataView, int>(this.CreateMapObjectDataView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateSelectionDetailsView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectDetailsView);
             this.viewFactoryRegistry.RegisterViewFactory<ITerrainObjectPlacementView, string>(this.CreateTerrainObjectPlacementView);
             this.viewFactoryRegistry.RegisterViewFactory<IMapObjectPlacementView, string>(this.CreateMapObjectPlacementView);
         }
@@ -288,8 +286,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.UnregisterViewFactory<ISelectionIndicatorView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ICommandView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMinimapView>();
-            this.viewFactoryRegistry.UnregisterViewFactory<IDetailsView>();
-            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectDataView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<ISelectionDetailsView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectDetailsView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ITerrainObjectPlacementView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectPlacementView>();
         }

@@ -1,0 +1,154 @@
+﻿using System;
+using RC.Common;
+using RC.Engine.Simulator.Engine;
+
+namespace RC.App.BizLogic.Views.Core
+{
+    /// <summary>
+    /// Implementation of views for providing detailed informations about map objects.
+    /// </summary>
+    class MapObjectDetailsView : MapViewBase, IMapObjectDetailsView
+    {
+        /// <summary>
+        /// Constructs a map object details view.
+        /// </summary>
+        public MapObjectDetailsView()
+        {
+        }
+
+        #region IMapObjectDetailsView members
+
+        /// <see cref="IMapObjectDetailsView.GetObjectTypeID"/>
+        public int GetObjectTypeID(int objectID)
+        {
+            Entity entity = this.GetEntity(objectID);
+            return entity.ElementType.ID;
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetVespeneGasAmount"/>
+        public int GetVespeneGasAmount(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            MineralField entityAsMineralField = this.Scenario.GetElement<MineralField>(objectID);
+            return entityAsMineralField != null ? entityAsMineralField.ResourceAmount.Read() : -1;
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetMineralsAmount"/>
+        public int GetMineralsAmount(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            VespeneGeyser entityAsVespeneGeyser = this.Scenario.GetElement<VespeneGeyser>(objectID);
+            return entityAsVespeneGeyser != null ? entityAsVespeneGeyser.ResourceAmount.Read() : -1;
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetHPCondition"/>
+        public MapObjectConditionEnum GetHPCondition(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            Entity entity = this.GetEntity(objectID);
+            if (entity.Biometrics.HP == -1) { return MapObjectConditionEnum.Undefined; }
+
+            RCNumber hpNorm = entity.Biometrics.HP / entity.ElementType.MaxHP.Read();
+            if (hpNorm <= (RCNumber)1 / (RCNumber)3) { return MapObjectConditionEnum.Critical; }
+            else if (hpNorm <= (RCNumber)2 / (RCNumber)3) { return MapObjectConditionEnum.Moderate; }
+            else { return MapObjectConditionEnum.Excellent; }
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetBigHPIcon"/>
+        public SpriteInst GetBigHPIcon(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            Entity entity = this.GetEntity(objectID);
+            if (entity.ElementType.HPIconPalette == null) { throw new InvalidOperationException(String.Format("ElementType '{0}' has no HPIconPalette defined!", entity.ElementType.Name)); }
+            int bigIconSpriteIdx = entity.ElementType.HPIconPalette.GetSpriteIndex(BIG_ICON_SPRITE_NAME); // TODO: cache this index!
+            return new SpriteInst()
+            {
+                Index = entity.ElementType.HPIconPalette.Index,
+                DisplayCoords = new RCIntVector(0, 0),
+                Section = entity.ElementType.HPIconPalette.GetSection(bigIconSpriteIdx)
+            };
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetSmallHPIcon"/>
+        public SpriteInst GetSmallHPIcon(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            Entity entity = this.GetEntity(objectID);
+            if (entity.ElementType.HPIconPalette == null) { throw new InvalidOperationException(String.Format("ElementType '{0}' has no HPIconPalette defined!", entity.ElementType.Name)); }
+            int smallIconSpriteIdx = entity.ElementType.HPIconPalette.GetSpriteIndex(SMALL_ICON_SPRITE_NAME); // TODO: cache this index!
+            return new SpriteInst()
+            {
+                Index = entity.ElementType.HPIconPalette.Index,
+                DisplayCoords = new RCIntVector(0, 0),
+                Section = entity.ElementType.HPIconPalette.GetSection(smallIconSpriteIdx)
+            };
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetCurrentHP"/>
+        public int GetCurrentHP(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            Entity entity = this.GetEntity(objectID);
+            return (int)entity.Biometrics.HP;
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetMaxHP"/>
+        public int GetMaxHP(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            Entity entity = this.GetEntity(objectID);
+            return entity.ElementType.MaxHP != null ? entity.ElementType.MaxHP.Read() : -1;
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetCurrentEnergy"/>
+        public int GetCurrentEnergy(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            Entity entity = this.GetEntity(objectID);
+            return (int)entity.Biometrics.Energy;
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetMaxEnergy"/>
+        public int GetMaxEnergy(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            Entity entity = this.GetEntity(objectID);
+            return entity.ElementType.MaxEnergy != null ? entity.ElementType.MaxEnergy.Read() : -1;
+        }
+
+        #endregion IMapObjectDetailsView members
+
+        /// <summary>
+        /// Gets the entity from the active scenario with the given ID.
+        /// </summary>
+        /// <param name="entityID">The ID of entity to get.</param>
+        /// <returns>The entity from the active scenario with the given ID.</returns>
+        /// <exception cref="InvalidOperationException">If there is no entity with the given ID in the active scenario.</exception>
+        private Entity GetEntity(int entityID)
+        {
+            Entity entity = this.Scenario.GetElementOnMap<Entity>(entityID);
+            if (entity == null) { throw new InvalidOperationException(String.Format("Entity with ID '{0}' doesn't exist!", entityID)); }
+
+            return entity;
+        }
+
+        /// <summary>
+        /// The name of the big icon in the HPIconPalette.
+        /// </summary>
+        private const string BIG_ICON_SPRITE_NAME = "BigIcon";
+
+        /// <summary>
+        /// The name of the small icon in the HPIconPalette.
+        /// </summary>
+        private const string SMALL_ICON_SPRITE_NAME = "SmallIcon";
+    }
+}

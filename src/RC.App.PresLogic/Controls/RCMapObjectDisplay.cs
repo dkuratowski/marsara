@@ -99,7 +99,7 @@ namespace RC.App.PresLogic.Controls
         /// The Nth sprite group in this list contains the variant of the sprites for PlayerN.
         /// The last sprite group in this list contains the neutral variants of the sprites.
         /// </summary>
-        private List<SpriteGroup> mapObjectSprites;
+        private readonly List<SpriteGroup> mapObjectSprites;
 
         /// <summary>
         /// Reference to the map object view.

@@ -236,6 +236,7 @@ namespace RC.App.Starter
                                                     "RC.App.BizLogic.MapWindowBC",
                                                     "RC.App.BizLogic.MultiplayerService",
                                                     "RC.App.BizLogic.CommandService",
+                                                    "RC.App.BizLogic.SelectionService",
                                                     "RC.App.BizLogic.ScrollService",
                                                     "RC.App.BizLogic.MapEditorService",
                                                     "RC.App.BizLogic.ViewService"

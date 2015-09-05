@@ -21,7 +21,6 @@ namespace RC.App.PresLogic.SpriteGroups
         public HPIconSpriteGroup(IMetadataView metadataView, MapObjectConditionEnum condition)
         {
             if (metadataView == null) { throw new ArgumentNullException("metadataView"); }
-            if (condition == MapObjectConditionEnum.Undefined) { throw new ArgumentException("Condition cannot be Undefined!", "condition"); }
 
             this.metadataView = metadataView;
             this.condition = condition;
@@ -31,6 +30,9 @@ namespace RC.App.PresLogic.SpriteGroups
 
         /// <see cref="MaskedSpriteGroup.SpriteDefinitions"/>
         protected override IEnumerable<SpriteDef> SpriteDefinitions { get { return this.metadataView.GetMapObjectHPIconDefs(); } }
+
+        /// <see cref="MaskedSpriteGroup.IsMaskingForced"/>
+        protected override bool IsMaskingForced { get { return this.condition == MapObjectConditionEnum.Undefined; } }
 
         /// <see cref="MaskedSpriteGroup.TargetColor"/>
         protected override RCColor TargetColor { get { return HPICON_COLOR_MAPPINGS[this.condition]; } }
@@ -52,6 +54,7 @@ namespace RC.App.PresLogic.SpriteGroups
         /// </summary>
         private static readonly Dictionary<MapObjectConditionEnum, RCColor> HPICON_COLOR_MAPPINGS = new Dictionary<MapObjectConditionEnum, RCColor>()
         {
+            { MapObjectConditionEnum.Undefined, RCColor.Black },
             { MapObjectConditionEnum.Excellent, RCColor.LightGreen },
             { MapObjectConditionEnum.Moderate, RCColor.Yellow },
             { MapObjectConditionEnum.Critical, RCColor.Red },

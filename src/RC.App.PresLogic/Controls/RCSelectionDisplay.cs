@@ -25,6 +25,7 @@ namespace RC.App.PresLogic.Controls
             : base(extendedControl)
         {
             this.selectionIndicatorView = null;
+            this.mapObjectDetailsView = null;
 
             this.greenBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Green, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
             this.yellowBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Yellow, new RCIntVector(1, 1), UIWorkspace.Instance.PixelScaling);
@@ -54,12 +55,14 @@ namespace RC.App.PresLogic.Controls
         {
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
             this.selectionIndicatorView = viewService.CreateView<ISelectionIndicatorView>();
+            this.mapObjectDetailsView = viewService.CreateView<IMapObjectDetailsView>();
         }
 
         /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>
         protected override void DisconnectEx_i()
         {
             this.selectionIndicatorView = null;
+            this.mapObjectDetailsView = null;
         }
 
         /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
@@ -105,7 +108,8 @@ namespace RC.App.PresLogic.Controls
                     int lineWidth = (int)(selIndicator.IndicatorRect.Width * selIndicator.HpNorm);
                     if (lineWidth > 0)
                     {
-                        renderContext.RenderRectangle(this.hpConditionBrushes[selIndicator.HpCondition],
+                        MapObjectConditionEnum hpCondition = this.mapObjectDetailsView.GetHPCondition(selIndicator.ObjectID);
+                        renderContext.RenderRectangle(this.hpConditionBrushes[hpCondition],
                             new RCIntRectangle(selIndicator.IndicatorRect.Left,
                                                selIndicator.IndicatorRect.Bottom + indicatorIndex,
                                                (int)(selIndicator.IndicatorRect.Width * selIndicator.HpNorm),
@@ -136,6 +140,11 @@ namespace RC.App.PresLogic.Controls
         /// Reference to the selection indicator view.
         /// </summary>
         private ISelectionIndicatorView selectionIndicatorView;
+
+        /// <summary>
+        /// Reference to the map object details view.
+        /// </summary>
+        private IMapObjectDetailsView mapObjectDetailsView;
 
         /// <summary>
         /// Resources for rendering.

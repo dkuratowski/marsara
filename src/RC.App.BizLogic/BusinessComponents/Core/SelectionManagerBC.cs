@@ -48,8 +48,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             this.localPlayer = localPlayer;
             this.currentSelection = new RCSet<int>();
-            this.savedSelections = new RCSet<int>[CAPACITY];
-            for (int i = 0; i < CAPACITY; i++)
+            this.savedSelections = new RCSet<int>[SELECTION_SAVE_CAPACITY];
+            for (int i = 0; i < SELECTION_SAVE_CAPACITY; i++)
             {
                 this.savedSelections[i] = new RCSet<int>();
             }
@@ -61,8 +61,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
-            this.Update();
-
             Entity entityAtPos = this.ActiveScenario.GetElementsOnMap<Entity>(position).FirstOrDefault();
             if (entityAtPos == null) { return -1; }
             return entityAtPos.ID.Read();
@@ -73,8 +71,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
-
-            this.Update();
 
             bool ownerUnitFound = false;
             Entity ownerBuilding = null;
@@ -96,7 +92,9 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                             this.currentSelection.Clear();
                             ownerUnitFound = true;
                         }
+
                         this.currentSelection.Add(entity.ID.Read());
+                        if (this.currentSelection.Count == MAX_SELECTION_SIZE) { break; }
                     }
                     else if (otherPlayerUnit == null && !ownerUnitFound)
                     {
@@ -151,12 +149,23 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
-            this.Update();
-
             Entity entityAtPos = this.ActiveScenario.GetElementsOnMap<Entity>(position).FirstOrDefault();
             if (entityAtPos == null) { return; }
             this.currentSelection.Clear();
-            this.currentSelection.Add(entityAtPos.ID.Read());
+            this.AddEntityToSelection(entityAtPos);
+        }
+
+        /// <see cref="ISelectionManagerBC.SelectEntity"/>
+        public void SelectEntity(int entityID)
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
+
+            Entity entity = this.ActiveScenario.GetElementOnMap<Entity>(entityID);
+            if (entity == null) { throw new InvalidOperationException(string.Format("Entity with ID '{0}' doesn't exist!", entityID)); }
+
+            this.currentSelection.Clear();
+            this.AddEntityToSelection(entity);
         }
 
         /// <see cref="ISelectionManagerBC.AddRemoveEntityToSelection"/>
@@ -165,8 +174,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
-            this.Update();
-            throw new NotImplementedException();
+            Entity entityAtPos = this.ActiveScenario.GetElementsOnMap<Entity>(position).FirstOrDefault();
+            if (entityAtPos == null) { return; }
+
+            /// If the entity is already selected then remove it from the selection.
+            if (this.currentSelection.Remove(entityAtPos.ID.Read())) { return; }
+
+            /// Otherwise add it to the current selection if possible.
+            this.AddEntityToSelection(entityAtPos);
         }
 
         /// <see cref="ISelectionManagerBC.AddEntitiesToSelection"/>
@@ -176,7 +191,74 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
             this.Update();
-            throw new NotImplementedException();
+            foreach (Entity entityToAdd in this.ActiveScenario.GetElementsOnMap<Entity>(selectionBox))
+            {
+                this.AddEntityToSelection(entityToAdd);
+            }
+        }
+
+        /// <see cref="ISelectionManagerBC.RemoveEntityFromSelection"/>
+        public void RemoveEntityFromSelection(int entityID)
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
+
+            Entity entity = this.ActiveScenario.GetElementOnMap<Entity>(entityID);
+            if (entity == null) { throw new InvalidOperationException(string.Format("Entity with ID '{0}' doesn't exist!", entityID)); }
+
+            if (!this.currentSelection.Remove(entity.ID.Read()))
+            {
+                throw new InvalidOperationException(string.Format("Entity with ID '{0}' is not selected!", entityID));
+            }
+        }
+
+        /// <see cref="ISelectionManagerBC.SelectEntitiesOfTheSameType"/>
+        public void SelectEntitiesOfTheSameType(RCNumVector position, RCNumRectangle selectionBox)
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
+
+            Entity entityAtPos = this.ActiveScenario.GetElementsOnMap<Entity>(position).FirstOrDefault();
+            if (entityAtPos == null) { return; }
+
+            this.currentSelection.Clear();
+            if (BizLogicHelpers.GetMapObjectOwner(entityAtPos.MapObject) == this.localPlayer &&
+                entityAtPos is Unit)
+            {
+                foreach (Entity entityToAdd in this.ActiveScenario.GetElementsOnMap<Entity>(selectionBox))
+                {
+                    if (BizLogicHelpers.GetMapObjectOwner(entityToAdd.MapObject) == this.localPlayer &&
+                        entityToAdd.ElementType == entityAtPos.ElementType) // TODO: this might be problematic in case of Terran Siege Tanks!
+                    {
+                        this.AddEntityToSelection(entityToAdd);
+                    }
+                }
+            }
+            else
+            {
+                this.AddEntityToSelection(entityAtPos);
+            }
+        }
+
+        /// <see cref="ISelectionManagerBC.SelectEntitiesOfTheSameType"/>
+        public void SelectEntitiesOfTheSameTypeFromCurrentSelection(int entityID)
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
+            if (!this.currentSelection.Contains(entityID)) { throw new InvalidOperationException(string.Format("Entity with ID '{0}' is not selected!", entityID)); }
+
+            Entity entity = this.ActiveScenario.GetElementOnMap<Entity>(entityID);
+            if (entity == null) { throw new InvalidOperationException(string.Format("Entity with ID '{0}' doesn't exist!", entityID)); }
+
+            List<Entity> currentSelection = this.GetSelectedEntities();
+            this.currentSelection.Clear();
+            foreach (Entity entityToAdd in currentSelection)
+            {
+                if (entityToAdd.ElementType == entity.ElementType) // TODO: this might be problematic in case of Terran Siege Tanks!
+                {
+                    this.AddEntityToSelection(entityToAdd);
+                }
+            }
         }
 
         /// <see cref="ISelectionManagerBC.LoadSelection"/>
@@ -185,7 +267,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
-            this.Update();
             throw new NotImplementedException();
         }
 
@@ -195,7 +276,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
-            this.Update();
             throw new NotImplementedException();
         }
 
@@ -233,14 +313,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             RCSet<int> idsToRemove = new RCSet<int>();
             foreach (int id in this.currentSelection)
             {
-                Entity entity = this.ActiveScenario.GetElement<Entity>(id);
+                Entity entity = this.ActiveScenario.GetElementOnMap<Entity>(id);
                 if (entity == null) { idsToRemove.Add(id); }
             }
             foreach (RCSet<int> savedSelection in this.savedSelections)
             {
                 foreach (int id in savedSelection)
                 {
-                    Entity entity = this.ActiveScenario.GetElement<Entity>(id);
+                    Entity entity = this.ActiveScenario.GetElementOnMap<Entity>(id);
                     if (entity == null) { idsToRemove.Add(id); }
                 }
             }
@@ -254,6 +334,60 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                     savedSelection.Remove(idToRemove);
                 }
             }
+        }
+
+        /// <summary>
+        /// Adds the given entity to the current selection if possible.
+        /// </summary>
+        /// <param name="entityToAdd">The entity to be added to the current selection if possible.</param>
+        private void AddEntityToSelection(Entity entityToAdd)
+        {
+            if (this.currentSelection.Count == MAX_SELECTION_SIZE) { return; }
+
+            List<Entity> currentSelection = this.GetSelectedEntities();
+            if (currentSelection.Count == 0)
+            {
+                /// Empty selection -> simply add the entity.
+                this.currentSelection.Add(entityToAdd.ID.Read());
+                return;
+            }
+
+            if (currentSelection.Count == 1 &&
+                BizLogicHelpers.GetMapObjectOwner(currentSelection[0].MapObject) == this.localPlayer &&
+                BizLogicHelpers.GetMapObjectOwner(entityToAdd.MapObject) == this.localPlayer &&
+                currentSelection[0] is Unit &&
+                entityToAdd is Unit)
+            {
+                /// Only 1 entity is selected -> add if both the new and the selected entities are units and owned by the local player.
+                this.currentSelection.Add(entityToAdd.ID.Read());
+                return;
+            }
+
+            if (currentSelection.TrueForAll(selectedEntity =>
+                    BizLogicHelpers.GetMapObjectOwner(selectedEntity.MapObject) == this.localPlayer &&
+                    BizLogicHelpers.GetMapObjectOwner(entityToAdd.MapObject) == this.localPlayer &&
+                    selectedEntity is Unit) &&
+                entityToAdd is Unit)
+            {
+                /// Multiple entities are selected -> add if all selected entities and the new entity are units and owned by the local player.
+                this.currentSelection.Add(entityToAdd.ID.Read());
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Gets the list of entities currently selected.
+        /// </summary>
+        /// <returns>The currently selected entities.</returns>
+        private List<Entity> GetSelectedEntities()
+        {
+            List<Entity> retList = new List<Entity>();
+            foreach (int selectedEntityID in this.currentSelection)
+            {
+                Entity selectedEntity = this.ActiveScenario.GetElementOnMap<Entity>(selectedEntityID);
+                if (selectedEntity != null) { retList.Add(selectedEntity); }
+            }
+            return retList;
         }
 
         /// <summary>
@@ -279,6 +413,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// The maximum number of selections that can be saved.
         /// </summary>
-        private const int CAPACITY = 10;
+        private const int SELECTION_SAVE_CAPACITY = 10;
+
+        /// <summary>
+        /// The maximum number of objects that can be selected.
+        /// </summary>
+        private const int MAX_SELECTION_SIZE = 12;
     }
 }

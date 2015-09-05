@@ -124,7 +124,7 @@ namespace RC.UI
         /// <summary>
         /// List of the controls in this UIContainer.
         /// </summary>
-        private List<UIControl> controls;
+        private readonly List<UIControl> controls;
 
         /// <summary>
         /// Flag indicates whether the added controls are attached to the UI-tree.

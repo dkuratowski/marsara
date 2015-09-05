@@ -65,8 +65,8 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// Resources for rendering.
         /// </summary>
-        private UIPointer selectionBoxPointer;
-        private UIPointer crosshairsPointer;
-        private UISprite selectionBoxBrush;
+        private readonly UIPointer selectionBoxPointer;
+        private readonly UIPointer crosshairsPointer;
+        private readonly UISprite selectionBoxBrush;
     }
 }

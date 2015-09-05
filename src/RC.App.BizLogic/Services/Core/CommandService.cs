@@ -40,29 +40,6 @@ namespace RC.App.BizLogic.Services.Core
 
         #region ICommandService methods
 
-        /// <see cref="ICommandService.Select"/>
-        public void Select(RCIntVector position)
-        {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-
-            this.selectionManager.SelectEntity(this.mapWindowBC.AttachedWindow.WindowToMapCoords(position));
-        }
-
-        /// <see cref="ICommandService.Select"/>
-        public void Select(RCIntRectangle selectionBox)
-        {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-
-            this.selectionManager.SelectEntities(this.mapWindowBC.AttachedWindow.WindowToMapRect(selectionBox));
-        }
-
-        /// <see cref="ICommandService.SelectType"/>
-        public void SelectType(RCIntVector position)
-        {
-            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
-            /// TODO: implement!
-        }
-
         /// <see cref="ICommandService.SendFastCommand"/>
         public void SendFastCommand(RCIntVector position)
         {

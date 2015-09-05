@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <metadata>
-  <addonType name="ComsatStation" hasOwner="true">
+  <addonType name="ComsatStation" hasOwner="true" displayedName="Terran Comsat Station">
     <costs>
       <mineral>50</mineral>
       <gas>50</gas>
@@ -18,7 +18,7 @@
     <requires>Academy</requires>
     <!--spritePalette image="terran_scv.png" /-->
   </addonType>
-  <addonType name="NuclearSilo" hasOwner="true">
+  <addonType name="NuclearSilo" hasOwner="true" displayedName="Terran Nuclear Silo">
     <costs>
       <mineral>100</mineral>
       <gas>100</gas>
@@ -35,7 +35,7 @@
     <requires>ScienceFacility-CovertOps</requires>
     <!--spritePalette image="terran_scv.png" /-->
   </addonType>
-  <addonType name="MachineShop" hasOwner="true">
+  <addonType name="MachineShop" hasOwner="true" displayedName="Terran Machine Shop">
     <costs>
       <mineral>50</mineral>
       <gas>50</gas>
@@ -51,7 +51,7 @@
     <mainBuilding>Factory</mainBuilding>
     <!--spritePalette image="terran_scv.png" /-->
   </addonType>
-  <addonType name="ControlTower" hasOwner="true">
+  <addonType name="ControlTower" hasOwner="true" displayedName="Terran Control Tower">
     <costs>
       <mineral>50</mineral>
       <gas>50</gas>
@@ -67,7 +67,7 @@
     <mainBuilding>Starport</mainBuilding>
     <!--spritePalette image="terran_scv.png" /-->
   </addonType>
-  <addonType name="CovertOps" hasOwner="true">
+  <addonType name="CovertOps" hasOwner="true" displayedName="Terran Covert Ops">
     <costs>
       <mineral>50</mineral>
       <gas>50</gas>
@@ -83,7 +83,7 @@
     <mainBuilding>ScienceFacility</mainBuilding>
     <!--spritePalette image="terran_scv.png" /-->
   </addonType>
-  <addonType name="PhysicsLab" hasOwner="true">
+  <addonType name="PhysicsLab" hasOwner="true" displayedName="Terran Physics Lab">
     <costs>
       <mineral>50</mineral>
       <gas>50</gas>

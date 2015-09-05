@@ -18,6 +18,7 @@ namespace RC.Engine.Simulator.Core
         public const string MISSILETYPE_ELEM = "missileType";
         public const string CUSTOMTYPE_ELEM = "customType";
         public const string TYPE_NAME_ATTR = "name";
+        public const string TYPE_DISPLAYEDNAME_ATTR = "displayedName";
         public const string TYPE_HASOWNER_ATTR = "hasOwner";
         public const string GENERALDATA_ELEM = "generalData";
         public const string COSTS_ELEM = "costs";

@@ -197,6 +197,10 @@ namespace RC.Engine.Simulator.Core
         /// <param name="metadata">The metadata object.</param>
         private static void LoadScenarioElementType(XElement elementTypeElem, ScenarioElementType elementType, ScenarioMetadata metadata)
         {
+            /// Load the displayed name of the element type.
+            XAttribute displayedNameAttr = elementTypeElem.Attribute(XmlMetadataConstants.TYPE_DISPLAYEDNAME_ATTR);
+            if (displayedNameAttr != null) { elementType.SetDisplayedName(displayedNameAttr.Value); }
+
             /// Load the has owner flag of the element type.
             XAttribute hasOwnerAttr = elementTypeElem.Attribute(XmlMetadataConstants.TYPE_HASOWNER_ATTR);
             elementType.SetHasOwner(hasOwnerAttr != null && XmlHelper.LoadBool(hasOwnerAttr.Value));

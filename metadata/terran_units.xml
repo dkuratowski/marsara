@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <metadata>
-  <unitType name="SCV" hasOwner="true">
+  <unitType name="SCV" hasOwner="true" displayedName="Terran SCV">
     <costs>
       <food>1</food>
       <mineral>50</mineral>
@@ -136,7 +136,7 @@
 	</animationPalette>
   </unitType>
   
-  <unitType name="Marine" hasOwner="true">
+  <unitType name="Marine" hasOwner="true" displayedName="Terran Marine">
     <costs>
       <food>1</food>
       <mineral>50</mineral>
@@ -253,7 +253,7 @@
 	</animationPalette>
   </unitType>
   
-  <unitType name="Firebat" hasOwner="true">
+  <unitType name="Firebat" hasOwner="true" displayedName="Terran Firebat">
     <costs>
       <food>1</food>
       <mineral>50</mineral>
@@ -281,7 +281,7 @@
     <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Ghost" hasOwner="true">
+  <unitType name="Ghost" hasOwner="true" displayedName="Terran Ghost">
     <costs>
       <food>1</food>
       <mineral>25</mineral>
@@ -316,7 +316,7 @@
     <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Vulture" hasOwner="true">
+  <unitType name="Vulture" hasOwner="true" displayedName="Terran Vulture">
     <costs>
       <food>2</food>
       <mineral>75</mineral>
@@ -341,7 +341,7 @@
     <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="SiegeTank" hasOwner="true">
+  <unitType name="SiegeTank" hasOwner="true" displayedName="Terran Siege Tank">
     <costs>
       <food>2</food>
       <mineral>150</mineral>
@@ -367,7 +367,7 @@
     <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Goliath" hasOwner="true">
+  <unitType name="Goliath" hasOwner="true" displayedName="Terran Goliath">
     <costs>
       <food>2</food>
       <mineral>100</mineral>
@@ -401,7 +401,7 @@
     <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Wraith" hasOwner="true">
+  <unitType name="Wraith" hasOwner="true" displayedName="Terran Wraith">
     <costs>
       <food>2</food>
       <mineral>150</mineral>
@@ -435,7 +435,7 @@
     <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Dropship" hasOwner="true">
+  <unitType name="Dropship" hasOwner="true" displayedName="Terran Dropship">
     <costs>
       <food>2</food>
       <mineral>100</mineral>
@@ -454,7 +454,7 @@
     <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="ScienceVessel" hasOwner="true">
+  <unitType name="ScienceVessel" hasOwner="true" displayedName="Terran Science Vessel">
     <costs>
       <food>2</food>
       <mineral>100</mineral>
@@ -475,7 +475,7 @@
     <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Battlecruiser" hasOwner="true">
+  <unitType name="Battlecruiser" hasOwner="true" displayedName="Terran Battlecruiser">
     <costs>
       <food>6</food>
       <mineral>400</mineral>

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-  <customType name="MineralField">
+  <customType name="MineralField" displayedName="Mineral Field">
     <generalData>
       <area>8.0;4.0</area>
     </generalData>
+	<hpIconPalette image="mineral_field_icons.png" transparentColor="255;0;255">
+      <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
+	</hpIconPalette>
     <spritePalette image="mineral_field.png" transparentColor="255;0;255">
       <sprite name="Amount_0_200" sourceRegion="1;52;32;16" offset="0;0" />
       <sprite name="Amount_200_400" sourceRegion="1;35;32;16" offset="0;0" />
@@ -29,10 +32,13 @@
       </animation>
     </animationPalette>
   </customType>
-  <customType name="VespeneGeyser">
+  <customType name="VespeneGeyser" displayedName="Vespene Geyser">
     <generalData>
       <area>16.0;8.0</area>
     </generalData>
+	<hpIconPalette image="vespene_geyser_icons.png" transparentColor="255;0;255">
+      <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
+	</hpIconPalette>
     <spritePalette image="vespene_geyser.png" transparentColor="255;0;255">
       <sprite name="Crater" sourceRegion="1;1;64;32" offset="0;0" />
       <sprite name="NormalSmokeL0" sourceRegion="1;34;6;10" offset="14;2" />

@@ -216,37 +216,37 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// Reference to the minimap panel.
         /// </summary>
-        private RCMinimapPanel minimapPanel;
+        private readonly RCMinimapPanel minimapPanel;
 
         /// <summary>
         /// Reference to the details panel.
         /// </summary>
-        private RCDetailsPanel detailsPanel;
+        private readonly RCDetailsPanel detailsPanel;
 
         /// <summary>
         /// Reference to the command panel.
         /// </summary>
-        private RCCommandPanel commandPanel;
+        private readonly RCCommandPanel commandPanel;
 
         /// <summary>
         /// Reference to the tooltip bar.
         /// </summary>
-        private RCTooltipBar tooltipBar;
+        private readonly RCTooltipBar tooltipBar;
 
         /// <summary>
         /// Reference to the resource bar.
         /// </summary>
-        private RCResourceBar resourceBar;
+        private readonly RCResourceBar resourceBar;
 
         /// <summary>
         /// Reference to the panel that contains the gameplay menu button.
         /// </summary>
-        private RCMenuButtonPanel menuButtonPanel;
+        private readonly RCMenuButtonPanel menuButtonPanel;
 
         /// <summary>
         /// Reference to the map display.
         /// </summary>
-        private RCMapDisplay mapDisplay;
+        private readonly RCMapDisplay mapDisplay;
 
         /// <summary>
         /// The basic part of the map display.
@@ -261,7 +261,7 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// Extension of the map display that displays the map objects.
         /// </summary>
-        private RCMapObjectDisplay mapObjectDisplayEx;
+        private readonly RCMapObjectDisplay mapObjectDisplayEx;
 
         /// <summary>
         /// Extension of the map display that displays the selection indicators of the selected map objects.
@@ -281,12 +281,12 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// Extension of the map display that displays the selection box.
         /// </summary>
-        private RCSelectionBoxDisplay selectionBoxDisplayEx;
+        private readonly RCSelectionBoxDisplay selectionBoxDisplayEx;
 
         /// <summary>
         /// Reference to the game connector object.
         /// </summary>
-        private IGameConnector gameConnection;
+        private readonly IGameConnector gameConnection;
 
         /// <summary>
         /// Reference to the currently active mouse handler.

@@ -26,6 +26,7 @@ namespace RC.App.PresLogic
             if (scrollEventSource == null) { throw new ArgumentNullException("scrollEventSource"); }
             if (mapDisplay == null) { throw new ArgumentNullException("mapDisplay"); }
 
+            this.selectionService = ComponentManager.GetInterface<ISelectionService>();
             this.commandService = ComponentManager.GetInterface<ICommandService>();
             this.scrollService = ComponentManager.GetInterface<IScrollService>();
             this.commandView = ComponentManager.GetInterface<IViewService>().CreateView<ICommandView>();
@@ -71,6 +72,11 @@ namespace RC.App.PresLogic
         #endregion IMouseHandler members
 
         #region Protected methods
+
+        /// <summary>
+        /// Gets a reference to the selection service.
+        /// </summary>
+        protected ISelectionService SelectionService { get { return this.selectionService; } }
 
         /// <summary>
         /// Gets a reference to the command service.
@@ -175,27 +181,32 @@ namespace RC.App.PresLogic
         /// <summary>
         /// The event source for the scrolling.
         /// </summary>
-        private UISensitiveObject scrollEventSource;
+        private readonly UISensitiveObject scrollEventSource;
 
         /// <summary>
         /// Reference to the target map display.
         /// </summary>
-        private IMapDisplay mapDisplay;
+        private readonly IMapDisplay mapDisplay;
+
+        /// <summary>
+        /// Reference to the selection service.
+        /// </summary>
+        private readonly ISelectionService selectionService;
 
         /// <summary>
         /// Reference to the command service.
         /// </summary>
-        private ICommandService commandService;
+        private readonly ICommandService commandService;
 
         /// <summary>
         /// Reference to the scroll service.
         /// </summary>
-        private IScrollService scrollService;
+        private readonly IScrollService scrollService;
 
         /// <summary>
         /// Reference to a command view.
         /// </summary>
-        private ICommandView commandView;
+        private readonly ICommandView commandView;
 
         /// <summary>
         /// Elapsed time since last scroll in milliseconds.

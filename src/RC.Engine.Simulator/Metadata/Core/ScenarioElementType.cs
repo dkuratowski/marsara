@@ -26,6 +26,7 @@ namespace RC.Engine.Simulator.Metadata.Core
 
             this.id = -1;
             this.name = name;
+            this.displayedName = null;
             this.hasOwner = false;
             this.metadata = metadata;
             this.spritePalette = null;
@@ -41,6 +42,9 @@ namespace RC.Engine.Simulator.Metadata.Core
 
         /// <see cref="IScenarioElementType.Name"/>
         public string Name { get { return this.name; } }
+
+        /// <see cref="IScenarioElementType.DisplayedName"/>
+        public string DisplayedName { get { return this.displayedName; } }
 
         /// <see cref="IScenarioElementType.ID"/>
         public int ID { get { return this.id; } }
@@ -149,6 +153,17 @@ namespace RC.Engine.Simulator.Metadata.Core
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (id < 0) { throw new ArgumentOutOfRangeException("id"); }
             this.id = id;
+        }
+
+        /// <summary>
+        /// Sets the displayed name of this element type.
+        /// </summary>
+        /// <param name="displayedName">The displayed name of this element type.</param>
+        public void SetDisplayedName(string displayedName)
+        {
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (displayedName == null) { throw new ArgumentNullException("displayedName"); }
+            this.displayedName = displayedName;
         }
 
         /// <summary>
@@ -415,6 +430,11 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// The name of this element type. Must be unique in the metadata.
         /// </summary>
         private string name;
+
+        /// <summary>
+        /// The displayed name of this element type or null if this element type doesn't define displayed name.
+        /// </summary>
+        private string displayedName;
 
         /// <summary>
         /// The ID of this element type. Must be unique in the metadata.

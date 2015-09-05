@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <metadata>
-  <buildingType name="CommandCenter" hasOwner="true">
+  <buildingType name="CommandCenter" hasOwner="true" displayedName="Terran Command Center">
     <costs>
       <mineral>400</mineral>
       <buildTime>1800</buildTime>
@@ -16,7 +16,6 @@
     </generalData>
 	<hpIconPalette image="terran_commandcenter_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
       <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
-      <sprite name="SmallIcon" sourceRegion="34;1;16;16" offset="0;0" />
 	</hpIconPalette>
     <spritePalette image="terran_commandcenter.png" transparentColor="255;0;255" maskColor="0;255;255">
       <sprite name="Construction0" sourceRegion="1;1;62;48" offset="0;0" />
@@ -112,7 +111,7 @@
 	  </animation>
     </animationPalette>
   </buildingType>
-  <buildingType name="SupplyDepot" hasOwner="true">
+  <buildingType name="SupplyDepot" hasOwner="true" displayedName="Terran Supply Depot">
     <costs>
       <mineral>100</mineral>
       <buildTime>600</buildTime>
@@ -126,7 +125,7 @@
     </generalData>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
-  <buildingType name="Refinery" hasOwner="true">
+  <buildingType name="Refinery" hasOwner="true" displayedName="Terran Refinery">
     <costs>
       <mineral>100</mineral>
       <buildTime>600</buildTime>
@@ -140,7 +139,7 @@
     </generalData>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
-  <buildingType name="Barracks" hasOwner="true">
+  <buildingType name="Barracks" hasOwner="true" displayedName="Terran Barracks">
     <costs>
       <mineral>150</mineral>
       <buildTime>1200</buildTime>
@@ -156,7 +155,7 @@
     <requires>CommandCenter</requires>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
-  <buildingType name="Academy" hasOwner="true">
+  <buildingType name="Academy" hasOwner="true" displayedName="Terran Academy">
     <costs>
       <mineral>150</mineral>
       <buildTime>1200</buildTime>
@@ -171,7 +170,7 @@
     <requires>Barracks</requires>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
-  <buildingType name="Factory" hasOwner="true">
+  <buildingType name="Factory" hasOwner="true" displayedName="Terran Factory">
     <costs>
       <mineral>200</mineral>
       <gas>100</gas>
@@ -188,7 +187,7 @@
     <requires>Barracks</requires>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
-  <buildingType name="Starport" hasOwner="true">
+  <buildingType name="Starport" hasOwner="true" displayedName="Terran Starport">
     <costs>
       <mineral>150</mineral>
       <gas>100</gas>
@@ -205,7 +204,7 @@
     <requires>Factory</requires>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
-  <buildingType name="ScienceFacility" hasOwner="true">
+  <buildingType name="ScienceFacility" hasOwner="true" displayedName="Terran Science Facility">
     <costs>
       <mineral>100</mineral>
       <gas>150</gas>
@@ -222,7 +221,7 @@
     <requires>Starport</requires>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
-  <buildingType name="EngineeringBay" hasOwner="true">
+  <buildingType name="EngineeringBay" hasOwner="true" displayedName="Terran Engineering Bay">
     <costs>
       <mineral>125</mineral>
       <buildTime>900</buildTime>
@@ -237,7 +236,7 @@
     <requires>CommandCenter</requires>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
-  <buildingType name="Armory" hasOwner="true">
+  <buildingType name="Armory" hasOwner="true" displayedName="Terran Armory">
     <costs>
       <mineral>100</mineral>
       <gas>50</gas>
@@ -253,7 +252,7 @@
     <requires>Factory</requires>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
-  <buildingType name="MissileTurret" hasOwner="true">
+  <buildingType name="MissileTurret" hasOwner="true" displayedName="Terran Missile Turret">
     <costs>
       <mineral>75</mineral>
       <buildTime>450</buildTime>
@@ -274,7 +273,7 @@
     <requires>EngineeringBay</requires>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
-  <buildingType name="Bunker" hasOwner="true">
+  <buildingType name="Bunker" hasOwner="true" displayedName="Terran Bunker">
     <costs>
       <mineral>100</mineral>
       <buildTime>450</buildTime>

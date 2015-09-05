@@ -22,7 +22,8 @@ namespace RC.App.PresLogic.Controls
         public RCResourceAmountDisplay(RCMapDisplay extendedControl)
             : base(extendedControl)
         {
-            this.mapObjectDataView = null;
+            this.mapObjectDetailsView = null;
+            this.objectID = -1;
             this.drawPosition = RCIntVector.Undefined;
             this.stringToRender = new UIString("R:{0}", UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, RCColor.White);
             this.backgroundBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Black, new RCIntVector(1, this.stringToRender.Font.MinimumLineHeight), UIWorkspace.Instance.PixelScaling);
@@ -35,8 +36,8 @@ namespace RC.App.PresLogic.Controls
         /// <param name="objectID">The ID of the map object to read.</param>
         public void StartReadingMapObject(int objectID)
         {
-            if (this.mapObjectDataView != null) { throw new InvalidOperationException("Reading map object has already been started!"); }
-            this.mapObjectDataView = ComponentManager.GetInterface<IViewService>().CreateView<IMapObjectDataView, int>(objectID);
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+            this.objectID = objectID;
         }
 
         /// <summary>
@@ -45,40 +46,45 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         public void StopReadingMapObject()
         {
-            this.mapObjectDataView = null;
+            this.objectID = -1;
         }
 
         /// <summary>
         /// Gets the ID of the map object that is currently being read or -1 if there is no map object currently being read.
         /// </summary>
-        public int MapObjectID { get { return this.mapObjectDataView != null ? this.mapObjectDataView.ObjectID : -1; } }
+        public int MapObjectID { get { return this.objectID; } }
 
         /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
         protected override void ConnectEx_i()
         {
+            this.mapObjectDetailsView = ComponentManager.GetInterface<IViewService>().CreateView<IMapObjectDetailsView>();
             this.MouseSensor.Move += this.OnMouseMove;
         }
 
         /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>
         protected override void DisconnectEx_i()
         {
+            this.mapObjectDetailsView = null;
+            this.objectID = -1;
             this.MouseSensor.Move -= this.OnMouseMove;
         }
 
         /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
-            if (this.drawPosition != RCIntVector.Undefined && this.mapObjectDataView != null)
+            if (this.drawPosition != RCIntVector.Undefined && this.objectID != -1)
             {
-                if (this.mapObjectDataView.MineralsAmount != -1)
+                int mineralsAmount = this.mapObjectDetailsView.GetMineralsAmount(this.objectID);
+                int vespeneGasAmount = this.mapObjectDetailsView.GetVespeneGasAmount(this.objectID);
+                if (mineralsAmount != -1)
                 {
-                    this.stringToRender[0] = this.mapObjectDataView.MineralsAmount;
+                    this.stringToRender[0] = mineralsAmount;
                     renderContext.RenderRectangle(this.backgroundBrush, new RCIntRectangle(this.drawPosition.X, this.drawPosition.Y, this.stringToRender.Width, this.backgroundBrush.Size.Y));
                     renderContext.RenderString(this.stringToRender, this.drawPosition + new RCIntVector(0, this.stringToRender.Font.CharTopMaximum));
                 }
-                else if (this.mapObjectDataView.VespeneGasAmount != -1)
+                else if (vespeneGasAmount != -1)
                 {
-                    this.stringToRender[0] = this.mapObjectDataView.VespeneGasAmount;
+                    this.stringToRender[0] = vespeneGasAmount;
                     renderContext.RenderRectangle(this.backgroundBrush, new RCIntRectangle(this.drawPosition.X, this.drawPosition.Y, this.stringToRender.Width, this.backgroundBrush.Size.Y));
                     renderContext.RenderString(this.stringToRender, this.drawPosition + new RCIntVector(0, this.stringToRender.Font.CharTopMaximum));
                 }
@@ -97,9 +103,9 @@ namespace RC.App.PresLogic.Controls
         }
 
         /// <summary>
-        /// Reference to the map object data view or null if there is no map object whose resource data is being displayed.
+        /// Reference to the map object details view.
         /// </summary>
-        private IMapObjectDataView mapObjectDataView;
+        private IMapObjectDetailsView mapObjectDetailsView;
 
         /// <summary>
         /// The position to draw in the coordinate system of the display.
@@ -109,11 +115,16 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// The rendered string.
         /// </summary>
-        private UIString stringToRender;
+        private readonly UIString stringToRender;
 
         /// <summary>
         /// The brush that is used to draw the background.
         /// </summary>
-        private UISprite backgroundBrush;
+        private readonly UISprite backgroundBrush;
+
+        /// <summary>
+        /// The ID of the map object currently being read or -1 if there is no map object currently being read.
+        /// </summary>
+        private int objectID;
     }
 }

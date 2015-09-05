@@ -12,6 +12,11 @@ namespace RC.App.BizLogic.Views
     public struct SelIndicatorInst
     {
         /// <summary>
+        /// The ID of the map object that belongs to this selection indicator.
+        /// </summary>
+        public int ObjectID { get; set; }
+
+        /// <summary>
         /// The type of the selection indicator to be displayed.
         /// </summary>
         public SelIndicatorTypeEnum SelIndicatorType { get; set; }
@@ -38,10 +43,5 @@ namespace RC.App.BizLogic.Views
         /// </summary>
         /// <remarks>Set this property to -1 if the HP value shall not be displayed.</remarks>
         public RCNumber HpNorm { get; set; }
-
-        /// <summary>
-        /// The condition of the HP of the object. This property shall be ignored if the HP value shall not be displayed.
-        /// </summary>
-        public MapObjectConditionEnum HpCondition { get; set; }
     }
 }

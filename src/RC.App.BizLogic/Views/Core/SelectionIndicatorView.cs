@@ -42,18 +42,15 @@ namespace RC.App.BizLogic.Views.Core
                     RCNumber hpNorm = entity.Biometrics.HP != -1
                         ? entity.Biometrics.HP/entity.ElementType.MaxHP.Read()
                         : -1;
-                    MapObjectConditionEnum hpCondition = MapObjectConditionEnum.Excellent;
-                    if (hpNorm <= (RCNumber)1 / (RCNumber)3) { hpCondition = MapObjectConditionEnum.Critical; }
-                    else if (hpNorm <= (RCNumber)2 / (RCNumber)3) { hpCondition = MapObjectConditionEnum.Moderate; }
 
                     retList.Add(new SelIndicatorInst()
                     {
+                        ObjectID = entity.ID.Read(),
                         SelIndicatorType = indicatorType,
                         IndicatorRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entity.Area),
                         HpNorm = hpNorm,
                         EnergyNorm = entity.Biometrics.Energy != -1 ? entity.Biometrics.Energy / entity.ElementType.MaxEnergy.Read() : -1,
                         ShieldNorm = -(RCNumber)1, // TODO: must be based on real data after Protoss will have been implemented!
-                        HpCondition = hpNorm != -1 ? hpCondition : MapObjectConditionEnum.Undefined,
                     });
                 }
             }

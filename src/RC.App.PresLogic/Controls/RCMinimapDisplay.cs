@@ -220,7 +220,7 @@ namespace RC.App.PresLogic.Controls
                 if (this.scannerStatus == ScannerStatusEnum.Rendering)
                 {
                     /// Rendering completed, start the next scan operation.
-                    TraceManager.WriteAllTrace("Minimap refresh completed", PresLogicTraceFilters.INFO);
+                    //TraceManager.WriteAllTrace("Minimap refresh completed", PresLogicTraceFilters.INFO);
                     this.spriteBuffer.CheckinFOWSprite(this.minimapScanner.FOWBuffer);
                     this.spriteBuffer.CheckinEntitiesSprite(this.minimapScanner.EntitiesBuffer);
                     this.spriteBuffer.CheckinAttackSignalsSprite(this.minimapScanner.AttackSignalsBuffer);
@@ -277,7 +277,7 @@ namespace RC.App.PresLogic.Controls
             if (this.minimapScanner.ExecuteScan())
             {
                 /// Scan operation finished, start the rendering on the background task.
-                TraceManager.WriteAllTrace("Start minimap refresh...", PresLogicTraceFilters.INFO);
+                //TraceManager.WriteAllTrace("Start minimap refresh...", PresLogicTraceFilters.INFO);
                 this.scannerStatus = ScannerStatusEnum.Rendering;
                 lock (this.jobQueue) { this.jobQueue.Push(this.minimapScanner); }
                 this.newJobEvent.Set();

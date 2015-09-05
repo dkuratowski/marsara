@@ -147,7 +147,25 @@ namespace RC.App.PresLogic
 
                 /// Handle the mouse event.
                 TraceManager.WriteAllTrace(string.Format("LEFT_CLICK {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                this.CommandService.Select(evtArgs.Position);
+                if (UIRoot.Instance.KeyboardAccess.PressedKeys.Count == 1 &&
+                   (UIRoot.Instance.KeyboardAccess.PressedKeys.Contains(UIKey.LeftShift) ||
+                    UIRoot.Instance.KeyboardAccess.PressedKeys.Contains(UIKey.RightShift)))
+                {
+                    /// SHIFT + Click -> add/remove to/from selection.
+                    this.SelectionService.AddOrRemoveFromSelection(evtArgs.Position);
+                }
+                else if (UIRoot.Instance.KeyboardAccess.PressedKeys.Count == 1 &&
+                        (UIRoot.Instance.KeyboardAccess.PressedKeys.Contains(UIKey.LeftControl) ||
+                         UIRoot.Instance.KeyboardAccess.PressedKeys.Contains(UIKey.RightControl)))
+                {
+                    /// CTRL + Click -> select type.
+                    this.SelectionService.SelectType(evtArgs.Position);
+                }
+                else
+                {
+                    /// Simple click -> select object.
+                    this.SelectionService.Select(evtArgs.Position);
+                }
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
@@ -160,7 +178,18 @@ namespace RC.App.PresLogic
 
                 /// Handle the mouse event.
                 TraceManager.WriteAllTrace(string.Format("SELECTION {0}", this.selectionBox), PresLogicTraceFilters.INFO);
-                this.CommandService.Select(this.selectionBox);
+                if (UIRoot.Instance.KeyboardAccess.PressedKeys.Count == 1 &&
+                   (UIRoot.Instance.KeyboardAccess.PressedKeys.Contains(UIKey.LeftShift) ||
+                    UIRoot.Instance.KeyboardAccess.PressedKeys.Contains(UIKey.RightShift)))
+                {
+                    /// SHIFT + Click -> add to selection.
+                    this.SelectionService.AddToSelection(this.selectionBox);
+                }
+                else
+                {
+                    /// Simple click -> select objects.
+                    this.SelectionService.Select(this.selectionBox);
+                }
 
                 /// Selection box off.
                 this.selectionBoxStartPosition = RCIntVector.Undefined;
@@ -175,7 +204,10 @@ namespace RC.App.PresLogic
             {
                 /// Handle the mouse event.
                 TraceManager.WriteAllTrace(string.Format("DOUBLE_CLICK {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
-                this.CommandService.SelectType(evtArgs.Position);
+                if (UIRoot.Instance.KeyboardAccess.PressedKeys.Count == 0)
+                {
+                    this.SelectionService.SelectType(evtArgs.Position);
+                }
 
                 this.CurrentMouseStatus = MouseStatus.None;
             }

@@ -9,6 +9,7 @@ using RC.App.PresLogic.SpriteGroups;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.UI;
+using RC.Common.Diagnostics;
 
 namespace RC.App.PresLogic.Panels
 {
@@ -26,27 +27,38 @@ namespace RC.App.PresLogic.Panels
         public RCDetailsPanel(RCIntRectangle backgroundRect, RCIntRectangle contentRect, string backgroundSprite)
             : base(backgroundRect, contentRect, ShowMode.Appear, HideMode.Disappear, 0, 0, backgroundSprite)
         {
+            this.textFont = UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5");
+            this.objectTypeTexts = new Dictionary<int, UIString>();
+
             this.isConnected = false;
             this.backgroundTask = null;
             this.hpIndicatorSprites = new Dictionary<MapObjectConditionEnum, SpriteGroup>();
             this.buttonArray = new RCSelectionButton[MAX_SELECTION_SIZE];
             this.multiplayerService = null;
+            this.selectionDetailsView = null;
+            this.mapObjectDetailsView = null;
+            this.selectionButtonsAdded = false;
+            this.hpTexts = new Dictionary<MapObjectConditionEnum, UIString>();
+            this.energyText = null;
         }
 
         #region IGameConnector members
 
         /// <see cref="IGameConnector.Connect"/>
-        void IGameConnector.Connect()
+        public void Connect()
         {
             if (this.isConnected || this.backgroundTask != null) { throw new InvalidOperationException("The details panel has been connected or is currently being connected!"); }
 
             /// UI-thread connection procedure
             this.multiplayerService = ComponentManager.GetInterface<IMultiplayerService>();
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
-            IMetadataView metadataView = viewService.CreateView<IMetadataView>();
-            this.hpIndicatorSprites.Add(MapObjectConditionEnum.Excellent, new HPIconSpriteGroup(metadataView, MapObjectConditionEnum.Excellent));
-            this.hpIndicatorSprites.Add(MapObjectConditionEnum.Moderate, new HPIconSpriteGroup(metadataView, MapObjectConditionEnum.Moderate));
-            this.hpIndicatorSprites.Add(MapObjectConditionEnum.Critical, new HPIconSpriteGroup(metadataView, MapObjectConditionEnum.Critical));
+            this.selectionDetailsView = viewService.CreateView<ISelectionDetailsView>();
+            this.mapObjectDetailsView = viewService.CreateView<IMapObjectDetailsView>();
+            this.metadataView = viewService.CreateView<IMetadataView>();
+            this.hpIndicatorSprites.Add(MapObjectConditionEnum.Excellent, new HPIconSpriteGroup(this.metadataView, MapObjectConditionEnum.Excellent));
+            this.hpIndicatorSprites.Add(MapObjectConditionEnum.Moderate, new HPIconSpriteGroup(this.metadataView, MapObjectConditionEnum.Moderate));
+            this.hpIndicatorSprites.Add(MapObjectConditionEnum.Critical, new HPIconSpriteGroup(this.metadataView, MapObjectConditionEnum.Critical));
+            this.hpIndicatorSprites.Add(MapObjectConditionEnum.Undefined, new HPIconSpriteGroup(this.metadataView, MapObjectConditionEnum.Undefined));
 
             this.backgroundTask = UITaskManager.StartParallelTask(this.ConnectBackgroundProc, "RCDetailsPanel.Connect");
             this.backgroundTask.Finished += this.OnBackgroundTaskFinished;
@@ -57,20 +69,21 @@ namespace RC.App.PresLogic.Panels
         }
 
         /// <see cref="IGameConnector.Disconnect"/>
-        void IGameConnector.Disconnect()
+        public void Disconnect()
         {
             if (!this.isConnected || this.backgroundTask != null) { throw new InvalidOperationException("The command panel has been connected or is currently being connected!"); }
 
-            /// Unsubscribe from the GameUpdated event.
-            this.multiplayerService.GameUpdated -= this.OnGameUpdated;
+            /// Unsubscribe from the FrameUpdate event.
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
 
             /// Destroy the selection buttons.
             for (int i = 0; i < MAX_SELECTION_SIZE; i++)
             {
-                this.RemoveControl(this.buttonArray[i]); // TODO: remove selection buttons only when more than 1 object is selected!
+                if (this.selectionButtonsAdded) { this.RemoveControl(this.buttonArray[i]); }
                 this.buttonArray[i].Dispose();
                 this.buttonArray[i] = null;
             }
+            this.selectionButtonsAdded = false;
 
             this.backgroundTask = UITaskManager.StartParallelTask(this.DisconnectBackgroundProc, "RCDetailsPanel.Disconnect");
             this.backgroundTask.Finished += this.OnBackgroundTaskFinished;
@@ -81,7 +94,7 @@ namespace RC.App.PresLogic.Panels
         }
 
         /// <see cref="IGameConnector.ConnectionStatus"/>
-        ConnectionStatusEnum IGameConnector.ConnectionStatus
+        public ConnectionStatusEnum ConnectionStatus
         {
             get
             {
@@ -91,13 +104,64 @@ namespace RC.App.PresLogic.Panels
         }
 
         /// <see cref="IGameConnector.ConnectorOperationFinished"/>
-        event Action<IGameConnector> IGameConnector.ConnectorOperationFinished
-        {
-            add { this.connectorOperationFinished += value; }
-            remove { this.connectorOperationFinished -= value; }
-        }
+        public event Action<IGameConnector> ConnectorOperationFinished;
 
         #endregion IGameConnector members
+
+        #region Overrides
+
+        /// <see cref="UIObject.Render_i"/>
+        protected sealed override void Render_i(IUIRenderContext renderContext)
+        {
+            base.Render_i(renderContext);
+
+            /// Check if we are online and in single selection mode.
+            if (this.ConnectionStatus != ConnectionStatusEnum.Online) { return; }
+            if (this.selectionDetailsView.SelectionCount != 1) { return; }
+
+            /// Retrieve the ID and the HP condition of the object.
+            int mapObjectID = this.selectionDetailsView.GetObjectID(0);
+            MapObjectConditionEnum hpCondition = this.mapObjectDetailsView.GetHPCondition(mapObjectID);
+            if (!this.hpIndicatorSprites.ContainsKey(hpCondition)) { return; }
+
+            /// Render the big icon of the selected object.
+            SpriteInst hpSprite = this.mapObjectDetailsView.GetBigHPIcon(mapObjectID);
+            renderContext.RenderSprite(this.hpIndicatorSprites[hpCondition][hpSprite.Index],
+                                       RCDetailsPanel.ICON_POS + hpSprite.DisplayCoords,
+                                       hpSprite.Section);
+
+            /// Render the typename of the selected object.
+            UIString typeTextToRender = this.objectTypeTexts[this.mapObjectDetailsView.GetObjectTypeID(mapObjectID)];
+            RCIntVector typeNameStringPos = TYPENAME_STRING_MIDDLE_POS - new RCIntVector(typeTextToRender.Width / 2, 0);
+            renderContext.RenderString(typeTextToRender, typeNameStringPos);
+
+            /// Render the HP of the selected object.
+            int currentHP = this.mapObjectDetailsView.GetCurrentHP(mapObjectID);
+            if (currentHP != -1)
+            {
+                int maxHP = this.mapObjectDetailsView.GetMaxHP(mapObjectID);
+                UIString hpTextToRender = this.hpTexts[hpCondition];
+                hpTextToRender[0] = currentHP;
+                hpTextToRender[1] = maxHP;
+
+                RCIntVector hpStringPos = HP_STRING_MIDDLE_POS - new RCIntVector(hpTextToRender.Width / 2, 0);
+                renderContext.RenderString(hpTextToRender, hpStringPos);
+            }
+
+            /// Render the energy of the selected object.
+            int currentEnergy = this.mapObjectDetailsView.GetCurrentEnergy(mapObjectID);
+            if (currentEnergy != -1)
+            {
+                int maxEnergy = this.mapObjectDetailsView.GetMaxEnergy(mapObjectID);
+                this.energyText[0] = currentEnergy;
+                this.energyText[1] = maxEnergy;
+
+                RCIntVector energyStringPos = ENERGY_STRING_MIDDLE_POS - new RCIntVector(this.energyText.Width / 2, 0);
+                renderContext.RenderString(this.energyText, energyStringPos);
+            }
+        }
+
+        #endregion Overrides
 
         #region Internal members
 
@@ -110,24 +174,25 @@ namespace RC.App.PresLogic.Panels
             this.backgroundTask = null;
             if (!this.isConnected)
             {
-                /// Create the command buttons.
+                /// Create the selection buttons.
                 for (int i = 0; i < MAX_SELECTION_SIZE; i++)
                 {
                     this.buttonArray[i] = new RCSelectionButton(i, this.hpIndicatorSprites);
-                    this.AddControl(this.buttonArray[i]); // TODO: add selection buttons only when more than 1 object is selected!
                 }
 
-                /// Subscribe to the GameUpdated event.
-                this.multiplayerService.GameUpdated += this.OnGameUpdated;
+                /// Subscribe to the FrameUpdate event.
+                UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
 
                 this.isConnected = true;
-                if (this.connectorOperationFinished != null) { this.connectorOperationFinished(this); }
+                if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
             }
             else
             {
                 this.multiplayerService = null;
+                this.selectionDetailsView = null;
+                this.mapObjectDetailsView = null;
                 this.isConnected = false;
-                if (this.connectorOperationFinished != null) { this.connectorOperationFinished(this); }
+                if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
             }
         }
 
@@ -136,7 +201,24 @@ namespace RC.App.PresLogic.Panels
         /// </summary>
         private void ConnectBackgroundProc(object parameter)
         {
+            /// Load the HP indicator sprites.
             foreach (SpriteGroup spriteGroup in this.hpIndicatorSprites.Values) { spriteGroup.Load(); }
+
+            /// Load the UIStrings for displaying the map object type names.
+            foreach (KeyValuePair<int, string> typeName in this.metadataView.GetMapObjectDisplayedTypeNames())
+            {
+                this.objectTypeTexts.Add(typeName.Key,
+                    new UIString(typeName.Value, this.textFont, UIWorkspace.Instance.PixelScaling, RCColor.White));
+            }
+
+            /// Load the UIStrings for displaying the HP and the energy of the selected object in single selection mode.
+            this.hpTexts.Add(MapObjectConditionEnum.Excellent,
+                new UIString("{0}/{1}", this.textFont, UIWorkspace.Instance.PixelScaling, RCColor.LightGreen));
+            this.hpTexts.Add(MapObjectConditionEnum.Moderate,
+                new UIString("{0}/{1}", this.textFont, UIWorkspace.Instance.PixelScaling, RCColor.Yellow));
+            this.hpTexts.Add(MapObjectConditionEnum.Critical,
+                new UIString("{0}/{1}", this.textFont, UIWorkspace.Instance.PixelScaling, RCColor.Red));
+            this.energyText = new UIString("{0}/{1}", this.textFont, UIWorkspace.Instance.PixelScaling, RCColor.WhiteHigh);
         }
 
         /// <summary>
@@ -144,16 +226,46 @@ namespace RC.App.PresLogic.Panels
         /// </summary>
         private void DisconnectBackgroundProc(object parameter)
         {
+            /// Unload the HP indicator sprites.
             foreach (SpriteGroup spriteGroup in this.hpIndicatorSprites.Values) { spriteGroup.Unload(); }
             this.hpIndicatorSprites.Clear();
+
+            /// Unload the UIString that displayed the map object type names.
+            foreach (UIString objectTypeText in this.objectTypeTexts.Values) { objectTypeText.Dispose(); }
+            this.objectTypeTexts.Clear();
+
+            /// Unload the UIStrings that displayed the HP and the energy of the selected object in single selection mode.
+            foreach (UIString hpText in this.hpTexts.Values) { hpText.Dispose(); }
+            this.hpTexts.Clear();
+            this.energyText.Dispose();
+            this.energyText = null;
         }
 
         /// <summary>
-        /// This method is called on each game update.
+        /// This method is called on each frame update.
         /// </summary>
-        private void OnGameUpdated()
+        private void OnFrameUpdate()
         {
-            
+            if (this.selectionDetailsView.SelectionCount >= 2 && !this.selectionButtonsAdded)
+            {
+                /// Activate multi-select mode: add the selection buttons to the panel.
+                for (int i = 0; i < MAX_SELECTION_SIZE; i++)
+                {
+                    this.AddControl(this.buttonArray[i]);
+                }
+                this.selectionButtonsAdded = true;
+                TraceManager.WriteAllTrace("SelectionButtons added", PresLogicTraceFilters.INFO);
+            }
+            else if (this.selectionDetailsView.SelectionCount < 2 && this.selectionButtonsAdded)
+            {
+                /// Deactivate multi-select mode: remove the selection buttons from the panel.
+                for (int i = 0; i < MAX_SELECTION_SIZE; i++)
+                {
+                    this.RemoveControl(this.buttonArray[i]);
+                }
+                this.selectionButtonsAdded = false;
+                TraceManager.WriteAllTrace("SelectionButtons removed", PresLogicTraceFilters.INFO);
+            }
         }
 
         #endregion Internal members
@@ -162,11 +274,6 @@ namespace RC.App.PresLogic.Panels
         /// This flag indicates whether this details panel has been connected or not.
         /// </summary>
         private bool isConnected;
-
-        /// <summary>
-        /// This event is raised when the actual connector operation has been finished.
-        /// </summary>
-        private event Action<IGameConnector> connectorOperationFinished;
 
         /// <summary>
         /// An array that stores the selection buttons on the details panel in layout order.
@@ -189,8 +296,69 @@ namespace RC.App.PresLogic.Panels
         private IMultiplayerService multiplayerService;
 
         /// <summary>
+        /// Reference to the selection details view.
+        /// </summary>
+        private ISelectionDetailsView selectionDetailsView;
+
+        /// <summary>
+        /// Reference to the map object details view.
+        /// </summary>
+        private IMapObjectDetailsView mapObjectDetailsView;
+
+        /// <summary>
+        /// Reference to the metadata view.
+        /// </summary>
+        private IMetadataView metadataView;
+
+        /// <summary>
+        /// This flag indicates whether the selection buttons are currently added to the details panel.
+        /// </summary>
+        private bool selectionButtonsAdded;
+
+        /// <summary>
+        /// The strings for displaying the type name of the selected map object in single selection mode mapped by the
+        /// IDs of the corresponding types.
+        /// </summary>
+        private readonly Dictionary<int, UIString> objectTypeTexts;
+
+        /// <summary>
+        /// The string for displaying the HP of the selected object in single selection mode.
+        /// </summary>
+        private readonly Dictionary<MapObjectConditionEnum, UIString> hpTexts;
+
+        /// <summary>
+        /// The string for displaying the energy of the selected object in single selection mode.
+        /// </summary>
+        private UIString energyText;
+
+        /// <summary>
+        /// The font that is used for rendering texts on the details panel.
+        /// </summary>
+        private readonly UIFont textFont;
+
+        /// <summary>
         /// The maximum number of objects can be selected.
         /// </summary>
         private const int MAX_SELECTION_SIZE = 12;
+
+        /// <summary>
+        /// The position of the object icon in single selection mode.
+        /// </summary>
+        private static readonly RCIntVector ICON_POS = new RCIntVector(22, 1);
+
+        /// <summary>
+        /// The position of the center of the string that displays the object's typename in single selection mode.
+        /// </summary>
+        private static readonly RCIntVector TYPENAME_STRING_MIDDLE_POS = new RCIntVector(125, 6);
+
+        /// <summary>
+        /// The position of the center of the string that displays the object's HP in single selection mode.
+        /// </summary>
+        private static readonly RCIntVector HP_STRING_MIDDLE_POS = new RCIntVector(37, 38);
+
+        /// <summary>
+        /// The position of the center of the string that displays the object's energy in single selection mode.
+        /// </summary>
+        private static readonly RCIntVector ENERGY_STRING_MIDDLE_POS = new RCIntVector(37, 47);
     }
 }

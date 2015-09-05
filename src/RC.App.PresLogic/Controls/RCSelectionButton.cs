@@ -32,7 +32,10 @@ namespace RC.App.PresLogic.Controls
             this.layoutIndex = layoutIndex;
             this.hpIndicatorSprites = hpIndicatorSprites;
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
-            this.detailsPanelView = viewService.CreateView<IDetailsView>();
+            this.selectionDetailsView = viewService.CreateView<ISelectionDetailsView>();
+            this.mapObjectDetailsView = viewService.CreateView<IMapObjectDetailsView>();
+            this.selectionService = ComponentManager.GetInterface<ISelectionService>();
+
             this.Pressed += this.OnButtonPressed;
         }
 
@@ -49,12 +52,13 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="UIObject.Render_i"/>
         protected override void Render_i(IUIRenderContext renderContext)
         {
-            if (this.layoutIndex >= this.detailsPanelView.SelectionCount) { return; }
+            if (this.layoutIndex >= this.selectionDetailsView.SelectionCount) { return; }
 
-            MapObjectConditionEnum hpCondition = this.detailsPanelView.GetHPCondition(this.layoutIndex);
+            int objectID = this.selectionDetailsView.GetObjectID(this.layoutIndex);
+            MapObjectConditionEnum hpCondition = this.mapObjectDetailsView.GetHPCondition(objectID);
             if (!this.hpIndicatorSprites.ContainsKey(hpCondition)) { return; }
 
-            SpriteInst hpSprite = this.detailsPanelView.GetHPIcon(this.layoutIndex);
+            SpriteInst hpSprite = this.mapObjectDetailsView.GetSmallHPIcon(objectID);
             renderContext.RenderSprite(this.hpIndicatorSprites[hpCondition][hpSprite.Index],
                                        hpSprite.DisplayCoords,
                                        hpSprite.Section);
@@ -67,13 +71,45 @@ namespace RC.App.PresLogic.Controls
         {
             if (sender != this) { throw new InvalidOperationException("Unexpected sender!"); }
 
-            // TODO: implement this event handler!
+            /// Check if this selection button is really attached to a map object.
+            if (this.layoutIndex >= this.selectionDetailsView.SelectionCount) { return; }
+
+            int objectID = this.selectionDetailsView.GetObjectID(this.layoutIndex);
+            if (UIRoot.Instance.KeyboardAccess.PressedKeys.Count == 0)
+            {
+                /// Simple click -> select object.
+                this.selectionService.Select(objectID);
+            }
+            else if (UIRoot.Instance.KeyboardAccess.PressedKeys.Count == 1 &&
+                    (UIRoot.Instance.KeyboardAccess.PressedKeys.Contains(UIKey.LeftShift) ||
+                     UIRoot.Instance.KeyboardAccess.PressedKeys.Contains(UIKey.RightShift)))
+            {
+                /// SHIFT + Click -> deselect object.
+                this.selectionService.RemoveFromSelection(objectID);
+            }
+            else if (UIRoot.Instance.KeyboardAccess.PressedKeys.Count == 1 &&
+                    (UIRoot.Instance.KeyboardAccess.PressedKeys.Contains(UIKey.LeftControl) ||
+                     UIRoot.Instance.KeyboardAccess.PressedKeys.Contains(UIKey.RightControl)))
+            {
+                /// CTRL + Click -> select type.
+                this.selectionService.SelectTypeFromCurrentSelection(this.layoutIndex);
+            }
         }
 
         /// <summary>
-        /// Reference to the details panel view.
+        /// Reference to the selection details view.
         /// </summary>
-        private readonly IDetailsView detailsPanelView;
+        private readonly ISelectionDetailsView selectionDetailsView;
+
+        /// <summary>
+        /// Reference to the map object details view.
+        /// </summary>
+        private readonly IMapObjectDetailsView mapObjectDetailsView;
+
+        /// <summary>
+        /// Reference to the selection service.
+        /// </summary>
+        private readonly ISelectionService selectionService;
 
         /// <summary>
         /// The index in the layout of this button on the details panel.

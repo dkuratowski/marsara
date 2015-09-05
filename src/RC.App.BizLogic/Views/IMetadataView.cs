@@ -21,5 +21,11 @@ namespace RC.App.BizLogic.Views
         /// </summary>
         /// <returns>The list of HP indicator icon definitions for the map object types.</returns>
         List<SpriteDef> GetMapObjectHPIconDefs();
+
+        /// <summary>
+        /// Gets the displayed names of all map object types mapped by their type IDs.
+        /// </summary>
+        /// <returns>The displayed names of all map object types mapped by their type IDs.</returns>
+        Dictionary<int, string> GetMapObjectDisplayedTypeNames();
     }
 }

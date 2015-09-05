@@ -14,28 +14,6 @@ namespace RC.App.BizLogic.Services
     public interface ICommandService
     {
         /// <summary>
-        /// Clears the current selection and selects an object on the map at the given position. If there is
-        /// no object on the map at the given position then this function has no effect.
-        /// </summary>
-        /// <param name="position">The position inside the displayed area in pixels.</param>
-        void Select(RCIntVector position);
-
-        /// <summary>
-        /// Clears the current selection and selects an object on the map inside the given selection box. If there is
-        /// no object on the map inside the given selection box then this function has no effect.
-        /// </summary>
-        /// <param name="selectionBox">The selection box inside the displayed area in pixels.</param>
-        void Select(RCIntRectangle selectionBox);
-
-        /// <summary>
-        /// Clears the current selection and selects every objects inside the displayed area that has the same
-        /// type as the object at the given position. If there is no object on the map at the given position then
-        /// this function has no effect.
-        /// </summary>
-        /// <param name="position">The position inside the displayed area in pixels.</param>
-        void SelectType(RCIntVector position);
-
-        /// <summary>
         /// Sends a fast command for the current selection. The target position of the fast command will be the
         /// given position.
         /// </summary>

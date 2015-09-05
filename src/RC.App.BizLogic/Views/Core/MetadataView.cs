@@ -56,10 +56,35 @@ namespace RC.App.BizLogic.Views.Core
                     info.ImageData = imageData;
                     info.TransparentColor = objType.HPIconPalette.TransparentColor;
                     info.MaskColor = objType.HPIconPalette.MaskColor;
-                    info.IsMaskableSprite = true;
+                    info.IsMaskableSprite = objType.MaxHP != null;
                     retList.Add(info);
                 }
             }
+            return retList;
+        }
+
+        /// <see cref="IMetadataView.GetMapObjectDisplayedTypeNames"/>
+        public Dictionary<int, string> GetMapObjectDisplayedTypeNames()
+        {
+            Dictionary<int, string> retList = new Dictionary<int, string>();
+
+            foreach (IUnitType unitType in this.metadata.UnitTypes)
+            {
+                if (unitType.DisplayedName != null) { retList.Add(unitType.ID, unitType.DisplayedName); }
+            }
+            foreach (IBuildingType buildingType in this.metadata.BuildingTypes)
+            {
+                if (buildingType.DisplayedName != null) { retList.Add(buildingType.ID, buildingType.DisplayedName); }
+            }
+            foreach (IAddonType addonType in this.metadata.AddonTypes)
+            {
+                if (addonType.DisplayedName != null) { retList.Add(addonType.ID, addonType.DisplayedName); }
+            }
+            foreach (IScenarioElementType customType in this.metadata.CustomTypes)
+            {
+                if (customType.DisplayedName != null) { retList.Add(customType.ID, customType.DisplayedName); }
+            }
+
             return retList;
         }
 
