@@ -23,7 +23,7 @@ namespace RC.App.PresLogic.Controls
         /// <param name="commandButtonSprites">
         /// List of the command button sprite groups mapped by the appropriate button state.
         /// </param>
-        public RCCommandButton(RCIntVector slotCoords, Dictionary<CommandButtonStateEnum, SpriteGroup> cmdButtonSprites)
+        public RCCommandButton(RCIntVector slotCoords, Dictionary<CommandButtonStateEnum, ISpriteGroup> cmdButtonSprites)
             : base(BUTTON_POSITIONS[slotCoords.X, slotCoords.Y].Location, BUTTON_POSITIONS[slotCoords.X, slotCoords.Y].Size)
         {
             if (slotCoords == RCIntVector.Undefined) { throw new ArgumentNullException("slotCoords"); }
@@ -90,7 +90,7 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// List of the command button sprite groups mapped by the appropriate button state.
         /// </summary>
-        private readonly Dictionary<CommandButtonStateEnum, SpriteGroup> commandButtonSprites;
+        private readonly Dictionary<CommandButtonStateEnum, ISpriteGroup> commandButtonSprites;
 
         /// <summary>
         /// The position of the command buttons inside the command panel based on their position.

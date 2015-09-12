@@ -82,6 +82,7 @@
     <Compile Include="Commands\HoldExecution.cs" />
     <Compile Include="Commands\MoveExecution.cs" />
     <Compile Include="Commands\PatrolExecution.cs" />
+    <Compile Include="Commands\ProductionExecutionFactory.cs" />
     <Compile Include="Commands\StopExecution.cs" />
     <Compile Include="Commands\CmdExecutionBase.cs" />
     <Compile Include="Commands\CommandExecutionFactoryBase.cs" />

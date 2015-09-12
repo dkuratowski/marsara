@@ -30,18 +30,18 @@ namespace RC.App.BizLogic.Views
         /// The value of the shield of the object normalized between 0 and 1.
         /// </summary>
         /// <remarks>Set this property to -1 if the shield value shall not be displayed.</remarks>
-        public RCNumber ShieldNorm { get; set; }
+        public RCNumber ShieldNormalized { get; set; }
 
         /// <summary>
         /// The value of the energy of the object normalized between 0 and 1.
         /// </summary>
         /// <remarks>Set this property to -1 if the energy value shall not be displayed.</remarks>
-        public RCNumber EnergyNorm { get; set; }
+        public RCNumber EnergyNormalized { get; set; }
 
         /// <summary>
         /// The value of the HP of the object normalized between 0 and 1.
         /// </summary>
         /// <remarks>Set this property to -1 if the HP value shall not be displayed.</remarks>
-        public RCNumber HpNorm { get; set; }
+        public RCNumber HpNormalized { get; set; }
     }
 }

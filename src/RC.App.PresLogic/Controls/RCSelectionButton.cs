@@ -17,7 +17,7 @@ namespace RC.App.PresLogic.Controls
     public class RCSelectionButton : UIButton, IDisposable
     {
         /// <summary>
-        /// Constructs a selection button at the given rectangular area inside the details panel.
+        /// Constructs a selection button at the given layout index inside the details panel.
         /// </summary>
         /// <param name="layoutIndex">The index in the layout of this button on the details panel.</param>
         /// <param name="hpIndicatorSprites">
@@ -126,12 +126,12 @@ namespace RC.App.PresLogic.Controls
         /// </summary>
         private static readonly RCIntRectangle[] BUTTON_POSITIONS = new RCIntRectangle[]
         {
-            new RCIntRectangle(31, 7, 16, 16), new RCIntRectangle(31, 27, 16, 16),
-            new RCIntRectangle(51, 7, 16, 16), new RCIntRectangle(51, 27, 16, 16),
-            new RCIntRectangle(71, 7, 16, 16), new RCIntRectangle(71, 27, 16, 16),
-            new RCIntRectangle(91, 7, 16, 16), new RCIntRectangle(91, 27, 16, 16),
-            new RCIntRectangle(111, 7, 16, 16), new RCIntRectangle(111, 27, 16, 16),
-            new RCIntRectangle(131, 7, 16, 16), new RCIntRectangle(131, 27, 16, 16),
+            new RCIntRectangle(24, 4, 20, 20), new RCIntRectangle(24, 26, 20, 20),
+            new RCIntRectangle(46, 4, 20, 20), new RCIntRectangle(46, 26, 20, 20),
+            new RCIntRectangle(68, 4, 20, 20), new RCIntRectangle(68, 26, 20, 20),
+            new RCIntRectangle(90, 4, 20, 20), new RCIntRectangle(90, 26, 20, 20),
+            new RCIntRectangle(112, 4, 20, 20), new RCIntRectangle(112, 26, 20, 20),
+            new RCIntRectangle(134, 4, 20, 20), new RCIntRectangle(134, 26, 20, 20),
         };
     }
 }

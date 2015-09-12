@@ -35,6 +35,7 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Patrol, SCV.SCV_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Hold, SCV.SCV_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, SCV.SCV_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(SCV.SCV_TYPE_NAME, CommandCenter.COMMANDCENTER_TYPE_NAME));
         }
 
         /// <see cref="IPlugin<T>.Uninstall"/>

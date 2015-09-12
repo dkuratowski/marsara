@@ -133,6 +133,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             { "buildingButton", typeof(BuildingButtonListener) },
             { "cancelButton", typeof(CancelButtonListener) },
             { "selectTargetPosition", typeof(TargetPositionListener) },
+            { "productionButton", typeof(ProductionButtonListener) },
         };
     }
 

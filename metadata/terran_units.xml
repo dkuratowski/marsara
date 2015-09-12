@@ -45,7 +45,7 @@
     <createdIn>CommandCenter</createdIn>
 	<hpIconPalette image="terran_scv_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
       <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
-      <sprite name="SmallIcon" sourceRegion="34;1;16;16" offset="0;0" />
+      <sprite name="SmallIcon" sourceRegion="34;1;20;20" offset="0;0" />
 	</hpIconPalette>
     <spritePalette image="terran_scv.png" transparentColor="255;0;255" maskColor="0;255;255">
       <sprite name="Body" variant="North" sourceRegion="1;1;13;11" offset="-3;-4" />

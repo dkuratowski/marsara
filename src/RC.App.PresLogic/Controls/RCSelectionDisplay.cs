@@ -88,46 +88,46 @@ namespace RC.App.PresLogic.Controls
 
                 /// Render the shield if exists.
                 int indicatorIndex = 0;
-                if (selIndicator.ShieldNorm != -1)
+                if (selIndicator.ShieldNormalized != -1)
                 {
-                    int lineWidth = (int)(selIndicator.IndicatorRect.Width * selIndicator.ShieldNorm);
+                    int lineWidth = (int)(selIndicator.IndicatorRect.Width * selIndicator.ShieldNormalized);
                     if (lineWidth > 0)
                     {
                         renderContext.RenderRectangle(this.lightBlueBrush,
                             new RCIntRectangle(selIndicator.IndicatorRect.Left,
                                                selIndicator.IndicatorRect.Bottom + indicatorIndex,
-                                               (int)(selIndicator.IndicatorRect.Width * selIndicator.ShieldNorm),
+                                               lineWidth,
                                                1));
                     }
                     indicatorIndex++;
                 }
 
                 /// Render the HP if exists.
-                if (selIndicator.HpNorm != -1)
+                if (selIndicator.HpNormalized != -1)
                 {
-                    int lineWidth = (int)(selIndicator.IndicatorRect.Width * selIndicator.HpNorm);
+                    int lineWidth = (int)(selIndicator.IndicatorRect.Width * selIndicator.HpNormalized);
                     if (lineWidth > 0)
                     {
                         MapObjectConditionEnum hpCondition = this.mapObjectDetailsView.GetHPCondition(selIndicator.ObjectID);
                         renderContext.RenderRectangle(this.hpConditionBrushes[hpCondition],
                             new RCIntRectangle(selIndicator.IndicatorRect.Left,
                                                selIndicator.IndicatorRect.Bottom + indicatorIndex,
-                                               (int)(selIndicator.IndicatorRect.Width * selIndicator.HpNorm),
+                                               lineWidth,
                                                1));
                     }
                     indicatorIndex++;
                 }
 
                 /// Render the energy if exists in case of friendly objects.
-                if (selIndicator.EnergyNorm != -1 && selIndicator.SelIndicatorType == SelIndicatorTypeEnum.Friendly)
+                if (selIndicator.EnergyNormalized != -1 && selIndicator.SelIndicatorType == SelIndicatorTypeEnum.Friendly)
                 {
-                    int lineWidth = (int)(selIndicator.IndicatorRect.Width * selIndicator.EnergyNorm);
+                    int lineWidth = (int)(selIndicator.IndicatorRect.Width * selIndicator.EnergyNormalized);
                     if (lineWidth > 0)
                     {
                         renderContext.RenderRectangle(this.lightMagentaBrush,
                             new RCIntRectangle(selIndicator.IndicatorRect.Left,
                                                selIndicator.IndicatorRect.Bottom + indicatorIndex,
-                                               (int)(selIndicator.IndicatorRect.Width * selIndicator.EnergyNorm),
+                                               lineWidth,
                                                1));
                     }
                 }

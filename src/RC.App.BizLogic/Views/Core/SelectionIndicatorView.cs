@@ -48,9 +48,9 @@ namespace RC.App.BizLogic.Views.Core
                         ObjectID = entity.ID.Read(),
                         SelIndicatorType = indicatorType,
                         IndicatorRect = this.MapWindowBC.AttachedWindow.MapToWindowRect(entity.Area),
-                        HpNorm = hpNorm,
-                        EnergyNorm = entity.Biometrics.Energy != -1 ? entity.Biometrics.Energy / entity.ElementType.MaxEnergy.Read() : -1,
-                        ShieldNorm = -(RCNumber)1, // TODO: must be based on real data after Protoss will have been implemented!
+                        HpNormalized = hpNorm,
+                        EnergyNormalized = entity.Biometrics.Energy != -1 ? entity.Biometrics.Energy / entity.ElementType.MaxEnergy.Read() : -1,
+                        ShieldNormalized = -(RCNumber)1, // TODO: must be based on real data after Protoss will have been implemented!
                     });
                 }
             }

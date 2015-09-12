@@ -21,22 +21,29 @@ namespace RC.App.PresLogic.Panels
         /// <summary>
         /// Constructs a details panel.
         /// </summary>
+        /// <param name="productIconSprites">The product icon sprite group.</param>
         /// <param name="backgroundRect">The area of the background of the panel in workspace coordinates.</param>
         /// <param name="contentRect">The area of the content of the panel relative to the background rectangle.</param>
         /// <param name="backgroundSprite">Name of the sprite resource that will be the background of this panel or null if there is no background.</param>
-        public RCDetailsPanel(RCIntRectangle backgroundRect, RCIntRectangle contentRect, string backgroundSprite)
+        public RCDetailsPanel(ISpriteGroup productIconSprites, RCIntRectangle backgroundRect, RCIntRectangle contentRect, string backgroundSprite)
             : base(backgroundRect, contentRect, ShowMode.Appear, HideMode.Disappear, 0, 0, backgroundSprite)
         {
+            if (productIconSprites == null) { throw new ArgumentNullException("productIconSprites"); }
+
             this.textFont = UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5");
             this.objectTypeTexts = new Dictionary<int, UIString>();
 
             this.isConnected = false;
             this.backgroundTask = null;
             this.hpIndicatorSprites = new Dictionary<MapObjectConditionEnum, SpriteGroup>();
+            this.productIconSprites = productIconSprites;
+            this.currentCustomContent = null;
             this.buttonArray = new RCSelectionButton[MAX_SELECTION_SIZE];
+            this.productionLineDisplay = null;
             this.multiplayerService = null;
             this.selectionDetailsView = null;
             this.mapObjectDetailsView = null;
+            this.productionLineView = null;
             this.selectionButtonsAdded = false;
             this.hpTexts = new Dictionary<MapObjectConditionEnum, UIString>();
             this.energyText = null;
@@ -54,6 +61,7 @@ namespace RC.App.PresLogic.Panels
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
             this.selectionDetailsView = viewService.CreateView<ISelectionDetailsView>();
             this.mapObjectDetailsView = viewService.CreateView<IMapObjectDetailsView>();
+            this.productionLineView = viewService.CreateView<IProductionLineView>();
             this.metadataView = viewService.CreateView<IMetadataView>();
             this.hpIndicatorSprites.Add(MapObjectConditionEnum.Excellent, new HPIconSpriteGroup(this.metadataView, MapObjectConditionEnum.Excellent));
             this.hpIndicatorSprites.Add(MapObjectConditionEnum.Moderate, new HPIconSpriteGroup(this.metadataView, MapObjectConditionEnum.Moderate));
@@ -75,6 +83,11 @@ namespace RC.App.PresLogic.Panels
 
             /// Unsubscribe from the FrameUpdate event.
             UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= this.OnFrameUpdate;
+
+            /// Destroy the controls that display the custom contents.
+            //this.productionDisplay.Dispose(); TODO: dispose if necessary!
+            this.productionLineDisplay = null;
+            this.currentCustomContent = null;
 
             /// Destroy the selection buttons.
             for (int i = 0; i < MAX_SELECTION_SIZE; i++)
@@ -180,6 +193,9 @@ namespace RC.App.PresLogic.Panels
                     this.buttonArray[i] = new RCSelectionButton(i, this.hpIndicatorSprites);
                 }
 
+                /// Create the controls that display the custom content.
+                this.productionLineDisplay = new RCProductionLineDisplay(this.productIconSprites, CUSTOM_CONTENT_RECT.Location, CUSTOM_CONTENT_RECT.Size);
+
                 /// Subscribe to the FrameUpdate event.
                 UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
 
@@ -191,6 +207,7 @@ namespace RC.App.PresLogic.Panels
                 this.multiplayerService = null;
                 this.selectionDetailsView = null;
                 this.mapObjectDetailsView = null;
+                this.productionLineView = null;
                 this.isConnected = false;
                 if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
             }
@@ -253,6 +270,7 @@ namespace RC.App.PresLogic.Panels
                 {
                     this.AddControl(this.buttonArray[i]);
                 }
+
                 this.selectionButtonsAdded = true;
                 TraceManager.WriteAllTrace("SelectionButtons added", PresLogicTraceFilters.INFO);
             }
@@ -263,9 +281,39 @@ namespace RC.App.PresLogic.Panels
                 {
                     this.RemoveControl(this.buttonArray[i]);
                 }
+
                 this.selectionButtonsAdded = false;
                 TraceManager.WriteAllTrace("SelectionButtons removed", PresLogicTraceFilters.INFO);
             }
+
+            /// Update the custom content to be displayed.
+            if (this.selectionDetailsView.SelectionCount == 1)
+            {
+                UIControl newCustomContent = this.SelectCustomContent();
+                if (this.currentCustomContent != newCustomContent)
+                {
+                    if (this.currentCustomContent != null) { this.RemoveControl(this.currentCustomContent); }
+                    if (newCustomContent != null) { this.AddControl(newCustomContent); }
+                    this.currentCustomContent = newCustomContent;
+                }
+            }
+            else if (this.currentCustomContent != null)
+            {
+                this.RemoveControl(this.currentCustomContent);
+                this.currentCustomContent = null;
+            }
+        }
+
+        /// <summary>
+        /// Selects the custom content to be displayed or null if no custom content shall be displayed.
+        /// </summary>
+        /// <remarks>Note that this method is called only in single selection mode.</remarks>
+        private UIControl SelectCustomContent()
+        {
+            // TODO: implement this method accordingly!
+            if (this.productionLineView.Capacity == 0) { return null; }
+
+            return this.productionLineDisplay;
         }
 
         #endregion Internal members
@@ -281,6 +329,17 @@ namespace RC.App.PresLogic.Panels
         private readonly RCSelectionButton[] buttonArray;
 
         /// <summary>
+        /// Reference to the control that currently displays custom content or null if custom content is currently
+        /// not displayed.
+        /// </summary>
+        private UIControl currentCustomContent;
+
+        /// <summary>
+        /// Reference to the production line display control.
+        /// </summary>
+        private RCProductionLineDisplay productionLineDisplay;
+
+        /// <summary>
         /// Reference to the currently executed connecting/disconnecting task or null if no such a task is under execution.
         /// </summary>
         private IUIBackgroundTask backgroundTask;
@@ -289,6 +348,11 @@ namespace RC.App.PresLogic.Panels
         /// List of the HP indicator sprite groups for each possible conditions.
         /// </summary>
         private readonly Dictionary<MapObjectConditionEnum, SpriteGroup> hpIndicatorSprites;
+
+        /// <summary>
+        /// The product icon sprite group.
+        /// </summary>
+        private readonly ISpriteGroup productIconSprites;
 
         /// <summary>
         /// Reference to the multiplayer service.
@@ -304,6 +368,11 @@ namespace RC.App.PresLogic.Panels
         /// Reference to the map object details view.
         /// </summary>
         private IMapObjectDetailsView mapObjectDetailsView;
+
+        /// <summary>
+        /// Reference to the production line view.
+        /// </summary>
+        private IProductionLineView productionLineView;
 
         /// <summary>
         /// Reference to the metadata view.
@@ -360,5 +429,10 @@ namespace RC.App.PresLogic.Panels
         /// The position of the center of the string that displays the object's energy in single selection mode.
         /// </summary>
         private static readonly RCIntVector ENERGY_STRING_MIDDLE_POS = new RCIntVector(37, 47);
+
+        /// <summary>
+        /// The position of the custom content.
+        /// </summary>
+        private static readonly RCIntRectangle CUSTOM_CONTENT_RECT = new RCIntRectangle(76, 10, 100, 40);
     }
 }

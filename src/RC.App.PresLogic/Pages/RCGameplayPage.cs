@@ -27,10 +27,23 @@ namespace RC.App.PresLogic.Pages
         public RCGameplayPage() : base()
         {
             /// Create the sprite group loaders for loading the shared sprite groups.
+            IViewService viewService = ComponentManager.GetInterface<IViewService>();
             SpriteGroupLoader isoTileSpriteGroupLoader = new SpriteGroupLoader(
-                () => new IsoTileSpriteGroup(ComponentManager.GetInterface<IViewService>().CreateView<ITileSetView>()));
+                () => new IsoTileSpriteGroup(viewService.CreateView<ITileSetView>()));
             SpriteGroupLoader terrainObjectSpriteGroupLoader = new SpriteGroupLoader(
-                () => new TerrainObjectSpriteGroup(ComponentManager.GetInterface<IViewService>().CreateView<ITileSetView>()));
+                () => new TerrainObjectSpriteGroup(viewService.CreateView<ITileSetView>()));
+            SpriteGroupLoader disabledCommandButtonSpriteGroupLoader = new SpriteGroupLoader(
+                    () => new CmdButtonSpriteGroup(viewService.CreateView<ICommandView>(), CommandButtonStateEnum.Disabled));
+            SpriteGroupLoader enabledCommandButtonSpriteGroupLoader = new SpriteGroupLoader(
+                    () => new CmdButtonSpriteGroup(viewService.CreateView<ICommandView>(), CommandButtonStateEnum.Enabled));
+            SpriteGroupLoader highlightedCommandButtonSpriteGroupLoader = new SpriteGroupLoader(
+                    () => new CmdButtonSpriteGroup(viewService.CreateView<ICommandView>(), CommandButtonStateEnum.Highlighted));
+            Dictionary<CommandButtonStateEnum, ISpriteGroup> commandButtonSprites = new Dictionary<CommandButtonStateEnum, ISpriteGroup>
+            {
+                { CommandButtonStateEnum.Disabled, disabledCommandButtonSpriteGroupLoader },
+                { CommandButtonStateEnum.Enabled, enabledCommandButtonSpriteGroupLoader },
+                { CommandButtonStateEnum.Highlighted, highlightedCommandButtonSpriteGroupLoader },
+            };
 
             /// Create the map display and its extensions.
             this.mapDisplayBasic = new RCMapDisplayBasic(isoTileSpriteGroupLoader,
@@ -52,10 +65,12 @@ namespace RC.App.PresLogic.Pages
                                                    new RCIntRectangle(0, 128, 72, 72),
                                                    new RCIntRectangle(1, 1, 70, 70),
                                                    "RC.App.Sprites.MinimapPanel");
-            this.detailsPanel = new RCDetailsPanel(new RCIntRectangle(72, 148, 178, 52),
+            this.detailsPanel = new RCDetailsPanel(enabledCommandButtonSpriteGroupLoader,
+                                                   new RCIntRectangle(72, 148, 178, 52),
                                                    new RCIntRectangle(0, 1, 178, 50),
                                                    "RC.App.Sprites.DetailsPanel");
-            this.commandPanel = new RCCommandPanel(new RCIntRectangle(250, 130, 70, 70),
+            this.commandPanel = new RCCommandPanel(commandButtonSprites,
+                                                   new RCIntRectangle(250, 130, 70, 70),
                                                    new RCIntRectangle(3, 3, 64, 64),
                                                    "RC.App.Sprites.CommandPanel");
             this.tooltipBar = new RCTooltipBar(new RCIntRectangle(0, 0, 209, 13),
@@ -75,7 +90,11 @@ namespace RC.App.PresLogic.Pages
             this.RegisterPanel(this.menuButtonPanel);
 
             this.gameConnection = new SequentialGameConnector(
-                new ConcurrentGameConnector(isoTileSpriteGroupLoader, terrainObjectSpriteGroupLoader),
+                new ConcurrentGameConnector(isoTileSpriteGroupLoader,
+                                            terrainObjectSpriteGroupLoader,
+                                            disabledCommandButtonSpriteGroupLoader,
+                                            enabledCommandButtonSpriteGroupLoader,
+                                            highlightedCommandButtonSpriteGroupLoader),
                 new ConcurrentGameConnector(this.mapDisplay, this.commandPanel, this.minimapPanel, this.detailsPanel));
         }
 

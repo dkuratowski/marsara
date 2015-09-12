@@ -69,7 +69,8 @@ namespace RC.App.PresLogic
             if (this.currentStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("The connector is not offline!"); }
 
             this.currentStatus = ConnectionStatusEnum.Connecting;
-            foreach (IGameConnector connector in this.disconnectedConnectors) { connector.Connect(); }
+            List<IGameConnector> disconnectedConnectorsCopy = new List<IGameConnector>(this.disconnectedConnectors);
+            foreach (IGameConnector connector in disconnectedConnectorsCopy) { connector.Connect(); }
         }
 
         /// <see cref="IGameConnector.Disconnect"/>
@@ -79,7 +80,8 @@ namespace RC.App.PresLogic
             if (this.currentStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("The connector is not online!"); }
 
             this.currentStatus = ConnectionStatusEnum.Disconnecting;
-            foreach (IGameConnector connector in this.connectedConnectors) { connector.Disconnect(); }
+            List<IGameConnector> connectedConnectorsCopy = new List<IGameConnector>(this.connectedConnectors);
+            foreach (IGameConnector connector in connectedConnectorsCopy) { connector.Disconnect(); }
         }
 
         /// <see cref="IGameConnector.ConnectionStatus"/>

@@ -255,6 +255,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
+        /// Creates a view of type IProductionLineView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IProductionLineView CreateProductionLineView()
+        {
+            return new ProductionLineView();
+        }
+
+        /// <summary>
         /// Registers the implemented factory methods to the view factory.
         /// </summary>
         private void RegisterFactoryMethods()
@@ -269,6 +278,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMinimapView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateSelectionDetailsView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectDetailsView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateProductionLineView);
             this.viewFactoryRegistry.RegisterViewFactory<ITerrainObjectPlacementView, string>(this.CreateTerrainObjectPlacementView);
             this.viewFactoryRegistry.RegisterViewFactory<IMapObjectPlacementView, string>(this.CreateMapObjectPlacementView);
         }
@@ -288,6 +298,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.UnregisterViewFactory<IMinimapView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ISelectionDetailsView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectDetailsView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IProductionLineView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ITerrainObjectPlacementView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectPlacementView>();
         }

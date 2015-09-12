@@ -158,6 +158,16 @@
       <path name="imageFile">../sprites/gameplaysprites/menubutton.png</path>
       <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
     </resource>
+    <resource namespace="RC.App.Sprites" name="ProductionButton" loader="SpriteLoader">
+      <path name="imageFile">../sprites/gameplaysprites/production_button.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
+    <resource namespace="RC.App.Sprites" name="ProductionProgressBar" loader="SpriteLoader">
+      <path name="imageFile">../sprites/gameplaysprites/production_progressbar.png</path>
+      <parameter name="transparentColor">255;0;255</parameter>
+      <parameter name="pixelSize">$(RC.UI.UIWorkspace.PixelScaling)</parameter>
+    </resource>
 
     <resource namespace="RC.App.Fonts" name="Font5" loader="FontLoader">
       <path name="mappingFile">../fonts/font5.xml</path>
