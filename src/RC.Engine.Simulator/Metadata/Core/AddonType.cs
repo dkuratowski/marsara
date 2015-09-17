@@ -20,9 +20,40 @@ namespace RC.Engine.Simulator.Metadata.Core
         public AddonType(string name, ScenarioMetadata metadata)
             : base(name, metadata)
         {
-            this.upgradeTypes = new RCSet<UpgradeType>();
+            this.upgradeTypes = new Dictionary<string, UpgradeType>();
             this.mainBuilding = null;
         }
+
+        #region IAddonType members
+
+        /// <see cref="IAddonType.HasUpgradeType"/>
+        public bool HasUpgradeType(string upgradeTypeName)
+        {
+            if (upgradeTypeName == null) { throw new ArgumentNullException("upgradeTypeName"); }
+            return this.upgradeTypes.ContainsKey(upgradeTypeName);
+        }
+
+        /// <see cref="IAddonType.GetUpgradeType"/>
+        public IUpgradeType GetUpgradeType(string upgradeTypeName)
+        {
+            return this.GetUpgradeTypeImpl(upgradeTypeName);
+        }
+
+        /// <see cref="IAddonType.UpgradeTypes"/>
+        public IEnumerable<IUpgradeType> UpgradeTypes { get { return this.upgradeTypes.Values; } }
+
+        #endregion IAddonType members
+
+        #region Internal public methods
+
+        /// <see cref="IAddonType.GetUpgradeType"/>
+        public UpgradeType GetUpgradeTypeImpl(string upgradeTypeName)
+        {
+            if (upgradeTypeName == null) { throw new ArgumentNullException("upgradeTypeName"); }
+            return this.upgradeTypes[upgradeTypeName];
+        }
+
+        #endregion Internal public methods
 
         #region AddonType buildup methods
 
@@ -34,7 +65,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         {
             if (this.Metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (upgradeType == null) { throw new ArgumentNullException("upgradeType"); }
-            this.upgradeTypes.Add(upgradeType);
+            this.upgradeTypes.Add(upgradeType.Name, upgradeType);
         }
 
         /// <summary>
@@ -61,9 +92,9 @@ namespace RC.Engine.Simulator.Metadata.Core
         #endregion AddonType buildup methods
 
         /// <summary>
-        /// List of the upgrade types that are performed in addons of this type.
+        /// List of the upgrade types that are performed in addons of this type mapped by their names.
         /// </summary>
-        private RCSet<UpgradeType> upgradeTypes;
+        private readonly Dictionary<string, UpgradeType> upgradeTypes;
 
         /// <summary>
         /// The name of the building type that creates this type of addon or null if no such a building type exists.

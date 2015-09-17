@@ -22,11 +22,15 @@ namespace RC.Engine.Simulator.Commands
         string EntityType { get; }
 
         /// <summary>
-        /// Gets the availability of the command from the point of view of this factory for the given entity set.
+        /// Gets the availability of the command from the point of view of this factory for the given entity set with
+        /// the given parameter.
         /// </summary>
         /// <param name="entitySet">The entity set.</param>
-        /// <returns>The availability of the command from the point of view of this factory for the given entity set.</returns>
-        AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitySet);
+        /// <param name="parameter">The parameter.</param>
+        /// <returns>
+        /// The availability of the command from the point of view of this factory for the given entity set with the given parameter.
+        /// </returns>
+        AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitySet, string parameter);
 
         /// <summary>
         /// Starts a command execution on the given entity set with the given parameters.

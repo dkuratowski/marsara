@@ -122,6 +122,11 @@ namespace RC.Engine.Simulator.Metadata
         IEnumerable<IWeaponData> StandardWeapons { get; }
 
         /// <summary>
+        /// Gets the requirements of this element type.
+        /// </summary>
+        IEnumerable<IRequirement> Requirements { get; }
+
+        /// <summary>
         /// Gets the quadratic coordinates relative to the origin that are inside the sight range or null if this element type has no sight range defined.
         /// </summary>
         /// TODO: later the sight range will depend on the upgrades of the players!

@@ -68,6 +68,13 @@ namespace RC.App.BizLogic.BusinessComponents
         CommandButtonStateEnum GetCmdButtonState(RCIntVector panelPosition);
 
         /// <summary>
+        /// Gets the sprite to be displayed for the given product.
+        /// </summary>
+        /// <param name="productName">The name of the product.</param>
+        /// <returns>The sprite to be displayed for the given product.</returns>
+        SpriteInst GetProductButtonSprite(string productName);
+
+        /// <summary>
         /// Updates the state of the command input procedure.
         /// </summary>
         void Update();

@@ -128,20 +128,6 @@ namespace RC.App.BizLogic.Views.Core
         #endregion IMapObjectDetailsView members
 
         /// <summary>
-        /// Gets the entity from the active scenario with the given ID.
-        /// </summary>
-        /// <param name="entityID">The ID of entity to get.</param>
-        /// <returns>The entity from the active scenario with the given ID.</returns>
-        /// <exception cref="InvalidOperationException">If there is no entity with the given ID in the active scenario.</exception>
-        private Entity GetEntity(int entityID)
-        {
-            Entity entity = this.Scenario.GetElementOnMap<Entity>(entityID);
-            if (entity == null) { throw new InvalidOperationException(String.Format("Entity with ID '{0}' doesn't exist!", entityID)); }
-
-            return entity;
-        }
-
-        /// <summary>
         /// The name of the big icon in the HPIconPalette.
         /// </summary>
         private const string BIG_ICON_SPRITE_NAME = "BigIcon";

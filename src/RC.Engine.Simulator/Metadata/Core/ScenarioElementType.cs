@@ -66,7 +66,10 @@ namespace RC.Engine.Simulator.Metadata.Core
         public IEnumerable<RCIntVector> RelativeQuadCoordsInSight { get { return this.relativeQuadCoordsInSight; } }
 
         /// <see cref="IScenarioElementType.StandardWeapons"/>
-        public IEnumerable<IWeaponData> StandardWeapons { get { return this.standardWeapons; } } 
+        public IEnumerable<IWeaponData> StandardWeapons { get { return this.standardWeapons; } }
+
+        /// <see cref="IScenarioElementType.Requirements"/>
+        public IEnumerable<IRequirement> Requirements { get { return this.requirements; } }
 
         #region Costs data properties
 
@@ -429,7 +432,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// The name of this element type. Must be unique in the metadata.
         /// </summary>
-        private string name;
+        private readonly string name;
 
         /// <summary>
         /// The displayed name of this element type or null if this element type doesn't define displayed name.
@@ -465,7 +468,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// List of the placement constraints of this element type or null if this element type has no placement constraints.
         /// </summary>
-        private List<EntityConstraint> placementConstraints;
+        private readonly List<EntityConstraint> placementConstraints;
 
         /// <summary>
         /// The costs data of this element type.
@@ -489,17 +492,17 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// The standard weapons of this element type.
         /// </summary>
-        private List<WeaponData> standardWeapons;
+        private readonly List<WeaponData> standardWeapons;
 
         /// <summary>
         /// The list of the requirements of this element type.
         /// </summary>
-        private List<Requirement> requirements;
+        private readonly List<Requirement> requirements;
 
         /// <summary>
         /// Reference to the metadata object that this type belongs to.
         /// </summary>
-        private ScenarioMetadata metadata;
+        private readonly ScenarioMetadata metadata;
 
         /// <summary>
         /// The quadratic coordinates relative to the origin that are inside the sight range or null if this element type has no sight range defined.

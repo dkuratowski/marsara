@@ -20,10 +20,10 @@ namespace RC.Engine.Simulator.Commands
         public string EntityType { get { return this.entityType; } }
 
         /// <see cref="ICommandExecutionFactory.GetCommandAvailability"/>
-        public AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitySet)
+        public AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitySet, string parameter)
         {
             RCSet<T> entitiesToHandle = this.CollectEntitiesToHandle(entitySet);
-            return this.GetCommandAvailability(entitiesToHandle, entitySet);
+            return this.GetCommandAvailability(entitiesToHandle, entitySet, parameter);
         }
 
         /// <see cref="ICommandExecutionFactory.StartCommandExecution"/>
@@ -55,12 +55,15 @@ namespace RC.Engine.Simulator.Commands
         #region Overridables
 
         /// <summary>
-        /// Gets the availability of the command from the point of view of this factory for the given entity set.
+        /// Gets the availability of the command from the point of view of this factory for the given entity set with the given parameter.
         /// </summary>
         /// <param name="entitiesToHandle">The subset of the full entity set that this factory has to handle.</param>
         /// <param name="fullEntitySet">The full entity set.</param>
-        /// <returns>The availability of the command from the point of view of this factory for the given entity set.</returns>
-        protected abstract AvailabilityEnum GetCommandAvailability(RCSet<T> entitiesToHandle, RCSet<Entity> fullEntitySet);
+        /// <param name="parameter">The parameter of the command.</param>
+        /// <returns>
+        /// The availability of the command from the point of view of this factory for the given entity set with the given parameter.
+        /// </returns>
+        protected abstract AvailabilityEnum GetCommandAvailability(RCSet<T> entitiesToHandle, RCSet<Entity> fullEntitySet, string parameter);
 
         /// <summary>
         /// Creates the appropriate command executions on the given entity set with the given parameters.

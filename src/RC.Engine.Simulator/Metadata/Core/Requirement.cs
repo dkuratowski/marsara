@@ -9,7 +9,7 @@ namespace RC.Engine.Simulator.Metadata.Core
     /// <summary>
     /// Represents a requirement for creating a building/unit/addon/upgrade type.
     /// </summary>
-    class Requirement
+    class Requirement : IRequirement
     {
         /// <summary>
         /// Constructs a requirement object.
@@ -30,15 +30,15 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.metadata = metadata;
         }
 
-        /// <summary>
-        /// Gets the required building type defined by this requirement.
-        /// </summary>
-        public BuildingType RequiredBuildingType { get { return this.requiredBuildingType; } }
+        #region IRequirement methods
 
-        /// <summary>
-        /// Gets the required addon type defined by this requirement.
-        /// </summary>
-        public AddonType RequiredAddonType { get { return this.requiredAddonType; } }
+        /// <see cref="IRequirement.RequiredBuildingType"/>
+        public IBuildingType RequiredBuildingType { get { return this.requiredBuildingType; } }
+
+        /// <see cref="IRequirement.RequiredAddonType"/>
+        public IAddonType RequiredAddonType { get { return this.requiredAddonType; } }
+
+        #endregion IRequirement methods
 
         /// <summary>
         /// Checks and finalizes this requirement definition.
@@ -71,16 +71,16 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// Name of the required building type.
         /// </summary>
-        private string requiredBuildingTypeName;
+        private readonly string requiredBuildingTypeName;
 
         /// <summary>
         /// Name of the required addon type.
         /// </summary>
-        private string requiredAddonTypeName;
+        private readonly string requiredAddonTypeName;
 
         /// <summary>
         /// Reference to the metadata object that this requirement belongs to.
         /// </summary>
-        private ScenarioMetadata metadata;
+        private readonly ScenarioMetadata metadata;
     }
 }

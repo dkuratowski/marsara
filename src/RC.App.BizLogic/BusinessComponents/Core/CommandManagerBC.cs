@@ -11,15 +11,15 @@ using RC.Common.Configuration;
 using RC.Common.Diagnostics;
 using RC.Engine.Simulator.Commands;
 using RC.Engine.Simulator.ComponentInterfaces;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
     /// <summary>
     /// The implementation of the command manager business component.
     /// </summary>
-    /// TODO: derive from ScenarioDependentComponent!
     [Component("RC.App.BizLogic.CommandManagerBC")]
-    class CommandManagerBC : ICommandManagerBC, IComponent
+    class CommandManagerBC : ScenarioDependentComponent, ICommandManagerBC
     {
         /// <summary>
         /// Constructs a CommandManagerBC instance.
@@ -32,13 +32,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.completedListeners = new List<CommandInputListener>();
             this.activeListeners = new List<CommandInputListener>();
             this.allSpritePalettes = new List<ISpritePalette>();
+            this.productButtonSprites = new Dictionary<string, SpriteInst>();
             this.commandBuilder = null;
         }
 
-        #region IComponent methods
+        #region Overrides from ScenarioDependentComponent
 
-        /// <see cref="IComponent.Start"/>
-        public void Start()
+        /// <see cref="ScenarioDependentComponent.StartImpl"/>
+        protected override void StartImpl()
         {
             this.commandBuilder = new CommandBuilder();
 
@@ -72,19 +73,25 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                         {
                             this.rootListeners.Add(rootListener);
                             this.activeListeners.Add(rootListener);
+                            this.CollectProductButtonSprites(rootListener);
                         }
                     }
                 }
             }
         }
 
-        /// <see cref="IComponent.Stop"/>
-        public void Stop()
+        /// <see cref="ScenarioDependentComponent.OnActiveScenarioChanged"/>
+        protected override void OnActiveScenarioChanged(Scenario activeScenario)
         {
-            /// Do nothing
+            this.completedListeners.Clear();
+            this.activeListeners = new List<CommandInputListener>(this.rootListeners);
+            this.commandBuilder.Reset();
+
+            this.commandPanelSlots = new CommandPanelSlot[BUTTON_ARRAY_ROWS, BUTTON_ARRAY_COLS];
+            this.targetPositionInputSlot = null;
         }
-        
-        #endregion IComponent methods
+
+        #endregion Overrides from ScenarioDependentComponent
 
         #region ICommandManagerBC methods
 
@@ -141,6 +148,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (panelPosition == RCIntVector.Undefined) { throw new ArgumentNullException("panelPosition"); }
             if (this.commandPanelSlots[panelPosition.X, panelPosition.Y] == null) { return CommandButtonStateEnum.Invisible; }
             return this.commandPanelSlots[panelPosition.X, panelPosition.Y].ButtonState;
+        }
+
+        /// <see cref="ICommandManagerBC.GetProductButtonSprite"/>
+        public SpriteInst GetProductButtonSprite(string productName)
+        {
+            if (productName == null) { throw new ArgumentNullException("productName"); }
+            if (!this.productButtonSprites.ContainsKey(productName)) { throw new InvalidOperationException(string.Format("Product button sprite not found for product '{0}'!", productName)); }
+            return this.productButtonSprites[productName];
         }
 
         /// <see cref="ICommandManagerBC.Update"/>
@@ -333,6 +348,24 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             };
         }
 
+        /// <summary>
+        /// Recursively collect the product button sprites defined by the given command input listener or by one of its children.
+        /// </summary>
+        /// <param name="listener">The given command input listener.</param>
+        private void CollectProductButtonSprites(CommandInputListener listener)
+        {
+            ProductionButtonListener productButtonListener = listener as ProductionButtonListener;
+            if (productButtonListener != null)
+            {
+                this.productButtonSprites.Add(productButtonListener.SelectedProductType, productButtonListener.ButtonSprite);
+            }
+
+            foreach (CommandInputListener childListener in listener.Children)
+            {
+                this.CollectProductButtonSprites(childListener);
+            }
+        }
+
         #endregion Internal methods
 
         #region CommandBuilderPermission class
@@ -381,12 +414,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// List of the root listeners.
         /// </summary>
-        private List<CommandInputListener> rootListeners;
+        private readonly List<CommandInputListener> rootListeners;
 
         /// <summary>
         /// List of the listeners that have already completed in the order of their completion.
         /// </summary>
-        private List<CommandInputListener> completedListeners;
+        private readonly List<CommandInputListener> completedListeners;
 
         /// <summary>
         /// List of the currently active listeners.
@@ -396,8 +429,13 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// List of all the loaded sprite palettes in the order of their indices.
         /// </summary>
-        private List<ISpritePalette> allSpritePalettes = new List<ISpritePalette>();
+        private readonly List<ISpritePalette> allSpritePalettes;
 
+        /// <summary>
+        /// List of all product button sprites mapped by the names of the corresponding products.
+        /// </summary>
+        private readonly Dictionary<string, SpriteInst> productButtonSprites;
+        
         /// <summary>
         /// Reference to the command builder.
         /// </summary>

@@ -22,6 +22,13 @@ namespace RC.Engine.Simulator.Core
         /// The name of the field of the composite heap types that contains the data from the base class.
         /// </summary>
         public const string NAME_OF_BASE_TYPE_FIELD = "base";
+
+        /// <summary>
+        /// The capacity of the basic production lines of an entity.
+        /// </summary>
+        public const int UNIT_PRODUCTION_LINE_CAPACITY = 5;
+        public const int ADDON_PRODUCTION_LINE_CAPACITY = 1;
+        public const int UPGRADE_PRODUCTION_LINE_CAPACITY = 1;
     }
 
     /// <summary>

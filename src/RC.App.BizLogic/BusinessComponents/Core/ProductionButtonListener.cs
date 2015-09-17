@@ -9,11 +9,16 @@ using RC.Engine.Simulator.ComponentInterfaces;
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
     /// <summary>
-    /// Represents a button listener that starts creating a unit of a given type in the selected building when the appropriate
+    /// Represents a button listener that starts producing an entity of a given type in the selected building when the appropriate
     /// button is pressed on the command panel.
     /// </summary>
     class ProductionButtonListener : ButtonListener
     {
+        /// <summary>
+        /// Gets the type of the product selected by this listener.
+        /// </summary>
+        public string SelectedProductType { get { return this.selectedProductType; } }
+
         /// <see cref="ButtonListener.ButtonAvailability"/>
         public override AvailabilityEnum ButtonAvailability
         {
@@ -22,25 +27,10 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 return this.commandExecutor.GetCommandAvailability(
                     this.scenarioManagerBC.ActiveScenario,
                     ProductionButtonListener.COMMAND_TYPE,
+                    this.selectedProductType,
                     this.selectionManagerBC.CurrentSelection);
             }
         }
-
-        /// <see cref="ButtonListener.IsHighlighted"/>
-        public override bool IsHighlighted
-        {
-            get
-            {
-                return this.commandExecutor.GetCommandsBeingExecuted(
-                    scenarioManagerBC.ActiveScenario,
-                    selectionManagerBC.CurrentSelection)
-                    .Contains(ProductionButtonListener.COMMAND_TYPE);
-            }
-        }
-
-        /// <see cref="CommandInputListener.CheckCompletionStatus"/>
-        /// TODO: implement this method!
-        public override bool CheckCompletionStatus() { return true; }
 
         /// <see cref="CommandInputListener.TryComplete"/>
         /// TODO: implement this method!
@@ -66,7 +56,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
-        /// The type of the command selected by this listener.
+        /// The type of the product selected by this listener.
         /// </summary>
         private string selectedProductType;
 

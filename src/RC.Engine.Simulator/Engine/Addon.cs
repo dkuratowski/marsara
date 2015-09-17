@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Engine.Simulator.Core;
 using RC.Engine.Simulator.Metadata;
 
 namespace RC.Engine.Simulator.Engine
@@ -22,6 +23,14 @@ namespace RC.Engine.Simulator.Engine
             : base(addonTypeName)
         {
             this.addonType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetAddonType(addonTypeName);
+
+            // Create and register the basic production lines of this addon based on the metadata.
+            List<IScenarioElementType> upgradeTypes = new List<IScenarioElementType>(this.addonType.UpgradeTypes);
+            if (upgradeTypes.Count > 0)
+            {
+                ProductionLine upgradeProductionLine = new ProductionLine(Constants.UPGRADE_PRODUCTION_LINE_CAPACITY, upgradeTypes);
+                this.RegisterProductionLine(upgradeProductionLine);
+            }
         }
 
         /// <summary>

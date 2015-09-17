@@ -32,8 +32,9 @@ namespace RC.Engine.Simulator.Engine
             this.startLocation.Write(startLocation);
             this.startPosition.Write(startLocation.MotionControl.PositionVector.Read());
 
-            this.buildings = new RCSet<Building>();
-            this.units = new RCSet<Unit>();
+            this.buildings = new Dictionary<string, RCSet<Building>>();
+            this.addons = new Dictionary<string, RCSet<Addon>>();
+            this.units = new Dictionary<string, RCSet<Unit>>();
         }
 
         /// <summary>
@@ -43,8 +44,29 @@ namespace RC.Engine.Simulator.Engine
         public void AddBuilding(Building building)
         {
             if (building == null) { throw new ArgumentNullException("building"); }
-            this.buildings.Add(building);
+
+            if (!this.buildings.ContainsKey(building.ElementType.Name))
+            {
+                this.buildings.Add(building.ElementType.Name, new RCSet<Building>());
+            }
+            this.buildings[building.ElementType.Name].Add(building);
             building.OnAddedToPlayer(this);
+        }
+
+        /// <summary>
+        /// Adds an addon to this player.
+        /// </summary>
+        /// <param name="addon">The addon to add to this player.</param>
+        public void AddAddon(Addon addon)
+        {
+            if (addon == null) { throw new ArgumentNullException("addon"); }
+
+            if (!this.addons.ContainsKey(addon.ElementType.Name))
+            {
+                this.addons.Add(addon.ElementType.Name, new RCSet<Addon>());
+            }
+            this.addons[addon.ElementType.Name].Add(addon);
+            addon.OnAddedToPlayer(this);
         }
 
         /// <summary>
@@ -54,7 +76,12 @@ namespace RC.Engine.Simulator.Engine
         public void AddUnit(Unit unit)
         {
             if (unit == null) { throw new ArgumentNullException("unit"); }
-            this.units.Add(unit);
+
+            if (!this.units.ContainsKey(unit.ElementType.Name))
+            {
+                this.units.Add(unit.ElementType.Name, new RCSet<Unit>());
+            }
+            this.units[unit.ElementType.Name].Add(unit);
             unit.OnAddedToPlayer(this);
         }
 
@@ -65,8 +92,31 @@ namespace RC.Engine.Simulator.Engine
         public void RemoveBuilding(Building building)
         {
             if (building == null) { throw new ArgumentNullException("building"); }
-            if (!this.buildings.Remove(building)) { throw new InvalidOperationException("The given building is not added to this player!"); }
+
+            if (!this.buildings.ContainsKey(building.ElementType.Name)) { throw new InvalidOperationException("The given building is not added to this player!"); }
+            if (!this.buildings[building.ElementType.Name].Remove(building)) { throw new InvalidOperationException("The given building is not added to this player!"); }
+            if (this.buildings[building.ElementType.Name].Count == 0)
+            {
+                this.buildings.Remove(building.ElementType.Name);
+            }
             building.OnRemovedFromPlayer();
+        }
+
+        /// <summary>
+        /// Removes an addon from this player.
+        /// </summary>
+        /// <param name="addon">The addon to be removed.</param>
+        public void RemoveAddon(Addon addon)
+        {
+            if (addon == null) { throw new ArgumentNullException("addon"); }
+
+            if (!this.addons.ContainsKey(addon.ElementType.Name)) { throw new InvalidOperationException("The given addon is not added to this player!"); }
+            if (!this.addons[addon.ElementType.Name].Remove(addon)) { throw new InvalidOperationException("The given addon is not added to this player!"); }
+            if (this.addons[addon.ElementType.Name].Count == 0)
+            {
+                this.addons.Remove(addon.ElementType.Name);
+            }
+            addon.OnRemovedFromPlayer();
         }
 
         /// <summary>
@@ -76,7 +126,13 @@ namespace RC.Engine.Simulator.Engine
         public void RemoveUnit(Unit unit)
         {
             if (unit == null) { throw new ArgumentNullException("unit"); }
-            if (!this.units.Remove(unit)) { throw new InvalidOperationException("The given unit is not added to this player!"); }
+
+            if (!this.units.ContainsKey(unit.ElementType.Name)) { throw new InvalidOperationException("The given unit is not added to this player!"); }
+            if (!this.units[unit.ElementType.Name].Remove(unit)) { throw new InvalidOperationException("The given unit is not added to this player!"); }
+            if (this.units[unit.ElementType.Name].Count == 0)
+            {
+                this.units.Remove(unit.ElementType.Name);
+            }
             unit.OnRemovedFromPlayer();
         }
 
@@ -90,13 +146,29 @@ namespace RC.Engine.Simulator.Engine
 
             Unit entityAsUnit = entity as Unit;
             Building entityAsBuilding = entity as Building;
+            Addon entityAsAddon = entity as Addon;
 
             if (entityAsUnit != null) { this.RemoveUnit(entityAsUnit); }
             else if (entityAsBuilding != null) { this.RemoveBuilding(entityAsBuilding); }
+            else if (entityAsAddon != null) { this.RemoveAddon(entityAsAddon); }
             else
             {
-                throw new InvalidOperationException("The given entity is neither a unit nor a building!");
+                throw new InvalidOperationException("The given entity is neither a unit, an addon nor a building!");
             }
+        }
+
+        /// <summary>
+        /// Checks whether this player has at least 1 entity of the given type.
+        /// </summary>
+        /// <param name="scenarioElementType">The name of the type to check.</param>
+        /// <returns>True if this player has at least 1 entity of the given type; otherwise false.</returns>
+        public bool HasEntity(string scenarioElementType)
+        {
+            if (scenarioElementType == null) { throw new ArgumentNullException("scenarioElementType"); }
+
+            return this.buildings.ContainsKey(scenarioElementType) ||
+                   this.addons.ContainsKey(scenarioElementType) ||
+                   this.units.ContainsKey(scenarioElementType);
         }
 
         /// <summary>
@@ -126,8 +198,18 @@ namespace RC.Engine.Simulator.Engine
         {
             get
             {
-                foreach (Building building in this.buildings) { yield return building; }
-                foreach (Unit unit in this.units) { yield return unit; }
+                foreach (RCSet<Building> buildings in this.buildings.Values)
+                {
+                    foreach (Building building in buildings) { yield return building; }
+                }
+                foreach (RCSet<Addon> addons in this.addons.Values)
+                {
+                    foreach (Addon addon in addons) { yield return addon; }
+                }
+                foreach (RCSet<Unit> units in this.units.Values)
+                {
+                    foreach (Unit unit in units) { yield return unit; }
+                }
             }
         }
 
@@ -136,10 +218,10 @@ namespace RC.Engine.Simulator.Engine
         /// <see cref="IDisposable.Dispose"/>
         protected override void DisposeImpl()
         {
-            foreach (Unit unit in this.units) { unit.OnRemovedFromPlayer(); }
-            foreach (Building building in this.buildings) { building.OnRemovedFromPlayer(); }
+            foreach (Entity entity in this.Entities) { entity.OnRemovedFromPlayer(); }
             this.units.Clear();
             this.buildings.Clear();
+            this.addons.Clear();
         }
 
         #endregion IDisposable methods
@@ -164,16 +246,22 @@ namespace RC.Engine.Simulator.Engine
         #endregion Heaped members
 
         /// <summary>
-        /// The buildings of the player.
+        /// The buildings of the player grouped by their types.
         /// </summary>
         /// TODO: store the buildings also in a HeapedArray!
-        private readonly RCSet<Building> buildings;
+        private readonly Dictionary<string, RCSet<Building>> buildings;
 
         /// <summary>
-        /// The units of the player.
+        /// The addons of the player grouped by their types.
+        /// </summary>
+        /// TODO: store the buildings also in a HeapedArray!
+        private readonly Dictionary<string, RCSet<Addon>> addons;
+
+        /// <summary>
+        /// The units of the player grouped by their types.
         /// </summary>
         /// TODO: store the units also in a HeapedArray!
-        private readonly RCSet<Unit> units;
+        private readonly Dictionary<string, RCSet<Unit>> units;
 
         /// <summary>
         /// The maximum number of players.

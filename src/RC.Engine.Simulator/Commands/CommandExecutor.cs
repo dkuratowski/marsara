@@ -26,7 +26,7 @@ namespace RC.Engine.Simulator.Commands
         #region ICommandExecutor methods
 
         /// <see cref="ICommandExecutor.GetCommandAvailability"/>
-        public AvailabilityEnum GetCommandAvailability(Scenario scenario, string commandType, IEnumerable<int> entityIDs)
+        public AvailabilityEnum GetCommandAvailability(Scenario scenario, string commandType, string commandParameter, IEnumerable<int> entityIDs)
         {
             /// Get all the existing entities from the scenario that are currently attached to the map.
             RCSet<Entity> entitySet = this.GetEntitiesOnMap(scenario, entityIDs);
@@ -39,7 +39,7 @@ namespace RC.Engine.Simulator.Commands
             foreach (ICommandExecutionFactory factory in this.SelectFactories(commandType, entitySet))
             {
                 isAnyUnavailable = false;
-                AvailabilityEnum availability = factory.GetCommandAvailability(entitySet);
+                AvailabilityEnum availability = factory.GetCommandAvailability(entitySet, commandParameter);
                 if (availability == AvailabilityEnum.Unavailable)
                 {
                     /// If any of the factories says that the command execution is unavailable then the overall result is unavailable.

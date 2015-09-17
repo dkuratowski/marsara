@@ -33,6 +33,7 @@ namespace RC.Engine.Simulator.Engine
             this.armour = this.ConstructField<Armour>("armour");
             this.biometrics = this.ConstructField<Biometrics>("biometrics");
             this.motionControl = this.ConstructField<MotionControl>("motionControl");
+            this.activeProductionLine = this.ConstructField<ProductionLine>("activeProductionLine");
 
             this.mapObject = null;
             this.isFlying.Write(0x00);
@@ -42,6 +43,8 @@ namespace RC.Engine.Simulator.Engine
             this.biometrics.Write(new Biometrics(this));
             this.motionControl.Write(new MotionControl(this));
             this.behaviors = new RCSet<EntityBehavior>(behaviors);
+            this.productionLines = new RCSet<ProductionLine>();
+            this.activeProductionLine.Write(null);
         }
 
         #region Public interface
@@ -129,7 +132,128 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         public MapObject MapObject { get { return this.mapObject; } }
 
+        /// <summary>
+        /// Gets the currently active production line or null if there is no active production line currently.
+        /// </summary>
+        public ProductionLine ActiveProductionLine { get { return this.activeProductionLine.Read(); } }
+
         #endregion Public interface
+
+        #region Production management
+        
+        /// <summary>
+        /// Check whether the given product is currently available.
+        /// </summary>
+        /// <param name="productName">The name of the product to check.</param>
+        /// <returns>True if the given product is currently available; otherwise false.</returns>
+        public bool CheckProductAvailability(string productName)
+        {
+            if (productName == null) { throw new ArgumentNullException("productName"); }
+
+            if (this.activeProductionLine.Read() != null)
+            {
+                /// First we check if the active production line has reached its capacity or not.
+                if (this.activeProductionLine.Read().ItemCount == this.activeProductionLine.Read().Capacity) { return false; }
+
+                /// Then we check if the given product is available at the active production line.
+                IScenarioElementType product = this.activeProductionLine.Read().GetProduct(productName);
+                return product != null;
+            }
+
+            /// If there is no active production line then we have to find a production line where the given product is available.
+            return this.productionLines.Any(productionLine => productionLine.GetProduct(productName) != null);
+        }
+
+        /// <summary>
+        /// Checks whether the given product is currently enabled.
+        /// </summary>
+        /// <param name="productName">The name of the product to check.</param>
+        /// <returns>True if the given product is currently enabled; otherwise false.</returns>
+        public bool IsProductionEnabled(string productName)
+        {
+            if (productName == null) { throw new ArgumentNullException("productName"); }
+
+            /// Search for the product.
+            IScenarioElementType product = null;
+            foreach (ProductionLine productionLine in this.productionLines)
+            {
+                product = productionLine.GetProduct(productName);
+                if (product != null) { break; }
+            }
+            if (product == null) { throw new InvalidOperationException(string.Format("Product '{0}' is not available at any of the registered production lines!", productName)); }
+
+            /// Execute custom check.
+            if (!this.IsProductionEnabledImpl(product)) { return false; }
+
+            /// Check the requirements of the product.
+            foreach (IRequirement requirement in product.Requirements)
+            {
+                if (!this.Owner.HasEntity(requirement.RequiredBuildingType.Name)) { return false; }
+                if (requirement.RequiredAddonType != null && !this.Owner.HasEntity(requirement.RequiredAddonType.Name)) { return false; }
+            }
+
+            /// All the requirements were satisfied.
+            return true;
+        }
+
+        /// <summary>
+        /// Start producing the given product.
+        /// </summary>
+        /// <param name="productName">The name of the product to start producing.</param>
+        public void StartProduction(string productName)
+        {
+            if (productName == null) { throw new ArgumentNullException("productName"); }
+
+            /// If there is no active production line -> activate one.
+            if (this.activeProductionLine.Read() == null)
+            {
+                foreach (ProductionLine line in this.productionLines)
+                {
+                    if (line.GetProduct(productName) != null)
+                    {
+                        this.activeProductionLine.Write(line);
+                        break;
+                    }
+                }
+
+                /// Check if we could activate a production line.
+                if (this.activeProductionLine.Read() == null)
+                {
+                    throw new InvalidOperationException(string.Format("Product '{0}' is not available at any of the registered production lines!", productName));
+                }
+            }
+
+            /// Start producing the given product with the active production line.
+            this.activeProductionLine.Read().StartProduction(productName);
+        }
+
+        /// <summary>
+        /// Registers the given production line to this entity.
+        /// </summary>
+        /// <param name="productionLine">The production line to be registered.</param>
+        protected void RegisterProductionLine(ProductionLine productionLine)
+        {
+            if (productionLine == null) { throw new ArgumentNullException("productionLine"); }
+            if (this.Scenario != null) { throw new InvalidOperationException("Production line cannot be registered while this entity is added to a scenario!"); }
+            if (this.productionLines.Contains(productionLine)) { throw new InvalidOperationException("The given production line has already been registered!"); }
+
+            this.productionLines.Add(productionLine);
+        }
+
+        /// <summary>
+        /// Unregisters the given production line from this entity.
+        /// </summary>
+        /// <param name="productionLine">The production line to be unregistered.</param>
+        protected void UnregisterProductionLine(ProductionLine productionLine)
+        {
+            if (productionLine == null) { throw new ArgumentNullException("productionLine"); }
+            if (this.Scenario != null) { throw new InvalidOperationException("Production line cannot be unregistered while this entity is added to a scenario!"); }
+            if (!this.productionLines.Contains(productionLine)) { throw new InvalidOperationException("The given production line has not yet been registered!"); }
+
+            this.productionLines.Remove(productionLine);
+        }
+
+        #endregion Production management
 
         #region Overrides
 
@@ -138,6 +262,14 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <remarks>Can be overriden in the derived classes.</remarks>
         protected virtual string DestructionAnimationName { get { throw new NotSupportedException("Entity.DestructionAnimationName not supported for this entity!"); } }
+
+        /// <summary>
+        /// The derived classes can implement additional checks whether the given product is currently enabled.
+        /// </summary>
+        /// <param name="product">The product to be checked.</param>
+        /// <returns>True if the given product is currently enabled; otherwise false.</returns>
+        /// <remarks>This method can be overriden in the derived classes. The default implementation does nothing.</remarks>
+        protected virtual bool IsProductionEnabledImpl(IScenarioElementType product) { return true; }
 
         /// <see cref="ScenarioElement.UpdateStateImpl"/>
         protected sealed override void UpdateStateImpl()
@@ -152,8 +284,19 @@ namespace RC.Engine.Simulator.Engine
             /// Ask the behaviors to perform additional updates on this entity.
             foreach (EntityBehavior behavior in this.behaviors) { behavior.UpdateState(this); }
 
+            /// Continue motion and attack.
             this.motionControl.Read().UpdateState();
             this.armour.Read().ContinueAttack();
+
+            /// Continue production.
+            if (this.activeProductionLine.Read() != null)
+            {
+                this.activeProductionLine.Read().ContinueProduction();
+                if (this.activeProductionLine.Read().ItemCount == 0)
+                {
+                    this.activeProductionLine.Write(null);
+                }
+            }
         }
 
         /// <see cref="ScenarioElement.UpdateMapObjectsImpl"/>
@@ -281,7 +424,18 @@ namespace RC.Engine.Simulator.Engine
         /// The behaviors of this entity.
         /// </summary>
         /// TODO: store these objects also in a HeapedArray!
-        private RCSet<EntityBehavior> behaviors;
+        private readonly RCSet<EntityBehavior> behaviors;
+
+        /// <summary>
+        /// The registered production lines of this entity.
+        /// </summary>
+        /// TODO: store these objects also in a HeapedArray!
+        private readonly RCSet<ProductionLine> productionLines;
+
+        /// <summary>
+        /// Reference to the active production line or null if there is no active production line currently.
+        /// </summary>
+        private readonly HeapedValue<ProductionLine> activeProductionLine;
 
         /// <summary>
         /// Reference to the map object that represents this entity on the map or null if this entity is not currently

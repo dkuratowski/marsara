@@ -51,5 +51,20 @@ namespace RC.Engine.Simulator.Metadata
         /// <param name="upgradeTypeName">The name of the upgrade type.</param>
         /// <returns>The upgrade type with the given name.</returns>
         IUpgradeType GetUpgradeType(string upgradeTypeName);
+
+        /// <summary>
+        /// Gets the addon types of this building type.
+        /// </summary>
+        IEnumerable<IAddonType> AddonTypes { get; }
+
+        /// <summary>
+        /// Gets the unit types of this building type.
+        /// </summary>
+        IEnumerable<IUnitType> UnitTypes { get; }
+
+        /// <summary>
+        /// Gets the upgrade types of this building type.
+        /// </summary>
+        IEnumerable<IUpgradeType> UpgradeTypes { get; }
     }
 }

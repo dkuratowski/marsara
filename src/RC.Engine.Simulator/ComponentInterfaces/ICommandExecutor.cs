@@ -23,14 +23,15 @@ namespace RC.Engine.Simulator.ComponentInterfaces
     public interface ICommandExecutor
     {
         /// <summary>
-        /// Gets the availability of the given command for the given set of entities based on the current state
+        /// Gets the availability of the given command with the given parameter for the given set of entities based on the current state
         /// of the given scenario.
         /// </summary>
         /// <param name="scenario">The scenario of the entities.</param>
         /// <param name="commandType">The type of the command.</param>
+        /// <param name="commandParameter">The parameter of the command.</param>
         /// <param name="entityIDs">The IDs of the entities.</param>
         /// <returns>The availability of the given command for the given set of entities.</returns>
-        AvailabilityEnum GetCommandAvailability(Scenario scenario, string commandType, IEnumerable<int> entityIDs);
+        AvailabilityEnum GetCommandAvailability(Scenario scenario, string commandType, string commandParameter, IEnumerable<int> entityIDs);
 
         /// <summary>
         /// Starts the execution of the given command on the given scenario.

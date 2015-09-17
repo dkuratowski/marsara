@@ -16,32 +16,48 @@ namespace RC.Engine.Simulator.Commands
         /// <summary>
         /// Constructs a BasicCmdExecutionFactory instance.
         /// </summary>
-        /// <param name="productType">The type of the product.</param>
         /// <param name="entityType">The type of the recipient entities.</param>
-        public ProductionExecutionFactory(string productType, string entityType)
+        /// <param name="firstProductType">The type of the first product that this execution factory is responsible for.</param>
+        /// <param name="furtherProductTypes">The types of the further products that this execution factory is responsible for.</param>
+        public ProductionExecutionFactory(string entityType, string firstProductType, params string[] furtherProductTypes)
             : base(COMMAND_TYPE, entityType)
         {
-            this.productType = productType;
+            if (firstProductType == null) { throw new ArgumentNullException("firstProductType"); }
+            if (furtherProductTypes == null) { throw new ArgumentNullException("furtherProductTypes"); }
+
+            this.productTypes = new RCSet<string>();
+            this.productTypes.Add(firstProductType);
+            foreach (string furtherProductType in furtherProductTypes)
+            {
+                this.productTypes.Add(furtherProductType);
+            }
         }
 
         /// <see cref="CommandExecutionFactoryBase.GetCommandAvailability"/>
-        protected override AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitiesToHandle, RCSet<Entity> fullEntitySet)
+        protected override AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitiesToHandle, RCSet<Entity> fullEntitySet, string parameter)
         {
-            /// TODO: implement this method!
-            return AvailabilityEnum.Enabled;
+            if (!this.productTypes.Contains(parameter)) { return AvailabilityEnum.Unavailable; }
+            if (entitiesToHandle.Count != 1) { return AvailabilityEnum.Unavailable; }
+
+            Entity producerEntity = entitiesToHandle.First();
+            if (!producerEntity.CheckProductAvailability(parameter)) { return AvailabilityEnum.Unavailable; }
+            return producerEntity.IsProductionEnabled(parameter) ? AvailabilityEnum.Enabled : AvailabilityEnum.Disabled;
         }
 
         /// <see cref="CommandExecutionFactoryBase.CreateCommandExecutions"/>
         protected override IEnumerable<CmdExecutionBase> CreateCommandExecutions(RCSet<Entity> entitiesToHandle, RCSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID, string parameter)
         {
-            /// TODO: implement this method!
-            yield break;
+            foreach (Entity entity in entitiesToHandle)
+            {
+                ProductionExecution productExecution = new ProductionExecution(entity, parameter);
+                yield return productExecution;
+            }
         }
 
         /// <summary>
-        /// The type of the product.
+        /// The types of the products that this execution factory is responsible for.
         /// </summary>
-        private readonly string productType;
+        private readonly RCSet<string> productTypes;
 
         /// <summary>
         /// The type of the command selected by this type of listeners.

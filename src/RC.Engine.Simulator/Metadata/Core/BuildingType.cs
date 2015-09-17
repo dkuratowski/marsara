@@ -64,6 +64,15 @@ namespace RC.Engine.Simulator.Metadata.Core
         {
             return this.GetUpgradeTypeImpl(upgradeTypeName);
         }
+
+        /// <see cref="IBuildingType.AddonTypes"/>
+        public IEnumerable<IAddonType> AddonTypes { get { return this.addonTypes.Values; } }
+
+        /// <see cref="IBuildingType.UnitTypes"/>
+        public IEnumerable<IUnitType> UnitTypes { get { return this.unitTypes.Values; } }
+
+        /// <see cref="IBuildingType.UpgradeTypes"/>
+        public IEnumerable<IUpgradeType> UpgradeTypes { get { return this.upgradeTypes.Values; } }
         
         #endregion IBuildingType members
 
@@ -132,16 +141,16 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// List of the unit types that are created in buildings of this type mapped by their names.
         /// </summary>
-        private Dictionary<string, UnitType> unitTypes;
+        private readonly Dictionary<string, UnitType> unitTypes;
 
         /// <summary>
         /// List of the addon types that are created by buildings of this type mapped by their names.
         /// </summary>
-        private Dictionary<string, AddonType> addonTypes;
+        private readonly Dictionary<string, AddonType> addonTypes;
 
         /// <summary>
         /// List of the upgrade types that are performed in buildings of this type mapped by their names.
         /// </summary>
-        private Dictionary<string, UpgradeType> upgradeTypes;
+        private readonly Dictionary<string, UpgradeType> upgradeTypes;
     }
 }

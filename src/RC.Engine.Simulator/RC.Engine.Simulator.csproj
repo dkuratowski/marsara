@@ -82,6 +82,7 @@
     <Compile Include="Commands\HoldExecution.cs" />
     <Compile Include="Commands\MoveExecution.cs" />
     <Compile Include="Commands\PatrolExecution.cs" />
+    <Compile Include="Commands\ProductionExecution.cs" />
     <Compile Include="Commands\ProductionExecutionFactory.cs" />
     <Compile Include="Commands\StopExecution.cs" />
     <Compile Include="Commands\CmdExecutionBase.cs" />
@@ -105,12 +106,14 @@
     <Compile Include="Engine\MapObject.cs" />
     <Compile Include="Engine\Missile.cs" />
     <Compile Include="Engine\MotionControl.cs" />
+    <Compile Include="Engine\ProductionLine.cs" />
     <Compile Include="Engine\ScenarioElement.cs" />
     <Compile Include="Engine\ScenarioMapContext.cs" />
     <Compile Include="Engine\StandardWeapon.cs" />
     <Compile Include="Engine\Weapon.cs" />
     <Compile Include="Metadata\Core\MissileData.cs" />
     <Compile Include="Metadata\IMissileData.cs" />
+    <Compile Include="Metadata\IRequirement.cs" />
     <Compile Include="MotionControl\BasicVelocityGraph.cs" />
     <Compile Include="MotionControl\DynamicObstacleInfo.cs" />
     <Compile Include="MotionControl\GroundUnitPathTracker.cs" />

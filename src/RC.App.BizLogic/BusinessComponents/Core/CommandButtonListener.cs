@@ -23,6 +23,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 return this.commandExecutor.GetCommandAvailability(
                     this.scenarioManagerBC.ActiveScenario,
                     this.selectedCommandType,
+                    null,
                     this.selectionManagerBC.CurrentSelection);
             }
         }

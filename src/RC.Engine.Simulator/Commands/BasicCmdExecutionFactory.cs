@@ -40,7 +40,7 @@ namespace RC.Engine.Simulator.Commands
         }
 
         /// <see cref="CommandExecutionFactoryBase.GetCommandAvailability"/>
-        protected override AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitiesToHandle, RCSet<Entity> fullEntitySet)
+        protected override AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitiesToHandle, RCSet<Entity> fullEntitySet, string parameter)
         {
             /// TODO: implement this method!
             return AvailabilityEnum.Enabled;
