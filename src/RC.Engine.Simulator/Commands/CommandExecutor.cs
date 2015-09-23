@@ -12,14 +12,13 @@ namespace RC.Engine.Simulator.Commands
     /// Implementation of the ICommandExecutor interface.
     /// </summary>
     [Component("RC.Engine.Simulator.CommandExecutor")]
-    class CommandExecutor : ICommandExecutor, IPlayerInitializer, ICommandExecutorPluginInstall
+    class CommandExecutor : ICommandExecutor, ICommandExecutorPluginInstall
     {
         /// <summary>
         /// Constructs a CommandExecutor instance.
         /// </summary>
         public CommandExecutor()
         {
-            this.playerInitializers = new Dictionary<RaceEnum, Action<Player>>();
             this.commandExecutionFactories = new Dictionary<string, Dictionary<string, ICommandExecutionFactory>>();
         }
 
@@ -89,27 +88,7 @@ namespace RC.Engine.Simulator.Commands
 
         #endregion ICommandExecutor methods
 
-        #region IPlayerInitializer methods
-
-        /// <see cref="IPlayerInitializer.Initialize"/>
-        public void Initialize(Player player, RaceEnum race)
-        {
-            if (player == null) { throw new ArgumentNullException("player"); }
-            if (!this.playerInitializers.ContainsKey(race)) { throw new SimulatorException(string.Format("Player initializer not found for race '{0}'!", race)); }
-            this.playerInitializers[race](player);
-        }
-
-        #endregion IPlayerInitializer methods
-
         #region ICommandExecutorPluginInstall methods
-
-        /// <see cref="ICommandExecutorPluginInstall.RegisterPlayerInitializer"/>
-        public void RegisterPlayerInitializer(RaceEnum race, Action<Player> initializer)
-        {
-            if (initializer == null) { throw new ArgumentNullException("initializer"); }
-            if (this.playerInitializers.ContainsKey(race)) { throw new InvalidOperationException(string.Format("Player initializer has already been registered for race '{0}'!", race)); }
-            this.playerInitializers[race] = initializer;
-        }
 
         /// <see cref="ICommandExecutorPluginInstall.RegisterCommandExecutionFactory"/>
         public void RegisterCommandExecutionFactory(ICommandExecutionFactory factory)
@@ -188,11 +167,6 @@ namespace RC.Engine.Simulator.Commands
         }
 
         #endregion Internal methods
-
-        /// <summary>
-        /// List of the registered player initializers mapped by the corresponding races.
-        /// </summary>
-        private readonly Dictionary<RaceEnum, Action<Player>> playerInitializers;
 
         /// <summary>
         /// List of the command execution factories registered by the engine plugins mapped by the corresponding

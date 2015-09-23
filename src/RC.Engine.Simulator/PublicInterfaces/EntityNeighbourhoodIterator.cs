@@ -7,7 +7,7 @@ using RC.Engine.Simulator.Engine;
 namespace RC.Engine.Simulator.PublicInterfaces
 {
     /// <summary>
-    /// This iterator iterates
+    /// This iterator visits the cells around a given central entity.
     /// </summary>
     public class EntityNeighbourhoodIterator : CellIteratorBase
     {
@@ -118,7 +118,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <summary>
         /// Reference to the entity at the center of the iteration.
         /// </summary>
-        private Entity centralEntity;
+        private readonly Entity centralEntity;
 
         /// <summary>
         /// Constants to determine the scan operation list.

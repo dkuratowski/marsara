@@ -43,6 +43,15 @@ namespace RC.App.BizLogic.Services
         void PressCommandButton(RCIntVector panelPosition);
 
         /// <summary>
+        /// Notifies the backend that the given production button has been pressed on the production line display.
+        /// </summary>
+        /// <param name="panelPosition">The position of the pressed button.</param>
+        /// <exception cref="InvalidOperationException">
+        /// If there is no production button at the given position in the current state.
+        /// </exception>
+        void PressProductionButton(int panelPosition);
+
+        /// <summary>
         /// Notifies the backend that a target position has been selected on the map.
         /// </summary>
         /// <param name="position">The position inside the displayed area in pixels.</param>

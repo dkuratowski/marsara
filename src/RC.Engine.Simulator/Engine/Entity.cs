@@ -34,6 +34,7 @@ namespace RC.Engine.Simulator.Engine
             this.biometrics = this.ConstructField<Biometrics>("biometrics");
             this.motionControl = this.ConstructField<MotionControl>("motionControl");
             this.activeProductionLine = this.ConstructField<ProductionLine>("activeProductionLine");
+            this.nextProductionJobID = this.ConstructField<int>("nextProductionJobID");
 
             this.mapObject = null;
             this.isFlying.Write(0x00);
@@ -45,6 +46,7 @@ namespace RC.Engine.Simulator.Engine
             this.behaviors = new RCSet<EntityBehavior>(behaviors);
             this.productionLines = new RCSet<ProductionLine>();
             this.activeProductionLine.Write(null);
+            this.nextProductionJobID.Write(0);
         }
 
         #region Public interface
@@ -223,8 +225,35 @@ namespace RC.Engine.Simulator.Engine
                 }
             }
 
-            /// Start producing the given product with the active production line.
-            this.activeProductionLine.Read().StartProduction(productName);
+            /// Enqueue the given product into the active production line.
+            this.activeProductionLine.Read().EnqueueJob(productName, this.nextProductionJobID.Read());
+            if (this.activeProductionLine.Read().ItemCount > 0)
+            {
+                /// Increment the production job ID in case of success.
+                this.nextProductionJobID.Write(this.nextProductionJobID.Read() + 1);
+            }
+            else
+            {
+                /// Deactivate the production line in case of failure.
+                this.activeProductionLine.Write(null);
+            }
+        }
+
+        /// <summary>
+        /// Cancels the given production job.
+        /// </summary>
+        /// <param name="productionJobID">The ID of the production job to be cancelled.</param>
+        public void CancelProduction(int productionJobID)
+        {
+            if (this.activeProductionLine.Read() != null)
+            {
+                this.activeProductionLine.Read().RemoveJob(productionJobID);
+                if (this.activeProductionLine.Read().ItemCount == 0)
+                {
+                    /// Deactivate the production line if there is no more job.
+                    this.activeProductionLine.Write(null);
+                }
+            }
         }
 
         /// <summary>
@@ -417,6 +446,11 @@ namespace RC.Engine.Simulator.Engine
         /// Reference to the motion control of this entity.
         /// </summary>
         private readonly HeapedValue<MotionControl> motionControl;
+
+        /// <summary>
+        /// The ID of the next production job.
+        /// </summary>
+        private readonly HeapedValue<int> nextProductionJobID;
 
         #endregion Heaped members
 

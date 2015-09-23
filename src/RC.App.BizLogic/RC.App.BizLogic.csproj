@@ -90,6 +90,7 @@
     <Compile Include="BusinessComponents\Core\BuildingButtonListener.cs" />
     <Compile Include="BusinessComponents\Core\ButtonListener.cs" />
     <Compile Include="BusinessComponents\Core\CancelButtonListener.cs" />
+    <Compile Include="BusinessComponents\Core\CancelProductionButtonListener.cs" />
     <Compile Include="BusinessComponents\Core\CommandBuilder.cs" />
     <Compile Include="BusinessComponents\Core\CommandButtonListener.cs" />
     <Compile Include="BusinessComponents\Core\CommandInputListener.cs" />
@@ -114,7 +115,6 @@
     <Compile Include="BusinessComponents\IMapWindowBC.cs" />
     <Compile Include="BusinessComponents\IMinimap.cs" />
     <Compile Include="BusinessComponents\IMinimapPixel.cs" />
-    <Compile Include="BusinessComponents\IProductionLineManagerBC.cs" />
     <Compile Include="BusinessComponents\ISelectionManagerBC.cs" />
     <Compile Include="BusinessComponents\Core\ScenarioManagerBC.cs" />
     <Compile Include="BusinessComponents\IScenarioManagerBC.cs" />

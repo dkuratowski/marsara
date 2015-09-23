@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -34,6 +36,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.allSpritePalettes = new List<ISpritePalette>();
             this.productButtonSprites = new Dictionary<string, SpriteInst>();
             this.commandBuilder = null;
+            this.selectionManager = null;
         }
 
         #region Overrides from ScenarioDependentComponent
@@ -41,6 +44,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="ScenarioDependentComponent.StartImpl"/>
         protected override void StartImpl()
         {
+            this.selectionManager = ComponentManager.GetInterface<ISelectionManagerBC>();
             this.commandBuilder = new CommandBuilder();
 
             /// Load the command input listeners from the configured directory.
@@ -111,6 +115,32 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (slot.ButtonState == CommandButtonStateEnum.Disabled) { throw new InvalidOperationException(string.Format("The command button at {0} is disabled!", panelPosition)); }
 
             this.CompleteListener(slot.Listener);
+        }
+
+        /// <see cref="ICommandManagerBC.PressProductionButton"/>
+        public void PressProductionButton(int panelPosition)
+        {
+            int[] currentSelection = this.selectionManager.CurrentSelection.ToArray();
+            if (currentSelection.Length != 1) { throw new InvalidOperationException("Exactly 1 entity has to be selected!"); }
+
+            /// Check if the selected entity exists and its owner is the local player.
+            Entity entity = this.ActiveScenario.GetElementOnMap<Entity>(currentSelection[0]);
+            if (entity == null) { throw new InvalidOperationException(String.Format("Entity with ID '{0}' doesn't exist!", currentSelection[0])); }
+            if (entity.Owner == null || entity.Owner.PlayerIndex != (int)this.selectionManager.LocalPlayer) { throw new InvalidOperationException("The owner of the selected entity is not the local player!"); }
+
+            /// Get the ID of the production job at the given position in the active production line of the selected entity.
+            ProductionLine productionLine = entity.ActiveProductionLine;
+            if (productionLine == null) { throw new InvalidOperationException("The selected entity has no active production line!"); }
+            int productionJobID = productionLine.GetProductionJobID(panelPosition);
+
+            /// Create and send the CancelProduction command.
+            RCCommand cancelProductionCommand = new RCCommand(CANCEL_PRODUCTION_COMMAND_TYPE,
+                                                              currentSelection,
+                                                              RCNumVector.Undefined,
+                                                              -1,
+                                                              productionJobID.ToString(CultureInfo.InvariantCulture));
+            TraceManager.WriteAllTrace(cancelProductionCommand, BizLogicTraceFilters.INFO);
+            if (this.NewCommand != null) { this.NewCommand(cancelProductionCommand); }
         }
 
         /// <see cref="ICommandManagerBC.SelectTargetPosition"/>
@@ -440,6 +470,16 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// Reference to the command builder.
         /// </summary>
         private CommandBuilder commandBuilder;
+
+        /// <summary>
+        /// Reference to the selection manager business component.
+        /// </summary>
+        private ISelectionManagerBC selectionManager;
+
+        /// <summary>
+        /// The type of the command sent when a production button is pressed.
+        /// </summary>
+        private const string CANCEL_PRODUCTION_COMMAND_TYPE = "CancelProduction";
 
         /// <summary>
         /// The size of the command button array.

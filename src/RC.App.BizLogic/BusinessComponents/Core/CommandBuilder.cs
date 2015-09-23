@@ -132,6 +132,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// Reference to the selection manager business component.
         /// </summary>
-        private ISelectionManagerBC selectionManager;
+        private readonly ISelectionManagerBC selectionManager;
     }
 }

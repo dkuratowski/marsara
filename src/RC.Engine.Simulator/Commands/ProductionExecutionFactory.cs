@@ -14,7 +14,7 @@ namespace RC.Engine.Simulator.Commands
     public class ProductionExecutionFactory : CommandExecutionFactoryBase<Entity>
     {
         /// <summary>
-        /// Constructs a BasicCmdExecutionFactory instance.
+        /// Constructs a ProductionExecutionFactory instance.
         /// </summary>
         /// <param name="entityType">The type of the recipient entities.</param>
         /// <param name="firstProductType">The type of the first product that this execution factory is responsible for.</param>
@@ -60,7 +60,7 @@ namespace RC.Engine.Simulator.Commands
         private readonly RCSet<string> productTypes;
 
         /// <summary>
-        /// The type of the command selected by this type of listeners.
+        /// The type of the command handled by this factory.
         /// </summary>
         private const string COMMAND_TYPE = "StartProduction";
     }

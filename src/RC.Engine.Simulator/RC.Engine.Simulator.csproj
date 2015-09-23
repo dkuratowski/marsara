@@ -82,6 +82,8 @@
     <Compile Include="Commands\HoldExecution.cs" />
     <Compile Include="Commands\MoveExecution.cs" />
     <Compile Include="Commands\PatrolExecution.cs" />
+    <Compile Include="Commands\ProductionCancelExecution.cs" />
+    <Compile Include="Commands\ProductionCancelExecutionFactory.cs" />
     <Compile Include="Commands\ProductionExecution.cs" />
     <Compile Include="Commands\ProductionExecutionFactory.cs" />
     <Compile Include="Commands\StopExecution.cs" />
@@ -92,12 +94,14 @@
     <Compile Include="Commands\MagicBox.cs" />
     <Compile Include="Commands\RCCommand.cs" />
     <Compile Include="ComponentInterfaces\ICommandExecutor.cs" />
+    <Compile Include="ComponentInterfaces\IEntityFactoryPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IHeapManager.cs" />
     <Compile Include="ComponentInterfaces\IScenarioLoader.cs" />
     <Compile Include="ComponentInterfaces\IHeapManagerPluginInstall.cs" />
     <Compile Include="Commands\ICommandExecutorPluginInstall.cs" />
-    <Compile Include="ComponentInterfaces\IPlayerInitializer.cs" />
+    <Compile Include="ComponentInterfaces\IEntityFactory.cs" />
     <Compile Include="ComponentInterfaces\IScenarioLoaderPluginInstall.cs" />
+    <Compile Include="Core\EntityFactory.cs" />
     <Compile Include="Core\HeadingToMapDirConverter.cs" />
     <Compile Include="Engine\Biometrics.cs" />
     <Compile Include="Engine\BurndownBehavior.cs" />

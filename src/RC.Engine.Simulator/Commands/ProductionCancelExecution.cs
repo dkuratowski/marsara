@@ -3,28 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common;
-using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Commands
 {
     /// <summary>
-    /// Responsible for executing production start commands.
+    /// Responsible for executing production cancel commands.
     /// </summary>
-    public class ProductionExecution : CmdExecutionBase
+    public class ProductionCancelExecution : CmdExecutionBase
     {
         /// <summary>
-        /// Creates a ProductionExecution instance.
+        /// Creates a ProductionCancelExecution instance.
         /// </summary>
         /// <param name="recipientEntity">The recipient entity of this command execution.</param>
-        /// <param name="product">The typename of the product.</param>
-        public ProductionExecution(Entity recipientEntity, string product)
+        /// <param name="productionJobID">The ID of the production job to be cancelled.</param>
+        public ProductionCancelExecution(Entity recipientEntity, int productionJobID)
             : base(new RCSet<Entity> { recipientEntity })
         {
             this.recipientEntity = this.ConstructField<Entity>("recipientEntity");
+            this.productionJobID = this.ConstructField<int>("productionJobID");
             this.recipientEntity.Write(recipientEntity);
-            this.product = product;
+            this.productionJobID.Write(productionJobID);
         }
 
         #region Overrides
@@ -32,13 +32,7 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="CmdExecutionBase.ContinueImpl"/>
         protected override bool ContinueImpl()
         {
-            if (this.recipientEntity.Read().CheckProductAvailability(product))
-            {
-                if (this.recipientEntity.Read().IsProductionEnabled(product))
-                {
-                    this.recipientEntity.Read().StartProduction(product);
-                }
-            }
+            this.recipientEntity.Read().CancelProduction(this.productionJobID.Read());
             return true;
         }
 
@@ -50,9 +44,8 @@ namespace RC.Engine.Simulator.Commands
         private readonly HeapedValue<Entity> recipientEntity;
 
         /// <summary>
-        /// The typename of the product.
+        /// The ID of the production job to be cancelled.
         /// </summary>
-        /// TODO: heap this field!
-        private readonly string product;
+        private readonly HeapedValue<int> productionJobID;
     }
 }

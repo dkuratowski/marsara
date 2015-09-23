@@ -56,7 +56,7 @@ namespace RC.App.BizLogic.Views.Core
                 if (activeProductionLine == null) { return -1; }
 
                 int progress = activeProductionLine.Progress;
-                int totalBuildTime = activeProductionLine[0].BuildTime.Read();
+                int totalBuildTime = activeProductionLine.GetProductionJob(0).BuildTime.Read();
                 return (RCNumber)progress/(RCNumber)totalBuildTime;
             }
         }
@@ -69,7 +69,7 @@ namespace RC.App.BizLogic.Views.Core
                 ProductionLine activeProductionLine = this.GetActiveProductionLine();
                 if (activeProductionLine == null) { throw new InvalidOperationException("Active production line of the current selection cannot be accessed!"); }
 
-                IScenarioElementType job = activeProductionLine[itemIndex];
+                IScenarioElementType job = activeProductionLine.GetProductionJob(itemIndex);
                 if (job == null) { throw new InvalidOperationException(string.Format("There is no production job at index {0} int the active production line of the current selection!", itemIndex)); }
                 
                 /// Retrieve the icon of the job from the CommandManagerBC!

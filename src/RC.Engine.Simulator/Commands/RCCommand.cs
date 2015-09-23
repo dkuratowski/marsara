@@ -117,6 +117,6 @@ namespace RC.Engine.Simulator.Commands
         /// <summary>
         /// The ID of the command package format.
         /// </summary>
-        private static int COMMAND_PACKAGEFORMAT = RCPackageFormatMap.Get("RC.Engine.Simulator.Command");
+        private static readonly int COMMAND_PACKAGEFORMAT = RCPackageFormatMap.Get("RC.Engine.Simulator.Command");
     }
 }

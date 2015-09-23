@@ -42,7 +42,7 @@ namespace RC.Engine.Simulator.Engine
 
             /// Initialize the non-heaped members.
             this.map = map;
-            this.playerInitializer = ComponentManager.GetInterface<IPlayerInitializer>();
+            this.entityFactory = ComponentManager.GetInterface<IEntityFactory>();
             this.objectsOnMap = new BspSearchTree<MapObject>(
                         new RCNumRectangle(-(RCNumber)1 / (RCNumber)2,
                                            -(RCNumber)1 / (RCNumber)2,
@@ -79,7 +79,7 @@ namespace RC.Engine.Simulator.Engine
             Player newPlayer = new Player(index, startLocation);
             startLocation.DetachFromMap();
             this.players[index].Write(newPlayer);
-            this.playerInitializer.Initialize(newPlayer, race);
+            this.entityFactory.InitializePlayer(newPlayer, race);
         }
 
         /// <summary>
@@ -544,9 +544,9 @@ namespace RC.Engine.Simulator.Engine
         private readonly RCSet<ScenarioElement> elementsToRemoveAfterUpdate;
 
         /// <summary>
-        /// Reference to the player initializer component.
+        /// Reference to the entity factory component.
         /// </summary>
-        private readonly IPlayerInitializer playerInitializer;
+        private readonly IEntityFactory entityFactory;
 
         /// <summary>
         /// This flag indicates if adding and removing scenario elements is currently forbidden or not.

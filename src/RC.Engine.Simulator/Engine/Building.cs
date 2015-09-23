@@ -33,17 +33,17 @@ namespace RC.Engine.Simulator.Engine
             List<IScenarioElementType> upgradeTypes = new List<IScenarioElementType>(this.buildingType.UpgradeTypes);
             if (unitTypes.Count > 0)
             {
-                ProductionLine unitProductionLine = new ProductionLine(Constants.UNIT_PRODUCTION_LINE_CAPACITY, unitTypes);
+                ProductionLine unitProductionLine = new ProductionLine(this, Constants.UNIT_PRODUCTION_LINE_CAPACITY, unitTypes);
                 this.RegisterProductionLine(unitProductionLine);
             }
             if (addonTypes.Count > 0)
             {
-                ProductionLine addonProductionLine = new ProductionLine(Constants.ADDON_PRODUCTION_LINE_CAPACITY, addonTypes);
+                ProductionLine addonProductionLine = new ProductionLine(this, Constants.ADDON_PRODUCTION_LINE_CAPACITY, addonTypes);
                 this.RegisterProductionLine(addonProductionLine);
             }
             if (upgradeTypes.Count > 0)
             {
-                ProductionLine upgradeProductionLine = new ProductionLine(Constants.UPGRADE_PRODUCTION_LINE_CAPACITY, upgradeTypes);
+                ProductionLine upgradeProductionLine = new ProductionLine(this, Constants.UPGRADE_PRODUCTION_LINE_CAPACITY, upgradeTypes);
                 this.RegisterProductionLine(upgradeProductionLine);
             }
 

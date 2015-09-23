@@ -127,13 +127,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// The list of the command input listener types mapped by the name of the XML-nodes from which to load them.
         /// </summary>
-        private static Dictionary<string, Type> commandInputListenerTypes = new Dictionary<string, Type>
+        private static readonly Dictionary<string, Type> commandInputListenerTypes = new Dictionary<string, Type>
         {
             { "commandButton", typeof(CommandButtonListener) },
             { "buildingButton", typeof(BuildingButtonListener) },
             { "cancelButton", typeof(CancelButtonListener) },
             { "selectTargetPosition", typeof(TargetPositionListener) },
             { "productionButton", typeof(ProductionButtonListener) },
+            { "cancelProductionButton", typeof(CancelProductionButtonListener) },
         };
     }
 

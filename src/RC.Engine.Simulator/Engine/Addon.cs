@@ -28,7 +28,7 @@ namespace RC.Engine.Simulator.Engine
             List<IScenarioElementType> upgradeTypes = new List<IScenarioElementType>(this.addonType.UpgradeTypes);
             if (upgradeTypes.Count > 0)
             {
-                ProductionLine upgradeProductionLine = new ProductionLine(Constants.UPGRADE_PRODUCTION_LINE_CAPACITY, upgradeTypes);
+                ProductionLine upgradeProductionLine = new ProductionLine(this, Constants.UPGRADE_PRODUCTION_LINE_CAPACITY, upgradeTypes);
                 this.RegisterProductionLine(upgradeProductionLine);
             }
         }

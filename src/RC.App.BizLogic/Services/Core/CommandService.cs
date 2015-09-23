@@ -88,6 +88,14 @@ namespace RC.App.BizLogic.Services.Core
             this.commandManager.PressCommandButton(panelPosition);
         }
 
+        /// <see cref="ICommandService.PressProductionButton"/>
+        public void PressProductionButton(int panelPosition)
+        {
+            if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+
+            this.commandManager.PressProductionButton(panelPosition);
+        }
+
         /// <see cref="ICommandService.SelectTargetPosition"/>
         public void SelectTargetPosition(RCIntVector position)
         {

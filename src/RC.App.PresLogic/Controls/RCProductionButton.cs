@@ -30,6 +30,7 @@ namespace RC.App.PresLogic.Controls
 
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
             this.productionLineView = viewService.CreateView<IProductionLineView>();
+            this.commandService = ComponentManager.GetInterface<ICommandService>();
 
             this.productionButtonSprite = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ProductionButton");
             this.layoutIndex = layoutIndex;
@@ -74,14 +75,22 @@ namespace RC.App.PresLogic.Controls
         {
             if (sender != this) { throw new InvalidOperationException("Unexpected sender!"); }
 
-            /// TODO: implement this method!
-            TraceManager.WriteAllTrace(string.Format("ProdButton {0}", this.layoutIndex), PresLogicTraceFilters.INFO);
+            /// Check if this production button is really attached to a production job.
+            if (this.layoutIndex >= this.productionLineView.ItemCount) { return; }
+
+            /// Send the event to the command service.
+            this.commandService.PressProductionButton(this.layoutIndex);
         }
 
         /// <summary>
         /// Reference to the production line view.
         /// </summary>
         private readonly IProductionLineView productionLineView;
+
+        /// <summary>
+        /// Reference to the command service.
+        /// </summary>
+        private readonly ICommandService commandService;
 
         /// <summary>
         /// The index in the layout of this button on the production display.
