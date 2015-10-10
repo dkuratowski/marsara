@@ -29,21 +29,21 @@ namespace RC.App.Starter
                 CmdLineSwitch.ExecuteSwitches();
 
                 /// Initialize the configuration sub-system
-                if (!ConfigurationManager.IsInitialized) { ConfigurationManager.Initialize(MapEditorSetup.Mode == MapEditorMode.Off ? "RC.App.root" : "RC.MapEditor.root"); }
+                if (!ConfigurationManager.IsInitialized) { ConfigurationManager.Initialize(RCAppSetup.Mode == RCAppMode.Normal ? "RC.App.root" : "RC.MapEditor.root"); }
 
                 /// Start the components of the system
                 StartComponents();
 
                 /// Initialize the UI-core and install the XNA-plugin (TODO: make it configurable)
-                UIRoot root = new UIRoot();
+                UIRoot root = new UIRoot(RCAppSetup.ScreenIndex);
                 Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
                 root.LoadPlugins(xnaPlugin);
                 root.InstallPlugins();
 
                 /// Create the UIWorkspace (TODO: make it configurable)
-                UIWorkspace workspace = new UIWorkspace(new RCIntVector(1024, 768), MapEditorSetup.Mode == MapEditorMode.Off ? new RCIntVector(320, 200) : new RCIntVector(1024, 768));
+                UIWorkspace workspace = new UIWorkspace(new RCIntVector(1024, 768), RCAppSetup.Mode == RCAppMode.Normal ? new RCIntVector(320, 200) : new RCIntVector(1024, 768));
 
-                if (MapEditorSetup.Mode == MapEditorMode.Off)
+                if (RCAppSetup.Mode == RCAppMode.Normal)
                 {
                     TraceManager.WriteAllTrace("NORMAL STARTUP...", TraceManager.GetTraceFilterID("RC.App.Info"));
 
@@ -62,27 +62,27 @@ namespace RC.App.Starter
                     TraceManager.WriteAllTrace("STARTING MAP EDITOR...", TraceManager.GetTraceFilterID("RC.MapEditor.Info"));
 
                     /// Read the parameters from the command line
-                    if (MapEditorSetup.Mode == MapEditorMode.NewMap)
+                    if (RCAppSetup.Mode == RCAppMode.NewMap)
                     {
                         Console.Write("Name of the new map file: ");
-                        MapEditorSetup.MapFile = Console.ReadLine();
-                        if (File.Exists(MapEditorSetup.MapFile)) { throw new IOException(string.Format("The file '{0}' already exists!", MapEditorSetup.MapFile)); }
+                        RCAppSetup.MapFile = Console.ReadLine();
+                        if (File.Exists(RCAppSetup.MapFile)) { throw new IOException(string.Format("The file '{0}' already exists!", RCAppSetup.MapFile)); }
                         Console.Write("Name of the new map: ");
-                        MapEditorSetup.MapName = Console.ReadLine();
+                        RCAppSetup.MapName = Console.ReadLine();
                         Console.Write("Name of the tileset of the new map: ");
-                        MapEditorSetup.TilesetName = Console.ReadLine();
+                        RCAppSetup.TilesetName = Console.ReadLine();
                         Console.Write("Name of the default terrain of the new map: ");
-                        MapEditorSetup.DefaultTerrain = Console.ReadLine();
+                        RCAppSetup.DefaultTerrain = Console.ReadLine();
                         Console.Write("Size of the new map: ");
-                        MapEditorSetup.MapSize = XmlHelper.LoadIntVector(Console.ReadLine());
+                        RCAppSetup.MapSize = XmlHelper.LoadIntVector(Console.ReadLine());
                     }
-                    else if (MapEditorSetup.Mode == MapEditorMode.LoadMap)
+                    else if (RCAppSetup.Mode == RCAppMode.LoadMap)
                     {
                         Console.Write("Name of the map file to load: ");
-                        MapEditorSetup.MapFile = Console.ReadLine();
+                        RCAppSetup.MapFile = Console.ReadLine();
                     }
 
-                    TraceManager.WriteAllTrace(MapEditorSetup.ToString(), TraceManager.GetTraceFilterID("RC.MapEditor.Info"));
+                    TraceManager.WriteAllTrace(RCAppSetup.ToString(), TraceManager.GetTraceFilterID("RC.MapEditor.Info"));
 
                     /// Load the resources for the map editor.
                     UIResourceManager.LoadResourceGroup("RC.MapEditor.Resources");
@@ -186,17 +186,17 @@ namespace RC.App.Starter
 
             /// Create and activate the map editor page.
             RCMapEditorPage mapEditorPage = null;
-            if (MapEditorSetup.Mode == MapEditorMode.LoadMap)
+            if (RCAppSetup.Mode == RCAppMode.LoadMap)
             {
-                mapEditorPage = new RCMapEditorPage(MapEditorSetup.MapFile);
+                mapEditorPage = new RCMapEditorPage(RCAppSetup.MapFile);
             }
-            else if (MapEditorSetup.Mode == MapEditorMode.NewMap)
+            else if (RCAppSetup.Mode == RCAppMode.NewMap)
             {
-                mapEditorPage = new RCMapEditorPage(MapEditorSetup.MapFile,
-                                                    MapEditorSetup.MapName,
-                                                    MapEditorSetup.TilesetName,
-                                                    MapEditorSetup.DefaultTerrain,
-                                                    MapEditorSetup.MapSize);
+                mapEditorPage = new RCMapEditorPage(RCAppSetup.MapFile,
+                                                    RCAppSetup.MapName,
+                                                    RCAppSetup.TilesetName,
+                                                    RCAppSetup.DefaultTerrain,
+                                                    RCAppSetup.MapSize);
             }
             UIWorkspace.Instance.RegisterPage(mapEditorPage);
             mapEditorPage.Activate();

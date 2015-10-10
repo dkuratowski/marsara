@@ -22,12 +22,12 @@ namespace RC.Engine.Simulator.Engine
         /// Constructs an entity instance.
         /// </summary>
         /// <param name="elementTypeName">The name of the element type of this entity.</param>
+        /// <param name="isFlying">A flag indicating whether this entity is initially flying.</param>
         /// <param name="behaviors">The list of behaviors of this entity.</param>
-        protected Entity(string elementTypeName, params EntityBehavior[] behaviors) : base(elementTypeName)
+        protected Entity(string elementTypeName, bool isFlying, params EntityBehavior[] behaviors) : base(elementTypeName)
         {
             if (behaviors == null) { throw new ArgumentNullException("behaviors"); }
 
-            this.isFlying = this.ConstructField<byte>("isFlying");
             this.affectingCmdExecution = this.ConstructField<CmdExecutionBase>("affectingCmdExecution");
             this.locator = this.ConstructField<Locator>("locator");
             this.armour = this.ConstructField<Armour>("armour");
@@ -37,12 +37,12 @@ namespace RC.Engine.Simulator.Engine
             this.nextProductionJobID = this.ConstructField<int>("nextProductionJobID");
 
             this.mapObject = null;
-            this.isFlying.Write(0x00);
+            this.reservationObject = null;
             this.affectingCmdExecution.Write(null);
             this.locator.Write(new Locator(this));
             this.armour.Write(new Armour(this));
             this.biometrics.Write(new Biometrics(this));
-            this.motionControl.Write(new MotionControl(this));
+            this.motionControl.Write(new MotionControl(this, isFlying));
             this.behaviors = new RCSet<EntityBehavior>(behaviors);
             this.productionLines = new RCSet<ProductionLine>();
             this.activeProductionLine.Write(null);
@@ -50,6 +50,20 @@ namespace RC.Engine.Simulator.Engine
         }
 
         #region Public interface
+
+        /// <summary>
+        /// Attaches this entity to the given quadratic tile on the map.
+        /// </summary>
+        /// <param name="topLeftTile">The quadratic tile at the top-left corner of this entity.</param>
+        /// <returns>True if this entity was successfully attached to the map; otherwise false.</returns>
+        /// <remarks>Note that the caller has to explicitly call MotionControl.Fix to fix this entity after calling this method.</remarks>
+        public bool AttachToMap(IQuadTile topLeftTile)
+        {
+            ICell topLeftCell = topLeftTile.GetCell(new RCIntVector(0, 0));
+            RCNumVector position = topLeftCell.MapCoords - new RCNumVector(1, 1) / 2 + this.ElementType.Area.Read() / 2;
+
+            return this.AttachToMap(position);
+        }
 
         /// <see cref="ScenarioElement.AttachToMap"/>
         public override bool AttachToMap(RCNumVector position)
@@ -60,7 +74,7 @@ namespace RC.Engine.Simulator.Engine
             if (success)
             {
                 this.MotionControl.PositionVector.ValueChanged += this.OnPositionChanged;
-                this.mapObject = this.CreateMapObject(this.Area);
+                this.mapObject = this.CreateMapObject(this.Area, this.MotionControl.IsFlying ? MapObjectLayerEnum.AirObjects : MapObjectLayerEnum.GroundObjects);
             }
             return success;
         }
@@ -71,23 +85,18 @@ namespace RC.Engine.Simulator.Engine
             RCNumVector currentPosition = this.MotionControl.PositionVector.Read();
             if (currentPosition != RCNumVector.Undefined)
             {
+                if (this.MotionControl.Status == MotionControlStatusEnum.Fixed) { this.MotionControl.Unfix(); }
                 this.MotionControl.PositionVector.ValueChanged -= this.OnPositionChanged;
                 this.MotionControl.SetPosition(RCNumVector.Undefined);
                 this.DestroyMapObject(this.mapObject);
                 this.mapObject = null;
+                if (this.reservationObject != null)
+                {
+                    this.DestroyMapObject(this.reservationObject);
+                    this.reservationObject = null;
+                }
             }
             return currentPosition;
-        }
-
-        /// <summary>
-        /// Gets whether this entity is currently flying or not.
-        /// </summary>
-        public bool IsFlying
-        {
-            get
-            {
-                return this.isFlying.Read() != 0x00;
-            }
         }
 
         /// <summary>
@@ -331,6 +340,12 @@ namespace RC.Engine.Simulator.Engine
         /// <see cref="ScenarioElement.UpdateMapObjectsImpl"/>
         protected sealed override void UpdateMapObjectsImpl()
         {
+            if (this.mapObject != null)
+            {
+                /// Move the map object of this entity into the appropriate layer if necessary.
+                this.ChangeMapObjectLayer(this.mapObject, this.MotionControl.IsFlying ? MapObjectLayerEnum.AirObjects : MapObjectLayerEnum.GroundObjects);
+            }
+
             /// Ask the behaviors to update the map object of this entity.
             foreach (EntityBehavior behavior in this.behaviors) { behavior.UpdateMapObject(this); }
         }
@@ -358,6 +373,76 @@ namespace RC.Engine.Simulator.Engine
         #endregion Overrides
 
         #region Internal members
+        
+        /// <summary>
+        /// Reserves a position on the ground for this entity.
+        /// </summary>
+        /// <param name="positionToReserve">The position to be reserved.</param>
+        /// <remarks>This method is used by the MotionControl of this entity.</remarks>
+        internal void ReservePositionOnGround(RCNumVector positionToReserve)
+        {
+            if (positionToReserve == RCNumVector.Undefined) { throw new ArgumentNullException("positionToReserve"); }
+            if (this.reservationObject != null) { throw new InvalidOperationException("A position has already been reserved for this entity!"); }
+
+            this.reservationObject = this.CreateMapObject(this.CalculateArea(positionToReserve), MapObjectLayerEnum.GroundReservations);
+        }
+
+        /// <summary>
+        /// Reserves a position in the air for this entity.
+        /// </summary>
+        /// <param name="positionToReserve">The position to be reserved.</param>
+        /// <remarks>This method is used by the MotionControl of this entity.</remarks>
+        internal void ReservePositionInAir(RCNumVector positionToReserve)
+        {
+            if (positionToReserve == RCNumVector.Undefined) { throw new ArgumentNullException("positionToReserve"); }
+            if (this.reservationObject != null) { throw new InvalidOperationException("A position has already been reserved for this entity!"); }
+
+            this.reservationObject = this.CreateMapObject(this.CalculateArea(positionToReserve), MapObjectLayerEnum.AirReservations);
+        }
+
+        /// <summary>
+        /// Removes the reservation of this entity.
+        /// </summary>
+        /// <remarks>This method is used by the MotionControl of this entity.</remarks>
+        internal void RemoveReservation()
+        {
+            if (this.reservationObject == null) { throw new InvalidOperationException("There is no position currently reserved for this entity!"); }
+
+            this.DestroyMapObject(this.reservationObject);
+            this.reservationObject = null;
+        }
+
+        /// <summary>
+        /// Fixes this entity in its current quadratic position.
+        /// </summary>
+        /// <remarks>This method is used by the MotionControl of this entity.</remarks>
+        internal void OnFixed()
+        {
+            for (int col = this.MapObject.QuadraticPosition.Left; col < this.MapObject.QuadraticPosition.Right; col++)
+            {
+                for (int row = this.MapObject.QuadraticPosition.Top; row < this.MapObject.QuadraticPosition.Bottom; row++)
+                {
+                    if (this.MapContext.FixedEntities[col, row] != null) { throw new InvalidOperationException(string.Format("Another entity is already fixed to quadratic tile at ({0};{1})!", col, row)); }
+                    this.MapContext.FixedEntities[col, row] = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Unfixes this entity from its current quadratic position.
+        /// </summary>
+        /// <remarks>This method is used by the MotionControl of this entity.</remarks>
+        internal void OnUnfixed()
+        {
+            for (int col = this.MapObject.QuadraticPosition.Left; col < this.MapObject.QuadraticPosition.Right; col++)
+            {
+                for (int row = this.MapObject.QuadraticPosition.Top; row < this.MapObject.QuadraticPosition.Bottom; row++)
+                {
+                    if (this.MapContext.FixedEntities[col, row] != this) { throw new InvalidOperationException(string.Format("Entity is not fixed to quadratic tile at ({0};{1})!", col, row)); }
+                    this.MapContext.FixedEntities[col, row] = null;
+                }
+            }
+        }
 
         /// <summary>
         /// This method is called when a command execution starts to affecting this entity.
@@ -417,11 +502,6 @@ namespace RC.Engine.Simulator.Engine
         #region Heaped members
 
         /// <summary>
-        /// This flag indicates whether the entity is on the ground (0x00) or is flying (any other value).
-        /// </summary>
-        private readonly HeapedValue<byte> isFlying; 
-
-        /// <summary>
         /// Reference to the command execution that is affecting this entity or null if this entity is not affected by
         /// any command execution.
         /// </summary>
@@ -476,5 +556,10 @@ namespace RC.Engine.Simulator.Engine
         /// attached to the map.
         /// </summary>
         private MapObject mapObject;
+
+        /// <summary>
+        /// Reference to the map object that reserves an area for this entity on the map during takeoff and landing operations.
+        /// </summary>
+        private MapObject reservationObject;
     }
 }

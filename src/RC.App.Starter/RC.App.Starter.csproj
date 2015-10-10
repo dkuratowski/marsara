@@ -77,7 +77,7 @@
   <ItemGroup>
     <Compile Include="CmdLineSwitch.cs" />
     <Compile Include="ConsoleHelper.cs" />
-    <Compile Include="MapEditorSetup.cs" />
+    <Compile Include="RCAppSetup.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

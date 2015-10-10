@@ -40,7 +40,7 @@ namespace RC.Engine.Simulator.Engine
                     {
                         RCIntRectangle checkedQuadRect = new RCIntRectangle(absQuadCoords - this.minimumDistance, this.checkedQuadRectSize);
                         RCNumRectangle checkedArea = (RCNumRectangle)scenario.Map.QuadToCellRect(checkedQuadRect) - new RCNumVector(1, 1) / 2;
-                        RCSet<T> objectsTooClose = scenario.GetElementsOnMap<T>(checkedArea);
+                        RCSet<T> objectsTooClose = scenario.GetElementsOnMap<T>(checkedArea, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
                         if (objectsTooClose.Count > 0) { retList.Add(absQuadCoords - position); }
                     }
                 }

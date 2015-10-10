@@ -23,11 +23,13 @@ namespace RC.Engine.Simulator.Engine
             if (destructionAnimationName == null) { throw new ArgumentNullException("destructionAnimationName"); }
 
             this.playerIndex = this.ConstructField<int>("playerIndex");
+            this.motionControlStatus = this.ConstructField<byte>("motionControlStatus");
             this.playerIndex.Write(entity.Owner != null ? entity.Owner.PlayerIndex : -1);
             this.weapons = entity.Armour.DetachWeapons();
 
             this.destructionAnimationName = destructionAnimationName;
             this.destructionMapObject = null;
+            this.motionControlStatus.Write((byte)entity.MotionControl.Status);
         }
 
         /// <summary>
@@ -40,7 +42,11 @@ namespace RC.Engine.Simulator.Engine
         {
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            this.destructionMapObject = this.CreateMapObject(this.CalculateArea(position));
+            this.destructionMapObject = this.CreateMapObject(this.CalculateArea(position),
+                                                             (MotionControlStatusEnum)this.motionControlStatus.Read() == MotionControlStatusEnum.OnGround ||
+                                                             (MotionControlStatusEnum)this.motionControlStatus.Read() == MotionControlStatusEnum.Fixed ?
+                                                                 MapObjectLayerEnum.GroundObjects :
+                                                                 MapObjectLayerEnum.AirObjects);
             this.destructionMapObject.StartAnimation(this.destructionAnimationName);
             return true;
         }
@@ -85,6 +91,11 @@ namespace RC.Engine.Simulator.Engine
         /// The index of the player that this entity wreck belongs to or -1 if it is a wreck of a neutral entity.
         /// </summary>
         private readonly HeapedValue<int> playerIndex;
+
+        /// <summary>
+        /// The motion control status of this entity wreck.
+        /// </summary>
+        private readonly HeapedValue<byte> motionControlStatus;
 
         /// <summary>
         /// The name of the destruction animation to be played.

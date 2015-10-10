@@ -14,32 +14,35 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Constructs a ScenarioMapContext instance.
         /// </summary>
-        /// <param name="mapObjects">Reference to the search tree of map objects.</param>
-        /// <param name="boundQuadEntities">Reference to the array that stores the bound QuadEntities for each quadratic tile.</param>
-        public ScenarioMapContext(ISearchTree<MapObject> mapObjects, QuadEntity[,] boundQuadEntities)
+        /// <param name="mapObjectLayers">Reference to the layers of map objects.</param>
+        /// <param name="fixedEntities">Reference to the array that stores the fixed Entities for each quadratic tile.</param>
+        public ScenarioMapContext(Dictionary<MapObjectLayerEnum, ISearchTree<MapObject>> mapObjectLayers, Entity[,] fixedEntities)
         {
-            this.mapObjects = mapObjects;
-            this.boundQuadEntities = boundQuadEntities;
+            this.mapObjectLayers = mapObjectLayers;
+            this.fixedEntities = fixedEntities;
         }
 
         /// <summary>
-        /// Gets a reference to the search tree of map objects.
+        /// Gets a reference to the given layer of map objects.
         /// </summary>
-        public ISearchTree<MapObject> MapObjects { get { return this.mapObjects; } }
+        public ISearchTree<MapObject> GetMapObjectLayer(MapObjectLayerEnum layer)
+        {
+            return this.mapObjectLayers[layer];
+        }
 
         /// <summary>
-        /// Gets the array that stores the bound QuadEntities for each quadratic tile.
+        /// Gets the array that stores the fixed Entities for each quadratic tile.
         /// </summary>
-        public QuadEntity[,] BoundQuadEntities { get { return this.boundQuadEntities; } }
+        public Entity[,] FixedEntities { get { return this.fixedEntities; } }
 
         /// <summary>
         /// Reference to the search tree of map objects.
         /// </summary>
-        private readonly ISearchTree<MapObject> mapObjects;
+        private readonly Dictionary<MapObjectLayerEnum, ISearchTree<MapObject>> mapObjectLayers;
 
         /// <summary>
-        /// The array that stores the bound QuadEntities for each quadratic tile.
+        /// The array that stores the fixed Entities for each quadratic tile.
         /// </summary>
-        private readonly QuadEntity[,] boundQuadEntities;
+        private readonly Entity[,] fixedEntities;
     }
 }

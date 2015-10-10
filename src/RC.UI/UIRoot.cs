@@ -26,7 +26,15 @@ namespace RC.UI
         /// <summary>
         /// Constructs the singleton instance of the UIRoot class.
         /// </summary>
-        public UIRoot()
+        public UIRoot() : this(0)
+        {
+        }
+
+        /// <summary>
+        /// Constructs the singleton instance of the UIRoot class.
+        /// </summary>
+        /// <param name="screenIndex">The index of the screen on which to render.</param>
+        public UIRoot(int screenIndex)
         {
             if (theInstance != null) { throw new UIException("An instance of UIRoot already exists!"); }
             this.loadedPlugins = new Dictionary<string, IUIPlugin>();
@@ -34,6 +42,7 @@ namespace RC.UI
             this.mouseAccess = null;
             this.keyboardAccess = null;
             this.objectDisposed = false;
+            this.screenIndex = screenIndex;
 
             theInstance = this;
             TraceManager.WriteAllTrace("UIRoot.Instance created", UITraceFilters.INFO);
@@ -185,7 +194,13 @@ namespace RC.UI
 
         #endregion Plugin management
 
-        #region Methods for plugins
+        #region Methods and properties for plugins
+
+        /// <summary>
+        /// Gets the index of the screen on which to render.
+        /// </summary>
+        /// TODO: eliminate this property when UIRoot has been changed to use the RC.Common.ComponentModel for its plugin mechanism!
+        public int ScreenIndex { get { return this.screenIndex; } }
 
         /// <summary>
         /// Registers a graphics platform to the UIRoot object.
@@ -277,7 +292,7 @@ namespace RC.UI
             TraceManager.WriteAllTrace("Keyboard input device unregistered", UITraceFilters.INFO);
         }
 
-        #endregion Methods for plugins
+        #endregion Methods and properties for plugins
 
         #region IDisposable members
 
@@ -320,6 +335,11 @@ namespace RC.UI
         /// This flag indicates whether this UIRoot object is disposed or not.
         /// </summary>
         private bool objectDisposed;
+
+        /// <summary>
+        /// The index of the screen on which to render.
+        /// </summary>
+        private int screenIndex;
 
         /// <summary>
         /// Reference to the singleton instance of the UIRoot class.

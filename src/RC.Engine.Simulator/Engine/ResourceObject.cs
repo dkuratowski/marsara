@@ -10,7 +10,7 @@ namespace RC.Engine.Simulator.Engine
     /// <summary>
     /// Represents a resource object.
     /// </summary>
-    public abstract class ResourceObject : QuadEntity
+    public abstract class ResourceObject : Entity
     {
         /// <summary>
         /// Constructs a resource object.
@@ -18,7 +18,7 @@ namespace RC.Engine.Simulator.Engine
         /// <param name="elementTypeName">The name of the element type of the resource object.</param>
         /// <param name="initialAmount">The initial amount of resources in this resource object.</param>
         protected ResourceObject(string elementTypeName, int initialAmount)
-            : base(elementTypeName)
+            : base(elementTypeName, false)
         {
             if (initialAmount < 0) { throw new ArgumentOutOfRangeException("initialAmount"); }
 
@@ -36,7 +36,11 @@ namespace RC.Engine.Simulator.Engine
         public override bool AttachToMap(RCNumVector position)
         {
             bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess) { this.SetAnimationsImpl(); }
+            if (attachToMapSuccess)
+            {
+                this.MotionControl.Fix();
+                this.SetAnimationsImpl();
+            }
             return attachToMapSuccess;
         }
 

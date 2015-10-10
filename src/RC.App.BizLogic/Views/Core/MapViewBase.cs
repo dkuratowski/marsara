@@ -43,7 +43,7 @@ namespace RC.App.BizLogic.Views.Core
         /// <exception cref="InvalidOperationException">If there is no entity with the given ID in the active scenario.</exception>
         protected Entity GetEntity(int entityID)
         {
-            Entity entity = this.Scenario.GetElementOnMap<Entity>(entityID);
+            Entity entity = this.Scenario.GetElementOnMap<Entity>(entityID, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
             if (entity == null) { throw new InvalidOperationException(String.Format("Entity with ID '{0}' doesn't exist!", entityID)); }
 
             return entity;

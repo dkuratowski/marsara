@@ -11,14 +11,14 @@ namespace RC.Engine.Simulator.Engine
     /// <summary>
     /// Represents a start location of a scenario.
     /// </summary>
-    public class StartLocation : QuadEntity
+    public class StartLocation : Entity
     {
         /// <summary>
         /// Constructs a start location instance.
         /// </summary>
         /// <param name="playerIndex">The index of the player that this start location belongs to.</param>
         public StartLocation(int playerIndex)
-            : base(STARTLOCATION_TYPE_NAME)
+            : base(STARTLOCATION_TYPE_NAME, false)
         {
             if (playerIndex < 0 || playerIndex >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("playerIndex"); }
             this.playerIndex = this.ConstructField<int>("playerIndex");
@@ -34,7 +34,11 @@ namespace RC.Engine.Simulator.Engine
         public override bool AttachToMap(RCNumVector position)
         {
             bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess) { this.MapObject.StartAnimation(ANIMATION_NAME, this.MotionControl.VelocityVector); }
+            if (attachToMapSuccess)
+            {
+                this.MotionControl.Fix();
+                this.MapObject.StartAnimation(ANIMATION_NAME, this.MotionControl.VelocityVector);
+            }
             return attachToMapSuccess;
         }
 

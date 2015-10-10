@@ -22,15 +22,17 @@ namespace RC.Engine.Simulator.Engine
             if (playerIndex < 0 || playerIndex >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("playerIndex"); }
             if (startLocation == null) { throw new ArgumentNullException("startLocation"); }
             if (startLocation.Scenario == null) { throw new SimulatorException("The given start location doesn't belong to a scenario!"); }
-            if (startLocation.Scenario.GetElementOnMap<StartLocation>(startLocation.ID.Read()) == null) { throw new SimulatorException("The given start location has already been initialized!"); }
+            if (!startLocation.HasMapObject(MapObjectLayerEnum.GroundObjects)) { throw new SimulatorException("The given start location has already been initialized!"); }
 
             this.playerIndex = this.ConstructField<int>("playerIndex");
             this.startLocation = this.ConstructField<StartLocation>("startLocation");
             this.startPosition = this.ConstructField<RCNumVector>("startPosition");
+            this.quadraticStartPosition = this.ConstructField<RCIntRectangle>("quadraticStartPosition");
 
             this.playerIndex.Write(playerIndex);
             this.startLocation.Write(startLocation);
             this.startPosition.Write(startLocation.MotionControl.PositionVector.Read());
+            this.quadraticStartPosition.Write(startLocation.MapObject.QuadraticPosition);
 
             this.buildings = new Dictionary<string, RCSet<Building>>();
             this.addons = new Dictionary<string, RCSet<Addon>>();
@@ -182,6 +184,11 @@ namespace RC.Engine.Simulator.Engine
         public RCNumVector StartPosition { get { return this.startPosition.Read(); } }
 
         /// <summary>
+        /// Gets the quadratic start position of this player.
+        /// </summary>
+        public RCIntRectangle QuadraticStartPosition { get { return this.quadraticStartPosition.Read(); } }
+
+        /// <summary>
         /// Gets the start location of this player.
         /// </summary>
         public StartLocation StartLocation { get { return this.startLocation.Read(); } }
@@ -241,7 +248,12 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// The start position of the player.
         /// </summary>
-        private readonly HeapedValue<RCNumVector> startPosition; 
+        private readonly HeapedValue<RCNumVector> startPosition;
+
+        /// <summary>
+        /// The quadratic start position of the player.
+        /// </summary>
+        private readonly HeapedValue<RCIntRectangle> quadraticStartPosition;
 
         #endregion Heaped members
 

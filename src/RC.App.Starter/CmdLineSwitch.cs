@@ -183,7 +183,7 @@ namespace RC.App.Starter
         public NewMapSwitch(string[] args) : base(args) { }
 
         /// <see cref="CmdLineSwitch.Execute"/>
-        public override void Execute() { MapEditorSetup.Mode = MapEditorMode.NewMap; }
+        public override void Execute() { RCAppSetup.Mode = RCAppMode.NewMap; }
     }
 
     /// <summary>
@@ -203,6 +203,37 @@ namespace RC.App.Starter
         public LoadMapSwitch(string[] args) : base(args) { }
 
         /// <see cref="CmdLineSwitch.Execute"/>
-        public override void Execute() { MapEditorSetup.Mode = MapEditorMode.LoadMap; }
+        public override void Execute() { RCAppSetup.Mode = RCAppMode.LoadMap; }
+    }
+
+    /// <summary>
+    /// Command line switch for start the RC application on the screen with the given index. If there is no screen with the given
+    /// index then the application will be started on the last available screen before the given index.
+    /// </summary>
+    class ScreenIndexSwitch : CmdLineSwitch
+    {
+        /// <summary>
+        /// The signature of the command line switch.
+        /// </summary>
+        public static readonly string SIGNATURE = "/s";
+
+        /// <summary>
+        /// Constructs a ScreenIndexSwitch object.
+        /// </summary>
+        /// <param name="args">The arguments of the switch.</param>
+        public ScreenIndexSwitch(string[] args) : base(args)
+        {
+            if (args == null || args.Length != 1) { throw new Exception("/s switch usage: '/s index'"); }
+            if (args[0] == null || args[0].Length == 0) { throw new Exception("/s switch usage: '/s index'"); }
+
+            int screenIndex = 0;
+            if (!int.TryParse(args[0], out screenIndex)) { throw new Exception("/s switch usage: '/s index'"); }
+        }
+
+        /// <see cref="CmdLineSwitch.Execute"/>
+        public override void Execute()
+        {
+            RCAppSetup.ScreenIndex = int.Parse(this.Arguments[0]);
+        }
     }
 }

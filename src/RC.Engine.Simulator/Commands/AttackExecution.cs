@@ -154,7 +154,7 @@ namespace RC.Engine.Simulator.Commands
             }
 
             /// Target position became visible -> check if the target entity is there.
-            foreach (Entity entityAtTargetPosition in this.Scenario.GetElementsOnMap<Entity>(this.targetPosition.Read()))
+            foreach (Entity entityAtTargetPosition in this.Scenario.GetElementsOnMap<Entity>(this.targetPosition.Read(), MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects))
             {
                 if (entityAtTargetPosition.ID.Read() == this.targetEntityID.Read())
                 {

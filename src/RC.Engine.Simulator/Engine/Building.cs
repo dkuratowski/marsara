@@ -15,7 +15,7 @@ namespace RC.Engine.Simulator.Engine
     /// <summary>
     /// Represents a building.
     /// </summary>
-    public abstract class Building : QuadEntity
+    public abstract class Building : Entity
     {
         /// <summary>
         /// Constructs a Building instance.
@@ -23,7 +23,7 @@ namespace RC.Engine.Simulator.Engine
         /// <param name="buildingTypeName">The name of the type of this building.</param>
         /// <param name="behaviors">The list of behaviors of this entity.</param>
         protected Building(string buildingTypeName, params EntityBehavior[] behaviors)
-            : base(buildingTypeName, behaviors)
+            : base(buildingTypeName, false, behaviors)
         {
             this.buildingType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetBuildingType(buildingTypeName);
 
@@ -69,6 +69,6 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// The type of this building.
         /// </summary>
-        private IBuildingType buildingType;
+        private readonly IBuildingType buildingType;
     }
 }

@@ -43,18 +43,20 @@ namespace RC.Engine.Simulator.Engine
             /// Initialize the non-heaped members.
             this.map = map;
             this.entityFactory = ComponentManager.GetInterface<IEntityFactory>();
-            this.objectsOnMap = new BspSearchTree<MapObject>(
-                        new RCNumRectangle(-(RCNumber)1 / (RCNumber)2,
-                                           -(RCNumber)1 / (RCNumber)2,
-                                           this.map.CellSize.X,
-                                           this.map.CellSize.Y),
-                                           ConstantsTable.Get<int>("RC.Engine.Maps.BspNodeCapacity"),
-                                           ConstantsTable.Get<int>("RC.Engine.Maps.BspMinNodeSize"));
+            this.mapObjects = new Dictionary<MapObjectLayerEnum, ISearchTree<MapObject>>
+            {
+                { MapObjectLayerEnum.GroundObjects, this.CreateSearchTree() },
+                { MapObjectLayerEnum.GroundReservations, this.CreateSearchTree() },
+                { MapObjectLayerEnum.GroundMissiles, this.CreateSearchTree() },
+                { MapObjectLayerEnum.AirObjects, this.CreateSearchTree() },
+                { MapObjectLayerEnum.AirReservations, this.CreateSearchTree() },
+                { MapObjectLayerEnum.AirMissiles, this.CreateSearchTree() }
+            };
             this.idToScenarioElementMap = new Dictionary<int, ScenarioElement>();
             this.scenarioElements = new RCSet<ScenarioElement>();
             this.elementsToAddAfterUpdate = new RCSet<ScenarioElement>();
             this.elementsToRemoveAfterUpdate = new RCSet<ScenarioElement>();
-            this.boundQuadEntities = new QuadEntity[this.map.Size.X, this.map.Size.Y];
+            this.fixedEntities = new Entity[this.map.Size.X, this.map.Size.Y];
             this.commandExecutions = new RCSet<CmdExecutionBase>();
             this.addRemoveElementForbidden = false;
             this.updateInProgress = false;
@@ -93,7 +95,7 @@ namespace RC.Engine.Simulator.Engine
             if (this.players[index].Read() == null) { throw new SimulatorException(string.Format("Player with index {0} doesn't exist!", index)); }
 
             StartLocation startLoc = this.players[index].Read().StartLocation;
-            startLoc.AttachToMap(this.map.GetQuadTile(startLoc.LastKnownQuadCoords));
+            startLoc.AttachToMap(this.map.GetQuadTile(this.players[index].Read().QuadraticStartPosition.Location));
             RCSet<Entity> entitiesOfPlayer = new RCSet<Entity>(this.players[index].Read().Entities);
             this.players[index].Read().Dispose();
             this.players[index].Write(null);
@@ -101,7 +103,7 @@ namespace RC.Engine.Simulator.Engine
             /// Destroy entities of the player.
             foreach (Entity entity in entitiesOfPlayer)
             {
-                if (entity.HasMapObject) { entity.DetachFromMap(); }
+                if (entity.HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects)) { entity.DetachFromMap(); }
                 this.RemoveElementFromScenario(entity);
                 entity.Dispose();
             }
@@ -115,7 +117,7 @@ namespace RC.Engine.Simulator.Engine
         {
             if (this.playersFinalized.Read() != 0x00) { throw new InvalidOperationException("Players already finalized!"); }
 
-            foreach (StartLocation startLocation in this.GetElementsOnMap<StartLocation>())
+            foreach (StartLocation startLocation in this.GetElementsOnMap<StartLocation>(MapObjectLayerEnum.GroundObjects))
             {
                 startLocation.DetachFromMap();
             }
@@ -204,7 +206,7 @@ namespace RC.Engine.Simulator.Engine
                 this.elementsToAddAfterUpdate.Add(element);
             }
             this.addRemoveElementForbidden = true;
-            element.OnAddedToScenario(this, id, new ScenarioMapContext(this.objectsOnMap, this.boundQuadEntities));
+            element.OnAddedToScenario(this, id, new ScenarioMapContext(this.mapObjects, this.fixedEntities));
             this.addRemoveElementForbidden = false;
         }
 
@@ -248,90 +250,144 @@ namespace RC.Engine.Simulator.Engine
         public IMapAccess Map { get { return this.map; } }
 
         /// <summary>
-        /// Gets the scenario element of the given type with the given ID that is attached to the map.
+        /// Gets the scenario element of the given type with the given ID that is attached to at least one of the given layers of the map.
         /// </summary>
         /// <param name="id">The ID of the scenario element.</param>
+        /// <param name="firstLayer">The first layer to search in.</param>
+        /// <param name="furtherLayers">List of the further layers to search in.</param>
         /// <typeparam name="T">The type of the scenario element.</typeparam>
         /// <returns>
-        /// The scenario element with the given ID or null if no scenario element of the given type with the given ID is attached to the map.
+        /// The scenario element with the given ID or null if no scenario element of the given type with the given ID is attached to at
+        /// least one of the given layers of the map.
         /// </returns>
-        public T GetElementOnMap<T>(int id) where T : ScenarioElement
+        public T GetElementOnMap<T>(int id, MapObjectLayerEnum firstLayer, params MapObjectLayerEnum[] furtherLayers) where T : ScenarioElement
         {
+            if (furtherLayers == null) { throw new ArgumentNullException("furtherLayers"); }
+
             if (this.idToScenarioElementMap.ContainsKey(id))
             {
                 T retElement = this.idToScenarioElementMap[id] as T;
-                return retElement != null && retElement.HasMapObject ? retElement : null;
+                return retElement != null && retElement.HasMapObject(firstLayer, furtherLayers)
+                    ? retElement
+                    : null;
             }
             return null;
         }
 
         /// <summary>
-        /// Gets the scenario elements of the given type that are attached to the map.
+        /// Gets the scenario elements of the given type that are attached to at least one of the given layers of the map.
         /// </summary>
+        /// <param name="firstLayer">The first layer to search in.</param>
+        /// <param name="furtherLayers">List of the further layers to search in.</param>
         /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
-        /// <returns>A list that contains the scenario elements of the given type that are attached to the map.</returns>
-        public RCSet<T> GetElementsOnMap<T>() where T : ScenarioElement
+        /// <returns>
+        /// A list that contains the scenario elements of the given type that are attached to at least one of the given layers of the map.
+        /// </returns>
+        public RCSet<T> GetElementsOnMap<T>(MapObjectLayerEnum firstLayer, params MapObjectLayerEnum[] furtherLayers) where T : ScenarioElement
         {
+            if (furtherLayers == null) { throw new ArgumentNullException("furtherLayers"); }
+
             RCSet<T> retList = new RCSet<T>();
-            foreach (MapObject mapObj in this.objectsOnMap.GetContents())
+            foreach (MapObject mapObj in this.mapObjects[firstLayer].GetContents())
             {
                 T elementAsT = mapObj.Owner as T;
                 if (elementAsT != null) { retList.Add(elementAsT); }
+            }
+            foreach (MapObjectLayerEnum furtherLayer in furtherLayers)
+            {
+                foreach (MapObject mapObj in this.mapObjects[furtherLayer].GetContents())
+                {
+                    T elementAsT = mapObj.Owner as T;
+                    if (elementAsT != null) { retList.Add(elementAsT); }
+                }
             }
             return retList;
         }
 
         /// <summary>
-        /// Gets the scenario elements of the given type that are attached to the map at the given position.
+        /// Gets the scenario elements of the given type that are attached to at least one of the given layers of the map at the given position.
         /// </summary>
+        /// <param name="firstLayer">The first layer to search in.</param>
+        /// <param name="furtherLayers">List of the further layers to search in.</param>
         /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
         /// <param name="position">The position to search.</param>
-        /// <returns>A list that contains the scenario elements of the given type that are attached to the map at the given position.</returns>
-        public RCSet<T> GetElementsOnMap<T>(RCNumVector position) where T : ScenarioElement
+        /// <returns>
+        /// A list that contains the scenario elements of the given type that are attached to at least one of the given layers of the map at
+        /// the given position.
+        /// </returns>
+        public RCSet<T> GetElementsOnMap<T>(RCNumVector position, MapObjectLayerEnum firstLayer, params MapObjectLayerEnum[] furtherLayers) where T : ScenarioElement
         {
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
+            if (furtherLayers == null) { throw new ArgumentNullException("furtherLayers"); }
 
             RCSet<T> retList = new RCSet<T>();
-            foreach (MapObject mapObj in this.objectsOnMap.GetContents(position))
+            foreach (MapObject mapObj in this.mapObjects[firstLayer].GetContents(position))
             {
                 T elementAsT = mapObj.Owner as T;
                 if (elementAsT != null) { retList.Add(elementAsT); }
+            }
+            foreach (MapObjectLayerEnum furtherLayer in furtherLayers)
+            {
+                foreach (MapObject mapObj in this.mapObjects[furtherLayer].GetContents(position))
+                {
+                    T elementAsT = mapObj.Owner as T;
+                    if (elementAsT != null) { retList.Add(elementAsT); }
+                }
             }
             return retList;
         }
 
         /// <summary>
-        /// Gets the scenario elements of the given type that are attached to the map inside the given area.
+        /// Gets the scenario elements of the given type that are attached to at least one of the given layers of the map inside the given area.
         /// </summary>
+        /// <param name="firstLayer">The first layer to search in.</param>
+        /// <param name="furtherLayers">List of the further layers to search in.</param>
         /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
         /// <param name="area">
         /// The area to search.
         /// </param>
-        /// <returns>A list that contains the scenario elements of the given type that are attached to the map inside the given area.</returns>
-        public RCSet<T> GetElementsOnMap<T>(RCNumRectangle area) where T : ScenarioElement
+        /// <returns>
+        /// A list that contains the scenario elements of the given type that are attached to at least one of the given layers of the map inside 
+        /// the given area.
+        /// </returns>
+        public RCSet<T> GetElementsOnMap<T>(RCNumRectangle area, MapObjectLayerEnum firstLayer, params MapObjectLayerEnum[] furtherLayers) where T : ScenarioElement
         {
             if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
+            if (furtherLayers == null) { throw new ArgumentNullException("furtherLayers"); }
 
             RCSet<T> retList = new RCSet<T>();
-            foreach (MapObject mapObj in this.objectsOnMap.GetContents(area))
+            foreach (MapObject mapObj in this.mapObjects[firstLayer].GetContents(area))
             {
                 T elementAsT = mapObj.Owner as T;
                 if (elementAsT != null) { retList.Add(elementAsT); }
+            }
+            foreach (MapObjectLayerEnum furtherLayer in furtherLayers)
+            {
+                foreach (MapObject mapObj in this.mapObjects[furtherLayer].GetContents(area))
+                {
+                    T elementAsT = mapObj.Owner as T;
+                    if (elementAsT != null) { retList.Add(elementAsT); }
+                }
             }
             return retList;
         }
 
         /// <summary>
-        /// Gets the scenario elements of the given type that are attached to the map inside the search area around the given position.
+        /// Gets the scenario elements of the given type that are attached to at least one of the given layers of the map inside the search area
+        /// around the given position.
         /// </summary>
         /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
         /// <param name="position">The given position.</param>
         /// <param name="searchRadius">The radius of the search area given in quadratic tiles.</param>
-        /// <returns>A list that contains the scenario elements of the given type that are attached to the map inside the search area.</returns>
-        public RCSet<T> GetElementsOnMap<T>(RCNumVector position, int searchRadius) where T : ScenarioElement
+        /// <returns>
+        /// A list that contains the scenario elements of the given type that are attached to at least one of the given layers of the map inside
+        /// the search area.
+        /// </returns>
+        public RCSet<T> GetElementsOnMap<T>(RCNumVector position, int searchRadius, MapObjectLayerEnum firstLayer, params MapObjectLayerEnum[] furtherLayers) where T : ScenarioElement
         {
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
             if (searchRadius <= 0) { throw new ArgumentOutOfRangeException("searchRadius", "The radius of the search area shall be greater than 0!"); }
+            if (furtherLayers == null) { throw new ArgumentNullException("furtherLayers"); }
 
             RCIntVector quadCoordAtPosition = this.Map.GetCell(position.Round()).ParentQuadTile.MapCoords;
             RCIntVector topLeftQuadCoord = quadCoordAtPosition - new RCIntVector(searchRadius - 1, searchRadius - 1);
@@ -339,36 +395,51 @@ namespace RC.Engine.Simulator.Engine
             RCIntRectangle quadRect = new RCIntRectangle(topLeftQuadCoord, bottomRightQuadCoord - topLeftQuadCoord + new RCIntVector(1, 1));
 
             RCSet<T> retList = new RCSet<T>();
-            foreach (MapObject mapObj in this.objectsOnMap.GetContents((RCNumRectangle)this.Map.QuadToCellRect(quadRect) - new RCNumVector(1, 1) / 2))
+            foreach (MapObject mapObj in this.mapObjects[firstLayer].GetContents((RCNumRectangle)this.Map.QuadToCellRect(quadRect) - new RCNumVector(1, 1) / 2))
             {
                 T elementAsT = mapObj.Owner as T;
                 if (elementAsT != null) { retList.Add(elementAsT); }
+            }
+            foreach (MapObjectLayerEnum furtherLayer in furtherLayers)
+            {
+                foreach (MapObject mapObj in this.mapObjects[furtherLayer].GetContents((RCNumRectangle)this.Map.QuadToCellRect(quadRect) - new RCNumVector(1, 1) / 2))
+                {
+                    T elementAsT = mapObj.Owner as T;
+                    if (elementAsT != null) { retList.Add(elementAsT); }
+                }
             }
             return retList;
         }
 
         /// <summary>
-        /// Gets the map objects inside the given area.
+        /// Gets the map objects inside the given area of the given layers.
         /// </summary>
         /// <param name="area">The area to search.</param>
-        /// <returns>A list that contains the map objects inside the given area.</returns>
-        public RCSet<MapObject> GetMapObjects(RCNumRectangle area)
+        /// <returns>A list that contains the map objects inside the given area of the given layers.</returns>
+        public RCSet<MapObject> GetMapObjects(RCNumRectangle area, MapObjectLayerEnum firstLayer, params MapObjectLayerEnum[] furtherLayers)
         {
             if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
-            return this.objectsOnMap.GetContents(area);
+            if (furtherLayers == null) { throw new ArgumentNullException("furtherLayers"); }
+
+            RCSet<MapObject> retList = this.mapObjects[firstLayer].GetContents(area);
+            foreach (MapObjectLayerEnum furtherLayer in furtherLayers)
+            {
+                retList.UnionWith(this.mapObjects[furtherLayer].GetContents(area));
+            }
+            return retList;
         }
 
         /// <summary>
-        /// Gets the QuadEntity that is bound to the quadratic grid at the given position.
+        /// Gets the Entity that is fixed to the quadratic grid at the given position.
         /// </summary>
         /// <param name="quadCoords">The quadratic position on the map.</param>
         /// <returns>
-        /// The QuadEntity that is bound to the quadratic grid at the given position or null if there is no QuadEntity bound to the map at the given position.
+        /// The Entity that is fixed to the quadratic grid at the given position or null if there is no Entity fixed to the map at the given position.
         /// </returns>
-        public QuadEntity GetBoundQuadEntity(RCIntVector quadCoords)
+        public Entity GetFixedEntity(RCIntVector quadCoords)
         {
             if (quadCoords == RCIntVector.Undefined) { throw new ArgumentNullException("quadCoords"); }
-            return this.boundQuadEntities[quadCoords.X, quadCoords.Y];
+            return this.fixedEntities[quadCoords.X, quadCoords.Y];
         }
 
         #endregion Public members: Map management
@@ -500,21 +571,36 @@ namespace RC.Engine.Simulator.Engine
         #endregion Heaped members
 
         /// <summary>
+        /// Creates a search tree for map objects with the size of the map of this scenario.
+        /// </summary>
+        /// <returns>The created search tree.</returns>
+        private ISearchTree<MapObject> CreateSearchTree()
+        {
+            return new BspSearchTree<MapObject>(
+                new RCNumRectangle(-(RCNumber) 1/(RCNumber) 2,
+                    -(RCNumber) 1/(RCNumber) 2,
+                    this.map.CellSize.X,
+                    this.map.CellSize.Y),
+                ConstantsTable.Get<int>("RC.Engine.Maps.BspNodeCapacity"),
+                ConstantsTable.Get<int>("RC.Engine.Maps.BspMinNodeSize"));
+        }
+
+        /// <summary>
         /// Reference to the map of the scenario.
         /// </summary>
         private readonly IMapAccess map;
 
         /// <summary>
-        /// The map objects of the scenario that are attached to the map.
+        /// The map objects of the scenario that are attached to the map mapped by the layers they are attached to.
         /// </summary>
         /// TODO: store these entities also in a HeapedArray!
-        private readonly ISearchTree<MapObject> objectsOnMap;
+        private readonly Dictionary<MapObjectLayerEnum, ISearchTree<MapObject>> mapObjects;
 
         /// <summary>
-        /// This array stores for all quadratic tile the QuadEntity that is bound to that QuadTile.
+        /// This array stores for all quadratic tile the Entity that is fixed to that QuadTile.
         /// </summary>
         /// TODO: store these entities also in a HeapedArray!
-        private readonly QuadEntity[,] boundQuadEntities;
+        private readonly Entity[,] fixedEntities;
 
         /// <summary>
         /// The command executions currently in progress.

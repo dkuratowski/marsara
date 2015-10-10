@@ -7,32 +7,32 @@ using RC.Common;
 namespace RC.App.Starter
 {
     /// <summary>
-    /// Enumerates the possible starting modes of the map editor.
+    /// Enumerates the possible starting modes of the RC application.
     /// </summary>
-    enum MapEditorMode
+    enum RCAppMode
     {
-        Off = 0,        /// Don't start the map editor.
+        Normal = 0,     /// Start the RC application in normal mode.
         NewMap = 1,     /// Start the map editor and create a new map file.
         LoadMap = 2,    /// Start the map editor and load an existing map file.
     }
 
     /// <summary>
-    /// Static class that contains the startup-settings of the map editor. By default the map editor is not started.
+    /// Static class that contains the startup-settings for the RC application.
     /// </summary>
-    static class MapEditorSetup
+    static class RCAppSetup
     {
         /// <summary>
-        /// Gets or sets the starting mode of the map editor.
+        /// Gets or sets the starting mode of the RC application.
         /// </summary>
-        public static MapEditorMode Mode
+        public static RCAppMode Mode
         {
             get { return mode; }
             set { mode = value; }
         }
 
         /// <summary>
-        /// Gets or sets the name of the file that the new map will be saved to in case of MapEditorMode.NewMap or
-        /// the name of the file that contains the map to be loaded in case of MapEditorMode.LoadMap.
+        /// Gets or sets the name of the file that the new map will be saved to in case of RCAppMode.NewMap or
+        /// the name of the file that contains the map to be loaded in case of RCAppMode.LoadMap.
         /// </summary>
         public static string MapFile
         {
@@ -41,7 +41,7 @@ namespace RC.App.Starter
         }
 
         /// <summary>
-        /// Gets or sets the name of the new map in case of MapEditorMode.NewMap.
+        /// Gets or sets the name of the new map in case of RCAppMode.NewMap.
         /// </summary>
         public static string MapName
         {
@@ -50,7 +50,7 @@ namespace RC.App.Starter
         }
 
         /// <summary>
-        /// Gets or sets the name of the tileset of the new map in case of MapEditorMode.NewMap.
+        /// Gets or sets the name of the tileset of the new map in case of RCAppMode.NewMap.
         /// </summary>
         public static string TilesetName
         {
@@ -59,7 +59,7 @@ namespace RC.App.Starter
         }
 
         /// <summary>
-        /// Gets or sets the name of the default terrain in case of MapEditorMode.NewMap.
+        /// Gets or sets the name of the default terrain in case of RCAppMode.NewMap.
         /// </summary>
         public static string DefaultTerrain
         {
@@ -68,7 +68,7 @@ namespace RC.App.Starter
         }
 
         /// <summary>
-        /// Gets or sets the size of the new map in case of MapEditorMode.NewMap.
+        /// Gets or sets the size of the new map in case of RCAppMode.NewMap.
         /// </summary>
         public static RCIntVector MapSize
         {
@@ -77,28 +77,37 @@ namespace RC.App.Starter
         }
 
         /// <summary>
-        /// Gets the string representation of the contents of the MapEditorSetup.
+        /// The index of the screen on which to startup the application.
+        /// </summary>
+        public static int ScreenIndex
+        {
+            get { return screenIndex; }
+            set { screenIndex = value; }
+        }
+
+        /// <summary>
+        /// Gets the string representation of the contents of the RCAppSetup.
         /// </summary>
         public static new string ToString()
         {
-            if (mode == MapEditorMode.NewMap)
+            if (mode == RCAppMode.NewMap)
             {
-                return string.Format("NEW MAP: map-file={0} tileset-file={1} default-terrain={2} size={3}", mapFile, tilesetName, defaultTerrain, mapSize);
+                return string.Format("NEW MAP: screen-index={0} map-file={1} tileset-file={2} default-terrain={3} size={4}", screenIndex, mapFile, tilesetName, defaultTerrain, mapSize);
             }
-            else if (mode == MapEditorMode.LoadMap)
+            else if (mode == RCAppMode.LoadMap)
             {
-                return string.Format("LOAD MAP: map-file={0} tileset-file={1}", mapFile, tilesetName);
+                return string.Format("LOAD MAP: screen-index={0} map-file={1} tileset-file={2}", screenIndex, mapFile, tilesetName);
             }
             else
             {
-                return string.Empty;
+                return string.Format("NORMAL MODE: screen-index={0}", screenIndex);
             }
         }
 
         /// <summary>
-        /// The starting mode of the map editor.
+        /// The starting mode of the application.
         /// </summary>
-        private static MapEditorMode mode = MapEditorMode.Off;
+        private static RCAppMode mode = RCAppMode.Normal;
 
         /// <summary>
         /// The name of the file that the new map will be saved to in case of MapEditorMode.NewMap or
@@ -125,5 +134,10 @@ namespace RC.App.Starter
         /// The size of the new map in case of MapEditorMode.NewMap.
         /// </summary>
         private static RCIntVector mapSize;
+
+        /// <summary>
+        /// The index of the screen on which to startup the application.
+        /// </summary>
+        private static int screenIndex;
     }
 }

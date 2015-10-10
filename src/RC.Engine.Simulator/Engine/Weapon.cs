@@ -177,7 +177,7 @@ namespace RC.Engine.Simulator.Engine
             }
 
             /// Impact the target entity if it is still on the map.
-            if (missile.TargetEntity != null && missile.TargetEntity.HasMapObject)
+            if (missile.TargetEntity != null && missile.TargetEntity.HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects))
             {
                 this.OnImpact(missile);
             }

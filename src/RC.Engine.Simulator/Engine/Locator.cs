@@ -34,7 +34,7 @@ namespace RC.Engine.Simulator.Engine
         {
             /// Collect the entities in sight-range.
             RCSet<Entity> retList = new RCSet<Entity>();
-            RCSet<Entity> entitiesToCheck = this.owner.Read().Scenario.GetElementsOnMap<Entity>(this.owner.Read().MotionControl.PositionVector.Read(), this.GetSightRangeOfOwner());
+            RCSet<Entity> entitiesToCheck = this.owner.Read().Scenario.GetElementsOnMap<Entity>(this.owner.Read().MotionControl.PositionVector.Read(), this.GetSightRangeOfOwner(), MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
             entitiesToCheck.Remove(this.owner.Read());
             RCSet<RCIntVector> visibleQuadCoords = this.VisibleQuadCoords;
             foreach (Entity entity in entitiesToCheck)
@@ -73,7 +73,7 @@ namespace RC.Engine.Simulator.Engine
         /// <returns>The entities that are in the search area.</returns>
         public RCSet<Entity> SearchNearbyEntities(int searchAreaRadius)
         {
-            RCSet<Entity> nearbyEntities = this.owner.Read().Scenario.GetElementsOnMap<Entity>(this.owner.Read().MotionControl.PositionVector.Read(), searchAreaRadius);
+            RCSet<Entity> nearbyEntities = this.owner.Read().Scenario.GetElementsOnMap<Entity>(this.owner.Read().MotionControl.PositionVector.Read(), searchAreaRadius, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
             nearbyEntities.Remove(this.owner.Read());
             return nearbyEntities;
         }
@@ -111,7 +111,7 @@ namespace RC.Engine.Simulator.Engine
                     otherQuadCoords.Y >= 0 && otherQuadCoords.Y < this.owner.Read().Scenario.Map.Size.Y)
                 {
                     IQuadTile otherQuadTile = this.owner.Read().Scenario.Map.GetQuadTile(otherQuadCoords);
-                    if (this.owner.Read().IsFlying || currentQuadTile.GroundLevel >= otherQuadTile.GroundLevel)
+                    if (this.owner.Read().MotionControl.IsFlying || currentQuadTile.GroundLevel >= otherQuadTile.GroundLevel)
                     {
                         retList.Add(otherQuadTile.MapCoords);
                     }

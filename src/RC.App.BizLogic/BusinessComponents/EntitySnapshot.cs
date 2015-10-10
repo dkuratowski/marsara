@@ -23,7 +23,7 @@ namespace RC.App.BizLogic.BusinessComponents
         {
             if (sourceEntity == null) { throw new ArgumentNullException("sourceEntity"); }
             if (sourceEntity.Scenario == null) { throw new ArgumentException("The source Entity doesn't belong to a scenario!"); }
-            if (!sourceEntity.HasMapObject) { throw new ArgumentException("The source Entity is not attached to the map!"); }
+            if (!sourceEntity.HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects)) { throw new ArgumentException("The source Entity is not attached to the map!"); }
 
             /// Copy some properties of the source entity.
             this.id = sourceEntity.ID.Read();

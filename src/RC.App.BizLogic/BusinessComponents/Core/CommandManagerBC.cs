@@ -124,7 +124,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (currentSelection.Length != 1) { throw new InvalidOperationException("Exactly 1 entity has to be selected!"); }
 
             /// Check if the selected entity exists and its owner is the local player.
-            Entity entity = this.ActiveScenario.GetElementOnMap<Entity>(currentSelection[0]);
+            Entity entity = this.ActiveScenario.GetElementOnMap<Entity>(currentSelection[0], MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
             if (entity == null) { throw new InvalidOperationException(String.Format("Entity with ID '{0}' doesn't exist!", currentSelection[0])); }
             if (entity.Owner == null || entity.Owner.PlayerIndex != (int)this.selectionManager.LocalPlayer) { throw new InvalidOperationException("The owner of the selected entity is not the local player!"); }
 

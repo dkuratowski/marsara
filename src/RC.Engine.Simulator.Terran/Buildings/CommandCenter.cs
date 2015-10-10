@@ -25,7 +25,15 @@ namespace RC.Engine.Simulator.Terran.Buildings
         }
 
         /// <see cref="Entity.DestructionAnimationName"/>
-        protected override string DestructionAnimationName { get { return this.IsFlying ? "DestructionFlying" : "DestructionNormal"; } }
+        protected override string DestructionAnimationName
+        {
+            get
+            {
+                return this.MotionControl.Status == MotionControlStatusEnum.OnGround || this.MotionControl.Status == MotionControlStatusEnum.Fixed
+                    ? "DestructionFlying"
+                    : "DestructionNormal";
+            }
+        }
 
         /// <summary>
         /// The name of the Command Center element type.

@@ -28,8 +28,14 @@ namespace RC.Engine.Simulator.MotionControl
         {
             if (basisVectors == null) { throw new ArgumentNullException("basisVectors"); }
             if (basisVectors.Count == 0) { throw new ArgumentException("Empty basis vector list!", "basisVectors"); }
-            if (maxSpeed <= 0) { throw new ArgumentOutOfRangeException("maxSpeed", "Maximum speed must be greater than 0!"); }
+            if (maxSpeed < 0) { throw new ArgumentOutOfRangeException("maxSpeed", "Maximum speed cannot be negative!"); }
             if (accelerationDuration < 1) { throw new ArgumentOutOfRangeException("accelerationDuration", "Acceleration duration must be at least 1!"); }
+
+            if (maxSpeed == 0)
+            {
+                /// Trivial case.
+                return new Dictionary<RCNumVector, RCSet<RCNumVector>> { { new RCNumVector(0, 0), new RCSet<RCNumVector>() } };
+            }
 
             /// First we calculate every possible velocity vectors and put them into a 2D array where the first coordinate
             /// is the index of the corresponding speed and the second coordinate is the index of the corresponding

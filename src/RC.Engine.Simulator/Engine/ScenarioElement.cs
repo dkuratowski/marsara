@@ -39,9 +39,13 @@ namespace RC.Engine.Simulator.Engine
         public Scenario Scenario { get { return this.scenario.Read(); } }
 
         /// <summary>
-        /// Gets whether this scenario element has at least one map object.
+        /// Gets whether this scenario element has at least one map object in at least one of the given layers of the map.
         /// </summary>
-        public bool HasMapObject { get { return this.mapObjectsOfThisElement.Count > 0; } }
+        public bool HasMapObject(MapObjectLayerEnum firstLayer, params MapObjectLayerEnum[] furtherLayers)
+        {
+            if (this.mapObjectsOfThisElementByLayer[firstLayer].Count > 0) { return true; }
+            return furtherLayers.Any(furtherLayer => this.mapObjectsOfThisElementByLayer[furtherLayer].Count > 0);
+        }
 
         /// <summary>
         /// Attaches this scenario element to the map into the given position.
@@ -79,6 +83,16 @@ namespace RC.Engine.Simulator.Engine
             }
         }
 
+        /// <summary>
+        /// Calculates the area of this scenario element if it were placed to the given position.
+        /// </summary>
+        /// <param name="position">The position vector.</param>
+        /// <returns>The area of this scenario element if it were placed to the given position.</returns>
+        public RCNumRectangle CalculateArea(RCNumVector position)
+        {
+            return new RCNumRectangle(position - this.ElementType.Area.Read() / 2, this.ElementType.Area.Read());
+        }
+
         #endregion Public interface
         
         /// <summary>
@@ -95,7 +109,16 @@ namespace RC.Engine.Simulator.Engine
             this.id = this.ConstructField<int>("id");
             this.owner = this.ConstructField<Player>("owner");
             this.scenario = this.ConstructField<Scenario>("scenario");
-            this.mapObjectsOfThisElement = new RCSet<MapObject>();
+            this.mapObjectsOfThisElementByLayer = new Dictionary<MapObjectLayerEnum, RCSet<MapObject>>
+            {
+                { MapObjectLayerEnum.GroundObjects, new RCSet<MapObject>() },
+                { MapObjectLayerEnum.GroundReservations, new RCSet<MapObject>() },
+                { MapObjectLayerEnum.GroundMissiles, new RCSet<MapObject>() },
+                { MapObjectLayerEnum.AirObjects, new RCSet<MapObject>() },
+                { MapObjectLayerEnum.AirReservations, new RCSet<MapObject>() },
+                { MapObjectLayerEnum.AirMissiles, new RCSet<MapObject>() }
+            };
+            this.mapObjectsOfThisElement = new Dictionary<MapObject, MapObjectLayerEnum>();
 
             this.typeID.Write(this.elementType.ID);
             this.id.Write(-1);
@@ -118,20 +141,44 @@ namespace RC.Engine.Simulator.Engine
         protected virtual void UpdateMapObjectsImpl() { }
 
         /// <summary>
-        /// Creates a map object for this scenario element to the given location on the map.
+        /// Creates a map object for this scenario element to the given location in the given layer of the map.
         /// </summary>
         /// <param name="location">The location of the created map object on the map.</param>
+        /// <param name="layer">The layer of the created map object.</param>
         /// <returns>The created map object.</returns>
-        protected MapObject CreateMapObject(RCNumRectangle location)
+        protected MapObject CreateMapObject(RCNumRectangle location, MapObjectLayerEnum layer)
         {
             if (this.scenario.Read() == null) { throw new InvalidOperationException("This scenario element doesn't not belong to a scenario!"); }
             if (location == RCNumRectangle.Undefined) { throw new ArgumentNullException("location"); }
 
             MapObject mapObject = new MapObject(this);
             mapObject.SetLocation(location);
-            this.mapContext.MapObjects.AttachContent(mapObject);
-            this.mapObjectsOfThisElement.Add(mapObject);
+            this.mapContext.GetMapObjectLayer(layer).AttachContent(mapObject);
+            this.mapObjectsOfThisElementByLayer[layer].Add(mapObject);
+            this.mapObjectsOfThisElement.Add(mapObject, layer);
             return mapObject;
+        }
+
+        /// <summary>
+        /// Moves the given map object to the given layer of the map.
+        /// </summary>
+        /// <param name="mapObject">The map object to move.</param>
+        /// <param name="targetLayer">The target layer.</param>
+        /// <remarks>If the map object is already in the given layer then this function has no effect.</remarks>
+        protected void ChangeMapObjectLayer(MapObject mapObject, MapObjectLayerEnum targetLayer)
+        {
+            if (this.scenario.Read() == null) { throw new InvalidOperationException("This scenario element doesn't not belong to a scenario!"); }
+            if (mapObject == null) { throw new ArgumentNullException("mapObject"); }
+            if (!this.mapObjectsOfThisElement.ContainsKey(mapObject)) { throw new InvalidOperationException("The given map object doesn't belong to this scenario element!"); }
+
+            MapObjectLayerEnum currentLayer = this.mapObjectsOfThisElement[mapObject];
+            if (currentLayer == targetLayer) { return; }
+
+            this.mapObjectsOfThisElementByLayer[currentLayer].Remove(mapObject);
+            this.mapObjectsOfThisElementByLayer[targetLayer].Add(mapObject);
+            this.mapObjectsOfThisElement[mapObject] = targetLayer;
+            this.mapContext.GetMapObjectLayer(currentLayer).DetachContent(mapObject);
+            this.mapContext.GetMapObjectLayer(targetLayer).AttachContent(mapObject);
         }
 
         /// <summary>
@@ -142,21 +189,13 @@ namespace RC.Engine.Simulator.Engine
         {
             if (this.scenario.Read() == null) { throw new InvalidOperationException("This scenario element doesn't not belong to a scenario!"); }
             if (mapObject == null) { throw new ArgumentNullException("mapObject"); }
-            if (!this.mapObjectsOfThisElement.Contains(mapObject)) { throw new InvalidOperationException("The given map object doesn't belong to this scenario element!"); }
+            if (!this.mapObjectsOfThisElement.ContainsKey(mapObject)) { throw new InvalidOperationException("The given map object doesn't belong to this scenario element!"); }
 
+            MapObjectLayerEnum layer = this.mapObjectsOfThisElement[mapObject];
+            this.mapObjectsOfThisElementByLayer[layer].Remove(mapObject);
             this.mapObjectsOfThisElement.Remove(mapObject);
-            this.mapContext.MapObjects.DetachContent(mapObject);
+            this.mapContext.GetMapObjectLayer(layer).DetachContent(mapObject);
             mapObject.Dispose();
-        }
-
-        /// <summary>
-        /// Calculates the area of this scenario element from the given position vector.
-        /// </summary>
-        /// <param name="position">The position vector.</param>
-        /// <returns>The area of this scenario element.</returns>
-        protected RCNumRectangle CalculateArea(RCNumVector position)
-        {
-            return new RCNumRectangle(position - this.ElementType.Area.Read() / 2, this.ElementType.Area.Read());
         }
 
         /// <summary>
@@ -192,7 +231,7 @@ namespace RC.Engine.Simulator.Engine
         internal void OnRemovedFromScenario()
         {
             if (this.scenario.Read() == null) { throw new InvalidOperationException("This scenario element doesn't not belong to a scenario!"); }
-            if (this.HasMapObject) { throw new InvalidOperationException("This scenario element has still some map objects attached to the map!"); }
+            if (this.mapObjectsOfThisElement.Count > 0) { throw new InvalidOperationException("This scenario element has still some map objects attached to the map!"); }
             if (this.owner.Read() != null) { throw new InvalidOperationException("This scenario element is still added to a player!"); }
 
             /// Reset the scenario context.
@@ -232,7 +271,7 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         private void StepAnimations()
         {
-            foreach (MapObject mapObject in this.mapObjectsOfThisElement) { mapObject.StepAnimations(); }
+            foreach (MapObject mapObject in this.mapObjectsOfThisElement.Keys) { mapObject.StepAnimations(); }
         }
 
         #endregion Private members
@@ -268,9 +307,14 @@ namespace RC.Engine.Simulator.Engine
         private ScenarioMapContext mapContext;
 
         /// <summary>
-        /// The list of map objects of this scenario element.
+        /// The list of map objects of this scenario element mapped by the layers of the map.
         /// </summary>
-        private readonly RCSet<MapObject> mapObjectsOfThisElement;
+        private readonly Dictionary<MapObjectLayerEnum, RCSet<MapObject>> mapObjectsOfThisElementByLayer;
+
+        /// <summary>
+        /// The list of map object of this scenario element and the layers they are attached to.
+        /// </summary>
+        private readonly Dictionary<MapObject, MapObjectLayerEnum> mapObjectsOfThisElement;
 
         /// <summary>
         /// Reference to the type of this scenario element.

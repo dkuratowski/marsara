@@ -83,6 +83,11 @@ namespace RC.UI.XnaPlugin
         /// </summary>
         protected override void Initialize()
         {
+            Screen[] screens = Screen.AllScreens;
+            int screenIndexToUse = Math.Max(0, Math.Min(UIRoot.Instance.ScreenIndex, screens.Length - 1));
+            this.mainForm.Left = screens[screenIndexToUse].WorkingArea.Left + this.mainForm.Left;
+            this.mainForm.Top = screens[screenIndexToUse].WorkingArea.Top + this.mainForm.Top;
+
             foreach (InitializeDlgt initFunc in this.initFunctions)
             {
                 initFunc();

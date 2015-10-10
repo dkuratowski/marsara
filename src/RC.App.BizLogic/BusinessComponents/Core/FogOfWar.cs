@@ -132,8 +132,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                             /// If there was a snapshot at the given quadratic tile -> remove it.
                             this.RemoveEntitySnapshot(visibleQuadCoord);
 
-                            /// If there is a non-friendly QuadEntity at the given quadratic tile -> start monitoring.
-                            QuadEntity entityAtQuadTile = this.owner.Scenario.GetBoundQuadEntity(visibleQuadCoord);
+                            /// If there is a non-friendly Entity fixed on the given quadratic tile -> start monitoring.
+                            Entity entityAtQuadTile = this.owner.Scenario.GetFixedEntity(visibleQuadCoord);
                             if (entityAtQuadTile != null && entityAtQuadTile.Owner != this.owner)
                             {
                                 this.monitoredEntities.Add(entityAtQuadTile.ID.Read());
@@ -149,12 +149,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             List<int> monitoredEntitiesCopy = new List<int>(this.monitoredEntities);
             foreach (int monitoredEntityId in monitoredEntitiesCopy)
             {
-                QuadEntity monitoredEntity = this.owner.Scenario.GetElementOnMap<QuadEntity>(monitoredEntityId);
-                if (monitoredEntity != null && monitoredEntity.Owner != this.owner && monitoredEntity.IsBoundToGrid)
+                Entity monitoredEntity = this.owner.Scenario.GetElementOnMap<Entity>(monitoredEntityId, MapObjectLayerEnum.GroundObjects);
+                if (monitoredEntity != null && monitoredEntity.Owner != this.owner && monitoredEntity.MotionControl.Status == MotionControlStatusEnum.Fixed)
                 {
                     /// Check if the monitored entity is still visible.
                     bool isStillVisible = false;
-                    for (int col = monitoredEntity.MapObject.QuadraticPosition.Left; col < monitoredEntity.MapObject.QuadraticPosition.Right; col++)
+                    for (int col = monitoredEntity.MapObject.QuadraticPosition.Left; !isStillVisible && col < monitoredEntity.MapObject.QuadraticPosition.Right; col++)
                     {
                         for (int row = monitoredEntity.MapObject.QuadraticPosition.Top; row < monitoredEntity.MapObject.QuadraticPosition.Bottom; row++)
                         {

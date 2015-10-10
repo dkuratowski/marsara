@@ -100,17 +100,18 @@ namespace RC.App.BizLogic.Services.Core
             {
                 RCNumRectangle isoTileRect = new RCNumRectangle(affectedIsoTile.GetCellMapCoords(new RCIntVector(0, 0)), affectedIsoTile.CellSize)
                                            - new RCNumVector(1, 1) / 2;
-                foreach (QuadEntity affectedEntity in this.scenarioManager.ActiveScenario.GetElementsOnMap<QuadEntity>(isoTileRect))
+                foreach (Entity affectedEntity in this.scenarioManager.ActiveScenario.GetElementsOnMap<Entity>(isoTileRect, MapObjectLayerEnum.AirObjects, MapObjectLayerEnum.GroundObjects))
                 {
+                    RCIntVector lastKnownQuadCoords = affectedEntity.MapObject.QuadraticPosition.Location;
                     affectedEntity.DetachFromMap();
-                    if (affectedEntity.ElementType.CheckConstraints(this.scenarioManager.ActiveScenario, affectedEntity.LastKnownQuadCoords).Count != 0)
+                    if (affectedEntity.ElementType.CheckConstraints(this.scenarioManager.ActiveScenario, lastKnownQuadCoords).Count != 0)
                     {
                         this.scenarioManager.ActiveScenario.RemoveElementFromScenario(affectedEntity);
                         affectedEntity.Dispose();
                     }
                     else
                     {
-                        affectedEntity.AttachToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(affectedEntity.LastKnownQuadCoords));
+                        affectedEntity.AttachToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(lastKnownQuadCoords));
                     }
                 }
             }
@@ -140,17 +141,18 @@ namespace RC.App.BizLogic.Services.Core
             {
                 RCNumRectangle terrObjRect = new RCNumRectangle(this.scenarioManager.ActiveScenario.Map.GetQuadTile(placedTerrainObject.MapCoords).GetCell(new RCIntVector(0, 0)).MapCoords, placedTerrainObject.CellSize)
                                            - new RCNumVector(1, 1) / 2;
-                foreach (QuadEntity affectedEntity in this.scenarioManager.ActiveScenario.GetElementsOnMap<QuadEntity>(terrObjRect))
+                foreach (Entity affectedEntity in this.scenarioManager.ActiveScenario.GetElementsOnMap<Entity>(terrObjRect, MapObjectLayerEnum.AirObjects, MapObjectLayerEnum.GroundObjects))
                 {
+                    RCIntVector lastKnownQuadCoords = affectedEntity.MapObject.QuadraticPosition.Location;
                     affectedEntity.DetachFromMap();
-                    if (affectedEntity.ElementType.CheckConstraints(this.scenarioManager.ActiveScenario, affectedEntity.LastKnownQuadCoords).Count != 0)
+                    if (affectedEntity.ElementType.CheckConstraints(this.scenarioManager.ActiveScenario, lastKnownQuadCoords).Count != 0)
                     {
                         this.scenarioManager.ActiveScenario.RemoveElementFromScenario(affectedEntity);
                         affectedEntity.Dispose();
                     }
                     else
                     {
-                        affectedEntity.AttachToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(affectedEntity.LastKnownQuadCoords));
+                        affectedEntity.AttachToMap(this.scenarioManager.ActiveScenario.Map.GetQuadTile(lastKnownQuadCoords));
                     }
                 }
             }
@@ -261,7 +263,7 @@ namespace RC.App.BizLogic.Services.Core
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             RCIntVector navCellCoords = this.mapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
-            foreach (Entity entity in this.scenarioManager.ActiveScenario.GetElementsOnMap<Entity>(navCellCoords))
+            foreach (Entity entity in this.scenarioManager.ActiveScenario.GetElementsOnMap<Entity>(navCellCoords, MapObjectLayerEnum.AirObjects, MapObjectLayerEnum.GroundObjects))
             {
                 entity.DetachFromMap();
                 this.scenarioManager.ActiveScenario.RemoveElementFromScenario(entity);

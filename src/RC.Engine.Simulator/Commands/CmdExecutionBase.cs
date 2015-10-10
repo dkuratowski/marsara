@@ -171,7 +171,7 @@ namespace RC.Engine.Simulator.Commands
         protected Entity LocateEntity(int entityID)
         {
             /// First we check if the target entity is even on the map.
-            Entity targetEntity = this.Scenario.GetElementOnMap<Entity>(entityID);
+            Entity targetEntity = this.Scenario.GetElementOnMap<Entity>(entityID, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
             if (targetEntity == null) { return null; }
 
             /// Check if the target entity is friendly.
@@ -199,7 +199,7 @@ namespace RC.Engine.Simulator.Commands
         protected bool LocatePosition(RCNumVector position)
         {
             /// Search for friendly entities nearby the target position and ask their locators.
-            foreach (Entity nearbyEntity in this.Scenario.GetElementsOnMap<Entity>(position, ENTITY_SEARCH_RADIUS))
+            foreach (Entity nearbyEntity in this.Scenario.GetElementsOnMap<Entity>(position, ENTITY_SEARCH_RADIUS, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects))
             {
                 /// Ignore nearby entity if non-friendly.
                 if (nearbyEntity.Owner != this.Owner) { continue; }

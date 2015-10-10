@@ -28,7 +28,7 @@ namespace RC.Engine.Simulator.Commands
                 foreach (Entity entity in recipientEntities)
                 {
                     RCNumVector boxLocationToEntityVector = entity.MotionControl.PositionVector.Read() - boundingBox.Location;
-                    RCNumVector magicBox = entity.IsFlying ? AIR_MAGIC_BOX : GROUND_MAGIC_BOX;
+                    RCNumVector magicBox = entity.MotionControl.IsFlying ? AIR_MAGIC_BOX : GROUND_MAGIC_BOX;
                     if (boxLocationToEntityVector.X > magicBox.X || boxLocationToEntityVector.Y > magicBox.Y)
                     {
                         /// Entity is outside of the magic box -> don't keep formation.

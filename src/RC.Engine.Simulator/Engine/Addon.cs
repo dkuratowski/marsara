@@ -13,14 +13,14 @@ namespace RC.Engine.Simulator.Engine
     /// <summary>
     /// Represents an addon.
     /// </summary>
-    public abstract class Addon : QuadEntity
+    public abstract class Addon : Entity
     {
         /// <summary>
         /// Constructs an Addon instance.
         /// </summary>
         /// <param name="addonTypeName">The name of the type of this addon.</param>
-        public Addon(string addonTypeName)
-            : base(addonTypeName)
+        protected Addon(string addonTypeName)
+            : base(addonTypeName, false)
         {
             this.addonType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetAddonType(addonTypeName);
 
@@ -36,6 +36,6 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// The type of this addon.
         /// </summary>
-        private IAddonType addonType;
+        private readonly IAddonType addonType;
     }
 }

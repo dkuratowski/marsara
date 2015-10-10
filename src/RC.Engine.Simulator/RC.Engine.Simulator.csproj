@@ -80,6 +80,10 @@
     <Compile Include="Commands\AttackExecution.cs" />
     <Compile Include="Commands\BasicCmdExecutionFactory.cs" />
     <Compile Include="Commands\HoldExecution.cs" />
+    <Compile Include="Commands\LandExecution.cs" />
+    <Compile Include="Commands\LandExecutionFactory.cs" />
+    <Compile Include="Commands\LiftOffExecution.cs" />
+    <Compile Include="Commands\LiftOffExecutionFactory.cs" />
     <Compile Include="Commands\MoveExecution.cs" />
     <Compile Include="Commands\PatrolExecution.cs" />
     <Compile Include="Commands\ProductionCancelExecution.cs" />
@@ -108,6 +112,7 @@
     <Compile Include="Engine\EntityBehavior.cs" />
     <Compile Include="Engine\EntityWreck.cs" />
     <Compile Include="Engine\MapObject.cs" />
+    <Compile Include="Engine\MapObjectLayerEnum.cs" />
     <Compile Include="Engine\Missile.cs" />
     <Compile Include="Engine\MotionControl.cs" />
     <Compile Include="Engine\ProductionLine.cs" />
@@ -118,9 +123,10 @@
     <Compile Include="Metadata\Core\MissileData.cs" />
     <Compile Include="Metadata\IMissileData.cs" />
     <Compile Include="Metadata\IRequirement.cs" />
+    <Compile Include="MotionControl\AirPathTracker.cs" />
     <Compile Include="MotionControl\BasicVelocityGraph.cs" />
     <Compile Include="MotionControl\DynamicObstacleInfo.cs" />
-    <Compile Include="MotionControl\GroundUnitPathTracker.cs" />
+    <Compile Include="MotionControl\GroundPathTracker.cs" />
     <Compile Include="MotionControl\HexadecagonalVelocityGraph.cs" />
     <Compile Include="MotionControl\OctagonalVelocityGraph.cs" />
     <Compile Include="MotionControl\PathCache.cs" />
@@ -157,7 +163,6 @@
     <Compile Include="Engine\Locator.cs" />
     <Compile Include="Metadata\Core\MissileType.cs" />
     <Compile Include="Engine\Player.cs" />
-    <Compile Include="Engine\QuadEntity.cs" />
     <Compile Include="Engine\RaceEnum.cs" />
     <Compile Include="Metadata\Core\Requirement.cs" />
     <Compile Include="Engine\MinimumDistanceConstraint.cs" />

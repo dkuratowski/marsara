@@ -36,8 +36,8 @@ namespace RC.Engine.Simulator.Engine
             if (entityToCheck == this.Owner) { return false; }              /// A standard weapon cannot attack its owner.
 
             /// Check the type of this weapon against the entity's current flying status.
-            return (entityToCheck.IsFlying && this.weaponData.WeaponType.Read() == WeaponTypeEnum.Air) ||
-                   (!entityToCheck.IsFlying && this.weaponData.WeaponType.Read() == WeaponTypeEnum.Ground);
+            return (entityToCheck.MotionControl.IsFlying && this.weaponData.WeaponType.Read() == WeaponTypeEnum.Air) ||
+                   (!entityToCheck.MotionControl.IsFlying && this.weaponData.WeaponType.Read() == WeaponTypeEnum.Ground);
         }
 
         /// <see cref="Weapon.CanLaunchMissiles"/>
@@ -67,7 +67,7 @@ namespace RC.Engine.Simulator.Engine
 
             /// TODO: Don't use the default random generator here because scenario update needs to be deterministic!
             bool makeDamage = impactedMissile.LaunchedFromAir ||
-                              impactedMissile.TargetEntity.IsFlying ||
+                              impactedMissile.TargetEntity.MotionControl.IsFlying ||
                               impactQuadTile.GroundLevel <= launchQuadTile.GroundLevel ||
                               RandomService.DefaultGenerator.Next(100) < LOW_TO_HIGH_GROUNDLEVEL_DAMAGE_PROBABILITY;
             if (makeDamage)

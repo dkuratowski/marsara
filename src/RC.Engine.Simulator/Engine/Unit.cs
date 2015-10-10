@@ -19,9 +19,10 @@ namespace RC.Engine.Simulator.Engine
         /// Constructs a Unit instance.
         /// </summary>
         /// <param name="unitTypeName">The name of the type of this unit.</param>
+        /// <param name="isFlying">A flag indicating whether this entity is initially flying.</param>
         /// <param name="behaviors">The list of behaviors of this entity.</param>
-        protected Unit(string unitTypeName, params EntityBehavior[] behaviors)
-            : base(unitTypeName, behaviors)
+        protected Unit(string unitTypeName, bool isFlying, params EntityBehavior[] behaviors)
+            : base(unitTypeName, isFlying, behaviors)
         {
             this.unitType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetUnitType(unitTypeName);
         }

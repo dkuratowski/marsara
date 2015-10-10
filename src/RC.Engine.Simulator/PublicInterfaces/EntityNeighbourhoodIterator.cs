@@ -28,7 +28,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
         {
             get
             {
-                if (!this.centralEntity.HasMapObject) { throw new InvalidOperationException("The given entity is not placed on the map!"); }
+                if (!this.centralEntity.HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects)) { throw new InvalidOperationException("The given entity is not placed on the map!"); }
                 
                 /// Calculate the initial processed area.
                 RCIntVector bbTopLeft = this.centralEntity.Area.Location.Round();

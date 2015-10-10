@@ -14,10 +14,8 @@ namespace RC.Engine.Simulator.Terran.Units
         /// Constructs a Terran SCV instance.
         /// </summary>
         public SCV()
-            : base(SCV_TYPE_NAME)
+            : base(SCV_TYPE_NAME, false)
         {
-            this.MotionControl.SetVelocityGraph(new OctagonalVelocityGraph(this.UnitType.Speed.Read()));
-            this.MotionControl.SetPathTracker(new GroundUnitPathTracker(this));
         }
 
         /// <see cref="ScenarioElement.AttachToMap"/>

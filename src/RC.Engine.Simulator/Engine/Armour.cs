@@ -88,7 +88,7 @@ namespace RC.Engine.Simulator.Engine
         public void StartAttack(int targetID)
         {
             /// Check if target entity is still on the map.
-            Entity targetEntity = this.owner.Read().Scenario.GetElementOnMap<Entity>(targetID);
+            Entity targetEntity = this.owner.Read().Scenario.GetElementOnMap<Entity>(targetID, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
             if (targetEntity == null) { return; }
 
             /// Check if target entity is in attack range.
@@ -114,7 +114,7 @@ namespace RC.Engine.Simulator.Engine
             if (this.target.Read() == null) { return; }
 
             bool isTargetStillInRange = false;
-            if (this.target.Read().HasMapObject)
+            if (this.target.Read().HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects))
             {
                 this.targetVector.Write(this.target.Read().MotionControl.PositionVector.Read() -
                                         this.owner.Read().MotionControl.PositionVector.Read());

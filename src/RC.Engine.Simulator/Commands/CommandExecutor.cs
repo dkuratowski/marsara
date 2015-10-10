@@ -136,7 +136,7 @@ namespace RC.Engine.Simulator.Commands
             RCSet<Entity> entitySet = new RCSet<Entity>();
             foreach (int entityId in entityIDs)
             {
-                Entity entity = scenario.GetElementOnMap<Entity>(entityId);
+                Entity entity = scenario.GetElementOnMap<Entity>(entityId, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
                 if (entity != null) { entitySet.Add(entity); }
             }
             return entitySet;

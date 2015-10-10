@@ -162,7 +162,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             /// Collect the currently visible entities inside the given window.
             RCNumRectangle cellWindow = (RCNumRectangle)this.ActiveScenario.Map.QuadToCellRect(quadWindow) - new RCNumVector(1, 1) / 2;
-            RCSet<MapObject> mapObjectsOnMap = this.ActiveScenario.GetMapObjects(cellWindow);
+            RCSet<MapObject> mapObjectsOnMap = this.ActiveScenario.GetMapObjects(cellWindow, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
             foreach (MapObject mapObject in mapObjectsOnMap)
             {
                 if (this.runningFowsCount == 0)
@@ -305,7 +305,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
 
             /// Collect the currently visible map objects.
-            RCSet<MapObject> objectsOnMap = this.ActiveScenario.GetMapObjects(this.mapWindowBC.AttachedWindow.WindowMapCoords);
+            RCSet<MapObject> objectsOnMap = this.ActiveScenario.GetMapObjects(
+                this.mapWindowBC.AttachedWindow.WindowMapCoords,
+                MapObjectLayerEnum.GroundObjects,
+                MapObjectLayerEnum.GroundMissiles,
+                MapObjectLayerEnum.AirObjects,
+                MapObjectLayerEnum.AirMissiles);
             RCSet<MapObject> mapObjectsToUpdate = new RCSet<MapObject>();
             foreach (MapObject mapObj in objectsOnMap)
             {
@@ -358,7 +363,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
 
             /// Collect the currently visible map objects.
-            RCSet<MapObject> mapObjectsToUpdate = this.ActiveScenario.GetMapObjects(this.mapWindowBC.AttachedWindow.WindowMapCoords);
+            RCSet<MapObject> mapObjectsToUpdate = this.ActiveScenario.GetMapObjects(
+                this.mapWindowBC.AttachedWindow.WindowMapCoords,
+                MapObjectLayerEnum.GroundObjects,
+                MapObjectLayerEnum.GroundMissiles,
+                MapObjectLayerEnum.AirObjects,
+                MapObjectLayerEnum.AirMissiles);
 
             /// Create the calculated visibility info.
             return new FowVisibilityInfo

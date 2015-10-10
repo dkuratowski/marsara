@@ -31,13 +31,14 @@ namespace RC.Engine.Simulator.Engine
             this.missileData = missileData;
 
             if (sourceEntity == null) { throw new ArgumentNullException("sourceEntity"); }
-            if (!sourceEntity.HasMapObject) { throw new ArgumentException("Source entity is not attached to the map!", "sourceEntity"); }
+            if (!sourceEntity.HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects)) { throw new ArgumentException("Source entity is not attached to the map!", "sourceEntity"); }
             if (targetEntity == null) { throw new ArgumentNullException("sourceEntity"); }
-            if (!targetEntity.HasMapObject) { throw new ArgumentException("Target entity is not attached to the map!", "targetEntity"); }
+            if (!targetEntity.HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects)) { throw new ArgumentException("Target entity is not attached to the map!", "targetEntity"); }
 
             this.sourceEntity = this.ConstructField<Entity>("sourceEntity");
             this.targetEntity = this.ConstructField<Entity>("targetEntity");
             this.lastKnownTargetEntityPos = this.ConstructField<RCNumVector>("lastKnownTargetEntityPos");
+            this.lastKnownTargetEntityIsFlying = this.ConstructField<byte>("lastKnownTargetEntityIsFlying");
             this.missilePosition = this.ConstructField<RCNumVector>("missilePosition");
             this.launchPosition = this.ConstructField<RCNumVector>("launchPosition");
             this.launchedFromAir = this.ConstructField<byte>("launchedFromAir");
@@ -48,6 +49,7 @@ namespace RC.Engine.Simulator.Engine
             this.sourceEntity.Write(sourceEntity);
             this.targetEntity.Write(targetEntity);
             this.lastKnownTargetEntityPos.Write(RCNumVector.Undefined);
+            this.lastKnownTargetEntityIsFlying.Write(0x00);
             this.missilePosition.Write(RCNumVector.Undefined);
             this.launchPosition.Write(RCNumVector.Undefined);
             this.launchedFromAir.Write(0x00);
@@ -162,7 +164,7 @@ namespace RC.Engine.Simulator.Engine
         protected override void UpdateMapObjectsImpl()
         {
             /// Remove the launch indicator if the source entity is removed from the map.
-            if (!this.sourceEntity.Read().HasMapObject)
+            if (!this.sourceEntity.Read().HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects))
             {
                 if (this.launchIndicator != null && !this.launchIndicator.IsDestroyed)
                 {
@@ -209,7 +211,7 @@ namespace RC.Engine.Simulator.Engine
             /// Create a launch indicator map object if it has not yet been created and the missile type defines a launch animation.
             if (this.launchIndicator == null && this.missileData.MissileType.LaunchAnimation != null)
             {
-                this.launchIndicator = this.CreateMapObject(this.CalculateArea(this.CalculateLaunchPosition()));
+                this.launchIndicator = this.CreateMapObject(this.CalculateArea(this.CalculateLaunchPosition()), this.sourceEntity.Read().MotionControl.IsFlying ? MapObjectLayerEnum.AirMissiles : MapObjectLayerEnum.GroundMissiles);
                 this.launchIndicator.StartAnimation(this.missileData.MissileType.LaunchAnimation, this.sourceEntity.Read().Armour.TargetVector);
             }
 
@@ -218,9 +220,10 @@ namespace RC.Engine.Simulator.Engine
             {
                 if (this.Launch != null) { this.Launch(this); }
                 this.lastKnownTargetEntityPos.Write(this.targetEntity.Read().MotionControl.PositionVector.Read());
+                this.lastKnownTargetEntityIsFlying.Write(this.targetEntity.Read().MotionControl.IsFlying ? (byte)0x01 : (byte)0x00);
                 this.missilePosition.Write(this.CalculateLaunchPosition());
                 this.launchPosition.Write(this.missilePosition.Read());
-                this.launchedFromAir.Write(this.sourceEntity.Read().IsFlying ? (byte)0x01 : (byte)0x00);
+                this.launchedFromAir.Write(this.sourceEntity.Read().MotionControl.IsFlying ? (byte)0x01 : (byte)0x00);
                 if (this.sourceEntity.Read().Owner != null) { this.OnAddedToPlayer(this.sourceEntity.Read().Owner); }
                 this.UpdateVelocity();
                 this.currentStatus.Write((byte)Status.Launched);
@@ -234,8 +237,12 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         private bool UpdateLaunchedState()
         {
-            /// Update the target entity position if it is still on the map.
-            if (this.targetEntity.Read().HasMapObject) { this.lastKnownTargetEntityPos.Write(this.targetEntity.Read().MotionControl.PositionVector.Read()); }
+            /// Update the target entity position and height if it is still on the map.
+            if (this.targetEntity.Read().HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects))
+            {
+                this.lastKnownTargetEntityPos.Write(this.targetEntity.Read().MotionControl.PositionVector.Read());
+                this.lastKnownTargetEntityIsFlying.Write(this.targetEntity.Read().MotionControl.IsFlying ? (byte)0x01 : (byte)0x00);
+            }
 
             /// Move immediately to the Impacted state if this is an instant missile.
             /// Note: a missile is instant if it has no speed defined.
@@ -269,7 +276,7 @@ namespace RC.Engine.Simulator.Engine
             /// Create a missile indicator map object if it has not yet been created and the missile type defines a flying animation...
             if (this.missileIndicator == null && this.missileData.MissileType.FlyingAnimation != null)
             {
-                this.missileIndicator = this.CreateMapObject(this.CalculateArea(this.missilePosition.Read()));
+                this.missileIndicator = this.CreateMapObject(this.CalculateArea(this.missilePosition.Read()), this.lastKnownTargetEntityIsFlying.Read() == 0x01 ? MapObjectLayerEnum.AirMissiles : MapObjectLayerEnum.GroundMissiles);
                 this.missileIndicator.StartAnimation(this.missileData.MissileType.FlyingAnimation, this.missileVelocity);
             }
             else if (this.missileIndicator != null && !this.missileIndicator.IsDestroyed)
@@ -285,8 +292,12 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         private bool UpdateImpactedState()
         {
-            /// Update the target entity position if it is still on the map.
-            if (this.targetEntity.Read().HasMapObject) { this.lastKnownTargetEntityPos.Write(this.targetEntity.Read().MotionControl.PositionVector.Read()); }
+            /// Update the target entity position and height if it is still on the map.
+            if (this.targetEntity.Read().HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects))
+            {
+                this.lastKnownTargetEntityPos.Write(this.targetEntity.Read().MotionControl.PositionVector.Read());
+                this.lastKnownTargetEntityIsFlying.Write(this.targetEntity.Read().MotionControl.IsFlying ? (byte)0x01 : (byte)0x00);
+            }
 
             /// Create an impact indicator map object if it has not yet been created and the missile type defines an impact animation.
             if (this.impactIndicator == null && this.missileData.MissileType.ImpactAnimation != null)
@@ -294,7 +305,7 @@ namespace RC.Engine.Simulator.Engine
                 RCNumVector impactIndicatorPos = this.missileData.MissileType.Speed != null
                     ? this.missilePosition.Read()
                     : this.lastKnownTargetEntityPos.Read();
-                this.impactIndicator = this.CreateMapObject(this.CalculateArea(impactIndicatorPos));
+                this.impactIndicator = this.CreateMapObject(this.CalculateArea(impactIndicatorPos), this.lastKnownTargetEntityIsFlying.Read() == 0x01 ? MapObjectLayerEnum.AirMissiles : MapObjectLayerEnum.GroundMissiles);
                 this.impactIndicator.StartAnimation(this.missileData.MissileType.ImpactAnimation, this.missileVelocity);
             }
 
@@ -356,8 +367,8 @@ namespace RC.Engine.Simulator.Engine
         private bool LaunchHasToBeCancelled()
         {
             /// Missile launch cancelled if...
-            return !this.sourceEntity.Read().HasMapObject ||    /// ... the source entity has been removed from the map or...
-                   !this.targetEntity.Read().HasMapObject ||    /// ... the target entity has been removed from the map or...
+            return !this.sourceEntity.Read().HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects) ||    /// ... the source entity has been removed from the map or...
+                   !this.targetEntity.Read().HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects) ||    /// ... the target entity has been removed from the map or...
                    this.sourceEntity.Read().Armour.Target != this.targetEntity.Read();  /// ... the target of the source entity has been changed.
         }
 
@@ -379,6 +390,12 @@ namespace RC.Engine.Simulator.Engine
         /// The last known position of the target entity.
         /// </summary>
         private readonly HeapedValue<RCNumVector> lastKnownTargetEntityPos;
+
+        /// <summary>
+        /// This flag indicates the last known flying state of the target entity.
+        /// Meanings: 0x00 - on the ground or fixed; 0x01 - in the air, landing or taking off.
+        /// </summary>
+        private readonly HeapedValue<byte> lastKnownTargetEntityIsFlying;
 
         /// <summary>
         /// The current position of this missile or RCNumVector.Undefined if it has not yet been launched.

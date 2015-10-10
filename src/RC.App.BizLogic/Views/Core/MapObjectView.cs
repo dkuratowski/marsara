@@ -79,7 +79,7 @@ namespace RC.App.BizLogic.Views.Core
         /// <see cref="IMapObjectView.GetMapObjectID"/>
         public int GetMapObjectID(RCIntVector position)
         {
-            foreach (Entity entity in this.Scenario.GetElementsOnMap<Entity>(this.MapWindowBC.AttachedWindow.WindowToMapCoords(position)))
+            foreach (Entity entity in this.Scenario.GetElementsOnMap<Entity>(this.MapWindowBC.AttachedWindow.WindowToMapCoords(position), MapObjectLayerEnum.AirObjects, MapObjectLayerEnum.GroundObjects))
             {
                 /// Get the ID of the entity only if it's not hidden by FOW.
                 if (this.fogOfWarBC.IsMapObjectVisible(entity.MapObject))

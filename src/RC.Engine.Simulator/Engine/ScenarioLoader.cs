@@ -87,15 +87,12 @@ namespace RC.Engine.Simulator.Engine
             }
 
             /// Check the constraints of the visible entities.
-            foreach (Entity entity in scenario.GetElementsOnMap<Entity>())
+            foreach (Entity entity in scenario.GetElementsOnMap<Entity>(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects))
             {
-                QuadEntity quadEntity = entity as QuadEntity;
-                if (quadEntity != null)
-                {
-                    quadEntity.DetachFromMap();
-                    if (quadEntity.ElementType.CheckConstraints(scenario, quadEntity.LastKnownQuadCoords).Count != 0) { throw new MapException(string.Format("Entity at {0} is voilating its placement constraints!", quadEntity.LastKnownQuadCoords)); }
-                    quadEntity.AttachToMap(map.GetQuadTile(quadEntity.LastKnownQuadCoords));
-                }
+                RCIntVector lastKnownQuadCoords = entity.MapObject.QuadraticPosition.Location;
+                entity.DetachFromMap();
+                if (entity.ElementType.CheckConstraints(scenario, lastKnownQuadCoords).Count != 0) { throw new MapException(string.Format("Entity at {0} is voilating its placement constraints!", lastKnownQuadCoords)); }
+                entity.AttachToMap(map.GetQuadTile(lastKnownQuadCoords));
             }
             return scenario;
         }
@@ -110,27 +107,30 @@ namespace RC.Engine.Simulator.Engine
             int retArrayLength = 0;
             foreach (MineralField mineralField in scenario.GetAllElements<MineralField>())
             {
+                RCIntVector lastKnownQuadCoords = mineralField.MapObject.QuadraticPosition.Location;
                 RCPackage mineralFieldPackage = RCPackage.CreateCustomDataPackage(ScenarioFileFormat.MINERAL_FIELD);
-                mineralFieldPackage.WriteShort(0, (short)mineralField.LastKnownQuadCoords.X);
-                mineralFieldPackage.WriteShort(1, (short)mineralField.LastKnownQuadCoords.Y);
+                mineralFieldPackage.WriteShort(0, (short)lastKnownQuadCoords.X);
+                mineralFieldPackage.WriteShort(1, (short)lastKnownQuadCoords.Y);
                 mineralFieldPackage.WriteInt(2, mineralField.ResourceAmount.Read());
                 entityPackages.Add(mineralFieldPackage);
                 retArrayLength += mineralFieldPackage.PackageLength;
             }
             foreach (VespeneGeyser vespeneGeyser in scenario.GetAllElements<VespeneGeyser>())
             {
+                RCIntVector lastKnownQuadCoords = vespeneGeyser.MapObject.QuadraticPosition.Location;
                 RCPackage vespeneGeyserPackage = RCPackage.CreateCustomDataPackage(ScenarioFileFormat.VESPENE_GEYSER);
-                vespeneGeyserPackage.WriteShort(0, (short)vespeneGeyser.LastKnownQuadCoords.X);
-                vespeneGeyserPackage.WriteShort(1, (short)vespeneGeyser.LastKnownQuadCoords.Y);
+                vespeneGeyserPackage.WriteShort(0, (short)lastKnownQuadCoords.X);
+                vespeneGeyserPackage.WriteShort(1, (short)lastKnownQuadCoords.Y);
                 vespeneGeyserPackage.WriteInt(2, vespeneGeyser.ResourceAmount.Read());
                 entityPackages.Add(vespeneGeyserPackage);
                 retArrayLength += vespeneGeyserPackage.PackageLength;
             }
             foreach (StartLocation startLocation in scenario.GetAllElements<StartLocation>())
             {
+                RCIntVector lastKnownQuadCoords = startLocation.MapObject.QuadraticPosition.Location;
                 RCPackage startLocationPackage = RCPackage.CreateCustomDataPackage(ScenarioFileFormat.START_LOCATION);
-                startLocationPackage.WriteShort(0, (short)startLocation.LastKnownQuadCoords.X);
-                startLocationPackage.WriteShort(1, (short)startLocation.LastKnownQuadCoords.Y);
+                startLocationPackage.WriteShort(0, (short)lastKnownQuadCoords.X);
+                startLocationPackage.WriteShort(1, (short)lastKnownQuadCoords.Y);
                 startLocationPackage.WriteByte(2, (byte)startLocation.PlayerIndex);
                 entityPackages.Add(startLocationPackage);
                 retArrayLength += startLocationPackage.PackageLength;
