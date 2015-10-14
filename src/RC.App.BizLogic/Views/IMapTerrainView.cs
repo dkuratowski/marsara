@@ -12,10 +12,10 @@ namespace RC.App.BizLogic.Views
     public interface IMapTerrainView
     {
         /// <summary>
-        /// Gets the list of the visible isometric tiles at the given area.
+        /// Gets the list of the visible terrain sprites to be rendered.
         /// </summary>
-        /// <returns>The list of display informations of the visible isometric tiles.</returns>
-        List<SpriteInst> GetVisibleIsoTiles();
+        /// <returns>The list of render informations of the visible terrain sprites.</returns>
+        List<SpriteRenderInfo> GetVisibleTerrainSprites();
 
         /// <summary>
         /// Gets the display coordinates of the isometric tile at the given position inside the displayed area.
@@ -25,12 +25,6 @@ namespace RC.App.BizLogic.Views
         /// <param name="position">The position inside the map displayed area in pixels.</param>
         /// <returns>The display coordinates of the isometric tile at the given position.</returns>
         RCIntVector GetIsoTileDisplayCoords(RCIntVector position);
-
-        /// <summary>
-        /// Gets the list of the visible terrain objects at the displayed area.
-        /// </summary>
-        /// <returns>The list of display informations of the visible terrain objects.</returns>
-        List<SpriteInst> GetVisibleTerrainObjects();
 
         /// <summary>
         /// Gets the display coordinates of the terrain object at the given position inside the displayed area.

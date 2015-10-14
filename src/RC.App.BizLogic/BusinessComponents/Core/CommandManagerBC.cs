@@ -34,7 +34,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.completedListeners = new List<CommandInputListener>();
             this.activeListeners = new List<CommandInputListener>();
             this.allSpritePalettes = new List<ISpritePalette>();
-            this.productButtonSprites = new Dictionary<string, SpriteInst>();
+            this.productButtonSprites = new Dictionary<string, SpriteRenderInfo>();
             this.commandBuilder = null;
             this.selectionManager = null;
         }
@@ -165,7 +165,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="ICommandManagerBC.GetCmdButtonSprite"/>
-        public SpriteInst GetCmdButtonSprite(RCIntVector panelPosition)
+        public SpriteRenderInfo GetCmdButtonSprite(RCIntVector panelPosition)
         {
             if (panelPosition == RCIntVector.Undefined) { throw new ArgumentNullException("panelPosition"); }
             if (this.commandPanelSlots[panelPosition.X, panelPosition.Y] == null) { throw new InvalidOperationException(string.Format("There is no command button on the command panel at {0}!", panelPosition)); }
@@ -181,7 +181,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="ICommandManagerBC.GetProductButtonSprite"/>
-        public SpriteInst GetProductButtonSprite(string productName)
+        public SpriteRenderInfo GetProductButtonSprite(string productName)
         {
             if (productName == null) { throw new ArgumentNullException("productName"); }
             if (!this.productButtonSprites.ContainsKey(productName)) { throw new InvalidOperationException(string.Format("Product button sprite not found for product '{0}'!", productName)); }
@@ -464,7 +464,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// List of all product button sprites mapped by the names of the corresponding products.
         /// </summary>
-        private readonly Dictionary<string, SpriteInst> productButtonSprites;
+        private readonly Dictionary<string, SpriteRenderInfo> productButtonSprites;
         
         /// <summary>
         /// Reference to the command builder.

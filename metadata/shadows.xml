@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+  <shadowPalette image="shadows.png" transparentColor="255;0;255">
+    <sprite name="Shadow_0" sourceRegion="46;31;5;3" />
+    <sprite name="Shadow_1" sourceRegion="34;54;20;10" />
+    <sprite name="Shadow_2" sourceRegion="1;54;32;16" />
+    <sprite name="Shadow_3" sourceRegion="1;31;44;22" />
+    <sprite name="Shadow_4" sourceRegion="1;1;58;29" />
+  </shadowPalette>
+</metadata>

@@ -27,6 +27,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.missileTypes = new Dictionary<string, MissileType>();
             this.customTypes = new Dictionary<string, ScenarioElementType>();
             this.allTypes = new List<ScenarioElementType>();
+            this.shadowPalette = null;
         }
 
         #region IScenarioMetadata members
@@ -138,6 +139,9 @@ namespace RC.Engine.Simulator.Metadata.Core
 
         /// <see cref="IScenarioMetadata.this[]"/>
         public IScenarioElementType this[int typeID] { get { return this.allTypes[typeID]; } }
+
+        /// <see cref="IScenarioMetadata.ShadowPalette"/>
+        public ISpritePalette ShadowPalette { get { return this.shadowPalette; } }
 
         #endregion IScenarioMetadata members
 
@@ -329,6 +333,17 @@ namespace RC.Engine.Simulator.Metadata.Core
         }
 
         /// <summary>
+        /// Sets the shadow palette for this metadata.
+        /// </summary>
+        /// <param name="shadowPalette">The shadow palette for this metadata.</param>
+        public void SetShadowPalette(ISpritePalette shadowPalette)
+        {
+            if (this.isFinalized) { throw new InvalidOperationException("ScenarioMetadata object already finalized!"); }
+            if (shadowPalette == null) { throw new ArgumentNullException("shadowPalette"); }
+            this.shadowPalette = shadowPalette;
+        }
+
+        /// <summary>
         /// Checks and finalizes the metadata object. Buildup methods will be unavailable after calling this method.
         /// </summary>
         public void CheckAndFinalize()
@@ -370,6 +385,7 @@ namespace RC.Engine.Simulator.Metadata.Core
 
                 objType.CheckAndFinalize();
             }
+            this.shadowPalette.SetIndex(0);
 
             this.isFinalized = true;
         }
@@ -410,6 +426,11 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// List of all defined types mapped by their IDs.
         /// </summary>
         private readonly List<ScenarioElementType> allTypes;
+
+        /// <summary>
+        /// The shadow palette defined for this metadata or null if no shadow palette has been defined.
+        /// </summary>
+        private ISpritePalette shadowPalette;
 
         /// <summary>
         /// Indicates whether this metadata object has been finalized or not.

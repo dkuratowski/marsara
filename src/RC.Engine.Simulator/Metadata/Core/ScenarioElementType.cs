@@ -28,6 +28,9 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.name = name;
             this.displayedName = null;
             this.hasOwner = false;
+            this.shadowSpriteName = null;
+            this.shadowSpriteIndex = -1;
+            this.shadowOffset = RCNumVector.Undefined;
             this.metadata = metadata;
             this.spritePalette = null;
             this.hpIconPalette = null;
@@ -51,6 +54,12 @@ namespace RC.Engine.Simulator.Metadata.Core
 
         /// <see cref="IScenarioElementType.HasOwner"/>
         public bool HasOwner { get { return this.hasOwner; } }
+
+        /// <see cref="IScenarioElementType.ShadowSpriteIndex"/>
+        public int ShadowSpriteIndex { get { return this.shadowSpriteIndex; } }
+
+        /// <see cref="IScenarioElementType.ShadowOffset"/>
+        public RCNumVector ShadowOffset { get { return this.shadowOffset; } }
 
         /// <see cref="IScenarioElementType.SpritePalette"/>
         public ISpritePalette<MapDirection> SpritePalette { get { return this.spritePalette; } }
@@ -210,6 +219,21 @@ namespace RC.Engine.Simulator.Metadata.Core
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (animationPalette == null) { throw new ArgumentNullException("animationPalette"); }
             this.animationPalette = animationPalette;
+        }
+
+        /// <summary>
+        /// Sets the shadow data of this element type.
+        /// </summary>
+        /// <param name="shadowSpriteName">The name of the shadow sprite in the shadow palette of the metadata.</param>
+        /// <param name="shadowOffset">The coordinates of the center of the shadow relative to the upper-left corner of the area defined for this element type.</param>
+        public void SetShadowData(string shadowSpriteName, RCNumVector shadowOffset)
+        {
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (shadowSpriteName == null) { throw new ArgumentNullException("shadowSpriteName"); }
+            if (shadowOffset == RCNumVector.Undefined) { throw new ArgumentNullException("shadowOffset"); }
+
+            this.shadowSpriteName = shadowSpriteName;
+            this.shadowOffset = shadowOffset;
         }
 
         /// <summary>
@@ -404,6 +428,18 @@ namespace RC.Engine.Simulator.Metadata.Core
                 if (this.sightRange != null && this.sightRange.Read() < 0) { throw new SimulatorException("SightRange must be non-negative!"); }
                 if (this.speed != null && this.speed.Read() < 0) { throw new SimulatorException("Speed must be non-negative!"); }
 
+                if (this.shadowSpriteName == null && this.shadowOffset != RCNumVector.Undefined ||
+                    this.shadowSpriteName != null && this.shadowOffset == RCNumVector.Undefined)
+                {
+                    throw new SimulatorException("Both shadow sprite name and shadow offset shall be defined in the metadata or none of them!");
+                }
+
+                if (this.shadowSpriteName != null)
+                {
+                    if (this.metadata.ShadowPalette == null) { throw new SimulatorException("Shadow palette not defined in the metadata!"); }
+                    this.shadowSpriteIndex = this.metadata.ShadowPalette.GetSpriteIndex(this.shadowSpriteName);
+                }
+
                 foreach (Requirement requirement in this.requirements)
                 {
                     requirement.CheckAndFinalize();
@@ -488,6 +524,13 @@ namespace RC.Engine.Simulator.Metadata.Core
         private ConstValue<int> sightRange;
         private ConstValue<SizeEnum> size;
         private ConstValue<RCNumber> speed;
+
+        /// <summary>
+        /// The shadow data of this element type.
+        /// </summary>
+        private string shadowSpriteName;
+        private int shadowSpriteIndex;
+        private RCNumVector shadowOffset;
 
         /// <summary>
         /// The standard weapons of this element type.

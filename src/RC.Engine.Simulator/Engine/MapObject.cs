@@ -31,18 +31,54 @@ namespace RC.Engine.Simulator.Engine
             this.currentAnimations = new AnimationPlayer[owner.ElementType.AnimationPalette.Count];
             this.quadraticPositionCache = new CachedValue<RCIntRectangle>(() =>
             {
-                if (this.location == RCNumRectangle.Undefined) { return RCIntRectangle.Undefined; }
                 RCIntVector topLeft = this.location.Location.Round();
                 RCIntVector bottomRight = (this.location.Location + this.location.Size).Round();
                 RCIntRectangle cellRect = new RCIntRectangle(topLeft.X, topLeft.Y, Math.Max(1, bottomRight.X - topLeft.X), Math.Max(1, bottomRight.Y - topLeft.Y));
                 return this.owner.Scenario.Map.CellToQuadRect(cellRect);
             });
 
+            this.quadraticShadowPositionCache = new CachedValue<RCIntRectangle>(() =>
+            {
+                if (this.owner.ElementType.ShadowOffset == RCNumVector.Undefined || this.shadowTransition == new RCNumVector(0, 0)) { return RCIntRectangle.Undefined; }
+                RCNumRectangle shiftedLocation = this.location + (this.owner.ElementType.ShadowOffset + this.shadowTransition - this.location.Size / 2);
+                RCIntVector topLeft = shiftedLocation.Location.Round();
+                RCIntVector bottomRight = (shiftedLocation.Location + shiftedLocation.Size).Round();
+                RCIntRectangle cellRect = new RCIntRectangle(topLeft.X, topLeft.Y, Math.Max(1, bottomRight.X - topLeft.X), Math.Max(1, bottomRight.Y - topLeft.Y));
+                return this.owner.Scenario.Map.CellToQuadRect(cellRect);
+            });
+
             this.owner = owner;
             this.location = RCNumRectangle.Undefined;
+            this.shadowTransition = new RCNumVector(0, 0);
         }
 
         #region Public interface
+
+        /// <summary>
+        /// Gets the center of the shadow of this map object or RCNumVector.Undefined if the shadow transition has been set
+        /// to (0;0) or if no shadow data defined for the type of the owner of this map object.
+        /// </summary>
+        public RCNumVector ShadowCenter
+        {
+            get
+            {
+                if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
+                if (this.owner.ElementType.ShadowOffset == RCNumVector.Undefined || this.shadowTransition == new RCNumVector(0, 0)) { return RCNumVector.Undefined; }
+                return this.location.Location + this.owner.ElementType.ShadowOffset + this.shadowTransition;
+            }
+        }
+
+        ///// <summary>
+        ///// Gets the shadow transition currently set for this map object.
+        ///// </summary>
+        //public RCNumVector ShadowTransition
+        //{
+        //    get
+        //    {
+        //        if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
+        //        return this.shadowTransition;
+        //    }
+        //}
 
         /// <summary>
         /// Gets the players of the currently active animations of this map object.
@@ -57,7 +93,7 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
-        /// Gets the quadratic position of this map object or RCIntRectangle.Undefined if this map object is not attached to the map.
+        /// Gets the quadratic position of this map object.
         /// </summary>
         public RCIntRectangle QuadraticPosition
         {
@@ -65,6 +101,19 @@ namespace RC.Engine.Simulator.Engine
             {
                 if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
                 return this.quadraticPositionCache.Value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the quadratic position of the shadow of this map object or RCIntRectangle.Undefined if the shadow transition has been set
+        /// to (0;0) or if no shadow data defined for the type of the owner of this map object.
+        /// </summary>
+        public RCIntRectangle QuadraticShadowPosition
+        {
+            get
+            {
+                if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
+                return this.quadraticShadowPositionCache.Value;
             }
         }
 
@@ -104,7 +153,23 @@ namespace RC.Engine.Simulator.Engine
                 if (this.BoundingBoxChanging != null) { this.BoundingBoxChanging(this); }
                 this.location = newLocation;
                 this.quadraticPositionCache.Invalidate();
+                this.quadraticShadowPositionCache.Invalidate();
                 if (this.BoundingBoxChanged != null) { this.BoundingBoxChanged(this); }
+            }
+        }
+
+        /// <summary>
+        /// Sets the transition of the shadow of this map object. The origin of the transition is the center of the shadow.
+        /// </summary>
+        /// <param name="shadowTransition">The transition vector of the shadow of this map object.</param>
+        public void SetShadowTransition(RCNumVector shadowTransition)
+        {
+            if (shadowTransition == RCNumVector.Undefined) { throw new ArgumentNullException("shadowTransition"); }
+
+            if (this.shadowTransition != shadowTransition)
+            {
+                this.shadowTransition = shadowTransition;
+                this.quadraticShadowPositionCache.Invalidate();
             }
         }
 
@@ -226,6 +291,11 @@ namespace RC.Engine.Simulator.Engine
         private RCNumRectangle location;
 
         /// <summary>
+        /// The shadow transition currently set for this map object.
+        /// </summary>
+        private RCNumVector shadowTransition;
+
+        /// <summary>
         /// Reference to the scenario element that owns this map object.
         /// </summary>
         private ScenarioElement owner;
@@ -240,5 +310,10 @@ namespace RC.Engine.Simulator.Engine
         /// The cached value of the quadratic position of this map object.
         /// </summary>
         private CachedValue<RCIntRectangle> quadraticPositionCache;
+
+        /// <summary>
+        /// The cached value of the quadratic shadow position of this map object.
+        /// </summary>
+        private CachedValue<RCIntRectangle> quadraticShadowPositionCache;
     }
 }

@@ -170,7 +170,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// Gets the sprite of the button to be displayed for this listener.
         /// </summary>
-        SpriteInst ButtonSprite { get; }
+        SpriteRenderInfo ButtonSprite { get; }
 
         /// <summary>
         /// Gets the availability of the button for this listener.

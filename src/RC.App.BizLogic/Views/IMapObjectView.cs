@@ -12,10 +12,11 @@ namespace RC.App.BizLogic.Views
     public interface IMapObjectView
     {
         /// <summary>
-        /// Gets the list of the visible map objects at the displayed area in the order as they shall be displayed.
+        /// Gets the list of the visible map object sprites to be rendered.
         /// </summary>
-        /// <returns>The list of display informations of the visible map objects.</returns>
-        List<ObjectInst> GetVisibleMapObjects();
+        /// <returns>
+        /// A list of pairs of render informations of the visible map object sprites and their owner player.</returns>
+        List<Tuple<SpriteRenderInfo, PlayerEnum>> GetVisibleMapObjectSprites();
 
         /// <summary>
         /// Gets the ID of the map object at the given position inside the displayed area.

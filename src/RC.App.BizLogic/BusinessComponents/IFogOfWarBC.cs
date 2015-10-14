@@ -50,11 +50,23 @@ namespace RC.App.BizLogic.BusinessComponents
         IEnumerable<EntitySnapshot> GetEntitySnapshotsToUpdate();
 
         /// <summary>
+        /// Gets all the map objects on the ground that are not entirely hidden by the Fog Of War inside the area of the attached window.
+        /// </summary>
+        /// <returns>All the map objects on the ground that are not entirely hidden by the Fog Of War inside the area of the attached window.</returns>
+        IEnumerable<MapObject> GetGroundMapObjectsToUpdate();
+
+        /// <summary>
+        /// Gets all the map objects in the air that are not entirely hidden by the Fog Of War inside the area of the attached window.
+        /// </summary>
+        /// <returns>All the map objects in the air that are not entirely hidden by the Fog Of War inside the area of the attached window.</returns>
+        IEnumerable<MapObject> GetAirMapObjectsToUpdate();
+
+        /// <summary>
         /// Gets all the map objects that are not entirely hidden by the Fog Of War inside the area of the attached window.
         /// </summary>
         /// <returns>All the map objects that are not entirely hidden by the Fog Of War inside the area of the attached window.</returns>
-        IEnumerable<MapObject> GetMapObjectsToUpdate();
-
+        IEnumerable<MapObject> GetAllMapObjectsToUpdate();
+        
         /// <summary>
         /// Gets all the entity snapshots that are not entirely hidden by the Fog Of War inside the given area.
         /// </summary>
@@ -67,7 +79,7 @@ namespace RC.App.BizLogic.BusinessComponents
         /// </summary>
         /// <param name="quadWindow">A rectangular area of the map given in quadratic tile coordinates.</param>
         /// <returns>All the map objects that are not entirely hidden by the Fog Of War inside the given area.</returns>
-        IEnumerable<MapObject> GetMapObjectsInWindow(RCIntRectangle quadWindow);
+        IEnumerable<MapObject> GetAllMapObjectsInWindow(RCIntRectangle quadWindow);
 
         /// <summary>
         /// Checks whether the given map object is not entirely hidden by the Fog Of War inside the area of the attached window.

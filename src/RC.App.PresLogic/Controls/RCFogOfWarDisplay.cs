@@ -72,17 +72,18 @@ namespace RC.App.PresLogic.Controls
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
             /// Display the partial FOW-tiles.
-            foreach (SpriteInst partialFowTileInfo in this.fogOfWarView.GetPartialFOWTiles())
+            foreach (SpriteRenderInfo fowTileInfo in this.fogOfWarView.GetFOWTiles())
             {
-                UISprite fowSprite = this.partialFowSprites[partialFowTileInfo.Index];
-                renderContext.RenderSprite(fowSprite, partialFowTileInfo.DisplayCoords, partialFowTileInfo.Section);
-            }
-
-            /// Display the full FOW-tiles.
-            foreach (SpriteInst fullFowTileInfo in this.fogOfWarView.GetFullFOWTiles())
-            {
-                UISprite fowSprite = this.fullFowSprites[fullFowTileInfo.Index];
-                renderContext.RenderSprite(fowSprite, fullFowTileInfo.DisplayCoords, fullFowTileInfo.Section);
+                if (fowTileInfo.SpriteGroup == SpriteGroupEnum.PartialFogOfWarSpriteGroup)
+                {
+                    UISprite fowSprite = this.partialFowSprites[fowTileInfo.Index];
+                    renderContext.RenderSprite(fowSprite, fowTileInfo.DisplayCoords, fowTileInfo.Section);
+                }
+                else if (fowTileInfo.SpriteGroup == SpriteGroupEnum.FullFogOfWarSpriteGroup)
+                {
+                    UISprite fowSprite = this.fullFowSprites[fowTileInfo.Index];
+                    renderContext.RenderSprite(fowSprite, fowTileInfo.DisplayCoords, fowTileInfo.Section);
+                }
             }
         }
 
@@ -106,7 +107,7 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// Reference to the Fog Of War sprite palette.
         /// </summary>
-        private ISpritePalette<FOWTypeEnum> fowSpritePalette;
+        private readonly ISpritePalette<FOWTypeEnum> fowSpritePalette;
 
         /// <summary>
         /// The directory and the file in which the FOW sprite-palette definition is located.

@@ -7,9 +7,9 @@ using System.Text;
 namespace RC.App.BizLogic.Views
 {
     /// <summary>
-    /// This structure contains informations for displaying a selection indicator on the map.
+    /// This structure contains informations for rendering a selection indicator on the map.
     /// </summary>
-    public struct SelIndicatorInst
+    public struct SelIndicatorRenderInfo
     {
         /// <summary>
         /// The ID of the map object that belongs to this selection indicator.

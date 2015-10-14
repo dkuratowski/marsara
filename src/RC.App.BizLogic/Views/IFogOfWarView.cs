@@ -12,15 +12,9 @@ namespace RC.App.BizLogic.Views
     public interface IFogOfWarView
     {
         /// <summary>
-        /// Gets the list of the partial Fog Of War tiles to update at the displayed area.
+        /// Gets the list of the Fog Of War tiles to update at the displayed area.
         /// </summary>
-        /// <returns>The list of display informations of the partial Fog Of War tiles to update.</returns>
-        List<SpriteInst> GetPartialFOWTiles();
-
-        /// <summary>
-        /// Gets the list of the full Fog Of War tiles to update at the displayed area.
-        /// </summary>
-        /// <returns>The list of display informations of the full Fog Of War tiles to update.</returns>
-        List<SpriteInst> GetFullFOWTiles();
+        /// <returns>The list of render informations of the Fog Of War tiles to update.</returns>
+        List<SpriteRenderInfo> GetFOWTiles();
     }
 }

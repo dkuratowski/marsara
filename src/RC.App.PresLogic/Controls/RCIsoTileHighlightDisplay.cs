@@ -14,13 +14,13 @@ namespace RC.App.PresLogic.Controls
     /// Adds new functionality to the map display control for displaying the isometric grid of the map and/or highlight the isometric tile
     /// that is currently under the mouse pointer.
     /// </summary>
-    public class RCIsoTileDisplay : RCMapDisplayExtension
+    public class RCIsoTileHighlightDisplay : RCMapDisplayExtension
     {
         /// <summary>
-        /// Constructs an RCIsoTileDisplay extension for the given map display control.
+        /// Constructs an RCIsoTileHighlightDisplay extension for the given map display control.
         /// </summary>
         /// <param name="extendedControl">The map display control to extend.</param>
-        public RCIsoTileDisplay(RCMapDisplay extendedControl)
+        public RCIsoTileHighlightDisplay(RCMapDisplay extendedControl)
             : base(extendedControl)
         {
             this.mapTerrainView = null;

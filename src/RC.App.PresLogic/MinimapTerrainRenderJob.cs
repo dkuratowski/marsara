@@ -42,8 +42,7 @@ namespace RC.App.PresLogic
 
             this.result = oldTerrainSprite;
 
-            this.isoTileInfos = new List<SpriteInst>(minimapView.GetIsoTileSprites());
-            this.terrainObjectInfos = new List<SpriteInst>(minimapView.GetTerrainObjectSprites());
+            this.terrainSpriteRenderInfos = new List<SpriteRenderInfo>(minimapView.GetTerrainSprites());
             this.mapPixelSize = minimapView.MapPixelSize;
             this.minimapPixelSize = minimapView.MinimapPosition.Size;
 
@@ -68,17 +67,18 @@ namespace RC.App.PresLogic
             IUIRenderContext fullMapImageRenderContext = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateRenderContext(fullMapImage);
 
             /// Render the isometric tiles to the map image.
-            foreach (SpriteInst tileDisplayInfo in this.isoTileInfos)
+            foreach (SpriteRenderInfo spriteRenderInfo in this.terrainSpriteRenderInfos)
             {
-                UISprite tileToDisplay = this.tileSpriteGroup[tileDisplayInfo.Index];
-                fullMapImageRenderContext.RenderSprite(tileToDisplay, tileDisplayInfo.DisplayCoords, tileDisplayInfo.Section);
-            }
-
-            /// Render the terrain objects to the map image.
-            foreach (SpriteInst terrainObjDisplayInfo in this.terrainObjectInfos)
-            {
-                UISprite terrainObjToDisplay = this.terrainObjectSpriteGroup[terrainObjDisplayInfo.Index];
-                fullMapImageRenderContext.RenderSprite(terrainObjToDisplay, terrainObjDisplayInfo.DisplayCoords, terrainObjDisplayInfo.Section);
+                if (spriteRenderInfo.SpriteGroup == SpriteGroupEnum.IsoTileSpriteGroup)
+                {
+                    UISprite spriteToDisplay = this.tileSpriteGroup[spriteRenderInfo.Index];
+                    fullMapImageRenderContext.RenderSprite(spriteToDisplay, spriteRenderInfo.DisplayCoords, spriteRenderInfo.Section);
+                }
+                else if (spriteRenderInfo.SpriteGroup == SpriteGroupEnum.TerrainObjectSpriteGroup)
+                {
+                    UISprite spriteToDisplay = this.terrainObjectSpriteGroup[spriteRenderInfo.Index];
+                    fullMapImageRenderContext.RenderSprite(spriteToDisplay, spriteRenderInfo.DisplayCoords, spriteRenderInfo.Section);
+                }
             }
 
             /// Close the render context of the map image.
@@ -109,10 +109,9 @@ namespace RC.App.PresLogic
         /// <summary>
         /// List of the informations for the rendering.
         /// </summary>
-        private List<SpriteInst> isoTileInfos;
-        private List<SpriteInst> terrainObjectInfos;
-        private RCIntVector mapPixelSize;
-        private RCIntVector minimapPixelSize;
+        private readonly List<SpriteRenderInfo> terrainSpriteRenderInfos;
+        private readonly RCIntVector mapPixelSize;
+        private readonly RCIntVector minimapPixelSize;
 
         /// <summary>
         /// Reference to the sprite group of the isometric tiles.

@@ -33,22 +33,17 @@ namespace RC.App.BizLogic.Views.Core
             RCIntVector objectQuadraticSize = this.GetObjectQuadraticSize();
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objectQuadraticSize / 2;
 
-            List<SpriteInst> spritesToDisplay = this.GetObjectSprites();
+            SpriteRenderInfo[] spritesToDisplay = this.GetObjectSprites();
             RCIntVector topLeftDisplayCoords =
                 this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(topLeftQuadCoords, new RCIntVector(1, 1))).Location;
-            for (int i = 0; i < spritesToDisplay.Count; i++)
+            for (int i = 0; i < spritesToDisplay.Length; i++)
             {
-                spritesToDisplay[i] = new SpriteInst()
-                {
-                    Index = spritesToDisplay[i].Index,
-                    DisplayCoords = topLeftDisplayCoords + spritesToDisplay[i].DisplayCoords,
-                    Section = spritesToDisplay[i].Section
-                };
+                spritesToDisplay[i].DisplayCoords += topLeftDisplayCoords;
             }
 
             ObjectPlacementBox placementBox = new ObjectPlacementBox()
             {
-                Sprites = spritesToDisplay,
+                Sprites = new List<SpriteRenderInfo>(spritesToDisplay),
                 IllegalParts = new List<RCIntRectangle>(),
                 LegalParts = new List<RCIntRectangle>()
             };
@@ -104,7 +99,7 @@ namespace RC.App.BizLogic.Views.Core
         /// <returns>
         /// A list of sprites with coordinates relative to the top left corner of the area of the object.
         /// </returns>
-        protected abstract List<SpriteInst> GetObjectSprites();
+        protected abstract SpriteRenderInfo[] GetObjectSprites();
 
         /// <summary>
         /// Reference to the Fog Of War business component.

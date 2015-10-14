@@ -14,6 +14,10 @@
       <sightRange>11</sightRange>
       <speed>0.25</speed>
     </generalData>
+	<shadowData>
+	  <spriteName>Shadow_4</spriteName>
+	  <centerOffset>7.5;7.5</centerOffset>
+	</shadowData>
 	<hpIconPalette image="terran_commandcenter_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
       <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
 	</hpIconPalette>

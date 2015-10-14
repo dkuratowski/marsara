@@ -57,12 +57,14 @@ namespace RC.Engine.Simulator.Engine
             this.airPathTracker.Write(new AirPathTracker(owner));
             if (isFlying)
             {
+                this.owner.Read().MapObject.SetShadowTransition(MAX_VTOL_TRANSITION_VECTOR);
                 this.status.Write((byte)MotionControlStatusEnum.InAir);
                 this.currentPathTracker.Write(this.airPathTracker.Read());
                 this.velocityGraph = new HexadecagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0); // TODO: max speed might change based on upgrades!
             }
             else
             {
+                this.owner.Read().MapObject.SetShadowTransition(new RCNumVector(0, 0));
                 this.status.Write((byte)MotionControlStatusEnum.OnGround);
                 this.currentPathTracker.Write(this.groundPathTracker.Read());
                 this.velocityGraph = new OctagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0); // TODO: max speed might change based on upgrades!
@@ -263,9 +265,17 @@ namespace RC.Engine.Simulator.Engine
                     finished = true;
                 }
 
-                /// Calculate the new position vector (TODO: adjust the shadow offset of the owner's map object)
+                /// Calculate the new position vector and adjust the shadow transition of the owner's map object.
                 this.position.Write(this.vtolInitialPosition.Read() * (1 - this.vtolOperationProgress.Read()) +
                                     this.vtolFinalPosition.Read() * this.vtolOperationProgress.Read());
+                if (this.Status == MotionControlStatusEnum.TakingOff)
+                {
+                    this.owner.Read().MapObject.SetShadowTransition(MAX_VTOL_TRANSITION_VECTOR * this.vtolOperationProgress.Read());
+                }
+                else if (this.Status == MotionControlStatusEnum.Landing)
+                {
+                    this.owner.Read().MapObject.SetShadowTransition(MAX_VTOL_TRANSITION_VECTOR * (1 - this.vtolOperationProgress.Read()));
+                }
 
                 /// Finish the VTOL operation if its progress has reached 1.
                 if (finished)
@@ -390,12 +400,14 @@ namespace RC.Engine.Simulator.Engine
             this.vtolFinalPosition.Write(RCNumVector.Undefined);
             if (this.Status == MotionControlStatusEnum.TakingOff)
             {
+                this.owner.Read().MapObject.SetShadowTransition(MAX_VTOL_TRANSITION_VECTOR);
                 this.status.Write((byte)MotionControlStatusEnum.InAir);
                 this.currentPathTracker.Write(this.airPathTracker.Read());
                 this.velocityGraph = new HexadecagonalVelocityGraph(this.owner.Read().ElementType.Speed.Read()); // TODO: max speed might change based on upgrades!
             }
             else
             {
+                this.owner.Read().MapObject.SetShadowTransition(new RCNumVector(0, 0));
                 this.status.Write((byte)MotionControlStatusEnum.OnGround);
                 this.currentPathTracker.Write(this.groundPathTracker.Read());
                 this.velocityGraph = new OctagonalVelocityGraph(this.owner.Read().ElementType.Speed.Read()); // TODO: max speed might change based on upgrades!
@@ -539,5 +551,10 @@ namespace RC.Engine.Simulator.Engine
         /// The increment of VTOL operation progress per frames.
         /// </summary>
         private static readonly RCNumber VTOL_INCREMENT_PER_FRAME = (RCNumber)1/(RCNumber)72;
+
+        /// <summary>
+        /// The shadow transition vector belonging to the maximum value of transition during a VTOL operation.
+        /// </summary>
+        private static readonly RCNumVector MAX_VTOL_TRANSITION_VECTOR = new RCNumVector(0, Constants.MAX_VTOL_TRANSITION);
     }
 }

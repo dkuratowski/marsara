@@ -54,7 +54,7 @@ namespace RC.App.PresLogic.Controls
             if (buttonState == CommandButtonStateEnum.Invisible) { return; }
             if (!this.commandButtonSprites.ContainsKey(buttonState)) { return; }
 
-            SpriteInst renderedSprite = this.commandPanelView.GetCmdButtonSprite(this.slotCoords);
+            SpriteRenderInfo renderedSprite = this.commandPanelView.GetCmdButtonSprite(this.slotCoords);
             renderContext.RenderSprite(this.commandButtonSprites[buttonState][renderedSprite.Index],
                                        renderedSprite.DisplayCoords,
                                        renderedSprite.Section);

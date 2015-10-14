@@ -24,15 +24,15 @@ namespace RC.App.BizLogic.Views.Core
 
         #region ICommandView methods
 
-        /// <see cref="ICommandView.GetCmdButtonSpriteDefs"/>
-        public List<SpriteDef> GetCmdButtonSpriteDefs()
+        /// <see cref="ICommandView.GetCmdButtonSpriteDatas"/>
+        public List<SpriteData> GetCmdButtonSpriteDatas()
         {
-            List<SpriteDef> retList = new List<SpriteDef>();
+            List<SpriteData> retList = new List<SpriteData>();
             foreach (ISpritePalette palette in this.commandManager.SpritePalettes)
             {
                 byte[] imageData = new byte[palette.ImageData.Length];
                 Array.Copy(palette.ImageData, imageData, palette.ImageData.Length);
-                SpriteDef info = new SpriteDef
+                SpriteData info = new SpriteData
                 {
                     ImageData = imageData,
                     TransparentColor = palette.TransparentColor,
@@ -45,7 +45,7 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="ICommandView.GetCmdButtonSprite"/>
-        public SpriteInst GetCmdButtonSprite(RCIntVector panelPosition)
+        public SpriteRenderInfo GetCmdButtonSprite(RCIntVector panelPosition)
         {
             return this.commandManager.GetCmdButtonSprite(panelPosition);
         }

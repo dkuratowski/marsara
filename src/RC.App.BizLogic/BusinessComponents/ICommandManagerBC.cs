@@ -64,7 +64,7 @@ namespace RC.App.BizLogic.BusinessComponents
         /// <exception cref="InvalidOperationException">
         /// If there is no command button at the given position on the command panel.
         /// </exception>
-        SpriteInst GetCmdButtonSprite(RCIntVector panelPosition);
+        SpriteRenderInfo GetCmdButtonSprite(RCIntVector panelPosition);
 
         /// <summary>
         /// Gets the state of the given command button.
@@ -81,7 +81,7 @@ namespace RC.App.BizLogic.BusinessComponents
         /// </summary>
         /// <param name="productName">The name of the product.</param>
         /// <returns>The sprite to be displayed for the given product.</returns>
-        SpriteInst GetProductButtonSprite(string productName);
+        SpriteRenderInfo GetProductButtonSprite(string productName);
 
         /// <summary>
         /// Updates the state of the command input procedure.

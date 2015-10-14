@@ -29,7 +29,7 @@ namespace RC.App.PresLogic.SpriteGroups
         #region Overriden from MaskedSpriteGroup
 
         /// <see cref="MaskedSpriteGroup.SpriteDefinitions"/>
-        protected override IEnumerable<SpriteDef> SpriteDefinitions { get { return this.metadataView.GetMapObjectHPIconDefs(); } }
+        protected override IEnumerable<SpriteData> SpriteDefinitions { get { return this.metadataView.GetMapObjectHPIconData(); } }
 
         /// <see cref="MaskedSpriteGroup.IsMaskingForced"/>
         protected override bool IsMaskingForced { get { return this.condition == MapObjectConditionEnum.Undefined; } }

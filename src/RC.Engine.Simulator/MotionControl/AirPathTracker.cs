@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Core;
 using RC.Engine.Simulator.Engine;
 
 namespace RC.Engine.Simulator.MotionControl
@@ -39,7 +40,7 @@ namespace RC.Engine.Simulator.MotionControl
             RCNumber topToMapEdgeDistance = this.ControlledEntity.Area.Top + (RCNumber)1 / (RCNumber)2;
             if (topToMapEdgeDistance < 0) { return RCNumVector.Undefined; }
 
-            RCNumber transitionValue = topToMapEdgeDistance <= MAX_VTOL_TRANSITION ? topToMapEdgeDistance : MAX_VTOL_TRANSITION;
+            RCNumber transitionValue = topToMapEdgeDistance <= Constants.MAX_VTOL_TRANSITION ? topToMapEdgeDistance : Constants.MAX_VTOL_TRANSITION;
             RCNumVector positionAfterTakeOff = this.ControlledEntity.MotionControl.PositionVector.Read() - new RCNumVector(0, transitionValue);
             return this.ValidatePosition(positionAfterTakeOff) ? positionAfterTakeOff : RCNumVector.Undefined;
         }

@@ -29,7 +29,7 @@ namespace RC.App.PresLogic.SpriteGroups
         protected override List<UISprite> Load_i()
         {
             List<UISprite> retList = new List<UISprite>();
-            foreach (SpriteDef tileType in this.tilesetView.GetIsoTileTypes())
+            foreach (SpriteData tileType in this.tilesetView.GetIsoTileTypes())
             {
                 UISprite tile = UIRoot.Instance.GraphicsPlatform.SpriteManager.LoadSprite(tileType.ImageData, UIWorkspace.Instance.PixelScaling);
                 tile.TransparentColor = tileType.TransparentColor != RCColor.Undefined ? tileType.TransparentColor : PresLogicConstants.DEFAULT_TRANSPARENT_COLOR;

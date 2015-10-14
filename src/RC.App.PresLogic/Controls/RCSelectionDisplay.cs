@@ -69,8 +69,8 @@ namespace RC.App.PresLogic.Controls
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
             /// Render the selection indicators of the selected map objects.
-            List<SelIndicatorInst> selectionIndicators = this.selectionIndicatorView.GetVisibleSelIndicators();
-            foreach (SelIndicatorInst selIndicator in selectionIndicators)
+            List<SelIndicatorRenderInfo> selectionIndicators = this.selectionIndicatorView.GetVisibleSelIndicators();
+            foreach (SelIndicatorRenderInfo selIndicator in selectionIndicators)
             {
                 /// Render the indicator rectangle.
                 if (selIndicator.SelIndicatorType == SelIndicatorTypeEnum.Friendly)

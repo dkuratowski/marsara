@@ -21,12 +21,13 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         public RCIntVector CommandPanelSlot { get { return this.panelPosition; } }
 
         /// <see cref="IButtonListener.ButtonSprite"/>
-        public SpriteInst ButtonSprite
+        public SpriteRenderInfo ButtonSprite
         {
             get
             {
-                return new SpriteInst
+                return new SpriteRenderInfo
                 {
+                    SpriteGroup = SpriteGroupEnum.CommandButtonSpriteGroup,
                     Index = this.SpritePalette.Index,
                     Section = this.spriteSection,
                     DisplayCoords = new RCIntVector(0, 0)

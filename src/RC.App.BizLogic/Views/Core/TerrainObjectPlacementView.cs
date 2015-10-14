@@ -42,12 +42,13 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="ObjectPlacementView.GetObjectSprites"/>
-        protected override List<SpriteInst> GetObjectSprites()
+        protected override SpriteRenderInfo[] GetObjectSprites()
         {
-            return new List<SpriteInst>()
+            return new SpriteRenderInfo[]
             {
-                new SpriteInst()
+                new SpriteRenderInfo()
                 {
+                    SpriteGroup = SpriteGroupEnum.TerrainObjectSpriteGroup,
                     Index = this.terrainObjectType.Index,
                     DisplayCoords = new RCIntVector(0, 0),
                     Section = RCIntRectangle.Undefined

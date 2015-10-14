@@ -12,16 +12,10 @@ namespace RC.App.BizLogic.Views
     public interface IMinimapView
     {
         /// <summary>
-        /// Gets the list of the sprites to render the isometric tiles of the full map.
+        /// Gets the list of the sprites to render the terrain of the full map.
         /// </summary>
-        /// <returns>The list of display informations of the sprites.</returns>
-        List<SpriteInst> GetIsoTileSprites();
-
-        /// <summary>
-        /// Gets the list of the sprites to render the terrain objects of the full map.
-        /// </summary>
-        /// <returns>The list of display informations of the sprites.</returns>
-        List<SpriteInst> GetTerrainObjectSprites();
+        /// <returns>The list of render informations of the sprites.</returns>
+        List<SpriteRenderInfo> GetTerrainSprites();
 
         /// <summary>
         /// Refreshes the minimap pixel informations in the given rows.

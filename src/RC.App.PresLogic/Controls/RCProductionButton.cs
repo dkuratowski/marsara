@@ -58,7 +58,7 @@ namespace RC.App.PresLogic.Controls
             /// If there is a production item belonging to this button, then we have to render its icon.
             if (this.layoutIndex < this.productionLineView.ItemCount)
             {
-                SpriteInst itemIcon = this.productionLineView[this.layoutIndex];
+                SpriteRenderInfo itemIcon = this.productionLineView[this.layoutIndex];
                 renderContext.RenderSprite(this.productIconSprites[itemIcon.Index],
                                            itemIcon.DisplayCoords,
                                            itemIcon.Section);

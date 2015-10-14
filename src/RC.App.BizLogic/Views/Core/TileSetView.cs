@@ -25,14 +25,14 @@ namespace RC.App.BizLogic.Views.Core
         #region ITileSetView methods
 
         /// <see cref="ITileSetView.GetIsoTileTypes"/>
-        public List<SpriteDef> GetIsoTileTypes()
+        public List<SpriteData> GetIsoTileTypes()
         {
-            List<SpriteDef> retList = new List<SpriteDef>();
+            List<SpriteData> retList = new List<SpriteData>();
             foreach (IIsoTileVariant tile in this.tileset.TileVariants)
             {
                 byte[] imageData = new byte[tile.ImageData.Length];
                 Array.Copy(tile.ImageData, imageData, tile.ImageData.Length);
-                SpriteDef info = new SpriteDef();
+                SpriteData info = new SpriteData();
                 info.ImageData = imageData;
                 info.TransparentColor = tile.TransparentColor;
                 retList.Add(info);
@@ -41,14 +41,14 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="ITileSetView.GetTerrainObjectTypes"/>
-        public List<SpriteDef> GetTerrainObjectTypes()
+        public List<SpriteData> GetTerrainObjectTypes()
         {
-            List<SpriteDef> retList = new List<SpriteDef>();
+            List<SpriteData> retList = new List<SpriteData>();
             foreach (ITerrainObjectType terrainObjectType in this.tileset.TerrainObjectTypes)
             {
                 byte[] imageData = new byte[terrainObjectType.ImageData.Length];
                 Array.Copy(terrainObjectType.ImageData, imageData, terrainObjectType.ImageData.Length);
-                SpriteDef info = new SpriteDef();
+                SpriteData info = new SpriteData();
                 info.ImageData = imageData;
                 info.TransparentColor = terrainObjectType.TransparentColor;
                 retList.Add(info);

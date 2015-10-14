@@ -33,36 +33,40 @@ namespace RC.Engine.Simulator.Core
             XDocument xmlDoc = XDocument.Parse(xmlStr);
 
             /// Load the scenario element type definitions.
-            foreach (XElement scenarioElementTypeElem in xmlDoc.Root.Elements())
+            foreach (XElement metadataElement in xmlDoc.Root.Elements())
             {
-                if (scenarioElementTypeElem.Name == XmlMetadataConstants.BUILDINGTYPE_ELEM)
+                if (metadataElement.Name == XmlMetadataConstants.BUILDINGTYPE_ELEM)
                 {
-                    LoadBuildingType(scenarioElementTypeElem, metadata);
+                    LoadBuildingType(metadataElement, metadata);
                 }
-                else if (scenarioElementTypeElem.Name == XmlMetadataConstants.UNITTYPE_ELEM)
+                else if (metadataElement.Name == XmlMetadataConstants.UNITTYPE_ELEM)
                 {
-                    LoadUnitType(scenarioElementTypeElem, metadata);
+                    LoadUnitType(metadataElement, metadata);
                 }
-                else if (scenarioElementTypeElem.Name == XmlMetadataConstants.ADDONTYPE_ELEM)
+                else if (metadataElement.Name == XmlMetadataConstants.ADDONTYPE_ELEM)
                 {
-                    LoadAddonType(scenarioElementTypeElem, metadata);
+                    LoadAddonType(metadataElement, metadata);
                 }
-                else if (scenarioElementTypeElem.Name == XmlMetadataConstants.UPGRADETYPE_ELEM)
+                else if (metadataElement.Name == XmlMetadataConstants.UPGRADETYPE_ELEM)
                 {
-                    LoadUpgradeType(scenarioElementTypeElem, metadata);
+                    LoadUpgradeType(metadataElement, metadata);
                 }
-                else if (scenarioElementTypeElem.Name == XmlMetadataConstants.MISSILETYPE_ELEM)
+                else if (metadataElement.Name == XmlMetadataConstants.MISSILETYPE_ELEM)
                 {
-                    LoadMissileType(scenarioElementTypeElem, metadata);
+                    LoadMissileType(metadataElement, metadata);
                 }
-                else if (scenarioElementTypeElem.Name == XmlMetadataConstants.CUSTOMTYPE_ELEM)
+                else if (metadataElement.Name == XmlMetadataConstants.CUSTOMTYPE_ELEM)
                 {
-                    XAttribute nameAttr = scenarioElementTypeElem.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
+                    XAttribute nameAttr = metadataElement.Attribute(XmlMetadataConstants.TYPE_NAME_ATTR);
                     if (nameAttr == null) { throw new SimulatorException("Custom type name not defined!"); }
 
                     ScenarioElementType elementType = new ScenarioElementType(nameAttr.Value, metadata);
-                    LoadScenarioElementType(scenarioElementTypeElem, elementType, metadata);
+                    LoadScenarioElementType(metadataElement, elementType, metadata);
                     metadata.AddCustomType(elementType);
+                }
+                else if (metadataElement.Name == XmlMetadataConstants.SHADOWPALETTE_ELEM)
+                {
+                    metadata.SetShadowPalette(XmlHelper.LoadSpritePalette(metadataElement, imageDir));
                 }
             }
         }
@@ -238,6 +242,9 @@ namespace RC.Engine.Simulator.Core
             XElement genDataElem = elementTypeElem.Element(XmlMetadataConstants.GENERALDATA_ELEM);
             if (genDataElem != null) { LoadGeneralData(genDataElem, elementType); }
 
+            XElement shadowDataElem = elementTypeElem.Element(XmlMetadataConstants.SHADOWDATA_ELEM);
+            if (shadowDataElem != null) { LoadShadowData(shadowDataElem, elementType); }
+
             /// Load the ground weapon definition of the element type.
             XElement gndWeaponElem = elementTypeElem.Element(XmlMetadataConstants.GROUNDWEAPON_ELEM);
             if (gndWeaponElem != null) { elementType.AddStandardWeapon(LoadWeaponData(gndWeaponElem, metadata)); }
@@ -397,7 +404,7 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Loads the general data of a scenario element type type from the given element.
+        /// Loads the general data of a scenario element type from the given element.
         /// </summary>
         /// <param name="genDataElem">The XML element to load from.</param>
         /// <param name="elementType">The scenario element type being constructed.</param>
@@ -430,11 +437,10 @@ namespace RC.Engine.Simulator.Core
         }
 
         /// <summary>
-        /// Loads the costs data of a scenario element type type from the given element.
+        /// Loads the costs data of a scenario element type from the given element.
         /// </summary>
         /// <param name="costsDataElem">The XML element to load from.</param>
         /// <param name="elementType">The scenario element type being constructed.</param>
-        /// <param name="metadata">The metadata object.</param>
         private static void LoadCostsData(XElement costsDataElem, ScenarioElementType elementType)
         {
             XElement buildTimeElem = costsDataElem.Element(XmlMetadataConstants.COSTS_BUILDTIME_ELEM);
@@ -446,6 +452,22 @@ namespace RC.Engine.Simulator.Core
             if (foodCostElem != null) { elementType.SetFoodCost(XmlHelper.LoadInt(foodCostElem.Value)); }
             if (mineralCostElem != null) { elementType.SetMineralCost(XmlHelper.LoadInt(mineralCostElem.Value)); }
             if (gasCostElem != null) { elementType.SetGasCost(XmlHelper.LoadInt(gasCostElem.Value)); }
+        }
+
+        /// <summary>
+        /// Loads the shadow data of a scenario element type from the given element.
+        /// </summary>
+        /// <param name="shadowDataElem">The XML element to load from.</param>
+        /// <param name="elementType">The scenario element type being constructed.</param>
+        private static void LoadShadowData(XElement shadowDataElem, ScenarioElementType elementType)
+        {
+            XElement spriteNameElem = shadowDataElem.Element(XmlMetadataConstants.SHADOWDATA_SPRITENAME_ELEM);
+            XElement offsetElem = shadowDataElem.Element(XmlMetadataConstants.SHADOWDATA_OFFSET_ELEM);
+
+            if (spriteNameElem == null) { throw new SimulatorException("Shadow sprite not defined!"); }
+            if (offsetElem == null) { throw new SimulatorException("Shadow offset not defined!"); }
+
+            elementType.SetShadowData(spriteNameElem.Value, XmlHelper.LoadNumVector(offsetElem.Value));
         }
 
         /// <summary>

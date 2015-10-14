@@ -12,10 +12,10 @@ namespace RC.App.BizLogic.Views
     public interface ICommandView
     {
         /// <summary>
-        /// Gets the sprite definitions for displaying the buttons on the command panel.
+        /// Gets the sprite data of all command buttons.
         /// </summary>
-        /// <returns>The list of the sprite definitions for displaying the buttons on the command panel.</returns>
-        List<SpriteDef> GetCmdButtonSpriteDefs();
+        /// <returns>The list of the sprite data of all command buttons.</returns>
+        List<SpriteData> GetCmdButtonSpriteDatas();
 
         /// <summary>
         /// Gets the sprite to be displayed for the given command button.
@@ -25,7 +25,7 @@ namespace RC.App.BizLogic.Views
         /// <exception cref="InvalidOperationException">
         /// If there is no command button at the given position on the command panel.
         /// </exception>
-        SpriteInst GetCmdButtonSprite(RCIntVector panelPosition);
+        SpriteRenderInfo GetCmdButtonSprite(RCIntVector panelPosition);
 
         /// <summary>
         /// Gets the state of the given command button.

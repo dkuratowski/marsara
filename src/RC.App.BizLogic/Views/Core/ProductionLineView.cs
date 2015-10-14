@@ -62,7 +62,7 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="IProductionLineView.this"/>
-        public SpriteInst this[int itemIndex]
+        public SpriteRenderInfo this[int itemIndex]
         {
             get
             {

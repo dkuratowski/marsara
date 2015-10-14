@@ -31,7 +31,7 @@ namespace RC.App.PresLogic.SpriteGroups
         #region Overriden from MaskedSpriteGroup
 
         /// <see cref="MaskedSpriteGroup.SpriteDefinitions"/>
-        protected override IEnumerable<SpriteDef> SpriteDefinitions { get { return this.commandPanelView.GetCmdButtonSpriteDefs(); } }
+        protected override IEnumerable<SpriteData> SpriteDefinitions { get { return this.commandPanelView.GetCmdButtonSpriteDatas(); } }
 
         /// <see cref="MaskedSpriteGroup.TargetColor"/>
         protected override RCColor TargetColor { get { return BUTTONSTATE_COLOR_MAPPINGS[this.buttonState]; } }

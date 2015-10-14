@@ -25,49 +25,62 @@ namespace RC.App.BizLogic.Views.Core
 
         #region IFogOfWarView methods
 
-        /// <see cref="IFogOfWarView.GetPartialFOWTiles"/>
-        public List<SpriteInst> GetPartialFOWTiles()
+        /// <see cref="IFogOfWarView.GetFOWTiles"/>
+        public List<SpriteRenderInfo> GetFOWTiles()
         {
-            List<SpriteInst> retList = new List<SpriteInst>();
+            List<SpriteRenderInfo> retList = new List<SpriteRenderInfo>();
+            this.CollectPartialFOWTiles(ref retList);
+            this.CollectFullFOWTiles(ref retList);
+            return retList;
+        }
+
+        #endregion IFogOfWarView methods
+
+        /// <summary>
+        /// Collects the partial Fog Of War tiles to update into the given list.
+        /// </summary>
+        /// <param name="targetList">The target list.</param>
+        private void CollectPartialFOWTiles(ref List<SpriteRenderInfo> targetList)
+        {
             foreach (IQuadTile quadTile in this.fogOfWarBC.GetQuadTilesToUpdate())
             {
                 FOWTileFlagsEnum partialFowFlags = this.fogOfWarBC.GetPartialFowTileFlags(quadTile.MapCoords);
                 if (partialFowFlags != FOWTileFlagsEnum.None)
                 {
-                    retList.Add(
-                        new SpriteInst()
+                    targetList.Add(
+                        new SpriteRenderInfo()
                         {
+                            SpriteGroup = SpriteGroupEnum.PartialFogOfWarSpriteGroup,
                             Index = (int)partialFowFlags,
                             DisplayCoords = this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(quadTile.MapCoords, new RCIntVector(1, 1))).Location,
                             Section = RCIntRectangle.Undefined
                         });
                 }
             }
-            return retList;
         }
 
-        /// <see cref="IFogOfWarView.GetFullFOWTiles"/>
-        public List<SpriteInst> GetFullFOWTiles()
+        /// <summary>
+        /// Collects the full Fog Of War tiles to update into the given list.
+        /// </summary>
+        /// <param name="targetList">The target list.</param>
+        private void CollectFullFOWTiles(ref List<SpriteRenderInfo> targetList)
         {
-            List<SpriteInst> retList = new List<SpriteInst>();
             foreach (IQuadTile quadTile in this.fogOfWarBC.GetQuadTilesToUpdate())
             {
                 FOWTileFlagsEnum fullFowFlags = this.fogOfWarBC.GetFullFowTileFlags(quadTile.MapCoords);
                 if (fullFowFlags != FOWTileFlagsEnum.None)
                 {
-                    retList.Add(
-                        new SpriteInst()
+                    targetList.Add(
+                        new SpriteRenderInfo()
                         {
+                            SpriteGroup = SpriteGroupEnum.FullFogOfWarSpriteGroup,
                             Index = (int)fullFowFlags,
                             DisplayCoords = this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(quadTile.MapCoords, new RCIntVector(1, 1))).Location,
                             Section = RCIntRectangle.Undefined
                         });
                 }
             }
-            return retList;
         }
-
-        #endregion IFogOfWarView methods
 
         /// <summary>
         /// Reference to the Fog Of War business component.

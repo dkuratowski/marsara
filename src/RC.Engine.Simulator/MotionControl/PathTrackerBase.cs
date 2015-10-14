@@ -235,11 +235,6 @@ namespace RC.Engine.Simulator.MotionControl
         #endregion Heaped members
 
         /// <summary>
-        /// The maximum value of transition during a VTOL operation in map coordinates.
-        /// </summary>
-        protected static readonly RCNumber MAX_VTOL_TRANSITION = 8;
-
-        /// <summary>
         /// Cache that stores the calculated preferred velocity during an update procedure.
         /// </summary>
         private CachedValue<RCNumVector> preferredVelocityCache;

@@ -56,18 +56,18 @@ namespace RC.App.PresLogic.Controls
             if (this.ConnectionStatus == ConnectionStatusEnum.Online)
             {
                 /// Render the isometric tiles inside the displayed area.
-                foreach (SpriteInst tileDisplayInfo in this.mapTerrainView.GetVisibleIsoTiles())
+                foreach (SpriteRenderInfo terrainSpriteRenderInfo in this.mapTerrainView.GetVisibleTerrainSprites())
                 {
-                    UISprite tileToDisplay = this.isoTileSpriteGroup[tileDisplayInfo.Index];
-                    renderContext.RenderSprite(tileToDisplay, tileDisplayInfo.DisplayCoords, tileDisplayInfo.Section);
-                }
-
-                /// Render the terrain objects inside the displayed area.
-                foreach (SpriteInst terrainObjDisplayInfo in this.mapTerrainView.GetVisibleTerrainObjects())
-                {
-                    UISprite terrainObjToDisplay = this.terrainObjectSpriteGroup[terrainObjDisplayInfo.Index];
-                    renderContext.RenderSprite(terrainObjToDisplay, terrainObjDisplayInfo.DisplayCoords,
-                        terrainObjDisplayInfo.Section);
+                    if (terrainSpriteRenderInfo.SpriteGroup == SpriteGroupEnum.IsoTileSpriteGroup)
+                    {
+                        UISprite tileToDisplay = this.isoTileSpriteGroup[terrainSpriteRenderInfo.Index];
+                        renderContext.RenderSprite(tileToDisplay, terrainSpriteRenderInfo.DisplayCoords, terrainSpriteRenderInfo.Section);
+                    }
+                    else if (terrainSpriteRenderInfo.SpriteGroup == SpriteGroupEnum.TerrainObjectSpriteGroup)
+                    {
+                        UISprite terrainObjToDisplay = this.terrainObjectSpriteGroup[terrainSpriteRenderInfo.Index];
+                        renderContext.RenderSprite(terrainObjToDisplay, terrainSpriteRenderInfo.DisplayCoords, terrainSpriteRenderInfo.Section);
+                    }
                 }
             }
         }

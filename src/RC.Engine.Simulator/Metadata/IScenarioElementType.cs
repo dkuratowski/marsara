@@ -47,6 +47,18 @@ namespace RC.Engine.Simulator.Metadata
         bool HasOwner { get; }
 
         /// <summary>
+        /// The index of the shadow sprite of this element type in the shadow palette of the metadata or -1 if
+        /// no shadow data has been defined for this element type.
+        /// </summary>
+        int ShadowSpriteIndex { get; }
+
+        /// <summary>
+        /// The coordinates of the center of the shadow relative to the upper-left corner of the area defined for this element type
+        /// or RCNumVector.Undefined if no shadow data has been defined for this element type.
+        /// </summary>
+        RCNumVector ShadowOffset { get; }
+
+        /// <summary>
         /// Gets the sprite palette of this element type or null if this element type has no sprite palette.
         /// </summary>
         ISpritePalette<MapDirection> SpritePalette { get; }

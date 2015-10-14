@@ -58,15 +58,16 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="IMapObjectDetailsView.GetBigHPIcon"/>
-        public SpriteInst GetBigHPIcon(int objectID)
+        public SpriteRenderInfo GetBigHPIcon(int objectID)
         {
             if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
 
             Entity entity = this.GetEntity(objectID);
             if (entity.ElementType.HPIconPalette == null) { throw new InvalidOperationException(String.Format("ElementType '{0}' has no HPIconPalette defined!", entity.ElementType.Name)); }
             int bigIconSpriteIdx = entity.ElementType.HPIconPalette.GetSpriteIndex(BIG_ICON_SPRITE_NAME); // TODO: cache this index!
-            return new SpriteInst()
+            return new SpriteRenderInfo()
             {
+                SpriteGroup = SpriteGroupEnum.HPIconSpriteGroup,
                 Index = entity.ElementType.HPIconPalette.Index,
                 DisplayCoords = new RCIntVector(0, 0),
                 Section = entity.ElementType.HPIconPalette.GetSection(bigIconSpriteIdx)
@@ -74,15 +75,16 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="IMapObjectDetailsView.GetSmallHPIcon"/>
-        public SpriteInst GetSmallHPIcon(int objectID)
+        public SpriteRenderInfo GetSmallHPIcon(int objectID)
         {
             if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
 
             Entity entity = this.GetEntity(objectID);
             if (entity.ElementType.HPIconPalette == null) { throw new InvalidOperationException(String.Format("ElementType '{0}' has no HPIconPalette defined!", entity.ElementType.Name)); }
             int smallIconSpriteIdx = entity.ElementType.HPIconPalette.GetSpriteIndex(SMALL_ICON_SPRITE_NAME); // TODO: cache this index!
-            return new SpriteInst()
+            return new SpriteRenderInfo()
             {
+                SpriteGroup = SpriteGroupEnum.HPIconSpriteGroup,
                 Index = entity.ElementType.HPIconPalette.Index,
                 DisplayCoords = new RCIntVector(0, 0),
                 Section = entity.ElementType.HPIconPalette.GetSection(smallIconSpriteIdx)

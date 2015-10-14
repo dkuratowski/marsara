@@ -173,11 +173,11 @@
     <Compile Include="BusinessComponents\ITaskManagerBC.cs" />
     <Compile Include="Views\ISelectionIndicatorView.cs" />
     <Compile Include="Views\MinimapPixelInfo.cs" />
-    <Compile Include="Views\ObjectInst.cs" />
     <Compile Include="Views\MapObjectConditionEnum.cs" />
-    <Compile Include="Views\SelIndicatorInst.cs" />
-    <Compile Include="Views\SpriteInst.cs" />
-    <Compile Include="Views\SpriteDef.cs" />
+    <Compile Include="Views\SelIndicatorRenderInfo.cs" />
+    <Compile Include="Views\SpriteGroupEnum.cs" />
+    <Compile Include="Views\SpriteRenderInfo.cs" />
+    <Compile Include="Views\SpriteData.cs" />
     <Compile Include="Views\ITileSetView.cs" />
     <Compile Include="Views\ObjectPlacementBox.cs" />
     <Compile Include="Views\PlayerEnum.cs" />

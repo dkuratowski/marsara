@@ -25,49 +25,12 @@ namespace RC.App.BizLogic.Views.Core
 
         #region IMinimapView members
 
-        /// <see cref="IMinimapView.GetIsoTileSprites"/>
-        public List<SpriteInst> GetIsoTileSprites()
+        /// <see cref="IMinimapView.GetTerrainSprites"/>
+        public List<SpriteRenderInfo> GetTerrainSprites()
         {
-            /// Collect the isometric tiles that need to be rendered.
-            RCSet<IIsoTile> isoTilesToRender = new RCSet<IIsoTile>();
-            List<SpriteInst> retList = new List<SpriteInst>();
-            for (int column = this.MapWindowBC.FullWindow.QuadTileWindow.Left; column < this.MapWindowBC.FullWindow.QuadTileWindow.Right; column++)
-            {
-                for (int row = this.MapWindowBC.FullWindow.QuadTileWindow.Top; row < this.MapWindowBC.FullWindow.QuadTileWindow.Bottom; row++)
-                {
-                    /// Add the primary & secondary isometric tiles into the render list.
-                    IQuadTile quadTileToUpdate = this.Map.GetQuadTile(new RCIntVector(column, row));
-                    if (quadTileToUpdate.PrimaryIsoTile != null && isoTilesToRender.Add(quadTileToUpdate.PrimaryIsoTile))
-                    {
-                        retList.Add(this.ConvertIsoTileToSpriteInst(quadTileToUpdate.PrimaryIsoTile));
-                    }
-                    if (quadTileToUpdate.SecondaryIsoTile != null && isoTilesToRender.Add(quadTileToUpdate.SecondaryIsoTile))
-                    {
-                        retList.Add(this.ConvertIsoTileToSpriteInst(quadTileToUpdate.SecondaryIsoTile));
-                    }
-                }
-            }
-            return retList;
-        }
-
-        /// <see cref="IMinimapView.GetTerrainObjectSprites"/>
-        public List<SpriteInst> GetTerrainObjectSprites()
-        {
-            /// Collect the terrain objects that need to be rendered.
-            RCSet<ITerrainObject> terrainObjectsToRender = new RCSet<ITerrainObject>();
-            List<SpriteInst> retList = new List<SpriteInst>();
-            for (int column = this.MapWindowBC.FullWindow.QuadTileWindow.Left; column < this.MapWindowBC.FullWindow.QuadTileWindow.Right; column++)
-            {
-                for (int row = this.MapWindowBC.FullWindow.QuadTileWindow.Top; row < this.MapWindowBC.FullWindow.QuadTileWindow.Bottom; row++)
-                {
-                    /// Add the primary & secondary isometric tiles & the terrain objects into the render lists.
-                    IQuadTile quadTileToUpdate = this.Map.GetQuadTile(new RCIntVector(column, row));
-                    if (quadTileToUpdate.TerrainObject != null && terrainObjectsToRender.Add(quadTileToUpdate.TerrainObject))
-                    {
-                        retList.Add(this.ConvertTerrainObjectToSpriteInst(quadTileToUpdate.TerrainObject));
-                    }
-                }
-            }
+            List<SpriteRenderInfo> retList = new List<SpriteRenderInfo>();
+            this.CollectIsoTileSprites(ref retList);
+            this.CollectTerrainObjectSprites(ref retList);
             return retList;
         }
 
@@ -98,7 +61,7 @@ namespace RC.App.BizLogic.Views.Core
             RCIntVector topLeftQuadTile = topLeftQuadRect.Location;
             RCIntVector bottomRightQuadTile = bottomRightQuadRect.Location + bottomRightQuadRect.Size;
             RCIntRectangle scannedQuadWindow = new RCIntRectangle(topLeftQuadTile, bottomRightQuadTile - topLeftQuadTile);
-            foreach (MapObject mapObject in this.fogOfWarBC.GetMapObjectsInWindow(scannedQuadWindow))
+            foreach (MapObject mapObject in this.fogOfWarBC.GetAllMapObjectsInWindow(scannedQuadWindow))
             {
                 Entity entity = mapObject.Owner as Entity;
                 if (entity != null)
@@ -126,14 +89,63 @@ namespace RC.App.BizLogic.Views.Core
         #endregion IMinimapView members
 
         /// <summary>
+        /// Collects the isometric tiles to render into the given list.
+        /// </summary>
+        /// <param name="targetList">The target list.</param>
+        private void CollectIsoTileSprites(ref List<SpriteRenderInfo> targetList)
+        {
+            /// Collect the isometric tiles that need to be rendered.
+            RCSet<IIsoTile> isoTilesToRender = new RCSet<IIsoTile>();
+            for (int column = this.MapWindowBC.FullWindow.QuadTileWindow.Left; column < this.MapWindowBC.FullWindow.QuadTileWindow.Right; column++)
+            {
+                for (int row = this.MapWindowBC.FullWindow.QuadTileWindow.Top; row < this.MapWindowBC.FullWindow.QuadTileWindow.Bottom; row++)
+                {
+                    /// Add the primary & secondary isometric tiles into the render list.
+                    IQuadTile quadTileToUpdate = this.Map.GetQuadTile(new RCIntVector(column, row));
+                    if (quadTileToUpdate.PrimaryIsoTile != null && isoTilesToRender.Add(quadTileToUpdate.PrimaryIsoTile))
+                    {
+                        targetList.Add(this.ConvertIsoTileToSpriteInst(quadTileToUpdate.PrimaryIsoTile));
+                    }
+                    if (quadTileToUpdate.SecondaryIsoTile != null && isoTilesToRender.Add(quadTileToUpdate.SecondaryIsoTile))
+                    {
+                        targetList.Add(this.ConvertIsoTileToSpriteInst(quadTileToUpdate.SecondaryIsoTile));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Collects the terrain objects to render into the given list.
+        /// </summary>
+        /// <param name="targetList">The target list.</param>
+        private void CollectTerrainObjectSprites(ref List<SpriteRenderInfo> targetList)
+        {
+            /// Collect the terrain objects that need to be rendered.
+            RCSet<ITerrainObject> terrainObjectsToRender = new RCSet<ITerrainObject>();
+            for (int column = this.MapWindowBC.FullWindow.QuadTileWindow.Left; column < this.MapWindowBC.FullWindow.QuadTileWindow.Right; column++)
+            {
+                for (int row = this.MapWindowBC.FullWindow.QuadTileWindow.Top; row < this.MapWindowBC.FullWindow.QuadTileWindow.Bottom; row++)
+                {
+                    /// Add the primary & secondary isometric tiles & the terrain objects into the render lists.
+                    IQuadTile quadTileToUpdate = this.Map.GetQuadTile(new RCIntVector(column, row));
+                    if (quadTileToUpdate.TerrainObject != null && terrainObjectsToRender.Add(quadTileToUpdate.TerrainObject))
+                    {
+                        targetList.Add(this.ConvertTerrainObjectToSpriteInst(quadTileToUpdate.TerrainObject));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Converts the given isometric tile into a SpriteInst structure.
         /// </summary>
         /// <param name="isotile">The isometric tile to convert.</param>
         /// <returns>The converted SpriteInst structure.</returns>
-        private SpriteInst ConvertIsoTileToSpriteInst(IIsoTile isotile)
+        private SpriteRenderInfo ConvertIsoTileToSpriteInst(IIsoTile isotile)
         {
-            return new SpriteInst()
+            return new SpriteRenderInfo()
             {
+                SpriteGroup = SpriteGroupEnum.IsoTileSpriteGroup,
                 Index = isotile.Variant.Index,
                 DisplayCoords = this.MapWindowBC.FullWindow.CellToWindowRect(new RCIntRectangle(isotile.GetCellMapCoords(new RCIntVector(0, 0)), isotile.CellSize)).Location,
                 Section = RCIntRectangle.Undefined
@@ -145,10 +157,11 @@ namespace RC.App.BizLogic.Views.Core
         /// </summary>
         /// <param name="terrainObject">The terrain object to convert.</param>
         /// <returns>The converted SpriteInst structure.</returns>
-        private SpriteInst ConvertTerrainObjectToSpriteInst(ITerrainObject terrainObject)
+        private SpriteRenderInfo ConvertTerrainObjectToSpriteInst(ITerrainObject terrainObject)
         {
-            return new SpriteInst()
+            return new SpriteRenderInfo()
             {
+                SpriteGroup = SpriteGroupEnum.TerrainObjectSpriteGroup,
                 Index = terrainObject.Type.Index,
                 DisplayCoords = this.MapWindowBC.FullWindow.QuadToWindowRect(new RCIntRectangle(terrainObject.MapCoords, new RCIntVector(1, 1))).Location,
                 Section = RCIntRectangle.Undefined

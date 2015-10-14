@@ -37,14 +37,14 @@ namespace RC.App.BizLogic.Views
         /// </summary>
         /// <param name="objectID">The ID of the map object.</param>
         /// <returns>The big HP indicator icon of the given map object.</returns>
-        SpriteInst GetBigHPIcon(int objectID);
+        SpriteRenderInfo GetBigHPIcon(int objectID);
 
         /// <summary>
         /// Gets the small HP indicator icon of the given map object.
         /// </summary>
         /// <param name="objectID">The ID of the map object.</param>
         /// <returns>The small HP indicator icon of the given map object.</returns>
-        SpriteInst GetSmallHPIcon(int objectID);
+        SpriteRenderInfo GetSmallHPIcon(int objectID);
 
         /// <summary>
         /// Gets the condition of the HP of the given map object.

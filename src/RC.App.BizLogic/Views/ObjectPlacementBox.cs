@@ -14,7 +14,7 @@ namespace RC.App.BizLogic.Views
         /// <summary>
         /// The sprites of the object to be displayed.
         /// </summary>
-        public List<SpriteInst> Sprites { get; set; }
+        public List<SpriteRenderInfo> Sprites { get; set; }
 
         /// <summary>
         /// The illegal parts of the object placement box.

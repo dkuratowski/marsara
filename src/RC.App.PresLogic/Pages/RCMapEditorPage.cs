@@ -122,7 +122,7 @@ namespace RC.App.PresLogic.Pages
             this.mapDisplayBasic = new RCMapDisplayBasic(this.isoTileSpriteGroupLoader, this.terrainObjectSpriteGroupLoader, new RCIntVector(0, 0), UIWorkspace.Instance.WorkspaceSize - new RCIntVector(97, 0));
             //this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic);
             this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic);
-            this.isotileDisplayEx = new RCIsoTileDisplay(this.mapObjectDisplayEx);
+            this.isotileDisplayEx = new RCIsoTileHighlightDisplay(this.mapObjectDisplayEx);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.isotileDisplayEx);
             this.resourceAmountDisplayEx = new RCResourceAmountDisplay(this.objectPlacementDisplayEx);
             this.mapDisplay = this.resourceAmountDisplayEx;
@@ -529,7 +529,7 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// Extension of the map display that displays the isometric tiles.
         /// </summary>
-        private RCIsoTileDisplay isotileDisplayEx;
+        private RCIsoTileHighlightDisplay isotileDisplayEx;
 
         /// <summary>
         /// Extension of the map display that displays the object placement boxes.

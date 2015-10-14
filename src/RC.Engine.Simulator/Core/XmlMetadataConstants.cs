@@ -17,11 +17,13 @@ namespace RC.Engine.Simulator.Core
         public const string UPGRADETYPE_ELEM = "upgradeType";
         public const string MISSILETYPE_ELEM = "missileType";
         public const string CUSTOMTYPE_ELEM = "customType";
+        public const string SHADOWPALETTE_ELEM = "shadowPalette";
         public const string TYPE_NAME_ATTR = "name";
         public const string TYPE_DISPLAYEDNAME_ATTR = "displayedName";
         public const string TYPE_HASOWNER_ATTR = "hasOwner";
         public const string GENERALDATA_ELEM = "generalData";
         public const string COSTS_ELEM = "costs";
+        public const string SHADOWDATA_ELEM = "shadowData";
         public const string GROUNDWEAPON_ELEM = "groundWeapon";
         public const string AIRWEAPON_ELEM = "airWeapon";
         public const string CREATEDIN_ELEM = "createdIn";
@@ -60,6 +62,8 @@ namespace RC.Engine.Simulator.Core
         public const string COSTS_FOODCOST_ELEM = "food";
         public const string COSTS_GASCOST_ELEM = "gas";
         public const string COSTS_MINERALCOST_ELEM = "mineral";
+        public const string SHADOWDATA_SPRITENAME_ELEM = "spriteName";
+        public const string SHADOWDATA_OFFSET_ELEM = "centerOffset";
         public const string WPN_COOLDOWN_ELEM = "cooldown";
         public const string WPN_DAMAGE_ELEM = "damage";
         public const string WPN_DAMAGETYPE_ELEM = "damageType";

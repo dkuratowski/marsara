@@ -93,7 +93,7 @@
     <Compile Include="Controls\IMapDisplay.cs" />
     <Compile Include="Controls\RCCommandButton.cs" />
     <Compile Include="Controls\RCFogOfWarDisplay.cs" />
-    <Compile Include="Controls\RCIsoTileDisplay.cs" />
+    <Compile Include="Controls\RCIsoTileHighlightDisplay.cs" />
     <Compile Include="Controls\RCDropdownSelector.cs" />
     <Compile Include="Controls\RCListBox.cs" />
     <Compile Include="Controls\RCMapDisplayBasic.cs" />
@@ -130,6 +130,7 @@
     <Compile Include="SpriteGroups\HPIconSpriteGroup.cs" />
     <Compile Include="SelectTargetMouseHandler.cs" />
     <Compile Include="SequentialGameConnector.cs" />
+    <Compile Include="SpriteGroups\ShadowSpriteGroup.cs" />
     <Compile Include="SpriteGroups\SpriteGroup.cs" />
     <Compile Include="Controls\RCMapDisplay.cs" />
     <Compile Include="Controls\RCScrollBar.cs" />

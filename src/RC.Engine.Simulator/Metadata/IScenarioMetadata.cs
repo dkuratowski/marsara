@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common.Configuration;
 
 namespace RC.Engine.Simulator.Metadata
 {
@@ -142,5 +143,10 @@ namespace RC.Engine.Simulator.Metadata
         /// <param name="typeID">The ID of the element type.</param>
         /// <returns>The element type with the given ID.</returns>
         IScenarioElementType this[int typeID] { get; }
+
+        /// <summary>
+        /// Gets the shadow palette defined for this metadata or null if no shadow palette has been defined.
+        /// </summary>
+        ISpritePalette ShadowPalette { get; }
     }
 }

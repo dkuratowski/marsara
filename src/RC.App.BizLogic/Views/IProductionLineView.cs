@@ -66,6 +66,6 @@ namespace RC.App.BizLogic.Views
         ///     - The owner of the selected map object is not the local player.
         ///     - There is no item at the given index in the active production line of the selected map object.
         /// </exception>
-        SpriteInst this[int itemIndex] { get; }
+        SpriteRenderInfo this[int itemIndex] { get; }
     }
 }

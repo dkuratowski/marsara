@@ -7,17 +7,22 @@ using RC.Common;
 namespace RC.App.BizLogic.Views
 {
     /// <summary>
-    /// This structure contains informations for displaying an instance of a sprite on the UI.
+    /// This structure contains informations for rendering a sprite on the UI.
     /// </summary>
-    public struct SpriteInst
+    public struct SpriteRenderInfo
     {
         /// <summary>
-        /// The index of the sprite instance to be displayed.
+        /// The sprite group of the sprite to be rendered.
+        /// </summary>
+        public SpriteGroupEnum SpriteGroup { get; set; }
+
+        /// <summary>
+        /// The index of the sprite in the sprite group to be rendered.
         /// </summary>
         public int Index { get; set; }
 
         /// <summary>
-        /// The coordinates of the upper-left pixel of the rendered part of the sprite instance in the coordinate system of
+        /// The coordinates of the upper-left pixel of the rendered part of the sprite in the coordinate system of
         /// the display area.
         /// </summary>
         public RCIntVector DisplayCoords { get; set; }

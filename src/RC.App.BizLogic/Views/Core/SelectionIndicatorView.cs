@@ -23,14 +23,14 @@ namespace RC.App.BizLogic.Views.Core
         #region ISelectionIndicatorView
 
         /// <see cref="ISelectionIndicatorView.GetVisibleSelIndicators"/>
-        public List<SelIndicatorInst> GetVisibleSelIndicators()
+        public List<SelIndicatorRenderInfo> GetVisibleSelIndicators()
         {
             RCSet<int> currentSelection = this.selectionManager.CurrentSelection;
-            if (currentSelection.Count == 0) { return new List<SelIndicatorInst>(); }
+            if (currentSelection.Count == 0) { return new List<SelIndicatorRenderInfo>(); }
 
             /// Display the selection indicators of the currently visible entities inside the currently visible window of quadratic tiles.
-            List<SelIndicatorInst> retList = new List<SelIndicatorInst>();
-            foreach (MapObject mapObject in this.fogOfWarBC.GetMapObjectsToUpdate())
+            List<SelIndicatorRenderInfo> retList = new List<SelIndicatorRenderInfo>();
+            foreach (MapObject mapObject in this.fogOfWarBC.GetAllMapObjectsToUpdate())
             {
                 Entity entity = mapObject.Owner as Entity;
                 if (entity != null && currentSelection.Contains(entity.ID.Read()))
@@ -43,7 +43,7 @@ namespace RC.App.BizLogic.Views.Core
                         ? entity.Biometrics.HP/entity.ElementType.MaxHP.Read()
                         : -1;
 
-                    retList.Add(new SelIndicatorInst()
+                    retList.Add(new SelIndicatorRenderInfo()
                     {
                         ObjectID = entity.ID.Read(),
                         SelIndicatorType = indicatorType,

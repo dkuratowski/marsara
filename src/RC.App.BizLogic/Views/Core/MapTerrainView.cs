@@ -25,22 +25,12 @@ namespace RC.App.BizLogic.Views.Core
 
         #region IMapTerrainView methods
 
-        /// <see cref="IMapTerrainView.GetVisibleIsoTiles"/>
-        public List<SpriteInst> GetVisibleIsoTiles()
+        /// <see cref="IMapTerrainView.GetVisibleTerrainSprites"/>
+        public List<SpriteRenderInfo> GetVisibleTerrainSprites()
         {
-            /// Collect the currently visible isometric tiles.
-            List<SpriteInst> retList = new List<SpriteInst>();
-            foreach (IIsoTile isoTile in this.fogOfWarBC.GetIsoTilesToUpdate())
-            {
-                retList.Add(
-                    new SpriteInst()
-                    {
-                        Index = isoTile.Variant.Index,
-                        DisplayCoords = this.MapWindowBC.AttachedWindow.CellToWindowRect(new RCIntRectangle(isoTile.GetCellMapCoords(new RCIntVector(0, 0)), isoTile.CellSize)).Location,
-                        Section = RCIntRectangle.Undefined
-                    });
-            }
-
+            List<SpriteRenderInfo> retList = new List<SpriteRenderInfo>();
+            this.CollectVisibleIsoTiles(ref retList);
+            this.CollectVisibleTerrainObjects(ref retList);
             return retList;
         }
 
@@ -50,22 +40,6 @@ namespace RC.App.BizLogic.Views.Core
             RCIntVector navCellCoords = this.MapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             IIsoTile isotile = this.Map.GetCell(navCellCoords).ParentIsoTile;
             return this.MapWindowBC.AttachedWindow.CellToWindowRect(new RCIntRectangle(isotile.GetCellMapCoords(new RCIntVector(0, 0)), isotile.CellSize)).Location;
-        }
-
-        /// <see cref="IMapTerrainView.GetVisibleTerrainObjects"/>
-        public List<SpriteInst> GetVisibleTerrainObjects()
-        {
-            List<SpriteInst> retList = new List<SpriteInst>();
-            foreach (ITerrainObject terrainObj in this.fogOfWarBC.GetTerrainObjectsToUpdate())
-            {
-                retList.Add(new SpriteInst()
-                {
-                    Index = terrainObj.Type.Index,
-                    DisplayCoords = this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(terrainObj.MapCoords, new RCIntVector(1, 1))).Location,
-                    Section = RCIntRectangle.Undefined
-                });
-            }
-            return retList;
         }
 
         /// <see cref="IMapTerrainView.GetTerrainObjectDisplayCoords"/>
@@ -100,6 +74,45 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         #endregion IMapTerrainView methods
+
+        /// <summary>
+        /// Collects the isometric tiles to update into the given list.
+        /// </summary>
+        /// <param name="targetList">The target list.</param>
+        private void CollectVisibleIsoTiles(ref List<SpriteRenderInfo> targetList)
+        {
+            /// Collect the currently visible isometric tiles.
+            foreach (IIsoTile isoTile in this.fogOfWarBC.GetIsoTilesToUpdate())
+            {
+                targetList.Add(
+                    new SpriteRenderInfo()
+                    {
+                        SpriteGroup = SpriteGroupEnum.IsoTileSpriteGroup,
+                        Index = isoTile.Variant.Index,
+                        DisplayCoords = this.MapWindowBC.AttachedWindow.CellToWindowRect(new RCIntRectangle(isoTile.GetCellMapCoords(new RCIntVector(0, 0)), isoTile.CellSize)).Location,
+                        Section = RCIntRectangle.Undefined
+                    });
+            }
+
+        }
+
+        /// <summary>
+        /// Collects the terrain objects to update into the given list.
+        /// </summary>
+        /// <param name="targetList">The target list.</param>
+        private void CollectVisibleTerrainObjects(ref List<SpriteRenderInfo> targetList)
+        {
+            foreach (ITerrainObject terrainObj in this.fogOfWarBC.GetTerrainObjectsToUpdate())
+            {
+                targetList.Add(new SpriteRenderInfo()
+                {
+                    SpriteGroup = SpriteGroupEnum.TerrainObjectSpriteGroup,
+                    Index = terrainObj.Type.Index,
+                    DisplayCoords = this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(terrainObj.MapCoords, new RCIntVector(1, 1))).Location,
+                    Section = RCIntRectangle.Undefined
+                });
+            }
+        }
 
         /// <summary>
         /// Reference to the Fog Of War business component.

@@ -24,7 +24,7 @@ namespace RC.App.PresLogic.SpriteGroups
         protected override List<UISprite> Load_i()
         {
             List<UISprite> retList = new List<UISprite>();
-            foreach (SpriteDef spriteDef in this.SpriteDefinitions)
+            foreach (SpriteData spriteDef in this.SpriteDefinitions)
             {
                 if (this.IsMaskingForced || spriteDef.IsMaskableSprite)
                 {
@@ -61,7 +61,7 @@ namespace RC.App.PresLogic.SpriteGroups
         /// <summary>
         /// Gets the sprite definitions to load.
         /// </summary>
-        protected abstract IEnumerable<SpriteDef> SpriteDefinitions { get; }
+        protected abstract IEnumerable<SpriteData> SpriteDefinitions { get; }
 
         /// <summary>
         /// Gets whether masking shall be forced even in case of non-maskable sprite definitions.

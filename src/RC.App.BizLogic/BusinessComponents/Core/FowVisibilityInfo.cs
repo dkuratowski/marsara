@@ -64,15 +64,28 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
-        /// Gets the map objects that are not entirely hidden by the Fog Of War.
+        /// Gets the map objects on the ground that are not entirely hidden by the Fog Of War.
         /// </summary>
-        public RCSet<MapObject> MapObjectsToUpdate
+        public RCSet<MapObject> GroundMapObjectsToUpdate
         {
-            get { return this.mapObjectsToUpdate; }
+            get { return this.groundMapObjectsToUpdate; }
             set
             {
-                if (this.mapObjectsToUpdate != null) { throw new InvalidOperationException("FogOfWarBCCache.MapObjectsToUpdate has already been set!"); }
-                this.mapObjectsToUpdate = value;
+                if (this.groundMapObjectsToUpdate != null) { throw new InvalidOperationException("FogOfWarBCCache.GroundMapObjectsToUpdate has already been set!"); }
+                this.groundMapObjectsToUpdate = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the map objects in the air that are not entirely hidden by the Fog Of War.
+        /// </summary>
+        public RCSet<MapObject> AirMapObjectsToUpdate
+        {
+            get { return this.airMapObjectsToUpdate; }
+            set
+            {
+                if (this.airMapObjectsToUpdate != null) { throw new InvalidOperationException("FogOfWarBCCache.AirMapObjectsToUpdate has already been set!"); }
+                this.airMapObjectsToUpdate = value;
             }
         }
 
@@ -97,8 +110,13 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private IEnumerable<EntitySnapshot> entitySnapshotsToUpdate;
 
         /// <summary>
-        /// The map objects that are not entirely hidden by the Fog Of War.
+        /// The map objects on the ground that are not entirely hidden by the Fog Of War.
         /// </summary>
-        private RCSet<MapObject> mapObjectsToUpdate;
+        private RCSet<MapObject> groundMapObjectsToUpdate;
+
+        /// <summary>
+        /// The map objects in the air that are not entirely hidden by the Fog Of War.
+        /// </summary>
+        private RCSet<MapObject> airMapObjectsToUpdate;
     }
 }

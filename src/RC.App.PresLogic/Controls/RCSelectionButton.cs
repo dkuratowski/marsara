@@ -58,7 +58,7 @@ namespace RC.App.PresLogic.Controls
             MapObjectConditionEnum hpCondition = this.mapObjectDetailsView.GetHPCondition(objectID);
             if (!this.hpIndicatorSprites.ContainsKey(hpCondition)) { return; }
 
-            SpriteInst hpSprite = this.mapObjectDetailsView.GetSmallHPIcon(objectID);
+            SpriteRenderInfo hpSprite = this.mapObjectDetailsView.GetSmallHPIcon(objectID);
             renderContext.RenderSprite(this.hpIndicatorSprites[hpCondition][hpSprite.Index],
                                        hpSprite.DisplayCoords,
                                        hpSprite.Section);

@@ -138,7 +138,7 @@ namespace RC.App.PresLogic.Panels
             if (!this.hpIndicatorSprites.ContainsKey(hpCondition)) { return; }
 
             /// Render the big icon of the selected object.
-            SpriteInst hpSprite = this.mapObjectDetailsView.GetBigHPIcon(mapObjectID);
+            SpriteRenderInfo hpSprite = this.mapObjectDetailsView.GetBigHPIcon(mapObjectID);
             renderContext.RenderSprite(this.hpIndicatorSprites[hpCondition][hpSprite.Index],
                                        RCDetailsPanel.ICON_POS + hpSprite.DisplayCoords,
                                        hpSprite.Section);

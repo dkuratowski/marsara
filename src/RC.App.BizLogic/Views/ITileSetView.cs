@@ -14,13 +14,13 @@ namespace RC.App.BizLogic.Views
         /// Gets the map sprite types for each isometric tile types defined by the tileset of this view.
         /// </summary>
         /// <returns>The list of the map sprite types for isometric tile types.</returns>
-        List<SpriteDef> GetIsoTileTypes();
+        List<SpriteData> GetIsoTileTypes();
 
         /// <summary>
         /// Gets the map sprite types for each terrain object types defined by the tileset of this view.
         /// </summary>
         /// <returns>The list of the map sprite types for terrain object types.</returns>
-        List<SpriteDef> GetTerrainObjectTypes();
+        List<SpriteData> GetTerrainObjectTypes();
 
         /// <summary>
         /// Gets the list of the names of the terrain object types defined by the tileset of this view.

@@ -15,7 +15,7 @@ namespace RC.App.BizLogic.Views
         /// Gets the list of the visible selection indicators at the displayed area in the order as they shall be displayed.
         /// </summary>
         /// <returns>The list of display informations of the visible selection indicators.</returns>
-        List<SelIndicatorInst> GetVisibleSelIndicators();
+        List<SelIndicatorRenderInfo> GetVisibleSelIndicators();
 
         /// <summary>
         /// Gets the index of the local player or PlayerEnum.Neutral if there is no active local player.

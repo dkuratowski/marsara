@@ -19,7 +19,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// Gets the sprite of the command button to be displayed at this slot.
         /// </summary>
-        public SpriteInst ButtonSprite { get; set; }
+        public SpriteRenderInfo ButtonSprite { get; set; }
 
         /// <summary>
         /// Reference to the button listener that is waiting for trigger from the command panel.

@@ -21,17 +21,17 @@ namespace RC.App.BizLogic.Views.Core
 
         #region IMetadataView members
 
-        /// <see cref="IMetadataView.GetMapObjectSpriteDefs"/>
-        public List<SpriteDef> GetMapObjectSpriteDefs()
+        /// <see cref="IMetadataView.GetMapObjectSpriteData"/>
+        public List<SpriteData> GetMapObjectSpriteData()
         {
-            List<SpriteDef> retList = new List<SpriteDef>();
+            List<SpriteData> retList = new List<SpriteData>();
             foreach (IScenarioElementType objType in this.metadata.AllTypes)
             {
                 if (objType.SpritePalette != null)
                 {
                     byte[] imageData = new byte[objType.SpritePalette.ImageData.Length];
                     Array.Copy(objType.SpritePalette.ImageData, imageData, objType.SpritePalette.ImageData.Length);
-                    SpriteDef info = new SpriteDef();
+                    SpriteData info = new SpriteData();
                     info.ImageData = imageData;
                     info.TransparentColor = objType.SpritePalette.TransparentColor;
                     info.MaskColor = objType.SpritePalette.MaskColor;
@@ -42,23 +42,41 @@ namespace RC.App.BizLogic.Views.Core
             return retList;
         }
 
-        /// <see cref="IMetadataView.GetMapObjectHPIconDefs"/>
-        public List<SpriteDef> GetMapObjectHPIconDefs()
+        /// <see cref="IMetadataView.GetMapObjectHPIconData"/>
+        public List<SpriteData> GetMapObjectHPIconData()
         {
-            List<SpriteDef> retList = new List<SpriteDef>();
+            List<SpriteData> retList = new List<SpriteData>();
             foreach (IScenarioElementType objType in this.metadata.AllTypes)
             {
                 if (objType.HPIconPalette != null)
                 {
                     byte[] imageData = new byte[objType.HPIconPalette.ImageData.Length];
                     Array.Copy(objType.HPIconPalette.ImageData, imageData, objType.HPIconPalette.ImageData.Length);
-                    SpriteDef info = new SpriteDef();
+                    SpriteData info = new SpriteData();
                     info.ImageData = imageData;
                     info.TransparentColor = objType.HPIconPalette.TransparentColor;
                     info.MaskColor = objType.HPIconPalette.MaskColor;
                     info.IsMaskableSprite = objType.MaxHP != null;
                     retList.Add(info);
                 }
+            }
+            return retList;
+        }
+
+        /// <see cref="IMetadataView.GetShadowSpriteData"/>
+        public List<SpriteData> GetShadowSpriteData()
+        {
+            List<SpriteData> retList = new List<SpriteData>();
+            if (this.metadata.ShadowPalette != null)
+            {
+                byte[] imageData = new byte[this.metadata.ShadowPalette.ImageData.Length];
+                Array.Copy(this.metadata.ShadowPalette.ImageData, imageData, this.metadata.ShadowPalette.ImageData.Length);
+                SpriteData info = new SpriteData();
+                info.ImageData = imageData;
+                info.TransparentColor = this.metadata.ShadowPalette.TransparentColor;
+                info.MaskColor = this.metadata.ShadowPalette.MaskColor;
+                info.IsMaskableSprite = false;
+                retList.Add(info);
             }
             return retList;
         }

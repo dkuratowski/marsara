@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using RC.App.PresLogic.SpriteGroups;
+using RC.Common.Configuration;
 using RC.UI;
 using RC.Common;
 using RC.Common.Diagnostics;
@@ -54,18 +56,23 @@ namespace RC.App.PresLogic.Controls
             this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player6));
             this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Player7));
             this.mapObjectSprites.Add(new MapObjectSpriteGroup(metadataView, PlayerEnum.Neutral));
+
+            this.shadowSprites = new ShadowSpriteGroup(metadataView);
         }
 
         /// <see cref="RCMapDisplayExtension.ConnectExBackgroundProc_i"/>
         protected override void ConnectExBackgroundProc_i()
         {
             foreach (SpriteGroup spriteGroup in this.mapObjectSprites) { spriteGroup.Load(); }
+            this.shadowSprites.Load();
         }
 
         /// <see cref="RCMapDisplayExtension.DisconnectExBackgroundProc_i"/>
         protected override void DisconnectExBackgroundProc_i()
         {
             foreach (SpriteGroup spriteGroup in this.mapObjectSprites) { spriteGroup.Unload(); }
+            this.shadowSprites.Unload();
+            this.shadowSprites = null;
             this.mapObjectView = null;
             this.mapObjectSprites.Clear();
         }
@@ -73,21 +80,22 @@ namespace RC.App.PresLogic.Controls
         /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
         protected override void RenderEx_i(IUIRenderContext renderContext)
         {
-            /// Retrieve the list of the visible map objects.
-            List<ObjectInst> mapObjects = this.mapObjectView.GetVisibleMapObjects();
-
-            /// Render the object sprites.
-            foreach (ObjectInst obj in mapObjects)
+            foreach (Tuple<SpriteRenderInfo, PlayerEnum> renderItem in this.mapObjectView.GetVisibleMapObjectSprites())
             {
-                foreach (SpriteInst spriteToDisplay in obj.Sprites)
+                SpriteRenderInfo mapObjectSpriteRenderInfo = renderItem.Item1;
+                PlayerEnum ownerPlayer = renderItem.Item2;
+                if (mapObjectSpriteRenderInfo.SpriteGroup == SpriteGroupEnum.MapObjectSpriteGroup)
                 {
-                    if (spriteToDisplay.Index != -1)
-                    {
-                        SpriteGroup spriteGroup = this.GetMapObjectSprites(obj.Owner);
-                        renderContext.RenderSprite(spriteGroup[spriteToDisplay.Index],
-                                                   spriteToDisplay.DisplayCoords,
-                                                   spriteToDisplay.Section);
-                    }
+                    SpriteGroup spriteGroup = this.GetMapObjectSprites(ownerPlayer);
+                    renderContext.RenderSprite(spriteGroup[mapObjectSpriteRenderInfo.Index],
+                                               mapObjectSpriteRenderInfo.DisplayCoords,
+                                               mapObjectSpriteRenderInfo.Section);
+                }
+                else if (mapObjectSpriteRenderInfo.SpriteGroup == SpriteGroupEnum.MapObjectShadowSpriteGroup)
+                {
+                    renderContext.RenderSprite(this.shadowSprites[mapObjectSpriteRenderInfo.Index],
+                                               mapObjectSpriteRenderInfo.DisplayCoords,
+                                               mapObjectSpriteRenderInfo.Section);
                 }
             }
         }
@@ -100,6 +108,11 @@ namespace RC.App.PresLogic.Controls
         /// The last sprite group in this list contains the neutral variants of the sprites.
         /// </summary>
         private readonly List<SpriteGroup> mapObjectSprites;
+
+        /// <summary>
+        /// This sprite-group contains the sprites for rendering map object shadows.
+        /// </summary>
+        private SpriteGroup shadowSprites;
 
         /// <summary>
         /// Reference to the map object view.

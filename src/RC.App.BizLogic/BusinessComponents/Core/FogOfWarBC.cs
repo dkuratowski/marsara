@@ -123,13 +123,33 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             return this.cache.Value.EntitySnapshotsToUpdate;
         }
 
-        /// <see cref="IFogOfWarBC.GetMapObjectsToUpdate"/>
-        public IEnumerable<MapObject> GetMapObjectsToUpdate()
+        /// <see cref="IFogOfWarBC.GetGroundMapObjectsToUpdate"/>
+        public IEnumerable<MapObject> GetGroundMapObjectsToUpdate()
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             this.UpdateQuadTileWindow();
-            return this.cache.Value.MapObjectsToUpdate;
+            return this.cache.Value.GroundMapObjectsToUpdate;
+        }
+
+        /// <see cref="IFogOfWarBC.GetAirMapObjectsToUpdate"/>
+        public IEnumerable<MapObject> GetAirMapObjectsToUpdate()
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+
+            this.UpdateQuadTileWindow();
+            return this.cache.Value.AirMapObjectsToUpdate;
+        }
+
+        /// <see cref="IFogOfWarBC.GetAllMapObjectsToUpdate"/>
+        public IEnumerable<MapObject> GetAllMapObjectsToUpdate()
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+
+            this.UpdateQuadTileWindow();
+            RCSet<MapObject> allMapObjects = new RCSet<MapObject>(this.cache.Value.GroundMapObjectsToUpdate);
+            allMapObjects.UnionWith(this.cache.Value.AirMapObjectsToUpdate);
+            return allMapObjects;
         }
 
         /// <see cref="IFogOfWarBC.GetEntitySnapshotsInWindow"/>
@@ -155,14 +175,19 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
         }
 
-        /// <see cref="IFogOfWarBC.GetMapObjectsInWindow"/>
-        public IEnumerable<MapObject> GetMapObjectsInWindow(RCIntRectangle quadWindow)
+        /// <see cref="IFogOfWarBC.GetAllMapObjectsInWindow"/>
+        public IEnumerable<MapObject> GetAllMapObjectsInWindow(RCIntRectangle quadWindow)
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             /// Collect the currently visible entities inside the given window.
             RCNumRectangle cellWindow = (RCNumRectangle)this.ActiveScenario.Map.QuadToCellRect(quadWindow) - new RCNumVector(1, 1) / 2;
-            RCSet<MapObject> mapObjectsOnMap = this.ActiveScenario.GetMapObjects(cellWindow, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
+            RCSet<MapObject> mapObjectsOnMap = this.ActiveScenario.GetMapObjects(
+                cellWindow,
+                MapObjectLayerEnum.GroundObjects,
+                MapObjectLayerEnum.GroundMissiles,
+                MapObjectLayerEnum.AirObjects,
+                MapObjectLayerEnum.AirMissiles);
             foreach (MapObject mapObject in mapObjectsOnMap)
             {
                 if (this.runningFowsCount == 0)
@@ -189,12 +214,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="IFogOfWarBC.IsMapObjectVisible"/>
-        public bool IsMapObjectVisible(MapObject mapObjects)
+        public bool IsMapObjectVisible(MapObject mapObject)
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             this.UpdateQuadTileWindow();
-            return this.cache.Value.MapObjectsToUpdate.Contains(mapObjects);
+            return this.cache.Value.GroundMapObjectsToUpdate.Contains(mapObject) || this.cache.Value.AirMapObjectsToUpdate.Contains(mapObject);
         }
 
         /// <see cref="IFogOfWarBC.GetFullFowTileFlags"/>
@@ -304,25 +329,46 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 }
             }
 
-            /// Collect the currently visible map objects.
-            RCSet<MapObject> objectsOnMap = this.ActiveScenario.GetMapObjects(
+            /// Collect the currently visible map objects on the ground.
+            RCSet<MapObject> groundObjectsOnMap = this.ActiveScenario.GetMapObjects(
                 this.mapWindowBC.AttachedWindow.WindowMapCoords,
                 MapObjectLayerEnum.GroundObjects,
-                MapObjectLayerEnum.GroundMissiles,
-                MapObjectLayerEnum.AirObjects,
-                MapObjectLayerEnum.AirMissiles);
-            RCSet<MapObject> mapObjectsToUpdate = new RCSet<MapObject>();
-            foreach (MapObject mapObj in objectsOnMap)
+                MapObjectLayerEnum.GroundMissiles);
+            RCSet<MapObject> groundMapObjectsToUpdate = new RCSet<MapObject>();
+            foreach (MapObject groundMapObj in groundObjectsOnMap)
             {
                 bool breakLoop = false;
-                for (int col = mapObj.QuadraticPosition.Left; !breakLoop && col < mapObj.QuadraticPosition.Right; col++)
+                for (int col = groundMapObj.QuadraticPosition.Left; !breakLoop && col < groundMapObj.QuadraticPosition.Right; col++)
                 {
-                    for (int row = mapObj.QuadraticPosition.Top; !breakLoop && row < mapObj.QuadraticPosition.Bottom; row++)
+                    for (int row = groundMapObj.QuadraticPosition.Top; !breakLoop && row < groundMapObj.QuadraticPosition.Bottom; row++)
                     {
                         if (this.fowCacheMatrix.GetFowStateAtQuadTile(new RCIntVector(col, row)) == FOWTypeEnum.None)
                         {
                             /// Found at least 1 quadratic tile where the map objects is visible.
-                            this.AddMapObjectToUpdate(mapObj, mapObjectsToUpdate, quadTilesToUpdate);
+                            this.AddMapObjectToUpdate(groundMapObj, groundMapObjectsToUpdate, quadTilesToUpdate);
+                            breakLoop = true;
+                        }
+                    }
+                }
+            }
+
+            /// Collect the currently visible map objects in the air.
+            RCSet<MapObject> airObjectsOnMap = this.ActiveScenario.GetMapObjects(
+                this.mapWindowBC.AttachedWindow.WindowMapCoords,
+                MapObjectLayerEnum.AirObjects,
+                MapObjectLayerEnum.AirMissiles);
+            RCSet<MapObject> airMapObjectsToUpdate = new RCSet<MapObject>();
+            foreach (MapObject airMapObj in airObjectsOnMap)
+            {
+                bool breakLoop = false;
+                for (int col = airMapObj.QuadraticPosition.Left; !breakLoop && col < airMapObj.QuadraticPosition.Right; col++)
+                {
+                    for (int row = airMapObj.QuadraticPosition.Top; !breakLoop && row < airMapObj.QuadraticPosition.Bottom; row++)
+                    {
+                        if (this.fowCacheMatrix.GetFowStateAtQuadTile(new RCIntVector(col, row)) == FOWTypeEnum.None)
+                        {
+                            /// Found at least 1 quadratic tile where the map objects is visible.
+                            this.AddMapObjectToUpdate(airMapObj, airMapObjectsToUpdate, quadTilesToUpdate);
                             breakLoop = true;
                         }
                     }
@@ -336,7 +382,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 TerrainObjectsToUpdate = terrainObjectsToUpdate,
                 QuadTilesToUpdate = quadTilesToUpdate,
                 EntitySnapshotsToUpdate = entitySnapshotsToUpdate,
-                MapObjectsToUpdate = mapObjectsToUpdate
+                GroundMapObjectsToUpdate = groundMapObjectsToUpdate,
+                AirMapObjectsToUpdate = airMapObjectsToUpdate
             };
         }
 
@@ -362,11 +409,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 }
             }
 
-            /// Collect the currently visible map objects.
-            RCSet<MapObject> mapObjectsToUpdate = this.ActiveScenario.GetMapObjects(
+            /// Collect the currently visible map objects on the ground.
+            RCSet<MapObject> groundMapObjectsToUpdate = this.ActiveScenario.GetMapObjects(
                 this.mapWindowBC.AttachedWindow.WindowMapCoords,
                 MapObjectLayerEnum.GroundObjects,
-                MapObjectLayerEnum.GroundMissiles,
+                MapObjectLayerEnum.GroundMissiles);
+
+            /// Collect the currently visible map objects in the air.
+            RCSet<MapObject> airMapObjectsToUpdate = this.ActiveScenario.GetMapObjects(
+                this.mapWindowBC.AttachedWindow.WindowMapCoords,
                 MapObjectLayerEnum.AirObjects,
                 MapObjectLayerEnum.AirMissiles);
 
@@ -377,7 +428,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 TerrainObjectsToUpdate = terrainObjectsToUpdate,
                 QuadTilesToUpdate = new List<IQuadTile>(),
                 EntitySnapshotsToUpdate = new List<EntitySnapshot>(),
-                MapObjectsToUpdate = mapObjectsToUpdate
+                GroundMapObjectsToUpdate = groundMapObjectsToUpdate,
+                AirMapObjectsToUpdate = airMapObjectsToUpdate
             };
         }
 
@@ -475,6 +527,23 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                              this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None))
                         {
                             quadTileUpdateList.Add(quadTileToUpdate);
+                        }
+                    }
+                }
+
+                if (mapObj.QuadraticShadowPosition != RCIntRectangle.Undefined)
+                {
+                    for (int col = mapObj.QuadraticShadowPosition.Left; col < mapObj.QuadraticShadowPosition.Right; col++)
+                    {
+                        for (int row = mapObj.QuadraticShadowPosition.Top; row < mapObj.QuadraticShadowPosition.Bottom; row++)
+                        {
+                            IQuadTile quadTileToUpdate = this.ActiveScenario.Map.GetQuadTile(new RCIntVector(col, row));
+                            if (quadTileToUpdate != null &&
+                                (this.fowCacheMatrix.GetFullFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None ||
+                                 this.fowCacheMatrix.GetPartialFowFlagsAtQuadTile(quadTileToUpdate.MapCoords) != FOWTileFlagsEnum.None))
+                            {
+                                quadTileUpdateList.Add(quadTileToUpdate);
+                            }
                         }
                     }
                 }
