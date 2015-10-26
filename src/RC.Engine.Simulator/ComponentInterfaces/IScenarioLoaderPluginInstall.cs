@@ -14,6 +14,6 @@ namespace RC.Engine.Simulator.ComponentInterfaces
         /// </summary>
         /// <param name="entityType">The name of the entity type.</param>
         /// <param name="constraint">The constraint to register.</param>
-        void RegisterEntityConstraint(string entityType, EntityConstraint constraint);
+        void RegisterEntityConstraint(string entityType, EntityPlacementConstraint constraint);
     }
 }

@@ -43,7 +43,7 @@ namespace RC.App.PresLogic
         /// </summary>
         public bool DisplayCrosshairs
         {
-            get { return this.commandView.IsWaitingForTargetPosition && this.commandView.SelectedBuildingType == null; }
+            get { return this.commandView.IsWaitingForTargetPosition && this.commandView.TypeToBePlaced == null; }
         }
 
 
@@ -72,7 +72,7 @@ namespace RC.App.PresLogic
         {
             if (this.currentMouseStatus == MouseStatus.None)
             {
-                if (evtArgs.Button == UIMouseButton.Left && (!this.commandView.IsWaitingForTargetPosition || this.commandView.SelectedBuildingType != null) ||
+                if (evtArgs.Button == UIMouseButton.Left && (!this.commandView.IsWaitingForTargetPosition || this.commandView.TypeToBePlaced != null) ||
                     evtArgs.Button == UIMouseButton.Right && this.commandView.IsWaitingForTargetPosition)
                 {
                     this.currentMouseStatus = MouseStatus.MovingDisplay;
@@ -80,7 +80,7 @@ namespace RC.App.PresLogic
                     TraceManager.WriteAllTrace(string.Format("SCROLL_ON_MINIMAP {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
                     this.scrollService.ScrollToMinimapPosition(evtArgs.Position);
                 }
-                else if (evtArgs.Button == UIMouseButton.Left && this.commandView.IsWaitingForTargetPosition && this.commandView.SelectedBuildingType == null)
+                else if (evtArgs.Button == UIMouseButton.Left && this.commandView.IsWaitingForTargetPosition && this.commandView.TypeToBePlaced == null)
                 {
                     this.currentMouseStatus = MouseStatus.SelectingTarget;
                     this.pressedButton = evtArgs.Button;

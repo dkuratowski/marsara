@@ -18,7 +18,8 @@ namespace RC.Engine.Simulator.MotionControl
         /// Constructs a AirPathTracker instance.
         /// </summary>
         /// <param name="controlledEntity">The entity that this path tracker controls.</param>
-        public AirPathTracker(Entity controlledEntity) : base(controlledEntity) { }
+        /// <param name="targetDistanceThreshold">If the controlled entity is closer to the target position than this threshold, it is considered to arrive.</param>
+        public AirPathTracker(Entity controlledEntity, RCNumber targetDistanceThreshold) : base(controlledEntity, targetDistanceThreshold) { }
 
         #region PathTrackerBase overrides
 

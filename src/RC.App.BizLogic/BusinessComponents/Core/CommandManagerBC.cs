@@ -217,13 +217,13 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="ICommandManagerBC.IsWaitingForTargetPosition"/>
         public bool IsWaitingForTargetPosition { get { return this.targetPositionInputSlot != null; } }
 
-        /// <see cref="ICommandManagerBC.SelectedBuildingType"/>
-        public string SelectedBuildingType
+        /// <see cref="ICommandManagerBC.TypeToBePlaced"/>
+        public string TypeToBePlaced
         {
             get
             {
                 if (this.targetPositionInputSlot == null) { throw new InvalidOperationException("Command manager is not waiting for target position input!"); }
-                return this.targetPositionInputSlot.SelectedBuildingType;
+                return this.targetPositionInputSlot.TypeToBePlaced;
             }
         }
 
@@ -372,7 +372,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             this.targetPositionInputSlot = new TargetPositionInputSlot
             {
-                SelectedBuildingType = targetPositionListener.SelectedBuildingType,
+                TypeToBePlaced = targetPositionListener.TypeToBePlaced,
                 TargetPositionListener = targetPositionListener,
                 Listener = listener
             };

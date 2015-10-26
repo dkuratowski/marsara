@@ -10,7 +10,7 @@ namespace RC.Engine.Simulator.Engine
     /// This entity constraint checks whether the checked area on the map is enough distance from entities of a given type.
     /// </summary>
     /// <typeparam name="T">The type of the entities from which the distance is minimized by this constraint.</typeparam>
-    public class MinimumDistanceConstraint<T> : EntityConstraint where T : Entity
+    public class MinimumDistanceConstraint<T> : EntityPlacementConstraint where T : Entity
     {
         /// <summary>
         /// Constructs a MinimumDistanceConstraint instance.
@@ -25,8 +25,8 @@ namespace RC.Engine.Simulator.Engine
             this.checkedQuadRectSize = new RCIntVector(2 * this.minimumDistance.X + 1, 2 * this.minimumDistance.Y + 1);
         }
 
-        /// <see cref="EntityConstraint.CheckImpl"/>
-        protected override RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position)
+        /// <see cref="EntityPlacementConstraint.CheckImpl"/>
+        protected override RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position, Entity entity)
         {
             RCIntRectangle objArea = new RCIntRectangle(position, scenario.Map.CellToQuadSize(this.EntityType.Area.Read()));
             RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
@@ -38,10 +38,23 @@ namespace RC.Engine.Simulator.Engine
                     if (absQuadCoords.X >= 0 && absQuadCoords.X < scenario.Map.Size.X &&
                         absQuadCoords.Y >= 0 && absQuadCoords.Y < scenario.Map.Size.Y)
                     {
+                        /// Collect all the entities that are on the ground and too close.
                         RCIntRectangle checkedQuadRect = new RCIntRectangle(absQuadCoords - this.minimumDistance, this.checkedQuadRectSize);
                         RCNumRectangle checkedArea = (RCNumRectangle)scenario.Map.QuadToCellRect(checkedQuadRect) - new RCNumVector(1, 1) / 2;
-                        RCSet<T> objectsTooClose = scenario.GetElementsOnMap<T>(checkedArea, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
-                        if (objectsTooClose.Count > 0) { retList.Add(absQuadCoords - position); }
+                        RCSet<T> entitiesTooClose = scenario.GetElementsOnMap<T>(checkedArea, MapObjectLayerEnum.GroundObjects);
+                        if (entity != null)
+                        {
+                            /// If an entity is given then we check whether the entitiesTooClose list contains other entities as well.
+                            if (!(entitiesTooClose.Count == 0 || (entitiesTooClose.Count == 1 && entitiesTooClose.Contains(entity))))
+                            {
+                                retList.Add(absQuadCoords - position);
+                            }
+                        }
+                        else
+                        {
+                            /// If an entity is not given then we check whether the entitiesTooClose list contains at least 1 entity.
+                            if (entitiesTooClose.Count > 0) { retList.Add(absQuadCoords - position); }
+                        }
                     }
                 }
             }
@@ -51,11 +64,11 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Rectangle computed from the minimum distance.
         /// </summary>
-        private RCIntVector checkedQuadRectSize;
+        private readonly RCIntVector checkedQuadRectSize;
 
         /// <summary>
         /// The minimum distance in horizontal and vertical directions.
         /// </summary>
-        private RCIntVector minimumDistance;
+        private readonly RCIntVector minimumDistance;
     }
 }

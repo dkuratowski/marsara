@@ -4,6 +4,7 @@ using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.Metadata;
 
 namespace RC.App.BizLogic.BusinessComponents
 {
@@ -108,6 +109,28 @@ namespace RC.App.BizLogic.BusinessComponents
         /// <param name="quadCoords">The quadratic coordinates of the tile.</param>
         /// <returns>The current FOW-state at the given quadratic tile.</returns>
         FOWTypeEnum GetFowState(RCIntVector quadCoords);
+
+        /// <summary>
+        /// Checks whether the constraints of the given entity type allows placing an entity of this type to the active scenario at the given
+        /// quadratic position and collects all the violating quadratic coordinates relative to the given position.
+        /// </summary>
+        /// <param name="elementType">The type to be checked.</param>
+        /// <param name="position">The position to be checked.</param>
+        /// <returns>
+        /// The list of the quadratic coordinates (relative to the given position) violating the placement constraints of the given entity type.
+        /// </returns>
+        RCSet<RCIntVector> CheckPlacementConstraints(IScenarioElementType elementType, RCIntVector position);
+
+        /// <summary>
+        /// Checks whether the placement constraints of the given entity allows it to be placed at the given quadratic position and
+        /// collects all the violating quadratic coordinates relative to the given position.
+        /// </summary>
+        /// <param name="entity">The entity to be checked.</param>
+        /// <param name="position">The position to be checked.</param>
+        /// <returns>
+        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of the given entity.
+        /// </returns>
+        RCSet<RCIntVector> CheckPlacementConstraints(Entity entity, RCIntVector position);
         
         /// <summary>
         /// Executes the next Fog Of War update iteration.

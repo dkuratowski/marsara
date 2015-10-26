@@ -23,6 +23,7 @@ namespace RC.App.BizLogic.Views.Core
         {
             if (objectTypeName == null) { throw new ArgumentNullException("objectTypeName"); }
 
+            this.fogOfWarBC = ComponentManager.GetInterface<IFogOfWarBC>();
             this.objectType = ComponentManager.GetInterface<IScenarioManagerBC>().Metadata.GetElementType(objectTypeName);
             if (this.objectType.AnimationPalette != null)
             {
@@ -42,7 +43,7 @@ namespace RC.App.BizLogic.Views.Core
         /// <see cref="ObjectPlacementView.CheckObjectConstraints"/>
         protected override RCSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords)
         {
-            return this.objectType.CheckConstraints(this.Scenario, topLeftCoords);
+            return this.fogOfWarBC.CheckPlacementConstraints(this.objectType, topLeftCoords);
         }
 
         /// <see cref="ObjectPlacementView.GetObjectQuadraticSize"/>
@@ -81,5 +82,10 @@ namespace RC.App.BizLogic.Views.Core
         /// Reference to the preview animation of the map object being placed.
         /// </summary>
         private AnimationPlayer previewAnimation;
+
+        /// <summary>
+        /// Reference to the Fog Of War business component.
+        /// </summary>
+        private readonly IFogOfWarBC fogOfWarBC;
     }
 }

@@ -53,18 +53,16 @@ namespace RC.Engine.Simulator.Engine
             this.vtolOperationProgress.Write(0);
             this.vtolInitialPosition.Write(RCNumVector.Undefined);
             this.vtolFinalPosition.Write(RCNumVector.Undefined);
-            this.groundPathTracker.Write(new GroundPathTracker(owner));
-            this.airPathTracker.Write(new AirPathTracker(owner));
+            this.groundPathTracker.Write(new GroundPathTracker(owner, TARGET_DISTANCE_THRESHOLD));
+            this.airPathTracker.Write(new AirPathTracker(owner, TARGET_DISTANCE_THRESHOLD));
             if (isFlying)
             {
-                this.owner.Read().MapObject.SetShadowTransition(MAX_VTOL_TRANSITION_VECTOR);
                 this.status.Write((byte)MotionControlStatusEnum.InAir);
                 this.currentPathTracker.Write(this.airPathTracker.Read());
                 this.velocityGraph = new HexadecagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0); // TODO: max speed might change based on upgrades!
             }
             else
             {
-                this.owner.Read().MapObject.SetShadowTransition(new RCNumVector(0, 0));
                 this.status.Write((byte)MotionControlStatusEnum.OnGround);
                 this.currentPathTracker.Write(this.groundPathTracker.Read());
                 this.velocityGraph = new OctagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0); // TODO: max speed might change based on upgrades!
@@ -156,7 +154,7 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <param name="toCoords">The target position.</param>
         /// <exception cref="InvalidOperationException">
-        /// If the status of this motion control is neither MotionControlStatusEnum.Landed nor MotionControlStatusEnum.Flying.
+        /// If the status of this motion control is neither MotionControlStatusEnum.OnGround nor MotionControlStatusEnum.InAir.
         /// </exception>
         public void StartMoving(RCNumVector toCoords)
         {
@@ -168,52 +166,56 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
-        /// Orders this motion control to stop at its current position.
+        /// Orders this motion control to stop at its current position. If the status of this motion control is Fixed, TakingOff or Landing then this function has no effect.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        /// If the status of this motion control is not one of the followings: Fixed, OnGround, InAir.
-        /// </exception>
         public void StopMoving()
         {
             if (this.position.Read() == RCNumVector.Undefined) { throw new InvalidOperationException("The owner is currently detached from the map!"); }
-            if (this.Status == MotionControlStatusEnum.TakingOff || this.Status == MotionControlStatusEnum.Landing) { throw new InvalidOperationException("The owner is currently landing or taking off!"); }
 
-            if (this.Status == MotionControlStatusEnum.Fixed) { return; }
+            if (this.Status == MotionControlStatusEnum.Fixed ||
+                this.Status == MotionControlStatusEnum.TakingOff ||
+                this.Status == MotionControlStatusEnum.Landing)
+            {
+                return;
+            }
             this.currentPathTracker.Read().TargetPosition = RCNumVector.Undefined;
             this.velocity.Write(new RCNumVector(0, 0));
         }
 
         /// <summary>
-        /// Starts the owner of this motion control to takeoff. If the takeoff is not possible in the current position then this function has no effect.
+        /// Begins the takeoff of the owner of this motion control.
         /// </summary>
-        /// <exception cref="InvalidOperationException">If the status of this motion control is not MotionControlStatusEnum.Landed.</exception>
-        public void TakeOff()
+        /// <exception cref="InvalidOperationException">If the status of this motion control is not MotionControlStatusEnum.Fixed.</exception>
+        /// <returns>True if the takeoff operation started successfully; otherwise false.</returns>
+        public bool BeginTakeOff()
         {
             if (this.position.Read() == RCNumVector.Undefined) { throw new InvalidOperationException("The owner is currently detached from the map!"); }
-            if (this.Status != MotionControlStatusEnum.OnGround) { throw new InvalidOperationException("The owner is currently not on the ground or is fixed!"); }
-
-            this.StopMoving();
+            if (this.Status != MotionControlStatusEnum.Fixed) { throw new InvalidOperationException("The owner is currently not fixed!"); }
 
             /// Reserve the position on the map.
             RCNumVector positionAfterTakeOff = this.airPathTracker.Read().CalculateTargetPositionForVTOL(false);
-            if (positionAfterTakeOff == RCNumVector.Undefined) { return; }
+            if (positionAfterTakeOff == RCNumVector.Undefined) { return false; }
             this.owner.Read().ReservePositionInAir(positionAfterTakeOff);
 
             /// Initialize the VTOL operation for take-off.
+            this.Unfix();
             this.status.Write((byte)MotionControlStatusEnum.TakingOff);
             this.vtolOperationProgress.Write(0);
             this.vtolInitialPosition.Write(this.position.Read());
             this.vtolFinalPosition.Write(positionAfterTakeOff);
             this.currentPathTracker.Write(null);
             this.velocityGraph = null;
+
+            return true;
         }
 
         /// <summary>
-        /// Starts the owner of this motion control to land. If the landing is not possible in the current position then this function has no effect.
+        /// Begins the landing of the owner of this motion control.
         /// </summary>
         /// <param name="landOnTheSpot">True to land without transition.</param>
         /// <exception cref="InvalidOperationException">If the status of this motion control is not MotionControlStatusEnum.Flying.</exception>
-        public void Land(bool landOnTheSpot)
+        /// <returns>True if the landing operation started successfully; otherwise false.</returns>
+        public bool BeginLand(bool landOnTheSpot)
         {
             if (this.position.Read() == RCNumVector.Undefined) { throw new InvalidOperationException("The owner is currently detached from the map!"); }
             if (this.Status != MotionControlStatusEnum.InAir) { throw new InvalidOperationException("The owner is currently not in the air!"); }
@@ -222,7 +224,7 @@ namespace RC.Engine.Simulator.Engine
 
             /// Reserve the position on the map.
             RCNumVector positionAfterLand = this.groundPathTracker.Read().CalculateTargetPositionForVTOL(landOnTheSpot);
-            if (positionAfterLand == RCNumVector.Undefined) { return; }
+            if (positionAfterLand == RCNumVector.Undefined) { return false; }
             this.owner.Read().ReservePositionOnGround(positionAfterLand);
 
             /// Initialize the VTOL operation for landing.
@@ -232,6 +234,8 @@ namespace RC.Engine.Simulator.Engine
             this.vtolFinalPosition.Write(positionAfterLand);
             this.currentPathTracker.Write(null);
             this.velocityGraph = null;
+
+            return true;
         }
 
         /// <summary>
@@ -239,11 +243,20 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         public void UpdateState()
         {
+            /// Do nothing if the owner is detached from the map.
+            if (this.position.Read() == RCNumVector.Undefined) { return; }
+
             if (this.Status == MotionControlStatusEnum.OnGround || this.Status == MotionControlStatusEnum.InAir)
             {
+                /// Set the appropriate shadow transition on the map object of the owner.
+                this.owner.Read().MapObject.SetShadowTransition(this.Status == MotionControlStatusEnum.InAir ? MAX_VTOL_TRANSITION_VECTOR : new RCNumVector(0, 0));
+
                 /// Continue the current path-tracking if active.
                 if (this.currentPathTracker.Read().IsActive)
                 {
+                    /// Get the current target position of the path-tracker.
+                    RCNumVector targetPosition = this.currentPathTracker.Read().TargetPosition;
+
                     /// Update the state of the path-tracker.
                     this.currentPathTracker.Read().Update();
 
@@ -252,6 +265,17 @@ namespace RC.Engine.Simulator.Engine
 
                     /// Update the position based on the new velocity.
                     this.UpdatePosition();
+
+                    /// If the path-tracker finished working, check if we reached the threshold to the target position.
+                    if (!this.currentPathTracker.Read().IsActive &&
+                        MapUtils.ComputeDistance(this.position.Read(), targetPosition) < TARGET_DISTANCE_THRESHOLD)
+                    {
+                        /// If yes, move the entity exactly to the target position.
+                        if (this.currentPathTracker.Read().ValidatePosition(targetPosition))
+                        {
+                            this.position.Write(targetPosition);
+                        }
+                    }
                 }
             }
             else if (this.Status == MotionControlStatusEnum.TakingOff || this.Status == MotionControlStatusEnum.Landing)
@@ -281,35 +305,48 @@ namespace RC.Engine.Simulator.Engine
                 if (finished)
                 {
                     this.FinishVTOLOperation();
+                    if (this.Status == MotionControlStatusEnum.OnGround) { this.Fix(); }
                 }
             }
         }
 
         /// <summary>
-        /// Explicitly sets the position of this motion control. A call to this method will automatically stop any moving and VTOL operation.
+        /// This method is called when the owner entity is being attached to the map.
+        /// </summary>
+        /// <param name="toPosition">The target position.</param>
+        /// <returns>True if the position has been set successfully; otherwise false.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// If the status of this motion control is neither MotionControlStatusEnum.OnGround nor MotionControlStatusEnum.InAir.
+        /// </exception>
+        /// <remarks>The method is called from Entity.AttachToMap.</remarks>
+        internal bool OnOwnerAttachingToMap(RCNumVector toPosition)
+        {
+            if (this.Status != MotionControlStatusEnum.OnGround && this.Status != MotionControlStatusEnum.InAir) { throw new InvalidOperationException("Invalid MotionControl state!"); }
+            if (toPosition == RCNumVector.Undefined) { throw new ArgumentNullException("toPosition"); }
+
+            if (this.currentPathTracker.Read().ValidatePosition(toPosition))
+            {
+                this.position.Write(toPosition);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// This method is called when the owner entity has been detached from the map. A call to this method will automatically stop any moving and VTOL operation.
         /// If a takeoff operation was in progress, then the status of this motion control will automatically be changed to MotionControlStatusEnum.Flying.
         /// If a landing operation was in progress, then the status of this motion control will automatically be changed to MotionControlStatusEnum.Landed.
         /// If neither a takeoff nor a landing operation was in progress, then the status of this motion control won't be changed.
         /// </summary>
-        /// <param name="newPosition">
-        /// The new position or RCNumVector.Undefined to indicate that the owner of this motion control has been removed from the map.
-        /// </param>
-        /// <returns>True if the position has been set successfully; otherwise false.</returns>
         /// <exception cref="InvalidOperationException">If the status of this motion control is MotionControlStatusEnum.Fixed.</exception>
-        /// <remarks>The method is called from Entity.AttachToMap and Entity.DetachFromMap.</remarks>
-        internal bool SetPosition(RCNumVector newPosition)
+        /// <remarks>The method is called from Entity.DetachFromMap.</remarks>
+        internal void OnOwnerDetachedFromMap()
         {
             if (this.Status == MotionControlStatusEnum.Fixed) { throw new InvalidOperationException("The owner is currently fixed on the ground!"); }
             if (this.Status == MotionControlStatusEnum.TakingOff || this.Status == MotionControlStatusEnum.Landing) { this.FinishVTOLOperation(); }
 
-            if (newPosition == RCNumVector.Undefined ||
-                this.currentPathTracker.Read().ValidatePosition(newPosition))
-            {
-                if (this.position.Read() != RCNumVector.Undefined) { this.StopMoving(); }
-                this.position.Write(newPosition);
-                return true;
-            }
-            return false;
+            this.StopMoving();
+            this.position.Write(RCNumVector.Undefined);
         }
 
         /// <see cref="HeapedObject.DisposeImpl"/>
@@ -556,5 +593,10 @@ namespace RC.Engine.Simulator.Engine
         /// The shadow transition vector belonging to the maximum value of transition during a VTOL operation.
         /// </summary>
         private static readonly RCNumVector MAX_VTOL_TRANSITION_VECTOR = new RCNumVector(0, Constants.MAX_VTOL_TRANSITION);
+
+        /// <summary>
+        /// If the controlled entity is closer to the target position than this threshold, it is considered to arrive.
+        /// </summary>
+        private static readonly RCNumber TARGET_DISTANCE_THRESHOLD = (RCNumber)1 / (RCNumber)2;
     }
 }

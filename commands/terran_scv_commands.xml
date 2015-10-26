@@ -31,54 +31,54 @@
   <commandButton command="Return" sprite="ReturnBtn" panelPosition="1;2" />  
   <commandButton command="Build" sprite="BuildBtn" panelPosition="2;0">
 	<buildingButton building="CommandCenter" sprite="CommandCenterBtn" panelPosition="0;0">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<buildingButton building="SupplyDepot" sprite="SupplyDepotBtn" panelPosition="0;1">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<buildingButton building="Refinery" sprite="RefineryBtn" panelPosition="0;2">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<buildingButton building="Barracks" sprite="BarracksBtn" panelPosition="1;0">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<buildingButton building="EngineeringBay" sprite="EngineeringBayBtn" panelPosition="1;1">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<buildingButton building="MissileTurret" sprite="MissileTurretBtn" panelPosition="1;2">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<buildingButton building="Academy" sprite="AcademyBtn" panelPosition="2;0">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<buildingButton building="Bunker" sprite="BunkerBtn" panelPosition="2;1">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<cancelButton sprite="CancelBtn" panelPosition="2;2" />
   </commandButton>  
   <commandButton command="Build" sprite="AdvancedBuildBtn" panelPosition="2;1">
 	<buildingButton building="Factory" sprite="FactoryBtn" panelPosition="0;0">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<buildingButton building="Starport" sprite="StarportBtn" panelPosition="0;1">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<buildingButton building="ScienceFacility" sprite="ScienceFacilityBtn" panelPosition="0;2">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<buildingButton building="Armory" sprite="ArmoryBtn" panelPosition="1;0">
-	  <selectTargetPosition />
+	  <selectTargetPosition sourceOfTypeToBePlaced="FromParameter" />
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
 	<cancelButton sprite="CancelBtn" panelPosition="2;2" />

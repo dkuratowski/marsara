@@ -10,10 +10,10 @@ namespace RC.Engine.Simulator.Engine
     /// <summary>
     /// This entity constraint checks whether the checked area on the map is buildable or not.
     /// </summary>
-    public class BuildableAreaConstraint : EntityConstraint
+    public class BuildableAreaConstraint : EntityPlacementConstraint
     {
-        /// <see cref="EntityConstraint.CheckImpl"/>
-        protected override RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position)
+        /// <see cref="EntityPlacementConstraint.CheckImpl"/>
+        protected override RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position, Entity entity)
         {
             RCIntRectangle objArea = new RCIntRectangle(position, scenario.Map.CellToQuadSize(this.EntityType.Area.Read()));
             RCSet<RCIntVector> retList = new RCSet<RCIntVector>();

@@ -33,7 +33,7 @@ namespace RC.App.PresLogic
             if (!this.CommandView.IsWaitingForTargetPosition) { throw new InvalidOperationException("Target selection is not possible currently!"); }
 
             this.multiplayerService = ComponentManager.GetInterface<IMultiplayerService>();
-            this.selectedBuildingType = this.CommandView.SelectedBuildingType;
+            this.selectedBuildingType = this.CommandView.TypeToBePlaced;
             this.normalMouseEventSource = normalMouseEventSource;
             this.objectPlacementInfo = this.selectedBuildingType != null
                 ? new ObjectPlacementInfo(
@@ -50,7 +50,7 @@ namespace RC.App.PresLogic
         /// <see cref="MouseHandlerBase.DisplayCrosshairs"/>
         public override bool DisplayCrosshairs
         {
-            get { return this.CommandView.IsWaitingForTargetPosition && this.CommandView.SelectedBuildingType == null; }
+            get { return this.CommandView.IsWaitingForTargetPosition && this.CommandView.TypeToBePlaced == null; }
         }
 
         /// <see cref="MouseHandlerBase.ObjectPlacementInfo"/>
@@ -100,7 +100,7 @@ namespace RC.App.PresLogic
         /// <returns>True if this mouse handler is still valid; otherwise false.</returns>
         private bool IsStillValid()
         {
-            return this.CommandView.IsWaitingForTargetPosition && this.CommandView.SelectedBuildingType == this.selectedBuildingType;
+            return this.CommandView.IsWaitingForTargetPosition && this.CommandView.TypeToBePlaced == this.selectedBuildingType;
         }
 
         /// <summary>

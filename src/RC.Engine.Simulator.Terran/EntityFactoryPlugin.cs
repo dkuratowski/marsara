@@ -54,7 +54,6 @@ namespace RC.Engine.Simulator.Terran
             scenario.AddElementToScenario(commandCenter);
             player.AddBuilding(commandCenter);
             commandCenter.AttachToMap(scenario.Map.GetQuadTile(player.QuadraticStartPosition.Location));
-            commandCenter.MotionControl.Fix();
 
             /// Find place for the given number of SCVs using an EntityNeighbourhoodIterator.
             EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(commandCenter);

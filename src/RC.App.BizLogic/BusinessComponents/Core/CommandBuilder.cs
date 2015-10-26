@@ -81,11 +81,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             get { return this.targetPosition; }
             set
             {
-                if (value == RCNumVector.Undefined) { throw new ArgumentNullException("TargetPosition"); }
+                //if (value == RCNumVector.Undefined) { throw new ArgumentNullException("TargetPosition"); }
                 if (!this.isEnabled) { throw new InvalidOperationException("CommandBuilder disabled!"); }
-                if (this.targetPosition != RCNumVector.Undefined) { throw new InvalidOperationException("TargetPosition already defined!"); }
+                //if (this.targetPosition != RCNumVector.Undefined) { throw new InvalidOperationException("TargetPosition already defined!"); }
                 this.targetPosition = value;
-                this.targetEntity = this.selectionManager.GetEntity(this.targetPosition);
+                if (this.targetPosition != RCNumVector.Undefined)
+                {
+                    this.targetEntity = this.selectionManager.GetEntity(this.targetPosition);
+                }
             }
         }
 

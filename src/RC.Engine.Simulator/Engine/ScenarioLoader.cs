@@ -24,7 +24,7 @@ namespace RC.Engine.Simulator.Engine
         public ScenarioLoader()
         {
             this.metadata = null;
-            this.entityConstraints = new Dictionary<string, List<EntityConstraint>>();
+            this.entityConstraints = new Dictionary<string, List<EntityPlacementConstraint>>();
 
             this.RegisterEntityConstraint(MineralField.MINERALFIELD_TYPE_NAME, new BuildableAreaConstraint());
             this.RegisterEntityConstraint(MineralField.MINERALFIELD_TYPE_NAME, new MinimumDistanceConstraint<StartLocation>(new RCIntVector(3, 3)));
@@ -89,10 +89,10 @@ namespace RC.Engine.Simulator.Engine
             /// Check the constraints of the visible entities.
             foreach (Entity entity in scenario.GetElementsOnMap<Entity>(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects))
             {
-                RCIntVector lastKnownQuadCoords = entity.MapObject.QuadraticPosition.Location;
-                entity.DetachFromMap();
-                if (entity.ElementType.CheckConstraints(scenario, lastKnownQuadCoords).Count != 0) { throw new MapException(string.Format("Entity at {0} is voilating its placement constraints!", lastKnownQuadCoords)); }
-                entity.AttachToMap(map.GetQuadTile(lastKnownQuadCoords));
+                if (entity.CheckPlacementConstraints(entity.MapObject.QuadraticPosition.Location).Count != 0)
+                {
+                    throw new MapException(string.Format("Entity at {0} is voilating its placement constraints!", entity.MapObject.QuadraticPosition.Location));
+                }
             }
             return scenario;
         }
@@ -152,10 +152,10 @@ namespace RC.Engine.Simulator.Engine
         #region ICmdExecutorFactoryPluginInstall methods
 
         /// <see cref="IScenarioLoaderPluginInstall.RegisterEntityConstraint"/>
-        public void RegisterEntityConstraint(string entityType, EntityConstraint constraint)
+        public void RegisterEntityConstraint(string entityType, EntityPlacementConstraint constraint)
         {
             if (entityType == null) { throw new ArgumentNullException("entityType"); }
-            if (!this.entityConstraints.ContainsKey(entityType)) { this.entityConstraints.Add(entityType, new List<EntityConstraint>()); }
+            if (!this.entityConstraints.ContainsKey(entityType)) { this.entityConstraints.Add(entityType, new List<EntityPlacementConstraint>()); }
             this.entityConstraints[entityType].Add(constraint);
         }
 
@@ -182,10 +182,10 @@ namespace RC.Engine.Simulator.Engine
             }
 
             /// Register the entity constraints to the corresponding entity types.
-            foreach (KeyValuePair<string, List<EntityConstraint>> item in this.entityConstraints)
+            foreach (KeyValuePair<string, List<EntityPlacementConstraint>> item in this.entityConstraints)
             {
                 ScenarioElementType elementType = this.metadata.GetElementTypeImpl(item.Key);
-                foreach (EntityConstraint constraint in item.Value)
+                foreach (EntityPlacementConstraint constraint in item.Value)
                 {
                     elementType.AddPlacementConstraint(constraint);
                 }
@@ -204,7 +204,7 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// List of the registered entity constraints mapped by the names of the corresponding entity types.
         /// </summary>
-        private Dictionary<string, List<EntityConstraint>> entityConstraints;
+        private Dictionary<string, List<EntityPlacementConstraint>> entityConstraints;
 
         /// <summary>
         /// Reference to the simulation metadata.

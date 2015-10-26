@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using RC.Common;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Engine;
@@ -42,7 +43,13 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="CommandExecutionFactoryBase.GetCommandAvailability"/>
         protected override AvailabilityEnum GetCommandAvailability(RCSet<Entity> entitiesToHandle, RCSet<Entity> fullEntitySet, string parameter)
         {
-            /// TODO: implement this method!
+            foreach (Entity entity in entitiesToHandle)
+            {
+                if (entity.MotionControl.Status == MotionControlStatusEnum.Fixed || entity.MotionControl.Status == MotionControlStatusEnum.Landing)
+                {
+                    return AvailabilityEnum.Unavailable;
+                }
+            }
             return AvailabilityEnum.Enabled;
         }
 
@@ -66,6 +73,8 @@ namespace RC.Engine.Simulator.Commands
                     return this.CreateMoveExecutions(entitiesToHandle, fullEntitySet, targetPosition, targetEntityID);
             }
         }
+
+        #region Execution creator methods
 
         /// <summary>
         /// Creates stop executions for the given entities.
@@ -122,6 +131,8 @@ namespace RC.Engine.Simulator.Commands
             MagicBox magicBox = new MagicBox(fullEntitySet, targetPosition);
             foreach (Entity entity in entitiesToHandle) { yield return new PatrolExecution(entity, magicBox.GetTargetPosition(entity)); }
         }
+
+        #endregion Execution creator methods
 
         /// <summary>
         /// The type of the command execution that this factory creates.

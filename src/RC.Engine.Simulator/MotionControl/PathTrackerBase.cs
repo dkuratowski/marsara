@@ -152,14 +152,17 @@ namespace RC.Engine.Simulator.MotionControl
         /// Constructs a PathTrackerBase instance.
         /// </summary>
         /// <param name="controlledEntity">The entity that this path tracker controls.</param>
-        protected PathTrackerBase(Entity controlledEntity)
+        /// <param name="targetDistanceThreshold">If the controlled entity is closer to the target position than this threshold, it is considered to arrive.</param>
+        protected PathTrackerBase(Entity controlledEntity, RCNumber targetDistanceThreshold)
         {
             if (controlledEntity == null) { throw new ArgumentNullException("controlledEntity"); }
+            if (targetDistanceThreshold < 0) { throw new ArgumentOutOfRangeException("targetDistanceThreshold", "Target distance threshold cannot be negative!"); }
 
             this.targetPosition = this.ConstructField<RCNumVector>("targetPosition");
             this.closestDistanceToTarget = this.ConstructField<RCNumber>("closestDistanceToTarget");
             this.timeSinceClosestDistanceReached = this.ConstructField<short>("timeSinceClosestDistanceReached");
             this.controlledEntity = this.ConstructField<Entity>("controlledEntity");
+            this.targetDistanceThreshold = this.ConstructField<RCNumber>("targetDistanceThreshold");
 
             this.preferredVelocityCache = new CachedValue<RCNumVector>(this.CalculatePreferredVelocity);
             this.dynamicObstaclesCache = new CachedValue<IEnumerable<DynamicObstacleInfo>>(this.CollectNearbyDynamicObstacles);
@@ -168,6 +171,7 @@ namespace RC.Engine.Simulator.MotionControl
             this.closestDistanceToTarget.Write(-1);
             this.timeSinceClosestDistanceReached.Write(0);
             this.controlledEntity.Write(controlledEntity);
+            this.targetDistanceThreshold.Write(targetDistanceThreshold);
         }
 
 
@@ -204,7 +208,8 @@ namespace RC.Engine.Simulator.MotionControl
         private bool CheckInactivationCriteria()
         {
             /// TODO: replace this with a more sophisticated inactivation criteria if necessary!
-            return this.ControlledEntity.Area.Contains(this.TargetPosition) || this.timeSinceClosestDistanceReached.Read() > 100;
+            return MapUtils.ComputeDistance(this.ControlledEntity.MotionControl.PositionVector.Read(), this.TargetPosition) < this.targetDistanceThreshold.Read() ||
+                   this.timeSinceClosestDistanceReached.Read() > 100;
         }
 
         #endregion Internal methods
@@ -231,6 +236,11 @@ namespace RC.Engine.Simulator.MotionControl
         /// The entity that this path tracker controls.
         /// </summary>
         private readonly HeapedValue<Entity> controlledEntity;
+
+        /// <summary>
+        /// If the controlled entity is closer to the target position than this threshold, it is considered to arrive.
+        /// </summary>
+        private readonly HeapedValue<RCNumber> targetDistanceThreshold;
 
         #endregion Heaped members
 

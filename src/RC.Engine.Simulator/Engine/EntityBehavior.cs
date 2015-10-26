@@ -15,12 +15,12 @@ namespace RC.Engine.Simulator.Engine
         /// Perform additional update operation on the given entity.
         /// </summary>
         /// <param name="entity">The entity to update.</param>
-        public abstract void UpdateState(Entity entity);
+        public virtual void UpdateState(Entity entity) { }
 
         /// <summary>
         /// Updates the animations of the map object of the given entity.
         /// </summary>
         /// <param name="entity">The entity to update.</param>
-        public abstract void UpdateMapObject(Entity entity);
+        public virtual void UpdateMapObject(Entity entity) { }
     }
 }

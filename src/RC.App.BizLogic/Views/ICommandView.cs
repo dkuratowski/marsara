@@ -43,9 +43,9 @@ namespace RC.App.BizLogic.Views
         bool IsWaitingForTargetPosition { get; }
 
         /// <summary>
-        /// The name of the currently selected building type if the ICommandView.IsWaitingForTargetPosition flag is true and
-        /// the command service is waiting for a target position for a build command; otherwise null.
+        /// The name of the scenario element type to be placed if the ICommandView.IsWaitingForTargetPosition flag is true or
+        /// null if there is no scenario element to be placed currently.
         /// </summary>
-        string SelectedBuildingType { get; }
+        string TypeToBePlaced { get; }
     }
 }

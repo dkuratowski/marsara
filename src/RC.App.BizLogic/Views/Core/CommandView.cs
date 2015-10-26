@@ -59,8 +59,8 @@ namespace RC.App.BizLogic.Views.Core
         /// <see cref="ICommandView.IsWaitingForTargetPosition"/>
         public bool IsWaitingForTargetPosition { get { return this.commandManager.IsWaitingForTargetPosition; } }
 
-        /// <see cref="ICommandView.SelectedBuildingType"/>
-        public string SelectedBuildingType { get { return this.commandManager.SelectedBuildingType; } }
+        /// <see cref="ICommandView.TypeToBePlaced"/>
+        public string TypeToBePlaced { get { return this.commandManager.TypeToBePlaced; } }
 
         #endregion ICommandView methods
 

@@ -94,10 +94,10 @@ namespace RC.App.BizLogic.BusinessComponents
         bool IsWaitingForTargetPosition { get; }
 
         /// <summary>
-        /// The name of the currently selected building type if the ICommandManagerBC.IsWaitingForTargetPosition flag is true and
-        /// the command manager is waiting for a target position for a build command; otherwise null.
+        /// The name of the scenario element type to be placed if the ICommandManagerBC.IsWaitingForTargetPosition flag is true or
+        /// null if there is no scenario element to be placed currently.
         /// </summary>
-        string SelectedBuildingType { get; }
+        string TypeToBePlaced { get; }
 
         /// <summary>
         /// This event is raised when a new command has been created.

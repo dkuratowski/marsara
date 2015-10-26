@@ -12,7 +12,9 @@ namespace RC.Engine.Simulator.Terran.Buildings
         /// Constructs a Terran Command Center instance.
         /// </summary>
         public CommandCenter()
-            : base(COMMANDCENTER_TYPE_NAME, new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000))
+            : base(COMMANDCENTER_TYPE_NAME,
+                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000),
+                   new LiftoffBehavior("Normal", "TakingOff", "Flying", "Landing"))
         {
         }
 
@@ -20,7 +22,11 @@ namespace RC.Engine.Simulator.Terran.Buildings
         public override bool AttachToMap(RCNumVector position)
         {
             bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess) { this.MapObject.StartAnimation("Normal", this.MotionControl.VelocityVector); }
+            if (attachToMapSuccess)
+            {
+                this.MotionControl.Fix();
+                this.MapObject.StartAnimation("Normal", this.MotionControl.VelocityVector);
+            }
             return attachToMapSuccess;
         }
 
@@ -29,7 +35,7 @@ namespace RC.Engine.Simulator.Terran.Buildings
         {
             get
             {
-                return this.MotionControl.Status == MotionControlStatusEnum.OnGround || this.MotionControl.Status == MotionControlStatusEnum.Fixed
+                return this.MotionControl.IsFlying
                     ? "DestructionFlying"
                     : "DestructionNormal";
             }

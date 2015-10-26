@@ -27,9 +27,8 @@ namespace RC.Engine.Simulator.Commands
         {
             if (entitiesToHandle.Count != 1) { return AvailabilityEnum.Unavailable; }
 
-            // TODO: this is only a temporary implementation for testing!
             Entity recipientEntity = entitiesToHandle.First();
-            return recipientEntity.MotionControl.Status == MotionControlStatusEnum.InAir && recipientEntity.ActiveProductionLine == null ? AvailabilityEnum.Enabled : AvailabilityEnum.Unavailable;
+            return recipientEntity.MotionControl.IsFlying && recipientEntity.ActiveProductionLine == null ? AvailabilityEnum.Enabled : AvailabilityEnum.Unavailable;
         }
 
         /// <see cref="CommandExecutionFactoryBase.CreateCommandExecutions"/>
@@ -38,7 +37,7 @@ namespace RC.Engine.Simulator.Commands
             /// Create the command executions.
             foreach (Entity entity in entitiesToHandle)
             {
-                yield return new LandExecution(entity);
+                yield return new LandExecution(entity, (RCIntVector)targetPosition);
             }
         }
 

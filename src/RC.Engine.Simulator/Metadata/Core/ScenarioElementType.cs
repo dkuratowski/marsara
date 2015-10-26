@@ -36,7 +36,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.hpIconPalette = null;
             this.animationPalette = null;
             this.relativeQuadCoordsInSight = null; /// TODO: later the sight range will depend on the upgrades of the players!
-            this.placementConstraints = new List<EntityConstraint>();
+            this.placementConstraints = new List<EntityPlacementConstraint>();
             this.requirements = new List<Requirement>();
             this.standardWeapons = new List<WeaponData>();
         }
@@ -121,34 +121,43 @@ namespace RC.Engine.Simulator.Metadata.Core
 
         #endregion General data properties
 
-        /// <see cref="IScenarioElementType.CheckConstraints"/>
-        public RCSet<RCIntVector> CheckConstraints(Scenario scenario, RCIntVector position)
+        /// <see cref="IScenarioElementType.CheckPlacementConstraints"/>
+        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position)
         {
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             /// Check against the constraints defined by this scenario element type.
             RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
-            foreach (EntityConstraint constraint in this.placementConstraints)
+            foreach (EntityPlacementConstraint constraint in this.placementConstraints)
             {
                 retList.UnionWith(constraint.Check(scenario, position));
             }
 
-            RCIntVector quadSize = scenario.Map.CellToQuadSize(this.Area.Read());
-            for (int quadX = 0; quadX < quadSize.X; quadX++)
+            /// Check against map boundaries.
+            this.CheckMapBorderIntersections(scenario, position, ref retList);
+
+            return retList;
+        }
+
+        /// <see cref="IScenarioElementType.CheckPlacementConstraints"/>
+        public RCSet<RCIntVector> CheckPlacementConstraints(Entity entity, RCIntVector position)
+        {
+            if (entity == null) { throw new ArgumentNullException("entity"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+            if (entity.ElementType != this) { throw new ArgumentException("The type of the given entity is not the same as this type!", "entity"); }
+            if (entity.Scenario == null) { throw new ArgumentException("The given entity is not added to a scenario!", "entity"); }
+
+            /// Check against the constraints defined by this scenario element type.
+            RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
+            foreach (EntityPlacementConstraint constraint in this.placementConstraints)
             {
-                for (int quadY = 0; quadY < quadSize.Y; quadY++)
-                {
-                    RCIntVector relQuadCoords = new RCIntVector(quadX, quadY);
-                    RCIntVector absQuadCoords = position + relQuadCoords;
-                    if (absQuadCoords.X < 0 || absQuadCoords.X >= scenario.Map.Size.X ||
-                        absQuadCoords.Y < 0 || absQuadCoords.Y >= scenario.Map.Size.Y)
-                    {
-                        /// Intersection with the boundaries of the map.
-                        retList.Add(relQuadCoords);
-                    }
-                }
+                retList.UnionWith(constraint.Check(entity, position));
             }
+
+            /// Check against map boundaries.
+            this.CheckMapBorderIntersections(entity.Scenario, position, ref retList);
+
             return retList;
         }
 
@@ -240,7 +249,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// Adds a placement constraint to this element type.
         /// </summary>
         /// <param name="constraints">The placement constraint to add.</param>
-        public void AddPlacementConstraint(EntityConstraint constraint)
+        public void AddPlacementConstraint(EntityPlacementConstraint constraint)
         {
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (constraint == null) { throw new ArgumentNullException("constraint"); }
@@ -466,6 +475,31 @@ namespace RC.Engine.Simulator.Metadata.Core
         protected ScenarioMetadata Metadata { get { return this.metadata; } }
 
         /// <summary>
+        /// Checks whether placing an entity of this type to the given scenario at the given quadratic position remains inside the boundaries of
+        /// the map and collects all the quadratic coordinates relative to the given position that violates this condition.
+        /// </summary>
+        /// <param name="scenario">Reference to the given scenario.</param>
+        /// <param name="position">The position to be checked.</param>
+        /// <param name="violatingQuadCoords">The target list in which to collect the violating quadratic coordinates.</param>
+        private void CheckMapBorderIntersections(Scenario scenario, RCIntVector position, ref RCSet<RCIntVector> violatingQuadCoords)
+        {
+            RCIntVector quadSize = scenario.Map.CellToQuadSize(this.Area.Read());
+            for (int quadX = 0; quadX < quadSize.X; quadX++)
+            {
+                for (int quadY = 0; quadY < quadSize.Y; quadY++)
+                {
+                    RCIntVector relQuadCoords = new RCIntVector(quadX, quadY);
+                    RCIntVector absQuadCoords = position + relQuadCoords;
+                    if (absQuadCoords.X < 0 || absQuadCoords.X >= scenario.Map.Size.X ||
+                        absQuadCoords.Y < 0 || absQuadCoords.Y >= scenario.Map.Size.Y)
+                    {
+                        violatingQuadCoords.Add(relQuadCoords);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// The name of this element type. Must be unique in the metadata.
         /// </summary>
         private readonly string name;
@@ -504,7 +538,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// List of the placement constraints of this element type or null if this element type has no placement constraints.
         /// </summary>
-        private readonly List<EntityConstraint> placementConstraints;
+        private readonly List<EntityPlacementConstraint> placementConstraints;
 
         /// <summary>
         /// The costs data of this element type.

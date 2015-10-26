@@ -9,7 +9,7 @@ namespace RC.Engine.Simulator.Commands
     /// <summary>
     /// Responsible for executing move commands.
     /// </summary>
-    public class MoveExecution : CmdExecutionBase
+    public class MoveExecution : PostponedCmdExecution
     {
         /// <summary>
         /// Creates a MoveExecution instance.
@@ -18,7 +18,7 @@ namespace RC.Engine.Simulator.Commands
         /// <param name="targetPosition">The target position.</param>
         /// <param name="targetEntityID">The ID of the entity to follow or -1 if no such entity is defined.</param>
         public MoveExecution(Entity recipientEntity, RCNumVector targetPosition, int targetEntityID)
-            : base(new RCSet<Entity> { recipientEntity })
+            : base(recipientEntity)
         {
             this.targetPosition = this.ConstructField<RCNumVector>("targetPosition");
             this.targetEntityID = this.ConstructField<int>("targetEntityID");
@@ -33,8 +33,8 @@ namespace RC.Engine.Simulator.Commands
 
         #region Overrides
 
-        /// <see cref="CmdExecutionBase.ContinueImpl"/>
-        protected override bool ContinueImpl()
+        /// <see cref="PostponedCmdExecution.ContinueImpl"/>
+        protected override bool ContinueImpl_i()
         {
             /// Check if we have to do anything in this frame.
             if (this.timeSinceLastCheck.Read() < TIME_BETWEEN_DISTANCE_CHECKS)
@@ -57,14 +57,8 @@ namespace RC.Engine.Simulator.Commands
             return false;
         }
 
-        /// <see cref="CmdExecutionBase.GetContinuation"/>
-        protected override CmdExecutionBase GetContinuation()
-        {
-            return new StopExecution(this.recipientEntity.Read());
-        }
-
-        /// <see cref="CmdExecutionBase.InitializeImpl"/>
-        protected override void InitializeImpl()
+        /// <see cref="PostponedCmdExecution.InitializeImpl_i"/>
+        protected override void InitializeImpl_i()
         {
             this.targetEntity.Write(this.LocateEntity(this.targetEntityID.Read()));
             if (this.targetEntity.Read() == null)
@@ -76,17 +70,25 @@ namespace RC.Engine.Simulator.Commands
             {
                 /// Target entity is defined and could be located -> calculate its distance from the recipient entity.
                 RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().Area, this.targetEntity.Read().Area);
-                //if (distance <= MAX_DISTANCE)
-                //{
-                //    /// Close enough -> not necessary to start approaching.
-                //    this.recipientEntity.Read().MotionControl.StopMoving(); // StopMoving already called in CmdExecutionBase.Initialize
-                //}
-                //else
                 if (distance > MAX_DISTANCE)
                 {
                     /// Too far -> start approaching
                     this.recipientEntity.Read().MotionControl.StartMoving(this.targetEntity.Read().MotionControl.PositionVector.Read());
                 }
+            }
+        }
+
+        /// <see cref="CmdExecutionBase.GetContinuation"/>
+        protected override CmdExecutionBase GetContinuation()
+        {
+            if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.OnGround ||
+                this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.InAir)
+            {
+                return new StopExecution(this.recipientEntity.Read());
+            }
+            else
+            {
+                return null;
             }
         }
 

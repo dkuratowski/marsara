@@ -29,13 +29,35 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="CmdExecutionBase.ContinueImpl"/>
         protected override bool ContinueImpl()
         {
-            // TODO: this is only a temporary implementation for testing!
-            if (!this.recipientEntity.Read().MotionControl.IsFlying)
+            if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.Fixed)
             {
-                this.recipientEntity.Read().MotionControl.Unfix();
-                this.recipientEntity.Read().MotionControl.TakeOff();
+                if (this.recipientEntity.Read().MotionControl.BeginTakeOff())
+                {
+                    /// Sucessfully beginned to takeoff -> continue monitoring the entity until it gets into the air.
+                    return false;
+                }
+                else
+                {
+                    /// Unable to takeoff -> command execution finished.
+                    /// TODO: send a message to the user that the takeoff operation failed.
+                    return true;
+                }
             }
-            return true;
+
+            return this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.InAir;
+        }
+
+        /// <see cref="CmdExecutionBase.GetContinuation"/>
+        protected override CmdExecutionBase GetContinuation()
+        {
+            if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.InAir)
+            {
+                return new StopExecution(this.recipientEntity.Read());
+            }
+            else
+            {
+                return null;
+            }
         }
 
         #endregion Overrides

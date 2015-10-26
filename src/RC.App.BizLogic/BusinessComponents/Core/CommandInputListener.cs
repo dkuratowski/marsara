@@ -144,9 +144,9 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     interface ITargetPositionListener
     {
         /// <summary>
-        /// The name of the selected building type if this listener is waiting for target position for a build command; otherwise null.
+        /// The name of the scenario element type to be placed or null if there is no scenario element to be placed currently.
         /// </summary>
-        string SelectedBuildingType { get; }
+        string TypeToBePlaced { get; }
 
         /// <summary>
         /// Indicates to the listener that a target position has been selected.

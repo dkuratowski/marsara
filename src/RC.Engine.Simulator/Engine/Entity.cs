@@ -70,7 +70,7 @@ namespace RC.Engine.Simulator.Engine
         {
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            bool success = this.MotionControl.SetPosition(position);
+            bool success = this.MotionControl.OnOwnerAttachingToMap(position);
             if (success)
             {
                 this.MotionControl.PositionVector.ValueChanged += this.OnPositionChanged;
@@ -87,7 +87,7 @@ namespace RC.Engine.Simulator.Engine
             {
                 if (this.MotionControl.Status == MotionControlStatusEnum.Fixed) { this.MotionControl.Unfix(); }
                 this.MotionControl.PositionVector.ValueChanged -= this.OnPositionChanged;
-                this.MotionControl.SetPosition(RCNumVector.Undefined);
+                this.MotionControl.OnOwnerDetachedFromMap();
                 this.DestroyMapObject(this.mapObject);
                 this.mapObject = null;
                 if (this.reservationObject != null)
@@ -97,6 +97,19 @@ namespace RC.Engine.Simulator.Engine
                 }
             }
             return currentPosition;
+        }
+
+        /// <summary>
+        /// Checks whether the placement constraints of this entity allows it to be placed at the given quadratic position and
+        /// collects all the violating quadratic coordinates relative to the given position.
+        /// </summary>
+        /// <param name="position">The position to be checked.</param>
+        /// <returns>
+        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this entity.
+        /// </returns>
+        public RCSet<RCIntVector> CheckPlacementConstraints(RCIntVector position)
+        {
+            return this.ElementType.CheckPlacementConstraints(this, position);
         }
 
         /// <summary>
@@ -344,10 +357,10 @@ namespace RC.Engine.Simulator.Engine
             {
                 /// Move the map object of this entity into the appropriate layer if necessary.
                 this.ChangeMapObjectLayer(this.mapObject, this.MotionControl.IsFlying ? MapObjectLayerEnum.AirObjects : MapObjectLayerEnum.GroundObjects);
-            }
 
-            /// Ask the behaviors to update the map object of this entity.
-            foreach (EntityBehavior behavior in this.behaviors) { behavior.UpdateMapObject(this); }
+                /// Ask the behaviors to update the map object of this entity.
+                foreach (EntityBehavior behavior in this.behaviors) { behavior.UpdateMapObject(this); }
+            }
         }
 
         /// <see cref="HeapedObject.DisposeImpl"/>

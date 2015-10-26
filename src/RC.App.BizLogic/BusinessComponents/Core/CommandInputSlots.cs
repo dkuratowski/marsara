@@ -38,9 +38,9 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     class TargetPositionInputSlot
     {
         /// <summary>
-        /// The name of the selected building type if the corresponding listener is waiting for target position for a build command; otherwise null.
+        /// The name of the scenario element type to be placed or null if there is no scenario element to be placed currently.
         /// </summary>
-        public string SelectedBuildingType { get; set; }
+        public string TypeToBePlaced { get; set; }
 
         /// <summary>
         /// Reference to the listener that is waiting for target position.

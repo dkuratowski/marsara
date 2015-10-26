@@ -9,14 +9,14 @@ namespace RC.Engine.Simulator.Commands
     /// <summary>
     /// Responsible for executing stop commands.
     /// </summary>
-    public class StopExecution : CmdExecutionBase
+    public class StopExecution : PostponedCmdExecution
     {
         /// <summary>
         /// Creates a StopExecution instance for the given entity.
         /// </summary>
         /// <param name="recipientEntity">The recipient entity of this command execution.</param>
         public StopExecution(Entity recipientEntity)
-            : base(new RCSet<Entity> { recipientEntity })
+            : base(recipientEntity)
         {
             this.recipientEntity = this.ConstructField<Entity>("recipientEntity");
             this.enemyToAttack = this.ConstructField<Entity>("enemyToAttack");
@@ -28,8 +28,8 @@ namespace RC.Engine.Simulator.Commands
 
         #region Overrides
 
-        /// <see cref="CmdExecutionBase.ContinueImpl"/>
-        protected override bool ContinueImpl()
+        /// <see cref="PostponedCmdExecution.ContinueImpl_i"/>
+        protected override bool ContinueImpl_i()
         {
             /// TODO: check if the recipient entity is hit by an enemy or not!
 
@@ -53,18 +53,19 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="CmdExecutionBase.GetContinuation"/>
         protected override CmdExecutionBase GetContinuation()
         {
-            return new AttackExecution(
-                this.recipientEntity.Read(),
-                this.enemyToAttack.Read().MotionControl.PositionVector.Read(),
-                this.enemyToAttack.Read().ID.Read());
+            if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.OnGround ||
+                this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.InAir)
+            {
+                return new AttackExecution(
+                    this.recipientEntity.Read(),
+                    this.enemyToAttack.Read().MotionControl.PositionVector.Read(),
+                    this.enemyToAttack.Read().ID.Read());
+            }
+            else
+            {
+                return null;
+            }
         }
-
-        ///// <see cref="CmdExecutionBase.InitializeImpl"/>
-        //protected override void InitializeImpl()
-        //{
-        //    this.recipientEntity.Read().Armour.StopAttack(); // StopAttack already called in CmdExecutionBase.Initialize
-        //    this.recipientEntity.Read().MotionControl.StopMoving(); // StopMoving already called in CmdExecutionBase.Initialize
-        //}
 
         /// <see cref="CmdExecutionBase.CommandBeingExecuted"/>
         protected override string GetCommandBeingExecuted() { return "Stop"; }

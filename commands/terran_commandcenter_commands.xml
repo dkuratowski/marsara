@@ -9,5 +9,7 @@
   <productionButton product="SCV" sprite="ScvBtn" panelPosition="0;0" />
   <cancelProductionButton sprite="CancelBtn" panelPosition="2;2" />
   <commandButton command="LiftOff" sprite="LiftOffBtn" panelPosition="2;2" />
-  <commandButton command="Land" sprite="LandBtn" panelPosition="2;2" />
+  <commandButton command="Land" sprite="LandBtn" panelPosition="2;2">
+	<selectTargetPosition sourceOfTypeToBePlaced="CurrentSelection" />
+  </commandButton>
 </commands>
