@@ -28,7 +28,7 @@ namespace RC.App.PresLogic
             : base(scrollEventSource, mapDisplay)
         {
             if (normalMouseEventSource == null) { throw new ArgumentNullException("normalMouseEventSource"); }
-            if (this.CommandView.IsWaitingForTargetPosition) { throw new InvalidOperationException("Normal mouse input is not possible currently!"); }
+            if (this.CommandView.TargetSelectionMode != TargetSelectionModeEnum.NoTargetSelection) { throw new InvalidOperationException("Normal mouse input is not possible currently!"); }
 
             this.multiplayerService = ComponentManager.GetInterface<IMultiplayerService>();
             this.normalMouseEventSource = normalMouseEventSource;
@@ -233,7 +233,7 @@ namespace RC.App.PresLogic
         /// </summary>
         private void OnGameUpdate()
         {
-            if (this.CommandView.IsWaitingForTargetPosition) { this.Inactivate(); }
+            if (this.CommandView.TargetSelectionMode != TargetSelectionModeEnum.NoTargetSelection) { this.Inactivate(); }
         }
 
         /// <summary>

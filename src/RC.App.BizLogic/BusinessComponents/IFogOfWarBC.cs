@@ -111,19 +111,32 @@ namespace RC.App.BizLogic.BusinessComponents
         FOWTypeEnum GetFowState(RCIntVector quadCoords);
 
         /// <summary>
-        /// Checks whether the constraints of the given entity type allows placing an entity of this type to the active scenario at the given
+        /// Checks whether the placement constraints of the given element type allows placing an entity of this type to the active scenario at the given
         /// quadratic position and collects all the violating quadratic coordinates relative to the given position.
         /// </summary>
         /// <param name="elementType">The type to be checked.</param>
         /// <param name="position">The position to be checked.</param>
         /// <returns>
-        /// The list of the quadratic coordinates (relative to the given position) violating the placement constraints of the given entity type.
+        /// The list of the quadratic coordinates (relative to the given position) violating the placement constraints of the given element type.
         /// </returns>
         RCSet<RCIntVector> CheckPlacementConstraints(IScenarioElementType elementType, RCIntVector position);
 
         /// <summary>
-        /// Checks whether the placement constraints of the given entity allows it to be placed at the given quadratic position and
-        /// collects all the violating quadratic coordinates relative to the given position.
+        /// Checks whether the placement constraints of the given building type allows placing a building of this type (optionally together with an addon
+        /// of the given addon type) to the active scenario at the given quadratic position and collects all the violating quadratic coordinates relative
+        /// to the given position.
+        /// </summary>
+        /// <param name="buildingType">The building type to be checked.</param>
+        /// <param name="position">The position to be checked.</param>
+        /// <param name="addonType">The addon type to be checked.</param>
+        /// <returns>
+        /// The list of the quadratic coordinates (relative to the given position) violating the placement constraints of the given building type.
+        /// </returns>
+        RCSet<RCIntVector> CheckPlacementConstraints(IBuildingType buildingType, RCIntVector position, IAddonType addonType);
+
+        /// <summary>
+        /// Checks whether the placement constraints of the given entity allows it to be placed at the given quadratic position and collects all the
+        /// violating quadratic coordinates relative to the given position.
         /// </summary>
         /// <param name="entity">The entity to be checked.</param>
         /// <param name="position">The position to be checked.</param>
@@ -131,6 +144,18 @@ namespace RC.App.BizLogic.BusinessComponents
         /// The list of the quadratic coordinates (relative to the given position) violating the constraints of the given entity.
         /// </returns>
         RCSet<RCIntVector> CheckPlacementConstraints(Entity entity, RCIntVector position);
+
+        /// <summary>
+        /// Checks whether the placement constraints of the given building allows it to be placed (optionally together with an addon of the given addon type)
+        /// at the given quadratic position and collects all the violating quadratic coordinates relative to the given position.
+        /// </summary>
+        /// <param name="building">The building to be checked.</param>
+        /// <param name="position">The position to be checked.</param>
+        /// <param name="addonType">The addon type to be checked.</param>
+        /// <returns>
+        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of the given building.
+        /// </returns>
+        RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType);
         
         /// <summary>
         /// Executes the next Fog Of War update iteration.

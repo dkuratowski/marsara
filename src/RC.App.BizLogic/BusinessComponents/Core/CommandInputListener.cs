@@ -144,9 +144,19 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     interface ITargetPositionListener
     {
         /// <summary>
-        /// The name of the scenario element type to be placed or null if there is no scenario element to be placed currently.
+        /// True if the selected building has to be placed, false otherwise.
         /// </summary>
-        string TypeToBePlaced { get; }
+        bool PlaceSelectedBuilding { get; }
+
+        /// <summary>
+        /// The name of the building type to be placed or null if there is no building type to be placed or if the selected building has to be placed.
+        /// </summary>
+        string BuildingType { get; }
+
+        /// <summary>
+        /// The name of the addon type to be placed together with the appropriate building or null if there is no addon type to be placed.
+        /// </summary>
+        string AddonType { get; }
 
         /// <summary>
         /// Indicates to the listener that a target position has been selected.

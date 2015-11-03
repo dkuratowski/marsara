@@ -19,8 +19,9 @@ namespace RC.Engine.Simulator.Engine
         /// Constructs an Addon instance.
         /// </summary>
         /// <param name="addonTypeName">The name of the type of this addon.</param>
-        protected Addon(string addonTypeName)
-            : base(addonTypeName, false)
+        /// <param name="behaviors">The list of behaviors of this addon.</param>
+        protected Addon(string addonTypeName, params EntityBehavior[] behaviors)
+            : base(addonTypeName, false, behaviors)
         {
             this.addonType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetAddonType(addonTypeName);
 

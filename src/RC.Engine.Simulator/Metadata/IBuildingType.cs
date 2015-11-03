@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
+using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Engine;
 
 namespace RC.Engine.Simulator.Metadata
 {
@@ -66,5 +69,48 @@ namespace RC.Engine.Simulator.Metadata
         /// Gets the upgrade types of this building type.
         /// </summary>
         IEnumerable<IUpgradeType> UpgradeTypes { get; }
+
+        /// <summary>
+        /// Checks whether the constraints of this building type allows placing a building of this type together with an addon of the given addon type
+        /// to the given scenario at the given quadratic position and collects all the violating quadratic coordinates
+        /// relative to the given position.
+        /// </summary>
+        /// <param name="scenario">Reference to the given scenario.</param>
+        /// <param name="position">The position to be checked.</param>
+        /// <param name="addonType">The addon type to be checked.</param>
+        /// <returns>
+        /// The list of the quadratic coordinates (relative to the given position) violating the placement constraints of this building type.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// If this building type is not defined as the main building for the given addon type.
+        /// </exception>
+        RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position, IAddonType addonType);
+
+        /// <summary>
+        /// Checks whether the constraints of this building type allows placing the given building to its scenario together with an addon of the given addon type
+        /// at the given quadratic position and collects all the violating quadratic coordinates relative to the given position.
+        /// </summary>
+        /// <param name="building">Reference to the building to be checked.</param>
+        /// <param name="position">The position to be checked.</param>
+        /// <param name="addonType">The addon type to be checked.</param>
+        /// <returns>
+        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this building type.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// If the type of the given building is not the same as this building type.
+        /// If this building type is not defined as the main building for the given addon type.
+        /// </exception>
+        RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType);
+
+        /// <summary>
+        /// Gets the quadratic position of the given addon type relative to the top-left quadratic tile of this building type.
+        /// </summary>
+        /// <param name="map">The map that is used for the calculations.</param>
+        /// <param name="addonType">The addon type whose relative quadratic position to retrieve.</param>
+        /// <returns>The quadratic position of the given addon type relative to the top-left quadratic tile of this building type.</returns>
+        /// <exception cref="ArgumentException">
+        /// If this building type is not defined as the main building for the given addon type.
+        /// </exception>
+        RCIntVector GetRelativeAddonPosition(IMapAccess map, IAddonType addonType);
     }
 }

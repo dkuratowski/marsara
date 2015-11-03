@@ -8,6 +8,7 @@ using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Simulator.Terran.Buildings;
 using RC.Engine.Simulator.Terran.Units;
+using RC.Engine.Simulator.Terran.Addons;
 
 namespace RC.Engine.Simulator.Terran
 {
@@ -34,12 +35,14 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Patrol, SCV.SCV_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Hold, SCV.SCV_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, SCV.SCV_TYPE_NAME));
+            // TEST:
+            //extendedComponent.RegisterCommandExecutionFactory(new TestCmdExecutionFactory("Build", SCV.SCV_TYPE_NAME));
 
             /// Terran Command Center
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, CommandCenter.COMMANDCENTER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, CommandCenter.COMMANDCENTER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, CommandCenter.COMMANDCENTER_TYPE_NAME));
-            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME, SCV.SCV_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME, SCV.SCV_TYPE_NAME, ComsatStation.COMSATSTATION_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME));

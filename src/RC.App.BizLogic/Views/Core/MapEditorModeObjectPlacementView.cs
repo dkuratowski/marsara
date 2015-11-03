@@ -11,15 +11,15 @@ using RC.Engine.Simulator.PublicInterfaces;
 namespace RC.App.BizLogic.Views.Core
 {
     /// <summary>
-    /// Implementation of object placement views for map objects.
+    /// Implementation of object placement views for map objects in map editor.
     /// </summary>
-    class MapObjectPlacementView : ObjectPlacementView, IMapObjectPlacementView
+    class MapEditorModeObjectPlacementView : ObjectPlacementView, IMapEditorModeObjectPlacementView
     {
         /// <summary>
-        /// Constructs a MapObjectPlacementView instance.
+        /// Constructs a MapEditorModeObjectPlacementView instance.
         /// </summary>
         /// <param name="objectTypeName">The name of the type of the map object being placed.</param>
-        public MapObjectPlacementView(string objectTypeName)
+        public MapEditorModeObjectPlacementView(string objectTypeName)
         {
             if (objectTypeName == null) { throw new ArgumentNullException("objectTypeName"); }
 
@@ -41,34 +41,35 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <see cref="ObjectPlacementView.CheckObjectConstraints"/>
-        protected override RCSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords)
+        protected override RCSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftQuadCoords)
         {
-            return this.fogOfWarBC.CheckPlacementConstraints(this.objectType, topLeftCoords);
+            return this.fogOfWarBC.CheckPlacementConstraints(this.objectType, topLeftQuadCoords);
         }
 
-        /// <see cref="ObjectPlacementView.GetObjectQuadraticSize"/>
-        protected override RCIntVector GetObjectQuadraticSize()
+        /// <see cref="ObjectPlacementView.GetObjectRelativeQuadRectangles"/>
+        protected override RCSet<Tuple<RCIntRectangle, SpriteRenderInfo[]>> GetObjectRelativeQuadRectangles()
         {
-            return this.Scenario.Map.CellToQuadSize(this.objectType.Area.Read());
-        }
-
-        /// <see cref="ObjectPlacementView.GetObjectSprites"/>
-        protected override SpriteRenderInfo[] GetObjectSprites()
-        {
-            if (this.previewAnimation == null) { return new SpriteRenderInfo[0]; }
-
-            SpriteRenderInfo[] retList = new SpriteRenderInfo[this.previewAnimation.CurrentFrame.Length];
-            for (int i = 0; i < retList.Length; i++)
+            SpriteRenderInfo[] objectSprites = new SpriteRenderInfo[0];
+            if (this.previewAnimation != null)
             {
-                retList[i] = new SpriteRenderInfo()
+                objectSprites = new SpriteRenderInfo[this.previewAnimation.CurrentFrame.Length];
+                for (int i = 0; i < objectSprites.Length; i++)
                 {
-                    SpriteGroup = SpriteGroupEnum.MapObjectSpriteGroup,
-                    Index = this.objectType.SpritePalette.Index,
-                    DisplayCoords = this.objectType.SpritePalette.GetOffset(this.previewAnimation.CurrentFrame[i]),
-                    Section = this.objectType.SpritePalette.GetSection(this.previewAnimation.CurrentFrame[i])
-                };
+                    objectSprites[i] = new SpriteRenderInfo()
+                    {
+                        SpriteGroup = SpriteGroupEnum.MapObjectSpriteGroup,
+                        Index = this.objectType.SpritePalette.Index,
+                        DisplayCoords = this.objectType.SpritePalette.GetOffset(this.previewAnimation.CurrentFrame[i]),
+                        Section = this.objectType.SpritePalette.GetSection(this.previewAnimation.CurrentFrame[i])
+                    };
+                }
             }
-            return retList;
+
+            RCIntVector objectQuadSize = this.Scenario.Map.CellToQuadSize(this.objectType.Area.Read());
+            return new RCSet<Tuple<RCIntRectangle, SpriteRenderInfo[]>>
+            {
+                Tuple.Create(new RCIntRectangle(-1 * objectQuadSize / 2, objectQuadSize), objectSprites)
+            };
         }
 
         #endregion ObjectPlacementView overrides
@@ -76,12 +77,12 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Reference to the type of the map object being placed.
         /// </summary>
-        private IScenarioElementType objectType;
+        private readonly IScenarioElementType objectType;
 
         /// <summary>
         /// Reference to the preview animation of the map object being placed.
         /// </summary>
-        private AnimationPlayer previewAnimation;
+        private readonly AnimationPlayer previewAnimation;
 
         /// <summary>
         /// Reference to the Fog Of War business component.

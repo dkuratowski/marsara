@@ -272,12 +272,60 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="IFogOfWarBC.CheckPlacementConstraints"/>
+        public RCSet<RCIntVector> CheckPlacementConstraints(IBuildingType buildingType, RCIntVector position, IAddonType addonType)
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+
+            RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(buildingType.Area.Read());
+            RCSet<RCIntVector> violatingQuadCoords = buildingType.CheckPlacementConstraints(this.ActiveScenario, position, addonType);
+            for (int x = 0; x < objectQuadraticSize.X; x++)
+            {
+                for (int y = 0; y < objectQuadraticSize.Y; y++)
+                {
+                    RCIntVector relativeQuadCoords = new RCIntVector(x, y);
+                    RCIntVector absQuadCoords = position + relativeQuadCoords;
+                    if (absQuadCoords.X < 0 || absQuadCoords.X >= this.ActiveScenario.Map.Size.X ||
+                        absQuadCoords.Y < 0 || absQuadCoords.Y >= this.ActiveScenario.Map.Size.Y ||
+                        this.GetFullFowTileFlags(absQuadCoords).HasFlag(FOWTileFlagsEnum.Current))
+                    {
+                        violatingQuadCoords.Add(relativeQuadCoords);
+                    }
+                }
+            }
+            return violatingQuadCoords;
+        }
+
+        /// <see cref="IFogOfWarBC.CheckPlacementConstraints"/>
         public RCSet<RCIntVector> CheckPlacementConstraints(Entity entity, RCIntVector position)
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(entity.ElementType.Area.Read());
             RCSet<RCIntVector> violatingQuadCoords = entity.CheckPlacementConstraints(position);
+            for (int x = 0; x < objectQuadraticSize.X; x++)
+            {
+                for (int y = 0; y < objectQuadraticSize.Y; y++)
+                {
+                    RCIntVector relativeQuadCoords = new RCIntVector(x, y);
+                    RCIntVector absQuadCoords = position + relativeQuadCoords;
+                    if (absQuadCoords.X < 0 || absQuadCoords.X >= this.ActiveScenario.Map.Size.X ||
+                        absQuadCoords.Y < 0 || absQuadCoords.Y >= this.ActiveScenario.Map.Size.Y ||
+                        this.GetFullFowTileFlags(absQuadCoords).HasFlag(FOWTileFlagsEnum.Current))
+                    {
+                        violatingQuadCoords.Add(relativeQuadCoords);
+                    }
+                }
+            }
+            return violatingQuadCoords;
+        }
+
+        /// <see cref="IFogOfWarBC.CheckPlacementConstraints"/>
+        public RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType)
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+
+            RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(building.ElementType.Area.Read());
+            RCSet<RCIntVector> violatingQuadCoords = building.CheckPlacementConstraints(position, addonType);
             for (int x = 0; x < objectQuadraticSize.X; x++)
             {
                 for (int y = 0; y < objectQuadraticSize.Y; y++)

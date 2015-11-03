@@ -28,31 +28,30 @@ namespace RC.App.BizLogic.Views.Core
         #region ObjectPlacementView overrides
 
         /// <see cref="ObjectPlacementView.CheckObjectConstraints"/>
-        protected override RCSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords)
+        protected override RCSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftQuadCoords)
         {
-            RCSet<RCIntVector> violatingQuadCoords = this.terrainObjectType.CheckConstraints(this.Map, topLeftCoords);
-            violatingQuadCoords.UnionWith(this.terrainObjectType.CheckTerrainObjectIntersections(this.Map, topLeftCoords));
+            RCSet<RCIntVector> violatingQuadCoords = this.terrainObjectType.CheckConstraints(this.Map, topLeftQuadCoords);
+            violatingQuadCoords.UnionWith(this.terrainObjectType.CheckTerrainObjectIntersections(this.Map, topLeftQuadCoords));
             return violatingQuadCoords;
         }
 
-        /// <see cref="ObjectPlacementView.GetObjectQuadraticSize"/>
-        protected override RCIntVector GetObjectQuadraticSize()
+        /// <see cref="ObjectPlacementView.GetObjectRelativeQuadRectangles"/>
+        protected override RCSet<Tuple<RCIntRectangle, SpriteRenderInfo[]>> GetObjectRelativeQuadRectangles()
         {
-            return this.terrainObjectType.QuadraticSize;
-        }
-
-        /// <see cref="ObjectPlacementView.GetObjectSprites"/>
-        protected override SpriteRenderInfo[] GetObjectSprites()
-        {
-            return new SpriteRenderInfo[]
+            return new RCSet<Tuple<RCIntRectangle, SpriteRenderInfo[]>>
             {
-                new SpriteRenderInfo()
-                {
-                    SpriteGroup = SpriteGroupEnum.TerrainObjectSpriteGroup,
-                    Index = this.terrainObjectType.Index,
-                    DisplayCoords = new RCIntVector(0, 0),
-                    Section = RCIntRectangle.Undefined
-                }
+                Tuple.Create(
+                    new RCIntRectangle(-1*this.terrainObjectType.QuadraticSize/2, this.terrainObjectType.QuadraticSize),
+                    new SpriteRenderInfo[]
+                    {
+                        new SpriteRenderInfo()
+                        {
+                            SpriteGroup = SpriteGroupEnum.TerrainObjectSpriteGroup,
+                            Index = this.terrainObjectType.Index,
+                            DisplayCoords = new RCIntVector(0, 0),
+                            Section = RCIntRectangle.Undefined
+                        }
+                    })
             };
         }
 
@@ -61,6 +60,6 @@ namespace RC.App.BizLogic.Views.Core
         /// <summary>
         /// Reference to the type of the terrain object being placed.
         /// </summary>
-        private ITerrainObjectType terrainObjectType;
+        private readonly ITerrainObjectType terrainObjectType;
     }
 }

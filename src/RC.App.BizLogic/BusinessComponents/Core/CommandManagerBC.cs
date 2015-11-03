@@ -217,13 +217,33 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <see cref="ICommandManagerBC.IsWaitingForTargetPosition"/>
         public bool IsWaitingForTargetPosition { get { return this.targetPositionInputSlot != null; } }
 
-        /// <see cref="ICommandManagerBC.TypeToBePlaced"/>
-        public string TypeToBePlaced
+        /// <see cref="ICommandManagerBC.PlaceSelectedBuilding"/>
+        public bool PlaceSelectedBuilding
         {
             get
             {
                 if (this.targetPositionInputSlot == null) { throw new InvalidOperationException("Command manager is not waiting for target position input!"); }
-                return this.targetPositionInputSlot.TypeToBePlaced;
+                return this.targetPositionInputSlot.PlaceSelectedBuilding;
+            }
+        }
+
+        /// <see cref="ICommandManagerBC.BuildingType"/>
+        public string BuildingType
+        {
+            get
+            {
+                if (this.targetPositionInputSlot == null) { throw new InvalidOperationException("Command manager is not waiting for target position input!"); }
+                return this.targetPositionInputSlot.BuildingType;
+            }
+        }
+
+        /// <see cref="ICommandManagerBC.AddonType"/>
+        public string AddonType
+        {
+            get
+            {
+                if (this.targetPositionInputSlot == null) { throw new InvalidOperationException("Command manager is not waiting for target position input!"); }
+                return this.targetPositionInputSlot.AddonType;
             }
         }
 
@@ -372,7 +392,9 @@ namespace RC.App.BizLogic.BusinessComponents.Core
 
             this.targetPositionInputSlot = new TargetPositionInputSlot
             {
-                TypeToBePlaced = targetPositionListener.TypeToBePlaced,
+                PlaceSelectedBuilding = targetPositionListener.PlaceSelectedBuilding,
+                BuildingType = targetPositionListener.BuildingType,
+                AddonType = targetPositionListener.AddonType,
                 TargetPositionListener = targetPositionListener,
                 Listener = listener
             };

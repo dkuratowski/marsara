@@ -146,24 +146,24 @@ namespace RC.Engine.Simulator.Metadata
         IEnumerable<RCIntVector> RelativeQuadCoordsInSight { get; }
 
         /// <summary>
-        /// Checks whether the constraints of this entity type allows placing an entity of this type to the given scenario at the given
-        /// quadratic position and collects all the violating quadratic coordinates relative to the given position.
+        /// Checks whether the constraints of this element type allows placing an entity of this type to the given scenario at the given quadratic
+        /// position and collects all the violating quadratic coordinates relative to the given position.
         /// </summary>
         /// <param name="scenario">Reference to the given scenario.</param>
         /// <param name="position">The position to be checked.</param>
         /// <returns>
-        /// The list of the quadratic coordinates (relative to the given position) violating the placement constraints of this entity type.
+        /// The list of the quadratic coordinates (relative to the given position) violating the placement constraints of this element type.
         /// </returns>
         RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position);
 
         /// <summary>
-        /// Checks whether the constraints of this entity type allows placing the given entity to its scenario at the given
-        /// quadratic position and collects all the violating quadratic coordinates relative to the given position.
+        /// Checks whether the constraints of this element type allows placing the given entity to its scenario at the given quadratic position and
+        /// collects all the violating quadratic coordinates relative to the given position.
         /// </summary>
         /// <param name="entity">Reference to the entity to be checked.</param>
         /// <param name="position">The position to be checked.</param>
         /// <returns>
-        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this entity type.
+        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this element type.
         /// </returns>
         /// <exception cref="ArgumentException">
         /// If the type of the given entity is not the same as this type or if the entity is not added to a scenario.

@@ -30,14 +30,14 @@ namespace RC.App.PresLogic
         {
             if (normalMouseEventSource == null) { throw new ArgumentNullException("normalMouseEventSource"); }
             if (sprites == null) { throw new ArgumentNullException("sprites"); }
-            if (!this.CommandView.IsWaitingForTargetPosition) { throw new InvalidOperationException("Target selection is not possible currently!"); }
+            if (this.CommandView.TargetSelectionMode == TargetSelectionModeEnum.NoTargetSelection) { throw new InvalidOperationException("Target selection is not possible currently!"); }
 
+            this.targetSelectionMode = this.CommandView.TargetSelectionMode;
             this.multiplayerService = ComponentManager.GetInterface<IMultiplayerService>();
-            this.selectedBuildingType = this.CommandView.TypeToBePlaced;
             this.normalMouseEventSource = normalMouseEventSource;
-            this.objectPlacementInfo = this.selectedBuildingType != null
+            this.objectPlacementInfo = this.targetSelectionMode == TargetSelectionModeEnum.BuildingLocationSelection
                 ? new ObjectPlacementInfo(
-                    ComponentManager.GetInterface<IViewService>().CreateView<IMapObjectPlacementView, string>(this.selectedBuildingType),
+                    ComponentManager.GetInterface<IViewService>().CreateView<INormalModeMapObjectPlacementView>(),
                     sprites)
                 : null;
 
@@ -50,7 +50,7 @@ namespace RC.App.PresLogic
         /// <see cref="MouseHandlerBase.DisplayCrosshairs"/>
         public override bool DisplayCrosshairs
         {
-            get { return this.CommandView.IsWaitingForTargetPosition && this.CommandView.TypeToBePlaced == null; }
+            get { return this.CommandView.TargetSelectionMode == TargetSelectionModeEnum.TargetPositionSelection; }
         }
 
         /// <see cref="MouseHandlerBase.ObjectPlacementInfo"/>
@@ -100,28 +100,27 @@ namespace RC.App.PresLogic
         /// <returns>True if this mouse handler is still valid; otherwise false.</returns>
         private bool IsStillValid()
         {
-            return this.CommandView.IsWaitingForTargetPosition && this.CommandView.TypeToBePlaced == this.selectedBuildingType;
+            return this.CommandView.TargetSelectionMode == this.targetSelectionMode;
         }
 
         /// <summary>
         /// The event source for additional mouse events.
         /// </summary>
-        private UISensitiveObject normalMouseEventSource;
+        private readonly UISensitiveObject normalMouseEventSource;
 
         /// <summary>
         /// Reference to the informations about the currently active object placement operation or null if no object placement operation is active.
         /// </summary>
-        private ObjectPlacementInfo objectPlacementInfo;
-
-        /// <summary>
-        /// The name of the selected building type that shall be displayed as an object placement box or null if no object placement box shall be
-        /// selected in the current state.
-        /// </summary>
-        private string selectedBuildingType;
+        private readonly ObjectPlacementInfo objectPlacementInfo;
 
         /// <summary>
         /// Reference to the multiplayer service.
         /// </summary>
-        private IMultiplayerService multiplayerService;
+        private readonly IMultiplayerService multiplayerService;
+
+        /// <summary>
+        /// The target selection mode that was active when this mouse handler was created.
+        /// </summary>
+        private readonly TargetSelectionModeEnum targetSelectionMode;
     }
 }

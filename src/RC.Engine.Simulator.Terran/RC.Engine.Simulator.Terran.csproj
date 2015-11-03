@@ -76,6 +76,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Addons\ComsatStation.cs" />
     <Compile Include="Buildings\CommandCenter.cs" />
     <Compile Include="CommandExecutorPlugin.cs" />
     <Compile Include="EntityFactoryPlugin.cs" />

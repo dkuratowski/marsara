@@ -222,13 +222,13 @@ namespace RC.App.PresLogic.Pages
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
                 this.mouseHandler.StartPlacingObject(
-                    this.viewService.CreateView<IMapObjectPlacementView, string>(STARTLOCATION_NAME),
+                    this.viewService.CreateView<IMapEditorModeObjectPlacementView, string>(STARTLOCATION_NAME),
                     this.mapObjectDisplayEx.GetMapObjectSprites((PlayerEnum)(this.mapEditorPanel.SelectedIndex)));
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
                 this.mouseHandler.StartPlacingObject(
-                    this.viewService.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
+                    this.viewService.CreateView<IMapEditorModeObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                     this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral));
             }
             else
@@ -251,13 +251,13 @@ namespace RC.App.PresLogic.Pages
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceStartLocation)
             {
                 this.mouseHandler.StartPlacingObject(
-                    this.viewService.CreateView<IMapObjectPlacementView, string>(STARTLOCATION_NAME),
+                    this.viewService.CreateView<IMapEditorModeObjectPlacementView, string>(STARTLOCATION_NAME),
                     this.mapObjectDisplayEx.GetMapObjectSprites((PlayerEnum)(this.mapEditorPanel.SelectedIndex)));
             }
             else if (this.mapEditorPanel.SelectedMode == RCMapEditorPanel.EditMode.PlaceResource)
             {
                 this.mouseHandler.StartPlacingObject(
-                    this.viewService.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
+                    this.viewService.CreateView<IMapEditorModeObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                     this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral));
             }
         }
@@ -376,7 +376,7 @@ namespace RC.App.PresLogic.Pages
                     if (!this.mouseHandler.IsPlacingObject)
                     {
                         this.mouseHandler.StartPlacingObject(
-                            this.viewService.CreateView<IMapObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
+                            this.viewService.CreateView<IMapEditorModeObjectPlacementView, string>(this.mapEditorPanel.SelectedItem),
                             this.mapObjectDisplayEx.GetMapObjectSprites(PlayerEnum.Neutral));
                     }
                 }

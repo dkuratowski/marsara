@@ -38,9 +38,19 @@ namespace RC.App.BizLogic.BusinessComponents.Core
     class TargetPositionInputSlot
     {
         /// <summary>
-        /// The name of the scenario element type to be placed or null if there is no scenario element to be placed currently.
+        /// True if the selected building has to be placed, false otherwise.
         /// </summary>
-        public string TypeToBePlaced { get; set; }
+        public bool PlaceSelectedBuilding { get; set; }
+
+        /// <summary>
+        /// The name of the building type to be placed or null if there is no building type to be placed or if the selected building has to be placed.
+        /// </summary>
+        public string BuildingType { get; set; }
+
+        /// <summary>
+        /// The name of the addon type to be placed together with the appropriate building or null if there is no addon type to be placed.
+        /// </summary>
+        public string AddonType { get; set; }
 
         /// <summary>
         /// Reference to the listener that is waiting for target position.

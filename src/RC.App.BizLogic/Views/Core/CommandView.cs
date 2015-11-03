@@ -56,11 +56,23 @@ namespace RC.App.BizLogic.Views.Core
             return this.commandManager.GetCmdButtonState(panelPosition);
         }
 
-        /// <see cref="ICommandView.IsWaitingForTargetPosition"/>
-        public bool IsWaitingForTargetPosition { get { return this.commandManager.IsWaitingForTargetPosition; } }
-
-        /// <see cref="ICommandView.TypeToBePlaced"/>
-        public string TypeToBePlaced { get { return this.commandManager.TypeToBePlaced; } }
+        /// <see cref="ICommandView.TargetSelectionMode"/>
+        public TargetSelectionModeEnum TargetSelectionMode
+        {
+            get
+            {
+                if (this.commandManager.IsWaitingForTargetPosition)
+                {
+                    return this.commandManager.PlaceSelectedBuilding || this.commandManager.BuildingType != null
+                        ? TargetSelectionModeEnum.BuildingLocationSelection
+                        : TargetSelectionModeEnum.TargetPositionSelection;
+                }
+                else
+                {
+                    return TargetSelectionModeEnum.NoTargetSelection;
+                }
+            }
+        }
 
         #endregion ICommandView methods
 

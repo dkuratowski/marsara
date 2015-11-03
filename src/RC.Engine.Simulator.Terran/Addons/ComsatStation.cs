@@ -1,20 +1,24 @@
-﻿using RC.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using RC.Common;
 using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Terran.Buildings
+namespace RC.Engine.Simulator.Terran.Addons
 {
     /// <summary>
-    /// Represents a Terran Command Center.
+    /// Represents a Terran Comsat Station.
     /// </summary>
-    class CommandCenter : Building
+    class ComsatStation : Addon
     {
         /// <summary>
-        /// Constructs a Terran Command Center instance.
+        /// Constructs a Terran Comsat Station.
         /// </summary>
-        public CommandCenter()
-            : base(COMMANDCENTER_TYPE_NAME,
-                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000),
-                   new LiftoffBehavior("Normal", "TakingOff", "Flying", "Landing"))
+        public ComsatStation()
+            : base(COMSATSTATION_TYPE_NAME,
+                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000))
         {
         }
 
@@ -25,7 +29,7 @@ namespace RC.Engine.Simulator.Terran.Buildings
             if (attachToMapSuccess)
             {
                 this.MotionControl.Fix();
-                this.MapObject.StartAnimation("Normal");
+                this.MapObject.StartAnimation("Online");
             }
             return attachToMapSuccess;
         }
@@ -35,15 +39,13 @@ namespace RC.Engine.Simulator.Terran.Buildings
         {
             get
             {
-                return this.MotionControl.IsFlying
-                    ? "DestructionFlying"
-                    : "DestructionNormal";
+                return "DestructionOnline";
             }
         }
 
         /// <summary>
         /// The name of the Command Center element type.
         /// </summary>
-        public const string COMMANDCENTER_TYPE_NAME = "CommandCenter";
+        public const string COMSATSTATION_TYPE_NAME = "ComsatStation";
     }
 }

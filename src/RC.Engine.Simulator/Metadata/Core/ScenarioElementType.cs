@@ -148,17 +148,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             if (entity.ElementType != this) { throw new ArgumentException("The type of the given entity is not the same as this type!", "entity"); }
             if (entity.Scenario == null) { throw new ArgumentException("The given entity is not added to a scenario!", "entity"); }
 
-            /// Check against the constraints defined by this scenario element type.
-            RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
-            foreach (EntityPlacementConstraint constraint in this.placementConstraints)
-            {
-                retList.UnionWith(constraint.Check(entity, position));
-            }
-
-            /// Check against map boundaries.
-            this.CheckMapBorderIntersections(entity.Scenario, position, ref retList);
-
-            return retList;
+            return this.CheckPlacementConstraintsImpl(entity, position);
         }
 
         #endregion IScenarioElementType members
@@ -473,6 +463,24 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// Gets a reference to the metadata object that this type belongs to.
         /// </summary>
         protected ScenarioMetadata Metadata { get { return this.metadata; } }
+
+        /// <summary>
+        /// The internal implementation of the CheckPlacementConstraints method.
+        /// </summary>
+        protected RCSet<RCIntVector> CheckPlacementConstraintsImpl(Entity entityNotToConsider, RCIntVector position)
+        {
+            /// Check against the constraints defined by this scenario element type.
+            RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
+            foreach (EntityPlacementConstraint constraint in this.placementConstraints)
+            {
+                retList.UnionWith(constraint.Check(entityNotToConsider, position));
+            }
+
+            /// Check against map boundaries.
+            this.CheckMapBorderIntersections(entityNotToConsider.Scenario, position, ref retList);
+
+            return retList;
+        }
 
         /// <summary>
         /// Checks whether placing an entity of this type to the given scenario at the given quadratic position remains inside the boundaries of

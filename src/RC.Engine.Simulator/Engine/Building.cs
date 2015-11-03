@@ -18,10 +18,29 @@ namespace RC.Engine.Simulator.Engine
     public abstract class Building : Entity
     {
         /// <summary>
+        /// Gets the type of this building.
+        /// </summary>
+        public IBuildingType BuildingType { get { return this.buildingType; } }
+
+        /// <summary>
+        /// Checks whether the placement constraints of this building allows it to be placed together with an addon of the given addon type
+        /// at the given quadratic position and collects all the violating quadratic coordinates relative to the given position.
+        /// </summary>
+        /// <param name="position">The position to be checked.</param>
+        /// <param name="addonType">The addon type to be checked.</param>
+        /// <returns>
+        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this building.
+        /// </returns>
+        public RCSet<RCIntVector> CheckPlacementConstraints(RCIntVector position, IAddonType addonType)
+        {
+            return this.buildingType.CheckPlacementConstraints(this, position, addonType);
+        }
+
+        /// <summary>
         /// Constructs a Building instance.
         /// </summary>
         /// <param name="buildingTypeName">The name of the type of this building.</param>
-        /// <param name="behaviors">The list of behaviors of this entity.</param>
+        /// <param name="behaviors">The list of behaviors of this building.</param>
         protected Building(string buildingTypeName, params EntityBehavior[] behaviors)
             : base(buildingTypeName, false, behaviors)
         {

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Engine.Simulator.Terran.Addons;
 using RC.Engine.Simulator.Terran.Buildings;
 using RC.Engine.Simulator.Terran.Units;
 
@@ -54,6 +56,13 @@ namespace RC.Engine.Simulator.Terran
             scenario.AddElementToScenario(commandCenter);
             player.AddBuilding(commandCenter);
             commandCenter.AttachToMap(scenario.Map.GetQuadTile(player.QuadraticStartPosition.Location));
+
+            /// TEST: Add a Terran Comsat Station
+            ComsatStation comsatStation = new ComsatStation();
+            scenario.AddElementToScenario(comsatStation);
+            player.AddAddon(comsatStation);
+            comsatStation.AttachToMap(scenario.Map.GetQuadTile(player.QuadraticStartPosition.Location + new RCIntVector(4, 1)));
+            /// TEST END
 
             /// Find place for the given number of SCVs using an EntityNeighbourhoodIterator.
             EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(commandCenter);

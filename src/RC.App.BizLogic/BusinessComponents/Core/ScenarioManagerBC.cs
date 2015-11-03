@@ -195,6 +195,29 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
+        /// Creates a view of type INormalModeObjectPlacementView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private INormalModeMapObjectPlacementView CreateNormalModeObjectPlacementView()
+        {
+            if (this.activeScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
+
+            return new NormalModeObjectPlacementView();
+        }
+
+        /// <summary>
+        /// Creates a view of type IMapEditorModeObjectPlacementView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IMapEditorModeObjectPlacementView CreateMapEditorModeObjectPlacementView(string buildingTypeName)
+        {
+            if (this.activeScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
+            if (buildingTypeName == null) { throw new ArgumentNullException("buildingTypeName"); }
+
+            return new MapEditorModeObjectPlacementView(buildingTypeName);
+        }
+
+        /// <summary>
         /// Creates a view of type ITerrainObjectPlacementView.
         /// </summary>
         /// <returns>The created view.</returns>
@@ -204,18 +227,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (terrainObjectName == null) { throw new ArgumentNullException("terrainObjectName"); }
 
             return new TerrainObjectPlacementView(terrainObjectName);
-        }
-
-        /// <summary>
-        /// Creates a view of type IMapObjectPlacementView.
-        /// </summary>
-        /// <returns>The created view.</returns>
-        private IMapObjectPlacementView CreateMapObjectPlacementView(string mapObjectTypeName)
-        {
-            if (this.activeScenario == null) { throw new InvalidOperationException("There is no opened map!"); }
-            if (mapObjectTypeName == null) { throw new ArgumentNullException("mapObjectTypeName"); }
-
-            return new MapObjectPlacementView(mapObjectTypeName);
         }
 
         /// <summary>
@@ -279,8 +290,9 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateSelectionDetailsView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectDetailsView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateProductionLineView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreateNormalModeObjectPlacementView);
+            this.viewFactoryRegistry.RegisterViewFactory<IMapEditorModeObjectPlacementView, string>(this.CreateMapEditorModeObjectPlacementView);
             this.viewFactoryRegistry.RegisterViewFactory<ITerrainObjectPlacementView, string>(this.CreateTerrainObjectPlacementView);
-            this.viewFactoryRegistry.RegisterViewFactory<IMapObjectPlacementView, string>(this.CreateMapObjectPlacementView);
         }
 
         /// <summary>
@@ -299,8 +311,9 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.UnregisterViewFactory<ISelectionDetailsView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectDetailsView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IProductionLineView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<INormalModeMapObjectPlacementView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IMapEditorModeObjectPlacementView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ITerrainObjectPlacementView>();
-            this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectPlacementView>();
         }
 
         #endregion View factory methods

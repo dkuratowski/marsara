@@ -15,54 +15,81 @@ namespace RC.App.BizLogic.Views.Core
     /// </summary>
     abstract class ObjectPlacementView : MapViewBase
     {
-        /// <summary>
-        /// Constructs an ObjectPlacementView instance.
-        /// </summary>
-        public ObjectPlacementView()
-        {
-        }
-
         #region IObjectPlacementView members
 
         /// <see cref="IObjectPlacementView.GetObjectPlacementBox"/>
         public ObjectPlacementBox GetObjectPlacementBox(RCIntVector position)
         {
+            /// Calculate the top-left quadratic coordinates based on the retrieved object rectangles relative to the quadratic tile at the incoming position.
+            RCSet<Tuple<RCIntRectangle, SpriteRenderInfo[]>> objRectsRelativeToQuadTileAtPos = this.GetObjectRelativeQuadRectangles();
+            if (objRectsRelativeToQuadTileAtPos.Count == 0)
+            {
+                return new ObjectPlacementBox
+                {
+                    Sprites = new List<SpriteRenderInfo>(),
+                    IllegalParts = new List<RCIntRectangle>(),
+                    LegalParts = new List<RCIntRectangle>()
+                };
+            }
             RCIntVector navCellCoords = this.MapWindowBC.AttachedWindow.WindowToMapCoords(position).Round();
             IQuadTile quadTileAtPos = this.Map.GetCell(navCellCoords).ParentQuadTile;
-            RCIntVector objectQuadraticSize = this.GetObjectQuadraticSize();
-            RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objectQuadraticSize / 2;
-
-            SpriteRenderInfo[] spritesToDisplay = this.GetObjectSprites();
-            RCIntVector topLeftDisplayCoords =
-                this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(topLeftQuadCoords, new RCIntVector(1, 1))).Location;
-            for (int i = 0; i < spritesToDisplay.Length; i++)
+            RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords;
+            foreach (Tuple<RCIntRectangle, SpriteRenderInfo[]> relativeRect in objRectsRelativeToQuadTileAtPos)
             {
-                spritesToDisplay[i].DisplayCoords += topLeftDisplayCoords;
+                RCIntVector rectTopLeftQuadCoords = topLeftQuadCoords + relativeRect.Item1.Location;
+                if (rectTopLeftQuadCoords.X < topLeftQuadCoords.X && rectTopLeftQuadCoords.Y < topLeftQuadCoords.Y ||
+                    rectTopLeftQuadCoords.X < topLeftQuadCoords.X && rectTopLeftQuadCoords.Y == topLeftQuadCoords.Y ||
+                    rectTopLeftQuadCoords.X == topLeftQuadCoords.X && rectTopLeftQuadCoords.Y < topLeftQuadCoords.Y)
+                {
+                    topLeftQuadCoords = rectTopLeftQuadCoords;
+                }
             }
 
-            ObjectPlacementBox placementBox = new ObjectPlacementBox()
+            /// Calculate the object rectangles relative to the calculated top-left quadratic coordinates.
+            RCSet<Tuple<RCIntRectangle, SpriteRenderInfo[]>> objRectsRelativeToTopLeftQuadTile = new RCSet<Tuple<RCIntRectangle, SpriteRenderInfo[]>>();
+            foreach (Tuple<RCIntRectangle, SpriteRenderInfo[]> relativeRect in objRectsRelativeToQuadTileAtPos)
             {
-                Sprites = new List<SpriteRenderInfo>(spritesToDisplay),
+                objRectsRelativeToTopLeftQuadTile.Add(Tuple.Create(
+                    new RCIntRectangle(
+                        relativeRect.Item1.Location + quadTileAtPos.MapCoords - topLeftQuadCoords,
+                        relativeRect.Item1.Size),
+                    relativeRect.Item2));
+            }
+
+            /// Get the sprites to be displayed, translate their DisplayCoordinates accordingly from the top-left quadratic tile,
+            /// and collect the violating quadratic coordinates.
+            ObjectPlacementBox placementBox = new ObjectPlacementBox
+            {
+                Sprites = new List<SpriteRenderInfo>(),
                 IllegalParts = new List<RCIntRectangle>(),
                 LegalParts = new List<RCIntRectangle>()
             };
-
             RCSet<RCIntVector> violatingQuadCoords = this.CheckObjectConstraints(topLeftQuadCoords);
-            for (int x = 0; x < objectQuadraticSize.X; x++)
+            foreach (Tuple<RCIntRectangle, SpriteRenderInfo[]> relativeRect in objRectsRelativeToTopLeftQuadTile)
             {
-                for (int y = 0; y < objectQuadraticSize.Y; y++)
+                RCIntVector topLeftDisplayCoords =
+                    this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(topLeftQuadCoords + relativeRect.Item1.Location, new RCIntVector(1, 1))).Location;
+                for (int i = 0; i < relativeRect.Item2.Length; i++)
                 {
-                    RCIntVector relativeQuadCoords = new RCIntVector(x, y);
-                    RCIntVector absQuadCoords = topLeftQuadCoords + relativeQuadCoords;
-                    RCIntRectangle partRect =
-                        this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(absQuadCoords, new RCIntVector(1, 1)));
-                    if (violatingQuadCoords.Contains(relativeQuadCoords))
+                    relativeRect.Item2[i].DisplayCoords += topLeftDisplayCoords;
+                    placementBox.Sprites.Add(relativeRect.Item2[i]);
+                }
+                for (int x = relativeRect.Item1.Left; x < relativeRect.Item1.Right; x++)
+                {
+                    for (int y = relativeRect.Item1.Top; y < relativeRect.Item1.Bottom; y++)
                     {
-                        placementBox.IllegalParts.Add(partRect);
-                    }
-                    else
-                    {
-                        placementBox.LegalParts.Add(partRect);
+                        RCIntVector relativeQuadCoords = new RCIntVector(x, y);
+                        RCIntVector absQuadCoords = topLeftQuadCoords + relativeQuadCoords;
+                        RCIntRectangle partRect =
+                            this.MapWindowBC.AttachedWindow.QuadToWindowRect(new RCIntRectangle(absQuadCoords, new RCIntVector(1, 1)));
+                        if (violatingQuadCoords.Contains(relativeQuadCoords))
+                        {
+                            placementBox.IllegalParts.Add(partRect);
+                        }
+                        else
+                        {
+                            placementBox.LegalParts.Add(partRect);
+                        }
                     }
                 }
             }
@@ -76,28 +103,39 @@ namespace RC.App.BizLogic.Views.Core
         #endregion IObjectPlacementView members
 
         /// <summary>
-        /// Gets the quadratic size of the object to be placed.
+        /// Constructs an ObjectPlacementView instance.
         /// </summary>
-        /// <returns>The quadratic size of the object to be placed.</returns>
-        protected abstract RCIntVector GetObjectQuadraticSize();
+        protected ObjectPlacementView()
+        {
+        }
+
+        /// <summary>
+        /// Gets the quadratic rectangles of the object to be placed relative to the quadratic tile pointed by the mouse pointer and
+        /// the corresponding sprites to be displayed.
+        /// </summary>
+        /// <returns>
+        /// The quadratic rectangles of the object to be placed relative to the quadratic tile pointed by the mouse pointer and the
+        /// corresponding sprites to be displayed.
+        /// </returns>
+        protected abstract RCSet<Tuple<RCIntRectangle, SpriteRenderInfo[]>> GetObjectRelativeQuadRectangles();
 
         /// <summary>
         /// Collects all the quadratic coordinates that violate the placement constraints of the object
         /// if it were placed to the given position on the map.
         /// </summary>
-        /// <param name="topLeftCoords">The target quadratic position of the top-left corner of the object.</param>
+        /// <param name="topLeftQuadCoords">The target quadratic position of the top-left corner of the object.</param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the top-left corner) violating the placement constraints
         /// of the object at the given position on the map.
         /// </returns>
-        protected abstract RCSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftCoords);
+        protected abstract RCSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftQuadCoords);
 
-        /// <summary>
-        /// Gets the sprites of the object to be displayed.
-        /// </summary>
-        /// <returns>
-        /// A list of sprites with coordinates relative to the top left corner of the area of the object.
-        /// </returns>
-        protected abstract SpriteRenderInfo[] GetObjectSprites();
+        ///// <summary>
+        ///// Gets the sprites of the object to be displayed.
+        ///// </summary>
+        ///// <returns>
+        ///// A list of sprites with coordinates relative to the top left corner of the area of the object.
+        ///// </returns>
+        //protected abstract SpriteRenderInfo[] GetObjectSprites();
     }
 }

@@ -25,9 +25,10 @@ namespace RC.App.BizLogic.Views
     }
 
     /// <summary>
-    /// Dummy interfaces needed to distinguish between the factory methods of the MapObjectPlacementView
-    /// and the TerrainObjectPlacementView.
+    /// Dummy interfaces needed to distinguish between the factory methods of the MapEditorModeObjectPlacementView,
+    /// the NormalModeMapObjectPlacementView and the TerrainObjectPlacementView.
     /// </summary>
-    public interface IMapObjectPlacementView : IObjectPlacementView { }
+    public interface INormalModeMapObjectPlacementView : IObjectPlacementView { }
+    public interface IMapEditorModeObjectPlacementView : IObjectPlacementView { }
     public interface ITerrainObjectPlacementView : IObjectPlacementView { }
 }

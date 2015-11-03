@@ -43,7 +43,7 @@ namespace RC.App.PresLogic
         /// </summary>
         public bool DisplayCrosshairs
         {
-            get { return this.commandView.IsWaitingForTargetPosition && this.commandView.TypeToBePlaced == null; }
+            get { return this.commandView.TargetSelectionMode == TargetSelectionModeEnum.TargetPositionSelection; }
         }
 
 
@@ -72,22 +72,23 @@ namespace RC.App.PresLogic
         {
             if (this.currentMouseStatus == MouseStatus.None)
             {
-                if (evtArgs.Button == UIMouseButton.Left && (!this.commandView.IsWaitingForTargetPosition || this.commandView.TypeToBePlaced != null) ||
-                    evtArgs.Button == UIMouseButton.Right && this.commandView.IsWaitingForTargetPosition)
+                if (evtArgs.Button == UIMouseButton.Left && (this.commandView.TargetSelectionMode == TargetSelectionModeEnum.NoTargetSelection ||
+                                                             this.commandView.TargetSelectionMode == TargetSelectionModeEnum.BuildingLocationSelection) ||
+                    evtArgs.Button == UIMouseButton.Right && this.commandView.TargetSelectionMode == TargetSelectionModeEnum.TargetPositionSelection)
                 {
                     this.currentMouseStatus = MouseStatus.MovingDisplay;
                     this.pressedButton = evtArgs.Button;
                     TraceManager.WriteAllTrace(string.Format("SCROLL_ON_MINIMAP {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
                     this.scrollService.ScrollToMinimapPosition(evtArgs.Position);
                 }
-                else if (evtArgs.Button == UIMouseButton.Left && this.commandView.IsWaitingForTargetPosition && this.commandView.TypeToBePlaced == null)
+                else if (evtArgs.Button == UIMouseButton.Left && this.commandView.TargetSelectionMode == TargetSelectionModeEnum.TargetPositionSelection)
                 {
                     this.currentMouseStatus = MouseStatus.SelectingTarget;
                     this.pressedButton = evtArgs.Button;
                     TraceManager.WriteAllTrace(string.Format("SELECT_TARGET_ON_MINIMAP {0}", evtArgs.Position), PresLogicTraceFilters.INFO);
                     this.commandService.SelectTargetPositionOnMinimap(evtArgs.Position);
                 }
-                else if (evtArgs.Button == UIMouseButton.Right && !this.commandView.IsWaitingForTargetPosition)
+                else if (evtArgs.Button == UIMouseButton.Right && this.commandView.TargetSelectionMode == TargetSelectionModeEnum.NoTargetSelection)
                 {
                     this.currentMouseStatus = MouseStatus.SelectingTarget;
                     this.pressedButton = evtArgs.Button;

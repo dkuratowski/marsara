@@ -60,28 +60,23 @@ namespace RC.Engine.Simulator.Engine
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating this placement constraint.
         /// </returns>
-        /// <exception cref="ArgumentException">
-        /// If the type of the given entity is not the same as the type that belongs to this placement constraint or if the
-        /// entity is not added to a scenario.
-        /// </exception>
         public RCSet<RCIntVector> Check(Entity entity, RCIntVector position)
         {
             if (this.entityType == null) { throw new SimulatorException("Entity type has not yet been set for constraint!"); }
             if (entity == null) { throw new ArgumentNullException("entity"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-            if (entity.ElementType != this.entityType) { throw new ArgumentException("The type of the given entity is not the same as the type that belongs to this constraint!", "entity"); }
             if (entity.Scenario == null) { throw new ArgumentException("The given entity is not added to a scenario!", "entity"); }
 
             return this.CheckImpl(entity.Scenario, position, entity);
         }
 
         /// <summary>
-        /// Checks whether this placement constraint allows placing an entity of the corresponding type or a given concrete entity
-        /// to the given scenario at the given quadratic position and collects all the violating quadratic coordinates relative to the given position.
+        /// Checks whether this placement constraint allows placing an entity of the corresponding type to the given scenario at the given
+        /// quadratic position and collects all the violating quadratic coordinates relative to the given position.
         /// </summary>
         /// <param name="scenario">Reference to the given scenario.</param>
         /// <param name="position">The position to be checked.</param>
-        /// <param name="entity">The concrete entity to be checked or null if there is no concrete entity to be considered during the check.</param>
+        /// <param name="entityNotToConsider">An optional entity considered not to be attached to the map during the check.</param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating this placement constraint.
         /// </returns>
@@ -89,7 +84,7 @@ namespace RC.Engine.Simulator.Engine
         /// This method shall be implemented in the derived classes.
         /// Note for the implementors: it is guaranteed that if the given entity is not null then its scenario will always equal to the given scenario.
         /// </remarks>
-        protected abstract RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position, Entity entity);
+        protected abstract RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position, Entity entityNotToConsider);
 
         /// <summary>
         /// Gets the entity type that this constraint belongs to.

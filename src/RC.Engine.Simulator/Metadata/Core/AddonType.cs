@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Metadata.Core
@@ -41,6 +42,17 @@ namespace RC.Engine.Simulator.Metadata.Core
 
         /// <see cref="IAddonType.UpgradeTypes"/>
         public IEnumerable<IUpgradeType> UpgradeTypes { get { return this.upgradeTypes.Values; } }
+
+        /// <see cref="IAddonType.CheckPlacementConstraints"/>
+        public RCSet<RCIntVector> CheckPlacementConstraints(Building mainBuilding, RCIntVector position)
+        {
+            if (mainBuilding == null) { throw new ArgumentNullException("mainBuilding"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
+            if (!mainBuilding.BuildingType.HasAddonType(this.Name)) { throw new ArgumentException("The type of the given building is not defined as the main building of this addon type!", "mainBuilding"); }
+            if (mainBuilding.Scenario == null) { throw new ArgumentException("The given building is not added to a scenario!", "mainBuilding"); }
+
+            return this.CheckPlacementConstraintsImpl(mainBuilding, position);
+        }
 
         #endregion IAddonType members
 

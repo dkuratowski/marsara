@@ -92,8 +92,8 @@
 		<goto label="LandingComplete" />
       </animation>
       <animation name="DestructionNormal">
-        <frame sprites="LeftLeg,MainPart,DestructionBurn0" duration="4" />
-        <frame sprites="RightLeg,MainPart,DestructionBurn1" duration="4" />
+        <frame sprites="LeftLeg,RightLeg,MainPart,DestructionBurn0" duration="4" />
+        <frame sprites="LeftLeg,RightLeg,MainPart,DestructionBurn1" duration="4" />
         <frame sprites="DestructionBurn2" duration="4" />
         <frame sprites="DestructionBurn3" duration="4" />
         <frame sprites="DestructionBurn4" duration="4" />

@@ -133,6 +133,7 @@
     <Compile Include="BusinessComponents\Core\PlayerManager.cs" />
     <Compile Include="BusinessComponents\Core\PlayerSlot.cs" />
     <Compile Include="Views\Core\CommandView.cs" />
+    <Compile Include="Views\Core\NormalModeObjectPlacementView.cs" />
     <Compile Include="Views\Core\ProductionLineView.cs" />
     <Compile Include="Views\Core\SelectionDetailsView.cs" />
     <Compile Include="Views\Core\FogOfWarView.cs" />
@@ -146,7 +147,7 @@
     <Compile Include="BusinessComponents\Core\CommandDispatcher.cs" />
     <Compile Include="Services\Core\MapEditorService.cs" />
     <Compile Include="Views\Core\MapObjectDetailsView.cs" />
-    <Compile Include="Views\Core\MapObjectPlacementView.cs" />
+    <Compile Include="Views\Core\MapEditorModeObjectPlacementView.cs" />
     <Compile Include="Views\Core\MapObjectView.cs" />
     <Compile Include="Views\Core\MapTerrainView.cs" />
     <Compile Include="Views\Core\MapViewBase.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="Views\ObjectPlacementBox.cs" />
     <Compile Include="Views\PlayerEnum.cs" />
     <Compile Include="Views\SelIndicatorTypeEnum.cs" />
+    <Compile Include="Views\TargetSelectionModeEnum.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj">

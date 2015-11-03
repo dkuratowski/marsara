@@ -38,14 +38,8 @@ namespace RC.App.BizLogic.Views
         CommandButtonStateEnum GetCmdButtonState(RCIntVector panelPosition);
 
         /// <summary>
-        /// Gets whether the command service is waiting for a target position.
+        /// Gets the currently active target selection mode.
         /// </summary>
-        bool IsWaitingForTargetPosition { get; }
-
-        /// <summary>
-        /// The name of the scenario element type to be placed if the ICommandView.IsWaitingForTargetPosition flag is true or
-        /// null if there is no scenario element to be placed currently.
-        /// </summary>
-        string TypeToBePlaced { get; }
+        TargetSelectionModeEnum TargetSelectionMode { get; }
     }
 }

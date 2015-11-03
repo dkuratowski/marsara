@@ -217,7 +217,7 @@ namespace RC.App.PresLogic.Pages
         private void CreateMouseHandler()
         {
             if (this.mouseHandler != null) { this.mouseHandler.Inactivated -= this.CreateMouseHandler; }
-            if (!this.commandView.IsWaitingForTargetPosition)
+            if (this.commandView.TargetSelectionMode == TargetSelectionModeEnum.NoTargetSelection)
             {
                 this.mouseHandler = new NormalMouseHandler(this, this.mapDisplay, this.selectionBoxDisplayEx);
             }

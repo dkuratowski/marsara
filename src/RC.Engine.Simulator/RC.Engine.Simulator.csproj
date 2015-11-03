@@ -98,6 +98,7 @@
     <Compile Include="Commands\ICommandExecutionFactory.cs" />
     <Compile Include="Commands\MagicBox.cs" />
     <Compile Include="Commands\RCCommand.cs" />
+    <Compile Include="Commands\TestCmdExecutionFactory.cs" />
     <Compile Include="ComponentInterfaces\ICommandExecutor.cs" />
     <Compile Include="ComponentInterfaces\IEntityFactoryPluginInstall.cs" />
     <Compile Include="ComponentInterfaces\IHeapManager.cs" />
