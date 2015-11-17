@@ -12,14 +12,14 @@ using RC.Engine.Simulator.Metadata;
 namespace RC.App.BizLogic.Views.Core
 {
     /// <summary>
-    /// Implementation of views for providing detailed informations about the production line of the currently selected map object.
+    /// Implementation of views for providing production details of the currently selected map object.
     /// </summary>
-    class ProductionLineView : MapViewBase, IProductionLineView
+    class ProductionDetailsView : MapViewBase, IProductionDetailsView
     {
         /// <summary>
         /// Constructs a production line view.
         /// </summary>
-        public ProductionLineView()
+        public ProductionDetailsView()
         {
             this.selectionManager = ComponentManager.GetInterface<ISelectionManagerBC>();
             this.commandManager = ComponentManager.GetInterface<ICommandManagerBC>();
@@ -27,8 +27,8 @@ namespace RC.App.BizLogic.Views.Core
 
         #region IProductionLineView members
 
-        /// <see cref="IProductionLineView.Capacity"/>
-        public int Capacity
+        /// <see cref="IProductionDetailsView.ProductionLineCapacity"/>
+        public int ProductionLineCapacity
         {
             get
             {
@@ -37,8 +37,8 @@ namespace RC.App.BizLogic.Views.Core
             }
         }
 
-        /// <see cref="IProductionLineView.ItemCount"/>
-        public int ItemCount
+        /// <see cref="IProductionDetailsView.ProductionLineItemCount"/>
+        public int ProductionLineItemCount
         {
             get
             {
@@ -47,8 +47,8 @@ namespace RC.App.BizLogic.Views.Core
             }
         }
 
-        /// <see cref="IProductionLineView.ProgressNormalized"/>
-        public RCNumber ProgressNormalized
+        /// <see cref="IProductionDetailsView.ProductionLineProgressNormalized"/>
+        public RCNumber ProductionLineProgressNormalized
         {
             get
             {
@@ -56,25 +56,36 @@ namespace RC.App.BizLogic.Views.Core
                 if (activeProductionLine == null) { return -1; }
 
                 int progress = activeProductionLine.Progress;
-                int totalBuildTime = activeProductionLine.GetProductionJob(0).BuildTime.Read();
+                int totalBuildTime = activeProductionLine.GetProduct(0).BuildTime.Read();
                 return (RCNumber)progress/(RCNumber)totalBuildTime;
             }
         }
 
-        /// <see cref="IProductionLineView.this"/>
-        public SpriteRenderInfo this[int itemIndex]
+        /// <see cref="IProductionDetailsView.ConstructionProgressNormalized"/>
+        public RCNumber ConstructionProgressNormalized
         {
             get
             {
-                ProductionLine activeProductionLine = this.GetActiveProductionLine();
-                if (activeProductionLine == null) { throw new InvalidOperationException("Active production line of the current selection cannot be accessed!"); }
+                Entity selectedEntity = this.GetSelectedEntity();
+                if (selectedEntity == null || !selectedEntity.Biometrics.IsUnderConstruction) { return -1; }
 
-                IScenarioElementType job = activeProductionLine.GetProductionJob(itemIndex);
-                if (job == null) { throw new InvalidOperationException(string.Format("There is no production job at index {0} int the active production line of the current selection!", itemIndex)); }
-                
-                /// Retrieve the icon of the job from the CommandManagerBC!
-                return this.commandManager.GetProductButtonSprite(job.Name);
+                int progress = selectedEntity.Biometrics.ConstructionProgress;
+                int totalBuildTime = selectedEntity.ElementType.BuildTime.Read();
+                return (RCNumber)progress / (RCNumber)totalBuildTime;
             }
+        }
+
+        /// <see cref="IProductionDetailsView.GetProductionJobIcon"/>
+        public SpriteRenderInfo GetProductionJobIcon(int itemIndex)
+        {
+            ProductionLine activeProductionLine = this.GetActiveProductionLine();
+            if (activeProductionLine == null) { throw new InvalidOperationException("Active production line of the current selection cannot be accessed!"); }
+
+            IScenarioElementType job = activeProductionLine.GetProduct(itemIndex);
+            if (job == null) { throw new InvalidOperationException(string.Format("There is no production job at index {0} int the active production line of the current selection!", itemIndex)); }
+
+            /// Retrieve the icon of the job from the CommandManagerBC!
+            return this.commandManager.GetProductButtonSprite(job.Name);
         }
 
         #endregion IProductionLineView members
@@ -91,6 +102,24 @@ namespace RC.App.BizLogic.Views.Core
         /// </returns>
         private ProductionLine GetActiveProductionLine()
         {
+            /// Get the currently selected entity.
+            Entity selectedEntity = this.GetSelectedEntity();
+
+            /// Return the active production line of the selected entity.
+            return selectedEntity != null ? selectedEntity.ActiveProductionLine : null;
+        }
+
+        /// <summary>
+        /// Gets the currently selected entity.
+        /// </summary>
+        /// <returns>
+        /// The currently selected entity or null in the following cases:
+        ///     - There is no selected entity.
+        ///     - More than 1 entities are selected.
+        ///     - The owner of the selected entity is not the local player.
+        /// </returns>
+        private Entity GetSelectedEntity()
+        {
             /// Check if exactly 1 entity is selected.
             int[] currentSelection = this.selectionManager.CurrentSelection.ToArray();
             if (currentSelection.Length != 1) { return null; }
@@ -99,8 +128,7 @@ namespace RC.App.BizLogic.Views.Core
             Entity selectedEntity = this.GetEntity(currentSelection[0]);
             if (selectedEntity.Owner == null || selectedEntity.Owner.PlayerIndex != (int)this.selectionManager.LocalPlayer) { return null; }
 
-            /// Return the active production line of the selected entity.
-            return selectedEntity.ActiveProductionLine;
+            return selectedEntity;
         }
 
         /// <summary>

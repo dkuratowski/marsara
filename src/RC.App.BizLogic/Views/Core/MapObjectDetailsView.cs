@@ -1,5 +1,7 @@
 ﻿using System;
+using RC.App.BizLogic.BusinessComponents;
 using RC.Common;
+using RC.Common.ComponentModel;
 using RC.Engine.Simulator.Engine;
 
 namespace RC.App.BizLogic.Views.Core
@@ -14,6 +16,7 @@ namespace RC.App.BizLogic.Views.Core
         /// </summary>
         public MapObjectDetailsView()
         {
+            this.selectionManager = ComponentManager.GetInterface<ISelectionManagerBC>();
         }
 
         #region IMapObjectDetailsView members
@@ -115,7 +118,14 @@ namespace RC.App.BizLogic.Views.Core
             if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
 
             Entity entity = this.GetEntity(objectID);
-            return (int)entity.Biometrics.Energy;
+            if (entity.Owner != null && entity.Owner.PlayerIndex == (int) this.selectionManager.LocalPlayer)
+            {
+                return (int)entity.Biometrics.Energy;
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         /// <see cref="IMapObjectDetailsView.GetMaxEnergy"/>
@@ -124,10 +134,22 @@ namespace RC.App.BizLogic.Views.Core
             if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
 
             Entity entity = this.GetEntity(objectID);
-            return entity.ElementType.MaxEnergy != null ? entity.ElementType.MaxEnergy.Read() : -1;
+            if (entity.Owner != null && entity.Owner.PlayerIndex == (int) this.selectionManager.LocalPlayer)
+            {
+                return entity.ElementType.MaxEnergy != null ? entity.ElementType.MaxEnergy.Read() : -1;
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         #endregion IMapObjectDetailsView members
+
+        /// <summary>
+        /// Reference to the selection manager business component.
+        /// </summary>
+        private readonly ISelectionManagerBC selectionManager;
 
         /// <summary>
         /// The name of the big icon in the HPIconPalette.

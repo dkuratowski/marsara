@@ -42,7 +42,7 @@ namespace RC.Engine.Simulator.Engine
 
             /// Initialize the non-heaped members.
             this.map = map;
-            this.entityFactory = ComponentManager.GetInterface<IEntityFactory>();
+            this.entityFactory = ComponentManager.GetInterface<IElementFactory>();
             this.mapObjects = new Dictionary<MapObjectLayerEnum, ISearchTree<MapObject>>
             {
                 { MapObjectLayerEnum.GroundObjects, this.CreateSearchTree() },
@@ -632,7 +632,7 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Reference to the entity factory component.
         /// </summary>
-        private readonly IEntityFactory entityFactory;
+        private readonly IElementFactory entityFactory;
 
         /// <summary>
         /// This flag indicates if adding and removing scenario elements is currently forbidden or not.

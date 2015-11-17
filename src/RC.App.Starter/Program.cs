@@ -219,7 +219,7 @@ namespace RC.App.Starter
             ComponentManager.RegisterComponents("RC.Engine.Simulator, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                                                 new string[]
                                                 {
-                                                    "RC.Engine.Simulator.EntityFactory",
+                                                    "RC.Engine.Simulator.ElementFactory",
                                                     "RC.Engine.Simulator.CommandExecutor",
                                                     "RC.Engine.Simulator.ScenarioLoader",
                                                     "RC.Engine.Simulator.HeapManager",

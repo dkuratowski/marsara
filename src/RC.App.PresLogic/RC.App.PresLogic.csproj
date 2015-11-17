@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConcurrentGameConnector.cs" />
+    <Compile Include="Controls\RCConstructionProgressDisplay.cs" />
     <Compile Include="Controls\RCProductionButton.cs" />
     <Compile Include="Controls\RCProductionLineDisplay.cs" />
     <Compile Include="SpriteGroups\CmdButtonSpriteGroup.cs" />

@@ -18,7 +18,9 @@ namespace RC.Engine.Simulator.Terran.Addons
         /// </summary>
         public ComsatStation()
             : base(COMSATSTATION_TYPE_NAME,
-                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000))
+                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000),
+                   new ConstructionBehavior("Construction", "Online"),
+                   new AddonBehavior("Online", "Offline"))
         {
         }
 
@@ -29,7 +31,6 @@ namespace RC.Engine.Simulator.Terran.Addons
             if (attachToMapSuccess)
             {
                 this.MotionControl.Fix();
-                this.MapObject.StartAnimation("Online");
             }
             return attachToMapSuccess;
         }

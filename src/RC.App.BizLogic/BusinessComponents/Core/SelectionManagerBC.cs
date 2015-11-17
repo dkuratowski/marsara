@@ -84,7 +84,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 if (entity is Unit)
                 {
                     /// If the entity is a unit then check its owner.
-                    if (entity.Owner.PlayerIndex == (int)this.localPlayer)
+                    if (entity.Owner != null && entity.Owner.PlayerIndex == (int)this.localPlayer)
                     {
                         /// If owned by the owner of this selector then add it to the current selection.
                         if (!ownerUnitFound)
@@ -105,7 +105,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 else if (entity is Building && !ownerUnitFound)
                 {
                     /// If the entity is a building then check its owner.
-                    if (entity.Owner.PlayerIndex == (int)this.localPlayer)
+                    if (entity.Owner != null && entity.Owner.PlayerIndex == (int)this.localPlayer)
                     {
                         if (ownerBuilding == null) { ownerBuilding = entity; }
                     }
@@ -117,7 +117,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 else if (entity is Addon && !ownerUnitFound)
                 {
                     /// If the entity is an addon then check its owner.
-                    if (entity.Owner.PlayerIndex == (int)this.localPlayer)
+                    if (entity.Owner != null && entity.Owner.PlayerIndex == (int)this.localPlayer)
                     {
                         if (ownerAddon == null) { ownerAddon = entity; }
                     }

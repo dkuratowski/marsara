@@ -131,7 +131,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             /// Get the ID of the production job at the given position in the active production line of the selected entity.
             ProductionLine productionLine = entity.ActiveProductionLine;
             if (productionLine == null) { throw new InvalidOperationException("The selected entity has no active production line!"); }
-            int productionJobID = productionLine.GetProductionJobID(panelPosition);
+            int productionJobID = productionLine.GetJobID(panelPosition);
 
             /// Create and send the CancelProduction command.
             RCCommand cancelProductionCommand = new RCCommand(CANCEL_PRODUCTION_COMMAND_TYPE,

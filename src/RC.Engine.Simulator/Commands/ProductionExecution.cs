@@ -32,9 +32,9 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="CmdExecutionBase.ContinueImpl"/>
         protected override bool ContinueImpl()
         {
-            if (this.recipientEntity.Read().CheckProductAvailability(product))
+            if (this.recipientEntity.Read().IsProductAvailable(product))
             {
-                if (this.recipientEntity.Read().IsProductionEnabled(product))
+                if (this.recipientEntity.Read().IsProductEnabled(product))
                 {
                     this.recipientEntity.Read().StartProduction(product);
                 }

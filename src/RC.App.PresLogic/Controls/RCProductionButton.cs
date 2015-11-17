@@ -29,7 +29,7 @@ namespace RC.App.PresLogic.Controls
             if (productIconSprites == null) { throw new ArgumentNullException("productIconSprites"); }
 
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
-            this.productionLineView = viewService.CreateView<IProductionLineView>();
+            this.productionDetailsView = viewService.CreateView<IProductionDetailsView>();
             this.commandService = ComponentManager.GetInterface<ICommandService>();
 
             this.productionButtonSprite = UIResourceManager.GetResource<UISprite>("RC.App.Sprites.ProductionButton");
@@ -53,12 +53,12 @@ namespace RC.App.PresLogic.Controls
         protected override void Render_i(IUIRenderContext renderContext)
         {
             /// Check if this button has to be even rendered.
-            if (this.layoutIndex >= this.productionLineView.Capacity) { return; }
+            if (this.layoutIndex >= this.productionDetailsView.ProductionLineCapacity) { return; }
 
             /// If there is a production item belonging to this button, then we have to render its icon.
-            if (this.layoutIndex < this.productionLineView.ItemCount)
+            if (this.layoutIndex < this.productionDetailsView.ProductionLineItemCount)
             {
-                SpriteRenderInfo itemIcon = this.productionLineView[this.layoutIndex];
+                SpriteRenderInfo itemIcon = this.productionDetailsView.GetProductionJobIcon(this.layoutIndex);
                 renderContext.RenderSprite(this.productIconSprites[itemIcon.Index],
                                            itemIcon.DisplayCoords,
                                            itemIcon.Section);
@@ -76,16 +76,16 @@ namespace RC.App.PresLogic.Controls
             if (sender != this) { throw new InvalidOperationException("Unexpected sender!"); }
 
             /// Check if this production button is really attached to a production job.
-            if (this.layoutIndex >= this.productionLineView.ItemCount) { return; }
+            if (this.layoutIndex >= this.productionDetailsView.ProductionLineItemCount) { return; }
 
             /// Send the event to the command service.
             this.commandService.PressProductionButton(this.layoutIndex);
         }
 
         /// <summary>
-        /// Reference to the production line view.
+        /// Reference to the production details view.
         /// </summary>
-        private readonly IProductionLineView productionLineView;
+        private readonly IProductionDetailsView productionDetailsView;
 
         /// <summary>
         /// Reference to the command service.

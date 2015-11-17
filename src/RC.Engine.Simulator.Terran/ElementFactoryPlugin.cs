@@ -16,28 +16,29 @@ using RC.Engine.Simulator.Terran.Units;
 namespace RC.Engine.Simulator.Terran
 {
     /// <summary>
-    /// This class represents the entity factory plugin for the Terran race.
+    /// The element factory plugin for the Terran race.
     /// </summary>
-    [Plugin(typeof(IEntityFactory))]
-    class EntityFactoryPlugin : IPlugin<IEntityFactoryPluginInstall>
+    [Plugin(typeof(IElementFactory))]
+    class ElementFactoryPlugin : IPlugin<IElementFactoryPluginInstall>
     {
         /// <summary>
-        /// Constructs an EntityFactoryPlugin instance.
+        /// Constructs an ElementFactoryPlugin instance.
         /// </summary>
-        public EntityFactoryPlugin()
+        public ElementFactoryPlugin()
         {
         }
 
-        /// <see cref="IPlugin<T>.Install"/>
-        public void Install(IEntityFactoryPluginInstall extendedComponent)
+        /// <see cref="IPlugin.Install"/>
+        public void Install(IElementFactoryPluginInstall extendedComponent)
         {
             /// TODO: Write installation code here!
             extendedComponent.RegisterPlayerInitializer(RaceEnum.Terran, this.TerranInitializer);
-            extendedComponent.RegisterEntityCreator(SCV.SCV_TYPE_NAME, this.CreateScv);
+            extendedComponent.RegisterElementFactory<Building>(SCV.SCV_TYPE_NAME, this.CreateScv);
+            extendedComponent.RegisterElementFactory<Building>(ComsatStation.COMSATSTATION_TYPE_NAME, this.CreateComsatStation);
         }
 
-        /// <see cref="IPlugin<T>.Uninstall"/>
-        public void Uninstall(IEntityFactoryPluginInstall extendedComponent)
+        /// <see cref="IPlugin.Uninstall"/>
+        public void Uninstall(IElementFactoryPluginInstall extendedComponent)
         {
             /// TODO: Write uninstallation code here!
         }
@@ -58,10 +59,10 @@ namespace RC.Engine.Simulator.Terran
             commandCenter.AttachToMap(scenario.Map.GetQuadTile(player.QuadraticStartPosition.Location));
 
             /// TEST: Add a Terran Comsat Station
-            ComsatStation comsatStation = new ComsatStation();
-            scenario.AddElementToScenario(comsatStation);
-            player.AddAddon(comsatStation);
-            comsatStation.AttachToMap(scenario.Map.GetQuadTile(player.QuadraticStartPosition.Location + new RCIntVector(4, 1)));
+            //ComsatStation comsatStation = new ComsatStation();
+            //scenario.AddElementToScenario(comsatStation);
+            //player.AddAddon(comsatStation);
+            //comsatStation.AttachToMap(scenario.Map.GetQuadTile(player.QuadraticStartPosition.Location + new RCIntVector(4, 1)));
             /// TEST END
 
             /// Find place for the given number of SCVs using an EntityNeighbourhoodIterator.
@@ -97,25 +98,22 @@ namespace RC.Engine.Simulator.Terran
         }
 
         /// <summary>
-        /// Creates an SCV for the given player.
+        /// Creates an SCV in the given building.
         /// </summary>
-        /// <param name="player">The owner player of the new SCV.</param>
-        /// <param name="producer">The producer entity.</param>
+        /// <param name="factoryBuilding">The building in which the SCV is created.</param>
         /// <returns>True if the SCV has been created successfully; otherwise false.</returns>
-        private bool CreateScv(Player player, Entity producer)
+        private bool CreateScv(Building factoryBuilding)
         {
-            if (player == null) { throw new ArgumentNullException("player"); }
-            if (producer == null) { throw new ArgumentNullException("producer"); }
-            if (producer.Scenario != player.Scenario) { throw new ArgumentException("Mismatch between the scenario of the player and the producer entity!");}
+            if (factoryBuilding == null) { throw new ArgumentNullException("factoryBuilding"); }
+            if (factoryBuilding.Scenario == null) { throw new ArgumentException("The factory building is not added to a scenario!"); }
 
-            Scenario scenario = player.Scenario;
-            EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(producer);
+            EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(factoryBuilding);
             IEnumerator<ICell> cellEnumerator = cellIterator.GetEnumerator();
 
             /// Create the SCV
             SCV scv = new SCV();
-            scenario.AddElementToScenario(scv);
-            player.AddUnit(scv);
+            factoryBuilding.Scenario.AddElementToScenario(scv);
+            if (factoryBuilding.Owner != null) { factoryBuilding.Owner.AddUnit(scv); }
 
             /// Search a place for the new SCV on the map.
             bool scvPlacedSuccessfully = false;
@@ -131,12 +129,40 @@ namespace RC.Engine.Simulator.Terran
             /// Remove the SCV if there is no more place on the map.
             if (!scvPlacedSuccessfully)
             {
-                player.RemoveUnit(scv);
-                scenario.RemoveElementFromScenario(scv);
+                if (factoryBuilding.Owner != null) { factoryBuilding.Owner.RemoveUnit(scv); }
+                factoryBuilding.Scenario.RemoveElementFromScenario(scv);
                 scv.Dispose();
             }
 
             return scvPlacedSuccessfully;
+        }
+
+        /// <summary>
+        /// Creates a ComsatStation addon for the given main building.
+        /// </summary>
+        /// <param name="mainBuilding">The main building for which the ComsatStation addon is created.</param>
+        /// <returns>True if the ComsatStation addon has been created successfully; otherwise false.</returns>
+        private bool CreateComsatStation(Building mainBuilding)
+        {
+            if (mainBuilding == null) { throw new ArgumentNullException("mainBuilding"); }
+            if (mainBuilding.Scenario == null) { throw new ArgumentException("The main building is not added to a scenario!", "mainBuilding"); }
+            if (mainBuilding.MapObject == null) { throw new ArgumentException("The main building is detached from the map!", "mainBuilding"); }
+
+            /// Create the ComsatStation.
+            ComsatStation comsatStation = new ComsatStation();
+            mainBuilding.Scenario.AddElementToScenario(comsatStation);
+
+            /// Try to attach the ComsatStation to the map.
+            RCIntVector relativeAddonPosition = mainBuilding.BuildingType.GetRelativeAddonPosition(mainBuilding.Scenario.Map, comsatStation.AddonType);
+            RCIntVector addonPosition = mainBuilding.MapObject.QuadraticPosition.Location + relativeAddonPosition;
+            bool comsatStationPlacedSuccessfully = comsatStation.AttachToMap(mainBuilding.Scenario.Map.GetQuadTile(addonPosition));
+            if (!comsatStationPlacedSuccessfully)
+            {
+                mainBuilding.Scenario.RemoveElementFromScenario(comsatStation);
+                comsatStation.Dispose();
+            }
+
+            return comsatStationPlacedSuccessfully;
         }
 
         private const int NUM_OF_SCVS = 5;

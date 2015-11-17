@@ -107,7 +107,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             RCIntVector relativeAddonPos = this.GetRelativeAddonPosition(building.Scenario.Map, addonType);
             RCIntVector addonPos = position + relativeAddonPos;
 
-            foreach (RCIntVector quadCoordViolatingByAddon in addonType.CheckPlacementConstraints(building/*.Scenario*/, addonPos))
+            foreach (RCIntVector quadCoordViolatingByAddon in addonType.CheckPlacementConstraints(building, addonPos))
             {
                 retList.Add(quadCoordViolatingByAddon + relativeAddonPos);
             }

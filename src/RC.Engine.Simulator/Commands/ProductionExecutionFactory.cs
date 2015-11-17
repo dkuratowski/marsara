@@ -40,9 +40,8 @@ namespace RC.Engine.Simulator.Commands
             if (entitiesToHandle.Count != 1) { return AvailabilityEnum.Unavailable; }
 
             Entity producerEntity = entitiesToHandle.First();
-            if (producerEntity.MotionControl.IsFlying) { return AvailabilityEnum.Unavailable; }
-            if (!producerEntity.CheckProductAvailability(parameter)) { return AvailabilityEnum.Unavailable; }
-            return producerEntity.IsProductionEnabled(parameter) ? AvailabilityEnum.Enabled : AvailabilityEnum.Disabled;
+            if (!producerEntity.IsProductAvailable(parameter)) { return AvailabilityEnum.Unavailable; }
+            return producerEntity.IsProductEnabled(parameter) ? AvailabilityEnum.Enabled : AvailabilityEnum.Disabled;
         }
 
         /// <see cref="CommandExecutionFactoryBase.CreateCommandExecutions"/>

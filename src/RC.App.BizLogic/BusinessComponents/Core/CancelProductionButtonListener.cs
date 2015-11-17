@@ -40,7 +40,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (selectedEntity.ActiveProductionLine == null) { throw new InvalidOperationException("CancelProductionButtonListener completion denied because the currently selected entity doesn't have an active production line!"); }
 
             this.CommandBuilder.CommandType = COMMAND_TYPE;
-            this.CommandBuilder.Parameter = selectedEntity.ActiveProductionLine.GetProductionJobID(0).ToString(CultureInfo.InvariantCulture);
+            this.CommandBuilder.Parameter = selectedEntity.ActiveProductionLine.GetJobID(0).ToString(CultureInfo.InvariantCulture);
             return CommandInputListener.CompletionResultEnum.Succeeded;
         }
 

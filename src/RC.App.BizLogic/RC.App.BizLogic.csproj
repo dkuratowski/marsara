@@ -134,7 +134,7 @@
     <Compile Include="BusinessComponents\Core\PlayerSlot.cs" />
     <Compile Include="Views\Core\CommandView.cs" />
     <Compile Include="Views\Core\NormalModeObjectPlacementView.cs" />
-    <Compile Include="Views\Core\ProductionLineView.cs" />
+    <Compile Include="Views\Core\ProductionDetailsView.cs" />
     <Compile Include="Views\Core\SelectionDetailsView.cs" />
     <Compile Include="Views\Core\FogOfWarView.cs" />
     <Compile Include="Views\Core\MinimapView.cs" />
@@ -162,7 +162,7 @@
     <Compile Include="BusinessComponents\Core\TriggeredScheduler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\IMapEditorService.cs" />
-    <Compile Include="Views\IProductionLineView.cs" />
+    <Compile Include="Views\IProductionDetailsView.cs" />
     <Compile Include="Views\ISelectionDetailsView.cs" />
     <Compile Include="Views\IFogOfWarView.cs" />
     <Compile Include="Views\IMapObjectDetailsView.cs" />

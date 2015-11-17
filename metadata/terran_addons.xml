@@ -59,10 +59,20 @@
         <frame sprites="Construction2" duration="200" />
       </animation>
 	  <animation name="Offline">
+		<frame sprites="MainPart,Corridor3,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor2,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor1,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor0,Antenna0" duration="5" />
+		<label name="Disconnected" />
 		<frame sprites="MainPart,Antenna0" />
-		<repeat/>
+		<goto label="Disconnected" />
 	  </animation>
 	  <animation name="Online">
+		<frame sprites="MainPart,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor0,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor1,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor2,Antenna0" duration="5" />
+		<label name="Connected" />
 		<frame sprites="MainPart,Corridor3,Antenna0" duration="3" />
 		<frame sprites="MainPart,Corridor3,Antenna1" duration="3" />
 		<frame sprites="MainPart,Corridor3,Antenna2" duration="3" />
@@ -71,25 +81,7 @@
 		<frame sprites="MainPart,Corridor3,Antenna5" duration="3" />
 		<frame sprites="MainPart,Corridor3,Antenna6" duration="3" />
 		<frame sprites="MainPart,Corridor3,Antenna7" duration="3" />
-		<repeat/>
-	  </animation>
-	  <animation name="Connecting">
-		<frame sprites="MainPart,Antenna0" duration="5" />
-		<frame sprites="MainPart,Corridor0,Antenna0" duration="5" />
-		<frame sprites="MainPart,Corridor1,Antenna0" duration="5" />
-		<frame sprites="MainPart,Corridor2,Antenna0" duration="5" />
-		<label name="Connected" />
-		<frame sprites="MainPart,Corridor3,Antenna0" duration="4" />
 		<goto label="Connected" />
-	  </animation>
-	  <animation name="Disconnecting">
-		<frame sprites="MainPart,Corridor3,Antenna0" duration="5" />
-		<frame sprites="MainPart,Corridor2,Antenna0" duration="5" />
-		<frame sprites="MainPart,Corridor1,Antenna0" duration="5" />
-		<frame sprites="MainPart,Corridor0,Antenna0" duration="5" />
-		<label name="Disconnected" />
-		<frame sprites="MainPart,Antenna0" duration="4" />
-		<goto label="Disconnected" />
 	  </animation>
       <animation name="DestructionOffline">
         <frame sprites="MainPart,DestructionBurn0" duration="5" />

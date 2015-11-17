@@ -40,10 +40,11 @@ namespace RC.App.PresLogic.Panels
             this.currentCustomContent = null;
             this.buttonArray = new RCSelectionButton[MAX_SELECTION_SIZE];
             this.productionLineDisplay = null;
+            this.constructionProgressDisplay = null;
             this.multiplayerService = null;
             this.selectionDetailsView = null;
             this.mapObjectDetailsView = null;
-            this.productionLineView = null;
+            this.productionDetailsView = null;
             this.selectionButtonsAdded = false;
             this.hpTexts = new Dictionary<MapObjectConditionEnum, UIString>();
             this.energyText = null;
@@ -61,7 +62,7 @@ namespace RC.App.PresLogic.Panels
             IViewService viewService = ComponentManager.GetInterface<IViewService>();
             this.selectionDetailsView = viewService.CreateView<ISelectionDetailsView>();
             this.mapObjectDetailsView = viewService.CreateView<IMapObjectDetailsView>();
-            this.productionLineView = viewService.CreateView<IProductionLineView>();
+            this.productionDetailsView = viewService.CreateView<IProductionDetailsView>();
             this.metadataView = viewService.CreateView<IMetadataView>();
             this.hpIndicatorSprites.Add(MapObjectConditionEnum.Excellent, new HPIconSpriteGroup(this.metadataView, MapObjectConditionEnum.Excellent));
             this.hpIndicatorSprites.Add(MapObjectConditionEnum.Moderate, new HPIconSpriteGroup(this.metadataView, MapObjectConditionEnum.Moderate));
@@ -87,6 +88,7 @@ namespace RC.App.PresLogic.Panels
             /// Destroy the controls that display the custom contents.
             //this.productionDisplay.Dispose(); TODO: dispose if necessary!
             this.productionLineDisplay = null;
+            this.constructionProgressDisplay = null;
             this.currentCustomContent = null;
 
             /// Destroy the selection buttons.
@@ -195,6 +197,7 @@ namespace RC.App.PresLogic.Panels
 
                 /// Create the controls that display the custom content.
                 this.productionLineDisplay = new RCProductionLineDisplay(this.productIconSprites, CUSTOM_CONTENT_RECT.Location, CUSTOM_CONTENT_RECT.Size);
+                this.constructionProgressDisplay = new RCConstructionProgressDisplay(CUSTOM_CONTENT_RECT.Location, CUSTOM_CONTENT_RECT.Size);
 
                 /// Subscribe to the FrameUpdate event.
                 UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
@@ -207,7 +210,7 @@ namespace RC.App.PresLogic.Panels
                 this.multiplayerService = null;
                 this.selectionDetailsView = null;
                 this.mapObjectDetailsView = null;
-                this.productionLineView = null;
+                this.productionDetailsView = null;
                 this.isConnected = false;
                 if (this.ConnectorOperationFinished != null) { this.ConnectorOperationFinished(this); }
             }
@@ -311,9 +314,8 @@ namespace RC.App.PresLogic.Panels
         private UIControl SelectCustomContent()
         {
             // TODO: implement this method accordingly!
-            if (this.productionLineView.Capacity == 0) { return null; }
-
-            return this.productionLineDisplay;
+            if (this.productionDetailsView.ConstructionProgressNormalized != -1) { return this.constructionProgressDisplay; }
+            return this.productionDetailsView.ProductionLineCapacity != 0 ? this.productionLineDisplay : null;
         }
 
         #endregion Internal members
@@ -338,6 +340,11 @@ namespace RC.App.PresLogic.Panels
         /// Reference to the production line display control.
         /// </summary>
         private RCProductionLineDisplay productionLineDisplay;
+
+        /// <summary>
+        /// Reference to the construction progress display control.
+        /// </summary>
+        private RCConstructionProgressDisplay constructionProgressDisplay;
 
         /// <summary>
         /// Reference to the currently executed connecting/disconnecting task or null if no such a task is under execution.
@@ -370,9 +377,9 @@ namespace RC.App.PresLogic.Panels
         private IMapObjectDetailsView mapObjectDetailsView;
 
         /// <summary>
-        /// Reference to the production line view.
+        /// Reference to the production details view.
         /// </summary>
-        private IProductionLineView productionLineView;
+        private IProductionDetailsView productionDetailsView;
 
         /// <summary>
         /// Reference to the metadata view.

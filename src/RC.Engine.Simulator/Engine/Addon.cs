@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using RC.Engine.Simulator.Core;
 using RC.Engine.Simulator.Metadata;
+using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Engine
 {
@@ -15,6 +16,31 @@ namespace RC.Engine.Simulator.Engine
     /// </summary>
     public abstract class Addon : Entity
     {
+        /// <summary>
+        /// Gets the type of this addon.
+        /// </summary>
+        public IAddonType AddonType { get { return this.addonType; } }
+
+        /// <summary>
+        /// Gets the current main building of this addon or null if this addon has no main building currently.
+        /// </summary>
+        public Building CurrentMainBuilding
+        {
+            get
+            {
+                if (this.MapObject == null) { throw new InvalidOperationException("This addon is detached from the map!"); }
+
+                if (this.MotionControl.Status != MotionControlStatusEnum.Fixed) { return null; }
+                RCIntVector buildingPosition = new RCIntVector(this.MapObject.QuadraticPosition.Left - 1, this.MapObject.QuadraticPosition.Bottom - 1);
+                if (buildingPosition.X < 0 || buildingPosition.X >= this.Scenario.Map.Size.X || buildingPosition.Y < 0 || buildingPosition.Y >= this.Scenario.Map.Size.Y) { return null; }
+
+                Building building = this.MapContext.FixedEntities[buildingPosition.X, buildingPosition.Y] as Building;
+                if (building == null) { return null; }
+
+                return building.BuildingType.HasAddonType(this.AddonType.Name) ? building : null;
+            }
+        }
+
         /// <summary>
         /// Constructs an Addon instance.
         /// </summary>
@@ -26,10 +52,10 @@ namespace RC.Engine.Simulator.Engine
             this.addonType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetAddonType(addonTypeName);
 
             // Create and register the basic production lines of this addon based on the metadata.
-            List<IScenarioElementType> upgradeTypes = new List<IScenarioElementType>(this.addonType.UpgradeTypes);
+            List<IUpgradeType> upgradeTypes = new List<IUpgradeType>(this.addonType.UpgradeTypes);
             if (upgradeTypes.Count > 0)
             {
-                ProductionLine upgradeProductionLine = new ProductionLine(this, Constants.UPGRADE_PRODUCTION_LINE_CAPACITY, upgradeTypes);
+                ProductionLine upgradeProductionLine = new UpgradeProductionLine(this, upgradeTypes);
                 this.RegisterProductionLine(upgradeProductionLine);
             }
         }

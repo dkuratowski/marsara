@@ -38,7 +38,7 @@ namespace RC.Engine.Simulator.Metadata
         /// <param name="mainBuilding">Reference to the main building of the addon to be checked.</param>
         /// <param name="position">The position to be checked.</param>
         /// <returns>
-        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this building type.
+        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this addon type.
         /// </returns>
         /// <exception cref="ArgumentException">
         /// If the type of the given building is not defined as the main building for this addon type.

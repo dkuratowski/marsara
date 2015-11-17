@@ -36,7 +36,7 @@ namespace RC.Engine.Simulator.Engine
         /// <see cref="EntityBehavior.UpdateState"/>
         public override void UpdateState(Entity entity)
         {
-            if (entity.Biometrics.HP <= (RCNumber)entity.ElementType.MaxHP.Read()/(RCNumber)3)
+            if (!entity.Biometrics.IsUnderConstruction && entity.Biometrics.HP <= (RCNumber)entity.ElementType.MaxHP.Read()/(RCNumber)3)
             {
                 entity.Biometrics.Damage(hpPerFrame.Read());
             }
@@ -45,6 +45,13 @@ namespace RC.Engine.Simulator.Engine
         /// <see cref="EntityBehavior.UpdateMapObject"/>
         public override void UpdateMapObject(Entity entity)
         {
+            if (entity.Biometrics.IsUnderConstruction)
+            {
+                entity.MapObject.StopAnimation(this.smallBurnAnimation);
+                entity.MapObject.StopAnimation(this.heavyBurnAnimation);
+                return;
+            }
+
             if (entity.Biometrics.HP <= (RCNumber)entity.ElementType.MaxHP.Read() / (RCNumber)3)
             {
                 entity.MapObject.StopAnimation(this.smallBurnAnimation);

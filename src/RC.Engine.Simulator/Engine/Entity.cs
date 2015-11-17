@@ -170,22 +170,18 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <param name="productName">The name of the product to check.</param>
         /// <returns>True if the given product is currently available; otherwise false.</returns>
-        public bool CheckProductAvailability(string productName)
+        public bool IsProductAvailable(string productName)
         {
             if (productName == null) { throw new ArgumentNullException("productName"); }
 
+            /// Check if the product is available on the active production line.
             if (this.activeProductionLine.Read() != null)
             {
-                /// First we check if the active production line has reached its capacity or not.
-                if (this.activeProductionLine.Read().ItemCount == this.activeProductionLine.Read().Capacity) { return false; }
-
-                /// Then we check if the given product is available at the active production line.
-                IScenarioElementType product = this.activeProductionLine.Read().GetProduct(productName);
-                return product != null;
+                return this.activeProductionLine.Read().IsProductAvailable(productName);
             }
 
             /// If there is no active production line then we have to find a production line where the given product is available.
-            return this.productionLines.Any(productionLine => productionLine.GetProduct(productName) != null);
+            return this.productionLines.Any(productionLine => productionLine.IsProductAvailable(productName));
         }
 
         /// <summary>
@@ -193,31 +189,18 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <param name="productName">The name of the product to check.</param>
         /// <returns>True if the given product is currently enabled; otherwise false.</returns>
-        public bool IsProductionEnabled(string productName)
+        public bool IsProductEnabled(string productName)
         {
             if (productName == null) { throw new ArgumentNullException("productName"); }
 
-            /// Search for the product.
-            IScenarioElementType product = null;
-            foreach (ProductionLine productionLine in this.productionLines)
+            /// Check if the product is enabled on the active production line.
+            if (this.activeProductionLine.Read() != null)
             {
-                product = productionLine.GetProduct(productName);
-                if (product != null) { break; }
-            }
-            if (product == null) { throw new InvalidOperationException(string.Format("Product '{0}' is not available at any of the registered production lines!", productName)); }
-
-            /// Execute custom check.
-            if (!this.IsProductionEnabledImpl(product)) { return false; }
-
-            /// Check the requirements of the product.
-            foreach (IRequirement requirement in product.Requirements)
-            {
-                if (!this.Owner.HasEntity(requirement.RequiredBuildingType.Name)) { return false; }
-                if (requirement.RequiredAddonType != null && !this.Owner.HasEntity(requirement.RequiredAddonType.Name)) { return false; }
+                return this.activeProductionLine.Read().IsProductAvailable(productName) && this.activeProductionLine.Read().IsProductEnabled(productName);
             }
 
-            /// All the requirements were satisfied.
-            return true;
+            /// If there is no active production line then we have to find a production line where the given product is enabled.
+            return this.productionLines.Any(productionLine => productionLine.IsProductAvailable(productName) && productionLine.IsProductEnabled(productName));
         }
 
         /// <summary>
@@ -233,7 +216,7 @@ namespace RC.Engine.Simulator.Engine
             {
                 foreach (ProductionLine line in this.productionLines)
                 {
-                    if (line.GetProduct(productName) != null)
+                    if (line.IsProductAvailable(productName))
                     {
                         this.activeProductionLine.Write(line);
                         break;
@@ -247,16 +230,15 @@ namespace RC.Engine.Simulator.Engine
                 }
             }
 
-            /// Enqueue the given product into the active production line.
-            this.activeProductionLine.Read().EnqueueJob(productName, this.nextProductionJobID.Read());
-            if (this.activeProductionLine.Read().ItemCount > 0)
+            /// Enqueue the given product into the active production line and increment the production job ID in case of success.
+            if (this.activeProductionLine.Read().EnqueueJob(productName, this.nextProductionJobID.Read()))
             {
-                /// Increment the production job ID in case of success.
                 this.nextProductionJobID.Write(this.nextProductionJobID.Read() + 1);
             }
-            else
+
+            /// Deactivate the production line if it remained empty.
+            if (this.activeProductionLine.Read().ItemCount == 0)
             {
-                /// Deactivate the production line in case of failure.
                 this.activeProductionLine.Write(null);
             }
         }
@@ -313,14 +295,6 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <remarks>Can be overriden in the derived classes.</remarks>
         protected virtual string DestructionAnimationName { get { throw new NotSupportedException("Entity.DestructionAnimationName not supported for this entity!"); } }
-
-        /// <summary>
-        /// The derived classes can implement additional checks whether the given product is currently enabled.
-        /// </summary>
-        /// <param name="product">The product to be checked.</param>
-        /// <returns>True if the given product is currently enabled; otherwise false.</returns>
-        /// <remarks>This method can be overriden in the derived classes. The default implementation does nothing.</remarks>
-        protected virtual bool IsProductionEnabledImpl(IScenarioElementType product) { return true; }
 
         /// <see cref="ScenarioElement.UpdateStateImpl"/>
         protected sealed override void UpdateStateImpl()

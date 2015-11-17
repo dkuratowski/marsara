@@ -23,6 +23,26 @@ namespace RC.Engine.Simulator.Engine
         public IBuildingType BuildingType { get { return this.buildingType; } }
 
         /// <summary>
+        /// Gets the addon that is currently joined to this building or null if this building has no addon joined to it.
+        /// </summary>
+        public Addon CurrentAddon
+        {
+            get
+            {
+                if (this.MapObject == null) { throw new InvalidOperationException("This building is detached from the map!"); }
+
+                if (this.MotionControl.Status != MotionControlStatusEnum.Fixed) { return null; }
+                RCIntVector addonPosition = new RCIntVector(this.MapObject.QuadraticPosition.Right, this.MapObject.QuadraticPosition.Bottom - 1);
+                if (addonPosition.X < 0 || addonPosition.X >= this.Scenario.Map.Size.X || addonPosition.Y < 0 || addonPosition.Y >= this.Scenario.Map.Size.Y) { return null; }
+
+                Addon addon = this.MapContext.FixedEntities[addonPosition.X, addonPosition.Y] as Addon;
+                if (addon == null) { return null; }
+
+                return this.buildingType.HasAddonType(addon.AddonType.Name) ? addon : null;
+            }
+        }
+
+        /// <summary>
         /// Checks whether the placement constraints of this building allows it to be placed together with an addon of the given addon type
         /// at the given quadratic position and collects all the violating quadratic coordinates relative to the given position.
         /// </summary>
@@ -47,43 +67,25 @@ namespace RC.Engine.Simulator.Engine
             this.buildingType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetBuildingType(buildingTypeName);
 
             // Create and register the basic production lines of this building based on the metadata.
-            List<IScenarioElementType> unitTypes = new List<IScenarioElementType>(this.buildingType.UnitTypes);
-            List<IScenarioElementType> addonTypes = new List<IScenarioElementType>(this.buildingType.AddonTypes);
-            List<IScenarioElementType> upgradeTypes = new List<IScenarioElementType>(this.buildingType.UpgradeTypes);
+            List<IUnitType> unitTypes = new List<IUnitType>(this.buildingType.UnitTypes);
+            List<IAddonType> addonTypes = new List<IAddonType>(this.buildingType.AddonTypes);
+            List<IUpgradeType> upgradeTypes = new List<IUpgradeType>(this.buildingType.UpgradeTypes);
             if (unitTypes.Count > 0)
             {
-                ProductionLine unitProductionLine = new ProductionLine(this, Constants.UNIT_PRODUCTION_LINE_CAPACITY, unitTypes);
+                ProductionLine unitProductionLine = new UnitProductionLine(this, unitTypes);
                 this.RegisterProductionLine(unitProductionLine);
             }
             if (addonTypes.Count > 0)
             {
-                ProductionLine addonProductionLine = new ProductionLine(this, Constants.ADDON_PRODUCTION_LINE_CAPACITY, addonTypes);
+                ProductionLine addonProductionLine = new AddonProductionLine(this, addonTypes);
                 this.RegisterProductionLine(addonProductionLine);
             }
             if (upgradeTypes.Count > 0)
             {
-                ProductionLine upgradeProductionLine = new ProductionLine(this, Constants.UPGRADE_PRODUCTION_LINE_CAPACITY, upgradeTypes);
+                ProductionLine upgradeProductionLine = new UpgradeProductionLine(this, upgradeTypes);
                 this.RegisterProductionLine(upgradeProductionLine);
             }
-
-            this.attachedAddon = this.ConstructField<Addon>("attachedAddon");
-            this.attachedAddon.Write(null);
         }
-
-        /// <see cref="Entity.IsProductionEnabledImpl"/>
-        protected override bool IsProductionEnabledImpl(IScenarioElementType product)
-        {
-            IUnitType productAsUnitType = product as IUnitType;
-            return productAsUnitType == null ||
-                   productAsUnitType.NecessaryAddon == null ||
-                   (this.attachedAddon.Read() != null &&
-                    this.attachedAddon.Read().ElementType == productAsUnitType.NecessaryAddon);
-        }
-
-        /// <summary>
-        /// Reference to the addon that is attached to this building or null if there is no attached addon.
-        /// </summary>
-        private readonly HeapedValue<Addon> attachedAddon;
 
         /// <summary>
         /// The type of this building.

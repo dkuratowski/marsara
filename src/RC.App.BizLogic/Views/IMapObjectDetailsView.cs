@@ -71,14 +71,20 @@ namespace RC.App.BizLogic.Views
         /// Gets the current energy value of the given map object.
         /// </summary>
         /// <param name="objectID">The ID of the map object.</param>
-        /// <returns>The current energy value of the given map object or -1 if the given map object doesn't have energy value.</returns>
+        /// <returns>
+        /// The current energy value of the given map object or -1 if the given map object doesn't have energy value or if the current energy value is
+        /// not accessible by the local player.
+        /// </returns>
         int GetCurrentEnergy(int objectID);
 
         /// <summary>
         /// Gets the maximum energy value of the given map object.
         /// </summary>
         /// <param name="objectID">The ID of the map object.</param>
-        /// <returns>The maximum energy value of the given map object or -1 if the given map object doesn't have energy value.</returns>
+        /// <returns>
+        /// The maximum energy value of the given map object or -1 if the given map object doesn't have energy value or if the maximum energy value is
+        /// not accessible by the local player.
+        /// </returns>
         int GetMaxEnergy(int objectID);
     }
 }

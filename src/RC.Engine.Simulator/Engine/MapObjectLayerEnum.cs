@@ -16,7 +16,7 @@ namespace RC.Engine.Simulator.Engine
         GroundObjects = 0,
 
         /// <summary>
-        /// This layer is used by entities to reserve a position on the ground.
+        /// This layer is used by entities to reserve a position on the ground for landing.
         /// </summary>
         GroundReservations = 1,
 
@@ -31,7 +31,7 @@ namespace RC.Engine.Simulator.Engine
         AirObjects = 3,
 
         /// <summary>
-        /// This layer is used by entities to reserve a position in the air.
+        /// This layer is used by entities to reserve a position in the air for takeoff.
         /// </summary>
         AirReservations = 4,
 
