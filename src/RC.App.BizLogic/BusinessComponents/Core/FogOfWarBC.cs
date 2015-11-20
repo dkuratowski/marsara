@@ -343,6 +343,36 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             return violatingQuadCoords;
         }
 
+        /// <see cref="IFogOfWarBC.GetPlacementSuggestions"/>
+        public RCSet<RCIntRectangle> GetPlacementSuggestions(IBuildingType buildingType)
+        {
+            if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+
+            RCIntRectangle quadWindow = this.mapWindowBC.AttachedWindow.QuadTileWindow;
+            RCSet<Tuple<RCIntRectangle, RCIntVector>> suggestions = buildingType.GetPlacementSuggestions(this.ActiveScenario, quadWindow);
+            RCSet<RCIntRectangle> retList = new RCSet<RCIntRectangle>();
+            foreach (Tuple<RCIntRectangle, RCIntVector> suggestion in suggestions)
+            {
+                RCIntRectangle areaToCheck = suggestion.Item1;
+                RCIntVector suggestionTranslation = suggestion.Item2;
+                for (int x = areaToCheck.Left; x < areaToCheck.Right; x++)
+                {
+                    for (int y = areaToCheck.Top; y < areaToCheck.Bottom; y++)
+                    {
+                        RCIntVector quadCoordToCheck = new RCIntVector(x, y);
+                        if (quadCoordToCheck.X >= 0 && quadCoordToCheck.X < this.ActiveScenario.Map.Size.X &&
+                            quadCoordToCheck.Y >= 0 && quadCoordToCheck.Y < this.ActiveScenario.Map.Size.Y &&
+                            this.GetFowState(quadCoordToCheck) == FOWTypeEnum.None)
+                        {
+                            RCIntVector buildingQuadSize = this.ActiveScenario.Map.CellToQuadSize(buildingType.Area.Read());
+                            retList.Add(new RCIntRectangle(areaToCheck.Location + suggestionTranslation, buildingQuadSize));
+                        }
+                    }
+                }
+            }
+            return retList;
+        }
+
         /// <see cref="IFogOfWarBC.ExecuteUpdateIteration"/>
         public void ExecuteUpdateIteration()
         {

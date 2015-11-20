@@ -156,6 +156,13 @@ namespace RC.App.BizLogic.BusinessComponents
         /// The list of the quadratic coordinates (relative to the given position) violating the constraints of the given building.
         /// </returns>
         RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType);
+
+        /// <summary>
+        /// Gets the placement suggestion boxes for the given building type inside the area of the attached window.
+        /// </summary>
+        /// <param name="buildingType">The type of the building for which to get suggestions.</param>
+        /// <returns>The list of the suggestion boxes in quadratic coordinates.</returns>
+        RCSet<RCIntRectangle> GetPlacementSuggestions(IBuildingType buildingType);
         
         /// <summary>
         /// Executes the next Fog Of War update iteration.

@@ -544,7 +544,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         private AnimationPalette animationPalette;
 
         /// <summary>
-        /// List of the placement constraints of this element type or null if this element type has no placement constraints.
+        /// List of the placement constraints of this element type.
         /// </summary>
         private readonly List<EntityPlacementConstraint> placementConstraints;
 

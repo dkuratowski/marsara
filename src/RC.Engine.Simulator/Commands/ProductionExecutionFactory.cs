@@ -49,7 +49,7 @@ namespace RC.Engine.Simulator.Commands
         {
             foreach (Entity entity in entitiesToHandle)
             {
-                ProductionExecution productExecution = new ProductionExecution(entity, parameter);
+                ProductionExecution productExecution = new ProductionExecution(entity, parameter, (RCIntVector)targetPosition);
                 yield return productExecution;
             }
         }

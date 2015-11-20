@@ -21,7 +21,7 @@ namespace RC.Common
         /// <returns>The result RCNumRectangle.</returns>
         public static implicit operator RCNumRectangle(RCIntRectangle rect)
         {
-            if (rect == RCIntRectangle.Undefined) { throw new ArgumentNullException("rect"); }
+            if (rect == RCIntRectangle.Undefined) { return RCNumRectangle.Undefined; }
             return new RCNumRectangle(rect.X, rect.Y, rect.Width, rect.Height);
         }
 
@@ -32,7 +32,7 @@ namespace RC.Common
         /// <returns>The components of the result rectangle are the floor of the components of the input rectangle.</returns>
         public static explicit operator RCIntRectangle(RCNumRectangle rect)
         {
-            if (rect == RCNumRectangle.Undefined) { throw new ArgumentNullException("rect"); }
+            if (rect == RCNumRectangle.Undefined) { return RCIntRectangle.Undefined; }
             return new RCIntRectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
         }
 

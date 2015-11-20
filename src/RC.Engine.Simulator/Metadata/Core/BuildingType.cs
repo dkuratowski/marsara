@@ -25,6 +25,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.unitTypes = new Dictionary<string, UnitType>();
             this.addonTypes = new Dictionary<string, AddonType>();
             this.upgradeTypes = new Dictionary<string, UpgradeType>();
+            this.suggestionProviders = new List<BuildingPlacementSuggestionProvider>();
         }
 
         #region IBuildingType members
@@ -115,6 +116,22 @@ namespace RC.Engine.Simulator.Metadata.Core
             return retList;
         }
 
+        /// <see cref="IBuildingType.GetPlacementSuggestions"/>
+        public RCSet<Tuple<RCIntRectangle, RCIntVector>> GetPlacementSuggestions(Scenario scenario, RCIntRectangle area)
+        {
+            if (scenario == null) { throw new ArgumentNullException("scenario"); }
+            if (area == RCIntRectangle.Undefined) { throw new ArgumentNullException("area"); }
+
+            /// Get suggestions from the providers defined by this building type.
+            RCSet<Tuple<RCIntRectangle, RCIntVector>> retList = new RCSet<Tuple<RCIntRectangle, RCIntVector>>();
+            foreach (BuildingPlacementSuggestionProvider suggestionProvider in this.suggestionProviders)
+            {
+                retList.UnionWith(suggestionProvider.GetSuggestions(scenario, area));
+            }
+
+            return retList;
+        }
+
         /// <see cref="IBuildingType.GetRelativeAddonPosition"/>
         public RCIntVector GetRelativeAddonPosition(IMapAccess map, IAddonType addonType)
         {
@@ -189,6 +206,19 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.upgradeTypes.Add(upgradeType.Name, upgradeType);
         }
 
+        /// <summary>
+        /// Adds a placement suggestion provider to this building type.
+        /// </summary>
+        /// <param name="suggestionProvider">The placement suggestion provider to add.</param>
+        public void AddPlacementSuggestionProvider(BuildingPlacementSuggestionProvider suggestionProvider)
+        {
+            if (this.Metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (suggestionProvider == null) { throw new ArgumentNullException("suggestionProvider"); }
+
+            suggestionProvider.SetBuildingType(this);
+            this.suggestionProviders.Add(suggestionProvider);
+        }
+
         #endregion BuildingType buildup methods
 
         /// <summary>
@@ -205,5 +235,10 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// List of the upgrade types that are performed in buildings of this type mapped by their names.
         /// </summary>
         private readonly Dictionary<string, UpgradeType> upgradeTypes;
+
+        /// <summary>
+        /// List of the placement suggestion providers of this building type.
+        /// </summary>
+        private readonly List<BuildingPlacementSuggestionProvider> suggestionProviders;
     }
 }

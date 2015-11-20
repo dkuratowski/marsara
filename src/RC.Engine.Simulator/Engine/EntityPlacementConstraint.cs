@@ -14,14 +14,6 @@ namespace RC.Engine.Simulator.Engine
     public abstract class EntityPlacementConstraint
     {
         /// <summary>
-        /// Constructs an EntityPlacementConstraint instance.
-        /// </summary>
-        public EntityPlacementConstraint()
-        {
-            this.entityType = null;
-        }
-
-        /// <summary>
         /// Sets the entity type that this constraint belongs to.
         /// </summary>
         /// <param name="entityType">The entity type that this constraint belongs to.</param>
@@ -29,7 +21,7 @@ namespace RC.Engine.Simulator.Engine
         public void SetEntityType(IScenarioElementType entityType)
         {
             if (entityType == null) { throw new ArgumentNullException("entityType"); }
-            if (this.entityType != null) { throw new SimulatorException("Entity type has already been set for constraint!"); }
+            if (this.entityType != null) { throw new SimulatorException("Entity type has already been set for this constraint!"); }
             this.entityType = entityType;
         }
 
@@ -44,7 +36,7 @@ namespace RC.Engine.Simulator.Engine
         /// </returns>
         public RCSet<RCIntVector> Check(Scenario scenario, RCIntVector position)
         {
-            if (this.entityType == null) { throw new SimulatorException("Entity type has not yet been set for constraint!"); }
+            if (this.entityType == null) { throw new SimulatorException("Entity type has not yet been set for this constraint!"); }
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
@@ -62,12 +54,20 @@ namespace RC.Engine.Simulator.Engine
         /// </returns>
         public RCSet<RCIntVector> Check(Entity entity, RCIntVector position)
         {
-            if (this.entityType == null) { throw new SimulatorException("Entity type has not yet been set for constraint!"); }
+            if (this.entityType == null) { throw new SimulatorException("Entity type has not yet been set for this constraint!"); }
             if (entity == null) { throw new ArgumentNullException("entity"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
             if (entity.Scenario == null) { throw new ArgumentException("The given entity is not added to a scenario!", "entity"); }
 
             return this.CheckImpl(entity.Scenario, position, entity);
+        }
+
+        /// <summary>
+        /// Constructs an EntityPlacementConstraint instance.
+        /// </summary>
+        protected EntityPlacementConstraint()
+        {
+            this.entityType = null;
         }
 
         /// <summary>

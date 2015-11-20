@@ -365,7 +365,7 @@ namespace RC.Engine.Simulator.Commands
         /// </summary>
         private void Initialize()
         {
-            foreach (Entity recipientEntity in this.recipientEntities)
+            foreach (Entity recipientEntity in this.RecipientEntities)
             {
                 recipientEntity.Armour.StopAttack();
                 recipientEntity.MotionControl.StopMoving();
@@ -377,7 +377,7 @@ namespace RC.Engine.Simulator.Commands
         #endregion Private methods
 
         /// <summary>
-        /// Reference to the recipient entities of this command execution.
+        /// Reference to the recipient entities of this command execution or null if this is a sub-execution.
         /// </summary>
         /// TODO: store these entities in a HeapedArray!
         private RCSet<Entity> recipientEntities;

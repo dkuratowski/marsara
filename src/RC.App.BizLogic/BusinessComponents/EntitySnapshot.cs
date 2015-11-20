@@ -37,8 +37,8 @@ namespace RC.App.BizLogic.BusinessComponents
             foreach (AnimationPlayer animation in sourceEntity.MapObject.CurrentAnimations) { spriteIndices.AddRange(animation.CurrentFrame); }
             this.animationFrame = spriteIndices.ToArray();
 
-            /// Save the owner player of the source entity.
-            this.owner = BizLogicHelpers.GetMapObjectOwner(sourceEntity.MapObject);
+            /// Save the last known owner player of the source entity.
+            this.owner = BizLogicHelpers.GetMapObjectLastOwner(sourceEntity.MapObject);
         }
 
         #region Public members

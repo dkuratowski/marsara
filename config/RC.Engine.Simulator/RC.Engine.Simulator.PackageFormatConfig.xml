@@ -23,8 +23,8 @@
   <packageFormat namespace="RC.Engine.Simulator" name="Command" id="13">
     <field type="STRING">The type of the command.</field>
     <field type="INT_ARRAY">The list of the IDs of the command recipients.</field>
-    <field type="INT">The X-coordinate of the target position (RCNumber, optional).</field>
-    <field type="INT">The Y-coordinate of the target position (RCNumber, optional).</field>
+    <field type="INT">The X-coordinate of the target position (bits of an RCNumber, optional, -1 if not defined).</field>
+    <field type="INT">The Y-coordinate of the target position (bits of an RCNumber, optional, -1 if not defined).</field>
     <field type="INT">Target entity ID (optional, -1 if not defined).</field>
     <field type="STRING">Optional parameter (empty string if not defined).</field>
   </packageFormat>

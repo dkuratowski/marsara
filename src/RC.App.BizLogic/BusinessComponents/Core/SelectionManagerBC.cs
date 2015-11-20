@@ -222,12 +222,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (entityAtPos == null) { return; }
 
             this.currentSelection.Clear();
-            if (BizLogicHelpers.GetMapObjectOwner(entityAtPos.MapObject) == this.localPlayer &&
+            if (BizLogicHelpers.GetMapObjectCurrentOwner(entityAtPos.MapObject) == this.localPlayer &&
                 entityAtPos is Unit)
             {
                 foreach (Entity entityToAdd in this.ActiveScenario.GetElementsOnMap<Entity>(selectionBox, MapObjectLayerEnum.AirObjects, MapObjectLayerEnum.GroundObjects))
                 {
-                    if (BizLogicHelpers.GetMapObjectOwner(entityToAdd.MapObject) == this.localPlayer &&
+                    if (BizLogicHelpers.GetMapObjectCurrentOwner(entityToAdd.MapObject) == this.localPlayer &&
                         entityToAdd.ElementType == entityAtPos.ElementType) // TODO: this might be problematic in case of Terran Siege Tanks!
                     {
                         this.AddEntityToSelection(entityToAdd);
@@ -353,8 +353,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
 
             if (currentSelection.Count == 1 &&
-                BizLogicHelpers.GetMapObjectOwner(currentSelection[0].MapObject) == this.localPlayer &&
-                BizLogicHelpers.GetMapObjectOwner(entityToAdd.MapObject) == this.localPlayer &&
+                BizLogicHelpers.GetMapObjectCurrentOwner(currentSelection[0].MapObject) == this.localPlayer &&
+                BizLogicHelpers.GetMapObjectCurrentOwner(entityToAdd.MapObject) == this.localPlayer &&
                 currentSelection[0] is Unit &&
                 entityToAdd is Unit)
             {
@@ -364,8 +364,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
 
             if (currentSelection.TrueForAll(selectedEntity =>
-                    BizLogicHelpers.GetMapObjectOwner(selectedEntity.MapObject) == this.localPlayer &&
-                    BizLogicHelpers.GetMapObjectOwner(entityToAdd.MapObject) == this.localPlayer &&
+                    BizLogicHelpers.GetMapObjectCurrentOwner(selectedEntity.MapObject) == this.localPlayer &&
+                    BizLogicHelpers.GetMapObjectCurrentOwner(entityToAdd.MapObject) == this.localPlayer &&
                     selectedEntity is Unit) &&
                 entityToAdd is Unit)
             {

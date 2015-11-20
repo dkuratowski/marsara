@@ -9,8 +9,8 @@ using RC.Engine.Simulator.PublicInterfaces;
 namespace RC.Engine.Simulator.Commands
 {
     /// <summary>
-    /// The abstract base class of command executions that are automatically postponed when the recipient entity is taking off and cancelled when
-    /// the recipient entity is fixed or is landing.
+    /// The abstract base class of command executions that are automatically postponed when the recipient entity is taking off or landing and cancelled when
+    /// the recipient entity is fixed.
     /// </summary>
     public abstract class PostponedCmdExecution : CmdExecutionBase
     {
@@ -22,8 +22,8 @@ namespace RC.Engine.Simulator.Commands
             : base(new RCSet<Entity> { recipientEntity })
         {
             this.recipientEntity = this.ConstructField<Entity>("recipientEntity");
-            this.waitingForTakeoff = this.ConstructField<byte>("waitingForTakeoff");
-            this.waitingForTakeoff.Write(0x00);
+            this.waitingForTakeoffOrLand = this.ConstructField<byte>("waitingForTakeoffOrLand");
+            this.waitingForTakeoffOrLand.Write(0x00);
             this.recipientEntity.Write(recipientEntity);
         }
 
@@ -32,20 +32,20 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="CmdExecutionBase.ContinueImpl"/>
         protected sealed override bool ContinueImpl()
         {
-            /// If the recipient entity is fixed or landing -> finish execution.
-            if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.Fixed ||
-                this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.Landing)
+            /// If the recipient entity is fixed -> execution cancelled.
+            if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.Fixed)
             {
                 return true;
             }
 
             /// If we are waiting for the current takeoff operation to complete -> check the completion.
-            if (this.waitingForTakeoff.Read() == 0x01)
+            if (this.waitingForTakeoffOrLand.Read() == 0x01)
             {
-                if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.InAir)
+                if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.InAir ||
+                    this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.OnGround)
                 {
                     this.InitializeImpl_i();
-                    this.waitingForTakeoff.Write(0x00);
+                    this.waitingForTakeoffOrLand.Write(0x00);
                 }
                 else
                 {
@@ -59,17 +59,17 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="CmdExecutionBase.InitializeImpl"/>
         protected sealed override void InitializeImpl()
         {
-            /// If the recipient entity is fixed or landing -> nothing to do.
-            if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.Fixed ||
-                this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.Landing)
+            /// If the recipient entity is fixed -> nothing to do.
+            if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.Fixed)
             {
                 return;
             }
 
-            /// If the recipient entity is taking off -> postpone the initialization.
-            if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.TakingOff)
+            /// If the recipient entity is taking off or landing -> postpone the initialization.
+            if (this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.TakingOff ||
+                this.recipientEntity.Read().MotionControl.Status == MotionControlStatusEnum.Landing)
             {
-                this.waitingForTakeoff.Write(0x01);
+                this.waitingForTakeoffOrLand.Write(0x01);
             }
             else
             {
@@ -101,8 +101,8 @@ namespace RC.Engine.Simulator.Commands
         private readonly HeapedValue<Entity> recipientEntity;
 
         /// <summary>
-        /// This flag indicates whether this command execution is still waiting for a condition to begin its execution.
+        /// This flag indicates whether this command execution is still waiting for the current taking off or landing operation.
         /// </summary>
-        private readonly HeapedValue<byte> waitingForTakeoff;
+        private readonly HeapedValue<byte> waitingForTakeoffOrLand;
     }
 }

@@ -100,7 +100,7 @@ namespace RC.App.BizLogic.Views.Core
                         Index = mapObject.Owner.ElementType.SpritePalette.Index,
                         DisplayCoords = displayRect.Location + mapObject.Owner.ElementType.SpritePalette.GetOffset(spriteIdx),
                         Section = mapObject.Owner.ElementType.SpritePalette.GetSection(spriteIdx)
-                    }, BizLogicHelpers.GetMapObjectOwner(mapObject)));
+                    }, BizLogicHelpers.GetMapObjectLastOwner(mapObject)));
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace RC.App.BizLogic.Views.Core
                     Index = this.scenarioManagerBC.Metadata.ShadowPalette.Index,
                     DisplayCoords = shadowDisplayCoords,
                     Section = shadowSection
-                }, BizLogicHelpers.GetMapObjectOwner(mapObject)));
+                }, BizLogicHelpers.GetMapObjectLastOwner(mapObject)));
             }
         }
 

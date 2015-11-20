@@ -68,7 +68,7 @@ namespace RC.App.BizLogic.Views.Core
                 {
                     bool attackSignal = entity.Biometrics.FrameIndexOfLastEnemyDamage != -1 &&
                                         entity.Scenario.CurrentFrameIndex - entity.Biometrics.FrameIndexOfLastEnemyDamage <= ATTACK_INDICATION_DURATION;
-                    this.AddEntityInfo(mapObject.QuadraticPosition, BizLogicHelpers.GetMapObjectOwner(mapObject), attackSignal, pixelInfos);
+                    this.AddEntityInfo(mapObject.QuadraticPosition, BizLogicHelpers.GetMapObjectCurrentOwner(mapObject), attackSignal, pixelInfos);
                 }
             }
             foreach (EntitySnapshot entitySnapshot in this.fogOfWarBC.GetEntitySnapshotsInWindow(scannedQuadWindow))

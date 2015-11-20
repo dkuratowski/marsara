@@ -103,6 +103,19 @@ namespace RC.Engine.Simulator.Metadata
         RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType);
 
         /// <summary>
+        /// Gets the placement suggestion boxes for this building type inside the given area on the map of the given scenario.
+        /// </summary>
+        /// <param name="scenario">The given scenario.</param>
+        /// <param name="area">The area on the map of the given scenario in quadratic coordinates.</param>
+        /// <returns>
+        /// A list that contains pairs of an RCIntRectangle and an RCIntVector. Each of these pair gives informations about
+        /// a suggestion box to the caller. The RCIntRectangle component represents the area whose visibility needs to be
+        /// checked by the caller. If that area is visible then the RCIntVector component contains the coordinates of the
+        /// top-left corner of the suggestion box relative to the RCIntRectangle component.
+        /// </returns>
+        RCSet<Tuple<RCIntRectangle, RCIntVector>> GetPlacementSuggestions(Scenario scenario, RCIntRectangle area);
+        
+        /// <summary>
         /// Gets the quadratic position of the given addon type relative to the top-left quadratic tile of this building type.
         /// </summary>
         /// <param name="map">The map that is used for the calculations.</param>

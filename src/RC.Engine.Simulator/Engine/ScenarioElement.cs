@@ -34,6 +34,11 @@ namespace RC.Engine.Simulator.Engine
         public Player Owner { get { return this.owner.Read(); } }
 
         /// <summary>
+        /// Gets the index of the last known owner of this scenario element or -1 if this scenario element hasn't had an owner yet.
+        /// </summary>
+        public int LastOwnerIndex { get { return this.lastOwnerIndex.Read(); } }
+
+        /// <summary>
         /// Gets a reference to the scenario that this scenario element belongs to or null if this scenario element doesn't belong to any scenario.
         /// </summary>
         public Scenario Scenario { get { return this.scenario.Read(); } }
@@ -108,6 +113,7 @@ namespace RC.Engine.Simulator.Engine
             this.typeID = this.ConstructField<int>("typeID");
             this.id = this.ConstructField<int>("id");
             this.owner = this.ConstructField<Player>("owner");
+            this.lastOwnerIndex = this.ConstructField<int>("lastOwnerIndex");
             this.scenario = this.ConstructField<Scenario>("scenario");
             this.mapObjectsOfThisElementByLayer = new Dictionary<MapObjectLayerEnum, RCSet<MapObject>>
             {
@@ -123,6 +129,7 @@ namespace RC.Engine.Simulator.Engine
             this.typeID.Write(this.elementType.ID);
             this.id.Write(-1);
             this.owner.Write(null);
+            this.lastOwnerIndex.Write(-1);
             this.scenario.Write(null);
             this.mapContext = null;
         }
@@ -250,6 +257,7 @@ namespace RC.Engine.Simulator.Engine
             if (this.scenario.Read() == null) { throw new InvalidOperationException("The scenario element doesn't not belong to a scenario!"); }
             if (this.owner.Read() != null) { throw new InvalidOperationException("The scenario element is already added to a player!"); }
             this.owner.Write(owner);
+            this.lastOwnerIndex.Write(owner.PlayerIndex);
         }
 
         /// <summary>
@@ -292,6 +300,11 @@ namespace RC.Engine.Simulator.Engine
         /// Reference to the player who owns this scenario element or null if this scenario element is neutral or is a start location.
         /// </summary>
         private readonly HeapedValue<Player> owner;
+
+        /// <summary>
+        /// The index of the last known owner of this scenario element or -1 if this scenario element hasn't had an owner yet.
+        /// </summary>
+        private readonly HeapedValue<int> lastOwnerIndex;
 
         /// <summary>
         /// Reference to the scenario that this scenario element belongs to or null if this scenario element doesn't belong to any scenario.

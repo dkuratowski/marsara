@@ -28,6 +28,7 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<ResourceObject>(new RCIntVector(3, 3)));
             extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<StartLocation>(new RCIntVector(3, 3)));
             extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<Entity>(new RCIntVector(0, 0)));
+            extendedComponent.RegisterPlacementSuggestionProvider(CommandCenter.COMMANDCENTER_TYPE_NAME, new CorrespondingAddonSuggestion());
 
             /// Terran Comsat Station
             extendedComponent.RegisterEntityConstraint(ComsatStation.COMSATSTATION_TYPE_NAME, new BuildableAreaConstraint());

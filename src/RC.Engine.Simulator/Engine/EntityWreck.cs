@@ -24,7 +24,7 @@ namespace RC.Engine.Simulator.Engine
 
             this.playerIndex = this.ConstructField<int>("playerIndex");
             this.motionControlStatus = this.ConstructField<byte>("motionControlStatus");
-            this.playerIndex.Write(entity.Owner != null ? entity.Owner.PlayerIndex : -1);
+            this.playerIndex.Write(entity.LastOwnerIndex);
             this.weapons = entity.Armour.DetachWeapons();
 
             this.destructionAnimationName = destructionAnimationName;

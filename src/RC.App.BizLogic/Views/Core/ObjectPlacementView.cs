@@ -97,6 +97,9 @@ namespace RC.App.BizLogic.Views.Core
             return placementBox;
         }
 
+        /// <see cref="IObjectPlacementView.GetSuggestionBoxes"/>
+        public virtual List<RCIntRectangle> GetSuggestionBoxes() { return new List<RCIntRectangle>(); }
+
         /// <see cref="IObjectPlacementView.StepPreviewAnimation"/>
         public virtual void StepPreviewAnimation() { }
 

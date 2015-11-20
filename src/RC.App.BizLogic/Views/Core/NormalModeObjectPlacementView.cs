@@ -36,6 +36,28 @@ namespace RC.App.BizLogic.Views.Core
 
         #region ObjectPlacementView overrides
 
+        /// <see cref="ObjectPlacementView.GetSuggestionBoxes"/>
+        public override List<RCIntRectangle> GetSuggestionBoxes()
+        {
+            this.UpdatePlacementData();
+
+            /// If there is no building to be placed or it has to be placed together with an addon -> no suggestion.
+            if ((this.buildingToBePlaced == null && this.buildingTypeToBePlaced == null) || this.addonTypeToBePlaced != null) { return new List<RCIntRectangle>(); }
+
+            /// Otherwise collect the suggestion boxes for the building type being placed and transform the collected
+            /// boxes to window coordinates.
+            IBuildingType buildingType = this.buildingToBePlaced != null
+                ? this.buildingToBePlaced.BuildingType
+                : this.buildingTypeToBePlaced;
+            RCSet<RCIntRectangle> quadSuggestionBoxes = this.fogOfWarBC.GetPlacementSuggestions(buildingType);
+            List<RCIntRectangle> suggestionBoxes = new List<RCIntRectangle>();
+            foreach (RCIntRectangle quadSuggestionBox in quadSuggestionBoxes)
+            {
+                suggestionBoxes.Add(this.MapWindowBC.AttachedWindow.QuadToWindowRect(quadSuggestionBox));
+            }
+            return suggestionBoxes;
+        }
+
         /// <see cref="ObjectPlacementView.StepPreviewAnimation"/>
         public override void StepPreviewAnimation()
         {

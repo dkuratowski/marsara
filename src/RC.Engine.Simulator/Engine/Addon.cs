@@ -35,7 +35,7 @@ namespace RC.Engine.Simulator.Engine
                 if (buildingPosition.X < 0 || buildingPosition.X >= this.Scenario.Map.Size.X || buildingPosition.Y < 0 || buildingPosition.Y >= this.Scenario.Map.Size.Y) { return null; }
 
                 Building building = this.MapContext.FixedEntities[buildingPosition.X, buildingPosition.Y] as Building;
-                if (building == null) { return null; }
+                if (building == null || building.Biometrics.IsUnderConstruction) { return null; }
 
                 return building.BuildingType.HasAddonType(this.AddonType.Name) ? building : null;
             }

@@ -25,6 +25,7 @@ namespace RC.Engine.Simulator.Engine
         {
             this.metadata = null;
             this.entityConstraints = new Dictionary<string, List<EntityPlacementConstraint>>();
+            this.suggestionProviders = new Dictionary<string, List<BuildingPlacementSuggestionProvider>>();
 
             this.RegisterEntityConstraint(MineralField.MINERALFIELD_TYPE_NAME, new BuildableAreaConstraint());
             this.RegisterEntityConstraint(MineralField.MINERALFIELD_TYPE_NAME, new MinimumDistanceConstraint<StartLocation>(new RCIntVector(3, 3)));
@@ -149,7 +150,7 @@ namespace RC.Engine.Simulator.Engine
 
         #endregion IScenarioLoader methods
 
-        #region ICmdExecutorFactoryPluginInstall methods
+        #region IScenarioLoaderPluginInstall methods
 
         /// <see cref="IScenarioLoaderPluginInstall.RegisterEntityConstraint"/>
         public void RegisterEntityConstraint(string entityType, EntityPlacementConstraint constraint)
@@ -159,7 +160,15 @@ namespace RC.Engine.Simulator.Engine
             this.entityConstraints[entityType].Add(constraint);
         }
 
-        #endregion ICmdExecutorFactoryPluginInstall methods
+        /// <see cref="IScenarioLoaderPluginInstall.RegisterPlacementSuggestionProvider"/>
+        public void RegisterPlacementSuggestionProvider(string buildingType, BuildingPlacementSuggestionProvider provider)
+        {
+            if (buildingType == null) { throw new ArgumentNullException("buildingType"); }
+            if (!this.suggestionProviders.ContainsKey(buildingType)) { this.suggestionProviders.Add(buildingType, new List<BuildingPlacementSuggestionProvider>()); }
+            this.suggestionProviders[buildingType].Add(provider);
+        }
+
+        #endregion IScenarioLoaderPluginInstall methods
 
         #region IComponent methods
 
@@ -190,6 +199,18 @@ namespace RC.Engine.Simulator.Engine
                     elementType.AddPlacementConstraint(constraint);
                 }
             }
+
+            /// Register the suggestion providers to the corresponding building types.
+            foreach (KeyValuePair<string, List<BuildingPlacementSuggestionProvider>> item in this.suggestionProviders)
+            {
+                BuildingType buildingType = this.metadata.GetBuildingTypeImpl(item.Key);
+                foreach (BuildingPlacementSuggestionProvider provider in item.Value)
+                {
+                    buildingType.AddPlacementSuggestionProvider(provider);
+                }
+            }
+
+            /// Finalize the metadata.
             this.metadata.CheckAndFinalize();
         }
 
@@ -204,7 +225,12 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// List of the registered entity constraints mapped by the names of the corresponding entity types.
         /// </summary>
-        private Dictionary<string, List<EntityPlacementConstraint>> entityConstraints;
+        private readonly Dictionary<string, List<EntityPlacementConstraint>> entityConstraints;
+
+        /// <summary>
+        /// List of the registered placement suggestion providers mapped by the names of the corresponding building types.
+        /// </summary>
+        private readonly Dictionary<string, List<BuildingPlacementSuggestionProvider>> suggestionProviders;
 
         /// <summary>
         /// Reference to the simulation metadata.

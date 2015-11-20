@@ -21,10 +21,15 @@ namespace RC.Engine.Simulator.Commands
             if (!cmdPackage.IsCommitted) { throw new ArgumentException("The incoming package is not committed!", "cmdPackage"); }
             if (cmdPackage.PackageFormat.ID != RCCommand.COMMAND_PACKAGEFORMAT) { throw new ArgumentException("The incoming package is not a command package!", "cmdPackage"); }
 
+            RCNumVector targetPosition = RCNumVector.Undefined;
+            int targetPositionX = cmdPackage.ReadInt(2);
+            int targetPositionY = cmdPackage.ReadInt(3);
+            if (targetPositionX != -1 && targetPositionY != -1) { targetPosition = new RCNumVector(new RCNumber(targetPositionX), new RCNumber(targetPositionY)); }
+
             return new RCCommand(
                 cmdPackage.ReadString(0),
                 cmdPackage.ReadIntArray(1),
-                new RCNumVector(new RCNumber(cmdPackage.ReadInt(2)), new RCNumber(cmdPackage.ReadInt(3))),
+                targetPosition,
                 cmdPackage.ReadInt(4),
                 cmdPackage.ReadString(5));
         }
@@ -43,7 +48,7 @@ namespace RC.Engine.Simulator.Commands
 
             this.commandType = commandType;
             this.recipientEntities = recipientEntities;
-            this.targetPosition = targetPosition != RCNumVector.Undefined ? targetPosition : new RCNumVector(0, 0);
+            this.targetPosition = targetPosition;
             this.targetEntity = targetEntity;
             this.parameter = parameter;
         }
@@ -57,8 +62,8 @@ namespace RC.Engine.Simulator.Commands
             RCPackage package = RCPackage.CreateCustomDataPackage(RCCommand.COMMAND_PACKAGEFORMAT);
             package.WriteString(0, this.commandType ?? string.Empty);
             package.WriteIntArray(1, this.recipientEntities);
-            package.WriteInt(2, this.targetPosition.X.Bits);
-            package.WriteInt(3, this.targetPosition.Y.Bits);
+            package.WriteInt(2, this.targetPosition != RCNumVector.Undefined ? this.targetPosition.X.Bits : -1);
+            package.WriteInt(3, this.targetPosition != RCNumVector.Undefined ? this.targetPosition.Y.Bits : -1);
             package.WriteInt(4, this.targetEntity);
             package.WriteString(5, this.parameter ?? string.Empty);
             return package;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 using RC.Engine.Simulator.Engine;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Metadata
 {

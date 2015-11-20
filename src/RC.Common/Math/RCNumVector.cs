@@ -125,7 +125,7 @@ namespace RC.Common
         /// <returns>The result RCNumVector.</returns>
         public static implicit operator RCNumVector(RCIntVector vect)
         {
-            if (vect == RCIntVector.Undefined) { throw new ArgumentNullException("vect"); }
+            if (vect == RCIntVector.Undefined) { return RCNumVector.Undefined; }
             return new RCNumVector(vect.X, vect.Y);
         }
 
@@ -136,7 +136,7 @@ namespace RC.Common
         /// <returns>The components of the result vector are the floor of the components of the input vector.</returns>
         public static explicit operator RCIntVector(RCNumVector vect)
         {
-            if (vect == RCNumVector.Undefined) { throw new ArgumentNullException("vect"); }
+            if (vect == RCNumVector.Undefined) { return RCIntVector.Undefined; }
             return new RCIntVector((int)vect.X, (int)vect.Y);
         }
 

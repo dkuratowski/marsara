@@ -19,6 +19,12 @@ namespace RC.App.BizLogic.Views
         ObjectPlacementBox GetObjectPlacementBox(RCIntVector position);
 
         /// <summary>
+        /// Gets the suggestion boxes inside the displayed area.
+        /// </summary>
+        /// <returns>The suggestion boxes to be displayed.</returns>
+        List<RCIntRectangle> GetSuggestionBoxes();
+
+        /// <summary>
         /// Steps the preview animation of the object. If the object has no preview animation then this function has no effect.
         /// </summary>
         void StepPreviewAnimation();

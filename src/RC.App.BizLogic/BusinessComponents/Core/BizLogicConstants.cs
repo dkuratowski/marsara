@@ -15,7 +15,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// </summary>
         /// <param name="mapObject">Reference to the map object.</param>
         /// <returns>The owner of the given map object or PlayerEnum.Neutral if the map object has no owner.</returns>
-        public static PlayerEnum GetMapObjectOwner(MapObject mapObject)
+        public static PlayerEnum GetMapObjectCurrentOwner(MapObject mapObject)
         {
             Entity entity = mapObject.Owner as Entity;
             if (entity != null)
@@ -24,6 +24,29 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 PlayerEnum owner = entityAsStartLoc != null
                     ? (PlayerEnum) entityAsStartLoc.PlayerIndex
                     : (entity.Owner != null ? (PlayerEnum) entity.Owner.PlayerIndex : PlayerEnum.Neutral);
+                return owner;
+            }
+
+            EntityWreck entityWreck = mapObject.Owner as EntityWreck;
+            if (entityWreck != null) { return (PlayerEnum)entityWreck.PlayerIndex; }
+
+            return PlayerEnum.Neutral;
+        }
+
+        /// <summary>
+        /// Gets the last known owner of the given map object.
+        /// </summary>
+        /// <param name="mapObject">Reference to the map object.</param>
+        /// <returns>The last known owner of the given map object or PlayerEnum.Neutral if the map object hasn't had owner yet.</returns>
+        public static PlayerEnum GetMapObjectLastOwner(MapObject mapObject)
+        {
+            Entity entity = mapObject.Owner as Entity;
+            if (entity != null)
+            {
+                StartLocation entityAsStartLoc = entity as StartLocation;
+                PlayerEnum owner = entityAsStartLoc != null
+                    ? (PlayerEnum)entityAsStartLoc.PlayerIndex
+                    : (PlayerEnum)entity.LastOwnerIndex;
                 return owner;
             }
 

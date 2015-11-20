@@ -52,7 +52,8 @@ namespace RC.App.PresLogic.Pages
                                                          new RCIntVector(320, 135));
             //this.mapWalkabilityDisplay = new RCMapWalkabilityDisplay(this.mapDisplayBasic);
             this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic);
-            this.selectionDisplayEx = new RCSelectionDisplay(this.mapObjectDisplayEx);
+            this.suggestionBoxDisplayEx = new RCSuggestionBoxDisplay(this.mapObjectDisplayEx);
+            this.selectionDisplayEx = new RCSelectionDisplay(this.suggestionBoxDisplayEx);
             this.fogOfWarDisplayEx = new RCFogOfWarDisplay(this.selectionDisplayEx);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.fogOfWarDisplayEx);
             this.selectionBoxDisplayEx = new RCSelectionBoxDisplay(this.objectPlacementDisplayEx);
@@ -232,6 +233,8 @@ namespace RC.App.PresLogic.Pages
             this.mouseHandler.Inactivated += this.CreateMouseHandler;
         }
 
+        #region Panels
+
         /// <summary>
         /// Reference to the minimap panel.
         /// </summary>
@@ -262,6 +265,10 @@ namespace RC.App.PresLogic.Pages
         /// </summary>
         private readonly RCMenuButtonPanel menuButtonPanel;
 
+        #endregion Panels
+
+        #region Map display & extensions
+
         /// <summary>
         /// Reference to the map display.
         /// </summary>
@@ -270,12 +277,12 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// The basic part of the map display.
         /// </summary>
-        private RCMapDisplayBasic mapDisplayBasic;
+        private readonly RCMapDisplayBasic mapDisplayBasic;
 
         /// <summary>
         /// Extension of the map display that displays the walkability of the map cells.
         /// </summary>
-        private RCMapWalkabilityDisplay mapWalkabilityDisplay;
+        private readonly RCMapWalkabilityDisplay mapWalkabilityDisplay;
 
         /// <summary>
         /// Extension of the map display that displays the map objects.
@@ -283,24 +290,31 @@ namespace RC.App.PresLogic.Pages
         private readonly RCMapObjectDisplay mapObjectDisplayEx;
 
         /// <summary>
+        /// Extension of the map display that displays the suggestion boxes.
+        /// </summary>
+        private readonly RCSuggestionBoxDisplay suggestionBoxDisplayEx;
+
+        /// <summary>
         /// Extension of the map display that displays the selection indicators of the selected map objects.
         /// </summary>
-        private RCSelectionDisplay selectionDisplayEx;
+        private readonly RCSelectionDisplay selectionDisplayEx;
 
         /// <summary>
         /// Extenation of the map display that displays the actual Fog Of War state of the quadratic tiles.
         /// </summary>
-        private RCFogOfWarDisplay fogOfWarDisplayEx;
+        private readonly RCFogOfWarDisplay fogOfWarDisplayEx;
 
         /// <summary>
         /// Extension of the map display that displays the object placement boxes.
         /// </summary>
-        private RCObjectPlacementDisplay objectPlacementDisplayEx;
+        private readonly RCObjectPlacementDisplay objectPlacementDisplayEx;
 
         /// <summary>
         /// Extension of the map display that displays the selection box.
         /// </summary>
         private readonly RCSelectionBoxDisplay selectionBoxDisplayEx;
+
+        #endregion Map display & extensions
 
         /// <summary>
         /// Reference to the game connector object.

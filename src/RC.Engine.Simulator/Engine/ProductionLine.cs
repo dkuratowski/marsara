@@ -100,8 +100,8 @@ namespace RC.Engine.Simulator.Engine
             /// Check the requirements of the product.
             foreach (IRequirement requirement in this.products[productName].Requirements)
             {
-                if (!this.owner.Read().Owner.HasEntity(requirement.RequiredBuildingType.Name)) { return false; }
-                if (requirement.RequiredAddonType != null && !this.owner.Read().Owner.HasEntity(requirement.RequiredAddonType.Name)) { return false; }
+                if (!this.owner.Read().Owner.HasBuilding(requirement.RequiredBuildingType.Name)) { return false; }
+                if (requirement.RequiredAddonType != null && !this.owner.Read().Owner.HasAddon(requirement.RequiredAddonType.Name)) { return false; }
             }
 
             /// Check the additional requirements of the derived class if exists.

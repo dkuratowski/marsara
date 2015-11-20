@@ -82,12 +82,12 @@ namespace RC.App.PresLogic.Controls
         /// <summary>
         /// The sprite for displaying the green parts of the object placement mask.
         /// </summary>
-        private UISprite objectPlacementMaskGreen;
+        private readonly UISprite objectPlacementMaskGreen;
 
         /// <summary>
         /// The sprite for displaying the red parts of the object placement mask.
         /// </summary>
-        private UISprite objectPlacementMaskRed;
+        private readonly UISprite objectPlacementMaskRed;
 
         /// <summary>
         /// The last known position of the mouse cursor in the coordinate system of the display.

@@ -104,8 +104,8 @@ namespace RC.App.BizLogic.Services.Core
                 {
                     if (affectedEntity.CheckPlacementConstraints(affectedEntity.MapObject.QuadraticPosition.Location).Count != 0)
                     {
-                        this.scenarioManager.ActiveScenario.RemoveElementFromScenario(affectedEntity);
                         affectedEntity.DetachFromMap();
+                        this.scenarioManager.ActiveScenario.RemoveElementFromScenario(affectedEntity);
                         affectedEntity.Dispose();
                     }
                 }
@@ -140,8 +140,8 @@ namespace RC.App.BizLogic.Services.Core
                 {
                     if (affectedEntity.CheckPlacementConstraints(affectedEntity.MapObject.QuadraticPosition.Location).Count != 0)
                     {
-                        this.scenarioManager.ActiveScenario.RemoveElementFromScenario(affectedEntity);
                         affectedEntity.DetachFromMap();
+                        this.scenarioManager.ActiveScenario.RemoveElementFromScenario(affectedEntity);
                         affectedEntity.Dispose();
                     }
                 }

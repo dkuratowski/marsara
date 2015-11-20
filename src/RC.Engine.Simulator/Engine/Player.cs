@@ -160,17 +160,48 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
-        /// Checks whether this player has at least 1 entity of the given type.
+        /// Checks whether this player has at least 1 building of the given type that is not under construction.
         /// </summary>
-        /// <param name="scenarioElementType">The name of the type to check.</param>
-        /// <returns>True if this player has at least 1 entity of the given type; otherwise false.</returns>
-        public bool HasEntity(string scenarioElementType)
+        /// <param name="buildingType">The name of the building type to check.</param>
+        /// <returns>
+        /// True if this player has at least 1 building of the given type that is not under construction; otherwise false.
+        /// </returns>
+        public bool HasBuilding(string buildingType)
         {
-            if (scenarioElementType == null) { throw new ArgumentNullException("scenarioElementType"); }
+            if (buildingType == null) { throw new ArgumentNullException("buildingType"); }
 
-            return this.buildings.ContainsKey(scenarioElementType) ||
-                   this.addons.ContainsKey(scenarioElementType) ||
-                   this.units.ContainsKey(scenarioElementType);
+            if (!this.buildings.ContainsKey(buildingType)) { return false; }
+            return this.buildings[buildingType].Any(building => !building.Biometrics.IsUnderConstruction);
+        }
+
+        /// <summary>
+        /// Checks whether this player has at least 1 addon of the given type that is not under construction.
+        /// </summary>
+        /// <param name="addonType">The name of the addon type to check.</param>
+        /// <returns>
+        /// True if this player has at least 1 addon of the given type that is not under construction; otherwise false.
+        /// </returns>
+        public bool HasAddon(string addonType)
+        {
+            if (addonType == null) { throw new ArgumentNullException("addonType"); }
+
+            if (!this.addons.ContainsKey(addonType)) { return false; }
+            return this.addons[addonType].Any(addon => !addon.Biometrics.IsUnderConstruction);
+        }
+
+        /// <summary>
+        /// Checks whether this player has at least 1 unit of the given type that is not under construction.
+        /// </summary>
+        /// <param name="unitType">The name of the unit type to check.</param>
+        /// <returns>
+        /// True if this player has at least 1 unit of the given type that is not under construction; otherwise false.
+        /// </returns>
+        public bool HasUnit(string unitType)
+        {
+            if (unitType == null) { throw new ArgumentNullException("unitType"); }
+
+            if (!this.units.ContainsKey(unitType)) { return false; }
+            return this.units[unitType].Any(unit => !unit.Biometrics.IsUnderConstruction);
         }
 
         /// <summary>
