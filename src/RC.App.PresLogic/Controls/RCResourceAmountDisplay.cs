@@ -1,130 +1,83 @@
-﻿using RC.Common;
+﻿using RC.App.BizLogic.Services;
+using RC.App.BizLogic.Views;
+using RC.Common;
+using RC.Common.ComponentModel;
 using RC.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using RC.Common.ComponentModel;
-using RC.App.BizLogic.Services;
-using RC.App.BizLogic.Views;
 
 namespace RC.App.PresLogic.Controls
 {
     /// <summary>
-    /// Adds new functionality to the map display control for displaying the amount of resource in a mineral field or vespene geyser.
+    /// Represents the resource amount display control on the details panel.
     /// </summary>
-    public class RCResourceAmountDisplay : RCMapDisplayExtension
+    public class RCResourceAmountDisplay : UIControl
     {
         /// <summary>
-        /// Constructs an RCResourceAmountDisplay extension for the given map display control.
+        /// Constructs a RCResourceAmountDisplay control at the given position with the given size.
         /// </summary>
-        /// <param name="extendedControl">The map display control to extend.</param>
-        public RCResourceAmountDisplay(RCMapDisplay extendedControl)
-            : base(extendedControl)
+        /// <param name="position">The position of the control.</param>
+        /// <param name="size">The size of the control.</param>
+        public RCResourceAmountDisplay(RCIntVector position, RCIntVector size)
+            : base(position, size)
         {
-            this.mapObjectDetailsView = null;
-            this.objectID = -1;
-            this.drawPosition = RCIntVector.Undefined;
-            this.stringToRender = new UIString("R:{0}", UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5"), UIWorkspace.Instance.PixelScaling, RCColor.White);
-            this.backgroundBrush = UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(RCColor.Black, new RCIntVector(1, this.stringToRender.Font.MinimumLineHeight), UIWorkspace.Instance.PixelScaling);
-            this.backgroundBrush.Upload();
+            IViewService viewService = ComponentManager.GetInterface<IViewService>();
+            this.mapObjectDetailsView = viewService.CreateView<IMapObjectDetailsView>();
+            this.selectionDetailsView = viewService.CreateView<ISelectionDetailsView>();
+
+            UIFont textFont = UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5");
+            this.mineralsText = new UIString("Minerals: {0}", textFont, UIWorkspace.Instance.PixelScaling, RCColor.White);
+            this.vespeneGasText = new UIString("Vespene Gas: {0}", textFont, UIWorkspace.Instance.PixelScaling, RCColor.White);
+            this.depletedText = new UIString("Depleted", textFont, UIWorkspace.Instance.PixelScaling, RCColor.White);
+
+            this.textY = size.Y / 2 - textFont.MinimumLineHeight / 2 + textFont.CharTopMaximum;
+            this.middleX = size.X / 2;
         }
 
-        /// <summary>
-        /// Starts reading the data of the given map object.
-        /// </summary>
-        /// <param name="objectID">The ID of the map object to read.</param>
-        public void StartReadingMapObject(int objectID)
+        /// <see cref="UIObject.Render_i"/>
+        protected override void Render_i(IUIRenderContext renderContext)
         {
-            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
-            this.objectID = objectID;
-        }
+            if (this.selectionDetailsView.SelectionCount != 1) { return; }
+            int mapObjectID = this.selectionDetailsView.GetObjectID(0);
 
-        /// <summary>
-        /// Stops reading the data of the map object currently being read. If reading has already been stopped or has not yet
-        /// started then this function has no effect.
-        /// </summary>
-        public void StopReadingMapObject()
-        {
-            this.objectID = -1;
-        }
-
-        /// <summary>
-        /// Gets the ID of the map object that is currently being read or -1 if there is no map object currently being read.
-        /// </summary>
-        public int MapObjectID { get { return this.objectID; } }
-
-        /// <see cref="RCMapDisplayExtension.ConnectEx_i"/>
-        protected override void ConnectEx_i()
-        {
-            this.mapObjectDetailsView = ComponentManager.GetInterface<IViewService>().CreateView<IMapObjectDetailsView>();
-            this.MouseSensor.Move += this.OnMouseMove;
-        }
-
-        /// <see cref="RCMapDisplayExtension.DisconnectEx_i"/>
-        protected override void DisconnectEx_i()
-        {
-            this.mapObjectDetailsView = null;
-            this.objectID = -1;
-            this.MouseSensor.Move -= this.OnMouseMove;
-        }
-
-        /// <see cref="RCMapDisplayExtension.RenderEx_i"/>
-        protected override void RenderEx_i(IUIRenderContext renderContext)
-        {
-            if (this.drawPosition != RCIntVector.Undefined && this.objectID != -1)
+            int minerals = this.mapObjectDetailsView.GetMineralsAmount(mapObjectID);
+            int vespeneGas = this.mapObjectDetailsView.GetVespeneGasAmount(mapObjectID);
+            if (minerals != -1)
             {
-                int mineralsAmount = this.mapObjectDetailsView.GetMineralsAmount(this.objectID);
-                int vespeneGasAmount = this.mapObjectDetailsView.GetVespeneGasAmount(this.objectID);
-                if (mineralsAmount != -1)
-                {
-                    this.stringToRender[0] = mineralsAmount;
-                    renderContext.RenderRectangle(this.backgroundBrush, new RCIntRectangle(this.drawPosition.X, this.drawPosition.Y, this.stringToRender.Width, this.backgroundBrush.Size.Y));
-                    renderContext.RenderString(this.stringToRender, this.drawPosition + new RCIntVector(0, this.stringToRender.Font.CharTopMaximum));
-                }
-                else if (vespeneGasAmount != -1)
-                {
-                    this.stringToRender[0] = vespeneGasAmount;
-                    renderContext.RenderRectangle(this.backgroundBrush, new RCIntRectangle(this.drawPosition.X, this.drawPosition.Y, this.stringToRender.Width, this.backgroundBrush.Size.Y));
-                    renderContext.RenderString(this.stringToRender, this.drawPosition + new RCIntVector(0, this.stringToRender.Font.CharTopMaximum));
-                }
+                this.mineralsText[0] = minerals;
+                renderContext.RenderString(this.mineralsText, new RCIntVector(this.middleX - this.mineralsText.Width / 2, this.textY));
+            }
+            else if (vespeneGas != -1)
+            {
+                this.vespeneGasText[0] = vespeneGas;
+                UIString stringToRender = vespeneGas > 0 ? this.vespeneGasText : this.depletedText;
+                renderContext.RenderString(stringToRender, new RCIntVector(this.middleX - stringToRender.Width / 2, this.textY));
             }
         }
 
         /// <summary>
-        /// Called when the mouse pointer has been moved over the display.
+        /// The texts to be displayed.
         /// </summary>
-        private void OnMouseMove(UISensitiveObject sender, UIMouseEventArgs evtArgs)
-        {
-            if (this.drawPosition != evtArgs.Position)
-            {
-                this.drawPosition = evtArgs.Position - new RCIntVector(0, this.stringToRender.Font.MinimumLineHeight);
-            }
-        }
+        private readonly UIString mineralsText;
+        private readonly UIString vespeneGasText;
+        private readonly UIString depletedText;
 
         /// <summary>
-        /// Reference to the map object details view.
+        /// The Y coordinate of the text to be displayed.
         /// </summary>
-        private IMapObjectDetailsView mapObjectDetailsView;
+        private readonly int textY;
 
         /// <summary>
-        /// The position to draw in the coordinate system of the display.
+        /// The X coordinate of the middle of this control.
         /// </summary>
-        private RCIntVector drawPosition;
+        private readonly int middleX;
 
         /// <summary>
-        /// The rendered string.
+        /// Reference to the necessary views.
         /// </summary>
-        private readonly UIString stringToRender;
-
-        /// <summary>
-        /// The brush that is used to draw the background.
-        /// </summary>
-        private readonly UISprite backgroundBrush;
-
-        /// <summary>
-        /// The ID of the map object currently being read or -1 if there is no map object currently being read.
-        /// </summary>
-        private int objectID;
+        private readonly IMapObjectDetailsView mapObjectDetailsView;
+        private readonly ISelectionDetailsView selectionDetailsView;
     }
 }

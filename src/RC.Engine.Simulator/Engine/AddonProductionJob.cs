@@ -8,6 +8,7 @@ using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Core;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Common;
 
 namespace RC.Engine.Simulator.Engine
 {
@@ -48,19 +49,19 @@ namespace RC.Engine.Simulator.Engine
             if (this.ownerBuilding.Read().CurrentAddon == null)
             {
                 /// The addon has been destroyed -> do not continue this production job!
-                return true;
+                return false;
             }
 
             /// Continue the construction of the addon.
             this.ownerBuilding.Read().CurrentAddon.Biometrics.Construct();
-            return false;
+            return true;
         }
 
         /// <see cref="ProductionJob.AbortImpl"/>
-        protected override void AbortImpl()
+        protected override void AbortImpl(int lockedMinerals, int lockedVespeneGas, int lockedSupplies)
         {
-            /// TODO: Give back the 75% of the locked resources and supply to the player of the owner building!
-            TraceManager.WriteAllTrace("75% of locked resources unlocked.", TraceFilters.INFO);
+            /// Give back the locked supply to the player of the owner building (if the player still exists).
+            this.OwnerPlayer.UnlockSupply(lockedSupplies);
 
             /// Destroy the addon being under construction.
             if (this.ownerBuilding.Read().CurrentAddon != null)

@@ -85,6 +85,7 @@ namespace RC.Engine.Simulator.Engine
             RCNumVector currentPosition = this.MotionControl.PositionVector.Read();
             if (currentPosition != RCNumVector.Undefined)
             {
+                if (this.activeProductionLine.Read() != null) { this.activeProductionLine.Read().RemoveAllJobs(); }
                 if (this.MotionControl.Status == MotionControlStatusEnum.Fixed) { this.MotionControl.Unfix(); }
                 this.MotionControl.PositionVector.ValueChanged -= this.OnPositionChanged;
                 this.MotionControl.OnOwnerDetachedFromMap();
@@ -340,13 +341,19 @@ namespace RC.Engine.Simulator.Engine
         /// <see cref="HeapedObject.DisposeImpl"/>
         protected override void DisposeImpl()
         {
+            /// Unregister this entity from the command execution it is currently being affected.
             if (this.affectingCmdExecution.Read() != null)
             {
-                /// Unregister this entity from the command execution it is currently being affected.
                 this.affectingCmdExecution.Read().RemoveEntity(this);
                 this.affectingCmdExecution.Write(null);
             }
 
+            /// Dispose the production lines.
+            this.activeProductionLine.Write(null);
+            foreach (ProductionLine productionLine in this.productionLines) { productionLine.Dispose(); }
+            this.productionLines.Clear();
+
+            /// Dispose the other components of this entity.
             this.locator.Read().Dispose();
             this.locator.Write(null);
             this.armour.Read().Dispose();
@@ -475,6 +482,8 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         private void OnDestroying()
         {
+            if (this.activeProductionLine.Read() != null) { this.activeProductionLine.Read().RemoveAllJobs(); }
+
             EntityWreck wreck = new EntityWreck(this, this.DestructionAnimationName);
             this.Scenario.AddElementToScenario(wreck);
             wreck.AttachToMap(this.MotionControl.PositionVector.Read());

@@ -29,7 +29,7 @@ namespace RC.Engine.Simulator.Engine
         {
             get
             {
-                if (this.MapObject == null) { throw new InvalidOperationException("This building is detached from the map!"); }
+                if (this.MapObject == null) { return null; }
 
                 if (this.MotionControl.Status != MotionControlStatusEnum.Fixed) { return null; }
                 RCIntVector addonPosition = new RCIntVector(this.MapObject.QuadraticPosition.Right, this.MapObject.QuadraticPosition.Bottom - 1);

@@ -444,12 +444,14 @@ namespace RC.Engine.Simulator.Core
         private static void LoadCostsData(XElement costsDataElem, ScenarioElementType elementType)
         {
             XElement buildTimeElem = costsDataElem.Element(XmlMetadataConstants.COSTS_BUILDTIME_ELEM);
-            XElement foodCostElem = costsDataElem.Element(XmlMetadataConstants.COSTS_FOODCOST_ELEM);
+            XElement supplyUsedElem = costsDataElem.Element(XmlMetadataConstants.COSTS_SUPPLYUSED_ELEM);
+            XElement supplyProvidedElem = costsDataElem.Element(XmlMetadataConstants.COSTS_SUPPLYPROVIDED_ELEM);
             XElement mineralCostElem = costsDataElem.Element(XmlMetadataConstants.COSTS_MINERALCOST_ELEM);
             XElement gasCostElem = costsDataElem.Element(XmlMetadataConstants.COSTS_GASCOST_ELEM);
 
             if (buildTimeElem != null) { elementType.SetBuildTime(XmlHelper.LoadInt(buildTimeElem.Value)); }
-            if (foodCostElem != null) { elementType.SetFoodCost(XmlHelper.LoadInt(foodCostElem.Value)); }
+            if (supplyUsedElem != null) { elementType.SetSupplyUsed(XmlHelper.LoadInt(supplyUsedElem.Value)); }
+            if (supplyProvidedElem != null) { elementType.SetSupplyProvided(XmlHelper.LoadInt(supplyProvidedElem.Value)); }
             if (mineralCostElem != null) { elementType.SetMineralCost(XmlHelper.LoadInt(mineralCostElem.Value)); }
             if (gasCostElem != null) { elementType.SetGasCost(XmlHelper.LoadInt(gasCostElem.Value)); }
         }

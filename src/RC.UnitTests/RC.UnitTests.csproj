@@ -95,6 +95,7 @@
     <Compile Include="NavmeshGeneratorTest.cs" />
     <Compile Include="NavmeshValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StepResponseTest.cs" />
     <Compile Include="TestWalkabilityGrid.cs" />
     <Compile Include="MapNavmeshTest.cs" />
     <Compile Include="FogOfWarTest.cs" />

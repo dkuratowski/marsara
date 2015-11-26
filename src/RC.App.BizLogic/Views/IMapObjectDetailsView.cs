@@ -86,5 +86,15 @@ namespace RC.App.BizLogic.Views
         /// not accessible by the local player.
         /// </returns>
         int GetMaxEnergy(int objectID);
+
+        /// <summary>
+        /// Gets the amount of supplies that the given map object provides.
+        /// </summary>
+        /// <param name="objectID">The ID of the map object.</param>
+        /// <returns>
+        /// The amount of supplies that the given map object provides or -1 if the given map object is not providing supplies or if the information
+        /// is not accessible by the local player.
+        /// </returns>
+        int GetSuppliesProvided(int objectID);
     }
 }

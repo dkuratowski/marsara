@@ -80,9 +80,14 @@ namespace RC.Engine.Simulator.Metadata
         ConstValue<int> BuildTime { get; }
 
         /// <summary>
-        /// Gets the food cost of this element type or null if this element type has no food cost defined.
+        /// Gets the supply used by this element type or null if this element type has no such value defined.
         /// </summary>
-        ConstValue<int> FoodCost { get; }
+        ConstValue<int> SupplyUsed { get; }
+
+        /// <summary>
+        /// Gets the supply provided by this element type or null if this element type has no such value defined.
+        /// </summary>
+        ConstValue<int> SupplyProvided { get; }
 
         /// <summary>
         /// Gets the mineral cost of this element type or null if this element type has no mineral cost defined.

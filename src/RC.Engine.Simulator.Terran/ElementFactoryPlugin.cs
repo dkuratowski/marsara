@@ -165,6 +165,6 @@ namespace RC.Engine.Simulator.Terran
             return comsatStationPlacedSuccessfully;
         }
 
-        private const int NUM_OF_SCVS = 5;
+        private const int NUM_OF_SCVS = 6;
     }
 }

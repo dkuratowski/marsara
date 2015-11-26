@@ -166,6 +166,14 @@ namespace RC.Engine.Simulator.Engine
 
             this.hp.Write(0);
             this.constructionProgress.Write(-1);
+
+            /// Give back the 75% of the locked resources to the player of the owner building (if the player exists).
+            if (this.owner.Read().Owner != null)
+            {
+                int mineralCost = this.owner.Read().ElementType.MineralCost != null ? this.owner.Read().ElementType.MineralCost.Read() : 0;
+                int vespeneGasCost = this.owner.Read().ElementType.GasCost != null ? this.owner.Read().ElementType.GasCost.Read() : 0;
+                this.owner.Read().Owner.GiveResources((int)(mineralCost * (RCNumber)3 / (RCNumber)4), (int)(vespeneGasCost * (RCNumber)3 / (RCNumber)4));
+            }
         }
 
         /// <summary>

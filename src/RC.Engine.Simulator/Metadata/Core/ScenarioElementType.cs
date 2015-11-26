@@ -85,8 +85,11 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <see cref="IScenarioElementType.BuildTime"/>
         public ConstValue<int> BuildTime { get { return this.buildTime; } }
 
-        /// <see cref="IScenarioElementType.FoodCost"/>
-        public ConstValue<int> FoodCost { get { return this.foodCost; } }
+        /// <see cref="IScenarioElementType.SupplyUsed"/>
+        public ConstValue<int> SupplyUsed { get { return this.supplyUsed; } }
+
+        /// <see cref="IScenarioElementType.SupplyProvided"/>
+        public ConstValue<int> SupplyProvided { get { return this.supplyProvided; } }
 
         /// <see cref="IScenarioElementType.MineralCost"/>
         public ConstValue<int> MineralCost { get { return this.mineralCost; } }
@@ -282,12 +285,21 @@ namespace RC.Engine.Simulator.Metadata.Core
         }
 
         /// <summary>
-        /// Sets the food cost.
+        /// Sets the supply used.
         /// </summary>
-        public void SetFoodCost(int foodCost)
+        public void SetSupplyUsed(int supplyUsed)
         {
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
-            this.foodCost = new ConstValue<int>(foodCost);
+            this.supplyUsed = new ConstValue<int>(supplyUsed);
+        }
+
+        /// <summary>
+        /// Sets the supply provided.
+        /// </summary>
+        public void SetSupplyProvided(int supplyProvided)
+        {
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.supplyProvided = new ConstValue<int>(supplyProvided);
         }
 
         /// <summary>
@@ -416,7 +428,8 @@ namespace RC.Engine.Simulator.Metadata.Core
                 foreach (WeaponData weapon in this.standardWeapons) { weapon.CheckAndFinalize(); }
 
                 if (this.buildTime != null && this.buildTime.Read() < 0) { throw new SimulatorException("BuildTime must be non-negative!"); }
-                if (this.foodCost != null && this.foodCost.Read() < 0) { throw new SimulatorException("FoodCost must be non-negative!"); }
+                if (this.supplyUsed != null && this.supplyUsed.Read() < 0) { throw new SimulatorException("SupplyUsed must be non-negative!"); }
+                if (this.supplyProvided != null && this.supplyProvided.Read() < 0) { throw new SimulatorException("SupplyProvided must be non-negative!"); }
                 if (this.mineralCost != null && this.mineralCost.Read() < 0) { throw new SimulatorException("MineralCost must be non-negative!"); }
                 if (this.gasCost != null && this.gasCost.Read() < 0) { throw new SimulatorException("GasCost must be non-negative!"); }
 
@@ -552,7 +565,8 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// The costs data of this element type.
         /// </summary>
         private ConstValue<int> buildTime;
-        private ConstValue<int> foodCost;
+        private ConstValue<int> supplyUsed;
+        private ConstValue<int> supplyProvided;
         private ConstValue<int> mineralCost;
         private ConstValue<int> gasCost;
 

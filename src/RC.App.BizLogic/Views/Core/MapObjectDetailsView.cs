@@ -33,8 +33,8 @@ namespace RC.App.BizLogic.Views.Core
         {
             if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
 
-            MineralField entityAsMineralField = this.Scenario.GetElement<MineralField>(objectID);
-            return entityAsMineralField != null ? entityAsMineralField.ResourceAmount.Read() : -1;
+            VespeneGeyser entityAsVespeneGeyser = this.Scenario.GetElement<VespeneGeyser>(objectID);
+            return entityAsVespeneGeyser != null ? entityAsVespeneGeyser.ResourceAmount.Read() : -1;
         }
 
         /// <see cref="IMapObjectDetailsView.GetMineralsAmount"/>
@@ -42,8 +42,8 @@ namespace RC.App.BizLogic.Views.Core
         {
             if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
 
-            VespeneGeyser entityAsVespeneGeyser = this.Scenario.GetElement<VespeneGeyser>(objectID);
-            return entityAsVespeneGeyser != null ? entityAsVespeneGeyser.ResourceAmount.Read() : -1;
+            MineralField entityAsMineralField = this.Scenario.GetElement<MineralField>(objectID);
+            return entityAsMineralField != null ? entityAsMineralField.ResourceAmount.Read() : -1;
         }
 
         /// <see cref="IMapObjectDetailsView.GetHPCondition"/>
@@ -137,6 +137,22 @@ namespace RC.App.BizLogic.Views.Core
             if (entity.Owner != null && entity.Owner.PlayerIndex == (int) this.selectionManager.LocalPlayer)
             {
                 return entity.ElementType.MaxEnergy != null ? entity.ElementType.MaxEnergy.Read() : -1;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetSuppliesProvided"/>
+        public int GetSuppliesProvided(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            Entity entity = this.GetEntity(objectID);
+            if (entity.Owner != null && entity.Owner.PlayerIndex == (int)this.selectionManager.LocalPlayer)
+            {
+                return entity.ElementType.SupplyProvided != null ? entity.ElementType.SupplyProvided.Read() : -1;
             }
             else
             {

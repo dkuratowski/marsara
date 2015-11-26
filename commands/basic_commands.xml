@@ -22,4 +22,5 @@
 	<cancelButton sprite="CancelBtn" panelPosition="2;2" />
   </commandButton>
   <commandButton command="Hold" sprite="HoldBtn" panelPosition="1;1" priority="1" />
+  <cancelConstructionButton sprite="CancelBtn" panelPosition="2;2" />
 </commands>

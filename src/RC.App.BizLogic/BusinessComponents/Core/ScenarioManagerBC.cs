@@ -113,8 +113,9 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             {
                 this.UnregisterFactoryMethods();
 
-                this.activeScenario.Map.Close();
+                IMapAccess map = this.activeScenario.Map;
                 this.activeScenario.Dispose();
+                map.Close();
                 this.activeScenario = null;
 
                 if (this.ActiveScenarioChanged != null) { this.ActiveScenarioChanged(this.activeScenario); }
@@ -275,6 +276,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <summary>
+        /// Creates a view of type IPlayerView.
+        /// </summary>
+        /// <returns>The created view.</returns>
+        private IPlayerView CreatePlayerView()
+        {
+            return new PlayerView();
+        }
+
+        /// <summary>
         /// Registers the implemented factory methods to the view factory.
         /// </summary>
         private void RegisterFactoryMethods()
@@ -290,6 +300,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateSelectionDetailsView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateMapObjectDetailsView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateProductionDetailsView);
+            this.viewFactoryRegistry.RegisterViewFactory(this.CreatePlayerView);
             this.viewFactoryRegistry.RegisterViewFactory(this.CreateNormalModeObjectPlacementView);
             this.viewFactoryRegistry.RegisterViewFactory<IMapEditorModeObjectPlacementView, string>(this.CreateMapEditorModeObjectPlacementView);
             this.viewFactoryRegistry.RegisterViewFactory<ITerrainObjectPlacementView, string>(this.CreateTerrainObjectPlacementView);
@@ -311,6 +322,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.viewFactoryRegistry.UnregisterViewFactory<ISelectionDetailsView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapObjectDetailsView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IProductionDetailsView>();
+            this.viewFactoryRegistry.UnregisterViewFactory<IPlayerView>();
             this.viewFactoryRegistry.UnregisterViewFactory<INormalModeMapObjectPlacementView>();
             this.viewFactoryRegistry.UnregisterViewFactory<IMapEditorModeObjectPlacementView>();
             this.viewFactoryRegistry.UnregisterViewFactory<ITerrainObjectPlacementView>();

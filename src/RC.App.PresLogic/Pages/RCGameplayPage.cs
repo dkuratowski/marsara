@@ -96,7 +96,7 @@ namespace RC.App.PresLogic.Pages
                                             disabledCommandButtonSpriteGroupLoader,
                                             enabledCommandButtonSpriteGroupLoader,
                                             highlightedCommandButtonSpriteGroupLoader),
-                new ConcurrentGameConnector(this.mapDisplay, this.commandPanel, this.minimapPanel, this.detailsPanel));
+                new ConcurrentGameConnector(this.mapDisplay, this.commandPanel, this.minimapPanel, this.detailsPanel, this.resourceBar));
         }
 
         #region IGameConnector methods

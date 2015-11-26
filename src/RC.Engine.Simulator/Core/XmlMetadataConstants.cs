@@ -59,7 +59,8 @@ namespace RC.Engine.Simulator.Core
         public const string GENDATA_SIZE_ELEM = "size";
         public const string GENDATA_SPEED_ELEM = "speed";
         public const string COSTS_BUILDTIME_ELEM = "buildTime";
-        public const string COSTS_FOODCOST_ELEM = "food";
+        public const string COSTS_SUPPLYUSED_ELEM = "supplyUsed";
+        public const string COSTS_SUPPLYPROVIDED_ELEM = "supplyProvided";
         public const string COSTS_GASCOST_ELEM = "gas";
         public const string COSTS_MINERALCOST_ELEM = "mineral";
         public const string SHADOWDATA_SPRITENAME_ELEM = "spriteName";

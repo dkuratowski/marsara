@@ -124,8 +124,8 @@ namespace RC.App.PresLogic.Pages
             this.mapObjectDisplayEx = new RCMapObjectDisplay(this.mapDisplayBasic);
             this.isotileDisplayEx = new RCIsoTileHighlightDisplay(this.mapObjectDisplayEx);
             this.objectPlacementDisplayEx = new RCObjectPlacementDisplay(this.isotileDisplayEx);
-            this.resourceAmountDisplayEx = new RCResourceAmountDisplay(this.objectPlacementDisplayEx);
-            this.mapDisplay = this.resourceAmountDisplayEx;
+            this.resourceAmountTooltipEx = new RCResourceAmountTooltip(this.objectPlacementDisplayEx);
+            this.mapDisplay = this.resourceAmountTooltipEx;
 
             /// Connect the map and the minimap displays.
             this.displaysConnector = new SequentialGameConnector(
@@ -364,15 +364,15 @@ namespace RC.App.PresLogic.Pages
                 if (objectID != -1)
                 {
                     this.mouseHandler.StopPlacingObject();
-                    if (objectID != this.resourceAmountDisplayEx.MapObjectID)
+                    if (objectID != this.resourceAmountTooltipEx.MapObjectID)
                     {
-                        this.resourceAmountDisplayEx.StopReadingMapObject();
-                        this.resourceAmountDisplayEx.StartReadingMapObject(objectID);
+                        this.resourceAmountTooltipEx.StopReadingMapObject();
+                        this.resourceAmountTooltipEx.StartReadingMapObject(objectID);
                     }
                 }
                 else
                 {
-                    this.resourceAmountDisplayEx.StopReadingMapObject();
+                    this.resourceAmountTooltipEx.StopReadingMapObject();
                     if (!this.mouseHandler.IsPlacingObject)
                     {
                         this.mouseHandler.StartPlacingObject(
@@ -430,7 +430,7 @@ namespace RC.App.PresLogic.Pages
                 {
                     if (this.mapEditorService.RemoveEntity(evtArgs.Position))
                     {
-                        this.resourceAmountDisplayEx.StopReadingMapObject();
+                        this.resourceAmountTooltipEx.StopReadingMapObject();
                     }
                 }
             }
@@ -539,7 +539,7 @@ namespace RC.App.PresLogic.Pages
         /// <summary>
         /// Extension of the map display that displays the amount of resource in a mineral field or vespene geyser.
         /// </summary>
-        private RCResourceAmountDisplay resourceAmountDisplayEx;
+        private RCResourceAmountTooltip resourceAmountTooltipEx;
 
         /// <summary>
         /// Reference to the panel with the controls.

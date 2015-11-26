@@ -79,6 +79,8 @@
   <ItemGroup>
     <Compile Include="Commands\AttackExecution.cs" />
     <Compile Include="Commands\BasicCmdExecutionFactory.cs" />
+    <Compile Include="Commands\ConstructionCancelExecution.cs" />
+    <Compile Include="Commands\ConstructionCancelExecutionFactory.cs" />
     <Compile Include="Commands\HoldExecution.cs" />
     <Compile Include="Commands\LandExecution.cs" />
     <Compile Include="Commands\LandExecutionFactory.cs" />

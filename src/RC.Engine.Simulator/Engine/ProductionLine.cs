@@ -76,6 +76,12 @@ namespace RC.Engine.Simulator.Engine
         {
             if (productName == null) { throw new ArgumentNullException("productName"); }
 
+            if (!this.CheckOwnerPlayer())
+            {
+                this.RemoveAllJobs();
+                return false;
+            }
+
             /// First we check if this production line has reached its capacity or not.
             if (this.itemCount.Read() == this.Capacity) { return false; }
 
@@ -100,8 +106,8 @@ namespace RC.Engine.Simulator.Engine
             /// Check the requirements of the product.
             foreach (IRequirement requirement in this.products[productName].Requirements)
             {
-                if (!this.owner.Read().Owner.HasBuilding(requirement.RequiredBuildingType.Name)) { return false; }
-                if (requirement.RequiredAddonType != null && !this.owner.Read().Owner.HasAddon(requirement.RequiredAddonType.Name)) { return false; }
+                if (!this.ownerPlayer.Read().HasBuilding(requirement.RequiredBuildingType.Name)) { return false; }
+                if (requirement.RequiredAddonType != null && !this.ownerPlayer.Read().HasAddon(requirement.RequiredAddonType.Name)) { return false; }
             }
 
             /// Check the additional requirements of the derived class if exists.
@@ -121,12 +127,17 @@ namespace RC.Engine.Simulator.Engine
             if (!this.products.ContainsKey(productName)) { throw new InvalidOperationException(string.Format("Product '{0}' cannot be produced at this production line!", productName)); }
             if (this.itemCount.Read() == this.Capacity) { throw new InvalidOperationException("This production line has reached its capacity!"); }
 
+            if (!this.CheckOwnerPlayer())
+            {
+                this.RemoveAllJobs();
+                return false;
+            }
+
             /// Create a job and try to lock the resources of the owner player.
             ProductionJob job = this.CreateJob(productName, jobID);
             if (!job.LockResources())
             {
                 /// Unable to lock the necessary resources -> abort the job and cancel.
-                job.Abort();
                 job.Dispose();
                 return false;
             }
@@ -137,7 +148,6 @@ namespace RC.Engine.Simulator.Engine
                 if (!job.Start())
                 {
                     /// Unable to start the job -> abort the job and cancel.
-                    job.Abort();
                     job.Dispose();
                     return false;
                 }
@@ -158,6 +168,12 @@ namespace RC.Engine.Simulator.Engine
         {
             if (jobID < 0) { throw new ArgumentOutOfRangeException("jobID", "Production job ID must be non-negative!"); }
 
+            if (!this.CheckOwnerPlayer())
+            {
+                this.RemoveAllJobs();
+                return;
+            }
+
             int indexOfRemovedJob = -1;
             for (int index = 0; index < this.itemCount.Read(); index++)
             {
@@ -165,7 +181,6 @@ namespace RC.Engine.Simulator.Engine
                 if (indexOfRemovedJob == -1 && this.jobs[physicalIndex].Read().ID == jobID)
                 {
                     /// Job found -> abort and remove it from the line.
-                    this.jobs[physicalIndex].Read().Abort();
                     this.jobs[physicalIndex].Read().Dispose();
                     this.jobs[physicalIndex].Write(null);
                     indexOfRemovedJob = index;
@@ -192,11 +207,31 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
+        /// Removes all jobs from the production line.
+        /// </summary>
+        public void RemoveAllJobs()
+        {
+            for (int index = 0; index < this.itemCount.Read(); index++)
+            {
+                int physicalIndex = this.CalculatePhysicalIndex(index);
+                this.jobs[physicalIndex].Read().Dispose();
+                this.jobs[physicalIndex].Write(null);
+            }
+            this.itemCount.Write(0);
+        }
+
+        /// <summary>
         /// Continues the current production job.
         /// </summary>
         public void ContinueProduction()
         {
             if (this.itemCount.Read() == 0) { throw new InvalidOperationException("This production line is inactive!"); }
+
+            if (!this.CheckOwnerPlayer())
+            {
+                this.RemoveAllJobs();
+                return;
+            }
 
             ProductionJob currentJob = this.jobs[this.CalculatePhysicalIndex(0)].Read();
             if (currentJob.IsStarted)
@@ -247,11 +282,13 @@ namespace RC.Engine.Simulator.Engine
 
             this.jobs = this.ConstructArrayField<ProductionJob>("jobs");
             this.owner = this.ConstructField<Entity>("owner");
+            this.ownerPlayer = this.ConstructField<Player>("ownerPlayer");
             this.startIndex = this.ConstructField<int>("startIndex");
             this.itemCount = this.ConstructField<int>("itemCount");
 
             this.jobs.New(capacity);
             this.owner.Write(owner);
+            this.ownerPlayer.Write(owner.Owner);
             this.startIndex.Write(0);
             this.itemCount.Write(0);
         }
@@ -259,11 +296,7 @@ namespace RC.Engine.Simulator.Engine
         /// <see cref="HeapedObject.DisposeImpl"/>
         protected override void DisposeImpl()
         {
-            foreach (IValue<ProductionJob> job in this.jobs)
-            {
-                job.Read().Dispose();
-                job.Write(null);
-            }
+            if (this.itemCount.Read() != 0) { throw new InvalidOperationException("ProductionLine cannot be disposed if it is not empty."); }
         }
 
         /// <summary>
@@ -312,6 +345,20 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
+        /// Checks whether the owner entity has a player and it's still the same as before.
+        /// </summary>
+        /// <returns>True if the owner entity has a player and it's still the same as before; otherwise false.</returns>
+        private bool CheckOwnerPlayer()
+        {
+            if (this.owner.Read().Owner != this.ownerPlayer.Read())
+            {
+                this.ownerPlayer.Write(this.owner.Read().Owner);
+                return false;
+            }
+            return this.ownerPlayer.Read() != null;
+        }
+
+        /// <summary>
         /// The list that contains the jobs in this production line.
         /// </summary>
         private readonly HeapedArray<ProductionJob> jobs;
@@ -320,6 +367,11 @@ namespace RC.Engine.Simulator.Engine
         /// Reference to the owner of this production line.
         /// </summary>
         private readonly HeapedValue<Entity> owner;
+
+        /// <summary>
+        /// Reference to the player of the owner that this production line belongs to.
+        /// </summary>
+        private readonly HeapedValue<Player> ownerPlayer;
 
         /// <summary>
         /// The index of the beginning of this production line.

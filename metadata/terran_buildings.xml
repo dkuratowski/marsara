@@ -2,6 +2,7 @@
 <metadata>
   <buildingType name="CommandCenter" hasOwner="true" displayedName="Terran Command Center">
     <costs>
+	  <supplyProvided>10</supplyProvided>
       <mineral>400</mineral>
       <buildTime>1800</buildTime>
     </costs>
@@ -121,6 +122,7 @@
   </buildingType>
   <buildingType name="SupplyDepot" hasOwner="true" displayedName="Terran Supply Depot">
     <costs>
+	  <supplyProvided>8</supplyProvided>
       <mineral>100</mineral>
       <buildTime>600</buildTime>
     </costs>

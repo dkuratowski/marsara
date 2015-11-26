@@ -320,7 +320,14 @@ namespace RC.Engine.Simulator.Commands
         {
             if (this.isInitialized.Read() == 0x00) { throw new InvalidOperationException("Command execution is not initialized!"); }
 
-            /// TODO: if some of the recipient entities has detached from the map, remove them from the list!
+            /// If this is not a sub-execution -> Remove the detached recipient entities from the list.
+            if (this.parentExecution.Read() == null)
+            {
+                foreach (Entity recipientEntity in new List<Entity>(this.recipientEntities))
+                {
+                    if (recipientEntity.MapObject == null) { this.recipientEntities.Remove(recipientEntity); }
+                }
+            }
 
             /// If there are no more recipient entities -> execution finished.
             if (this.RecipientEntities.Count == 0) { return true; }

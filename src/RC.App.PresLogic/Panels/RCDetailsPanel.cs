@@ -41,6 +41,8 @@ namespace RC.App.PresLogic.Panels
             this.buttonArray = new RCSelectionButton[MAX_SELECTION_SIZE];
             this.productionLineDisplay = null;
             this.constructionProgressDisplay = null;
+            this.supplyDetailsDisplay = null;
+            this.resourceAmountDisplay = null;
             this.multiplayerService = null;
             this.selectionDetailsView = null;
             this.mapObjectDetailsView = null;
@@ -89,6 +91,8 @@ namespace RC.App.PresLogic.Panels
             //this.productionDisplay.Dispose(); TODO: dispose if necessary!
             this.productionLineDisplay = null;
             this.constructionProgressDisplay = null;
+            this.supplyDetailsDisplay = null;
+            this.resourceAmountDisplay = null;
             this.currentCustomContent = null;
 
             /// Destroy the selection buttons.
@@ -198,6 +202,8 @@ namespace RC.App.PresLogic.Panels
                 /// Create the controls that display the custom content.
                 this.productionLineDisplay = new RCProductionLineDisplay(this.productIconSprites, CUSTOM_CONTENT_RECT.Location, CUSTOM_CONTENT_RECT.Size);
                 this.constructionProgressDisplay = new RCConstructionProgressDisplay(CUSTOM_CONTENT_RECT.Location, CUSTOM_CONTENT_RECT.Size);
+                this.supplyDetailsDisplay = new RCSupplyDetailsDisplay(CUSTOM_CONTENT_RECT.Location, CUSTOM_CONTENT_RECT.Size);
+                this.resourceAmountDisplay = new RCResourceAmountDisplay(CUSTOM_CONTENT_RECT.Location, CUSTOM_CONTENT_RECT.Size);
 
                 /// Subscribe to the FrameUpdate event.
                 UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
@@ -315,7 +321,22 @@ namespace RC.App.PresLogic.Panels
         {
             // TODO: implement this method accordingly!
             if (this.productionDetailsView.ConstructionProgressNormalized != -1) { return this.constructionProgressDisplay; }
-            return this.productionDetailsView.ProductionLineCapacity != 0 ? this.productionLineDisplay : null;
+            else if (this.productionDetailsView.ProductionLineCapacity != 0) { return this.productionLineDisplay; }
+            else if (this.mapObjectDetailsView.GetSuppliesProvided(this.selectionDetailsView.GetObjectID(0)) != -1) { return this.supplyDetailsDisplay; }
+            else
+            {
+                int idOfSelectedObj = this.selectionDetailsView.GetObjectID(0);
+                int minerals = this.mapObjectDetailsView.GetMineralsAmount(idOfSelectedObj);
+                int vespeneGas = this.mapObjectDetailsView.GetVespeneGasAmount(idOfSelectedObj);
+                if (minerals != -1 || vespeneGas != -1)
+                {
+                    return this.resourceAmountDisplay;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         #endregion Internal members
@@ -345,6 +366,16 @@ namespace RC.App.PresLogic.Panels
         /// Reference to the construction progress display control.
         /// </summary>
         private RCConstructionProgressDisplay constructionProgressDisplay;
+
+        /// <summary>
+        /// Reference to the supply details display control.
+        /// </summary>
+        private RCSupplyDetailsDisplay supplyDetailsDisplay;
+
+        /// <summary>
+        /// Reference to the resource amount display control.
+        /// </summary>
+        private RCResourceAmountDisplay resourceAmountDisplay;
 
         /// <summary>
         /// Reference to the currently executed connecting/disconnecting task or null if no such a task is under execution.

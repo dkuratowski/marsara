@@ -29,6 +29,12 @@ namespace RC.Engine.Simulator.Engine
             this.startPosition = this.ConstructField<RCNumVector>("startPosition");
             this.quadraticStartPosition = this.ConstructField<RCIntRectangle>("quadraticStartPosition");
 
+            this.minerals = this.ConstructField<int>("minerals");
+            this.vespeneGas = this.ConstructField<int>("vespeneGas");
+            this.lockedSupplies = this.ConstructField<int>("lockedSupplies");
+            this.usedSupplyCache = new CachedValue<int>(this.CalculateUsedSupply);
+            this.totalSupplyCache = new CachedValue<int>(this.CalculateTotalSupply);
+
             this.playerIndex.Write(playerIndex);
             this.startLocation.Write(startLocation);
             this.startPosition.Write(startLocation.MotionControl.PositionVector.Read());
@@ -37,6 +43,10 @@ namespace RC.Engine.Simulator.Engine
             this.buildings = new Dictionary<string, RCSet<Building>>();
             this.addons = new Dictionary<string, RCSet<Addon>>();
             this.units = new Dictionary<string, RCSet<Unit>>();
+
+            this.minerals.Write(INITIAL_MINERALS);
+            this.vespeneGas.Write(INITIAL_VESPENE_GAS);
+            this.lockedSupplies.Write(0);
         }
 
         /// <summary>
@@ -53,6 +63,9 @@ namespace RC.Engine.Simulator.Engine
             }
             this.buildings[building.ElementType.Name].Add(building);
             building.OnAddedToPlayer(this);
+
+            this.usedSupplyCache.Invalidate();
+            this.totalSupplyCache.Invalidate();
         }
 
         /// <summary>
@@ -69,6 +82,9 @@ namespace RC.Engine.Simulator.Engine
             }
             this.addons[addon.ElementType.Name].Add(addon);
             addon.OnAddedToPlayer(this);
+
+            this.usedSupplyCache.Invalidate();
+            this.totalSupplyCache.Invalidate();
         }
 
         /// <summary>
@@ -85,6 +101,9 @@ namespace RC.Engine.Simulator.Engine
             }
             this.units[unit.ElementType.Name].Add(unit);
             unit.OnAddedToPlayer(this);
+
+            this.usedSupplyCache.Invalidate();
+            this.totalSupplyCache.Invalidate();
         }
 
         /// <summary>
@@ -102,6 +121,9 @@ namespace RC.Engine.Simulator.Engine
                 this.buildings.Remove(building.ElementType.Name);
             }
             building.OnRemovedFromPlayer();
+
+            this.usedSupplyCache.Invalidate();
+            this.totalSupplyCache.Invalidate();
         }
 
         /// <summary>
@@ -119,6 +141,9 @@ namespace RC.Engine.Simulator.Engine
                 this.addons.Remove(addon.ElementType.Name);
             }
             addon.OnRemovedFromPlayer();
+
+            this.usedSupplyCache.Invalidate();
+            this.totalSupplyCache.Invalidate();
         }
 
         /// <summary>
@@ -136,6 +161,9 @@ namespace RC.Engine.Simulator.Engine
                 this.units.Remove(unit.ElementType.Name);
             }
             unit.OnRemovedFromPlayer();
+
+            this.usedSupplyCache.Invalidate();
+            this.totalSupplyCache.Invalidate();
         }
 
         /// <summary>
@@ -157,6 +185,9 @@ namespace RC.Engine.Simulator.Engine
             {
                 throw new InvalidOperationException("The given entity is neither a unit, an addon nor a building!");
             }
+
+            this.usedSupplyCache.Invalidate();
+            this.totalSupplyCache.Invalidate();
         }
 
         /// <summary>
@@ -202,6 +233,67 @@ namespace RC.Engine.Simulator.Engine
 
             if (!this.units.ContainsKey(unitType)) { return false; }
             return this.units[unitType].Any(unit => !unit.Biometrics.IsUnderConstruction);
+        }
+
+        /// <summary>
+        /// Takes the given amount of minerals and vespene gas from this player.
+        /// </summary>
+        /// <param name="minerals">The amount of minerals to be taken.</param>
+        /// <param name="vespeneGas">The amount of vespene gas to be taken.</param>
+        /// <returns>True if the given amount of resources has been taken successfully.</returns>
+        public bool TakeResources(int minerals, int vespeneGas)
+        {
+            if (minerals < 0) { throw new ArgumentOutOfRangeException("minerals", "The amount of minerals to be taken cannot be negative!"); }
+            if (vespeneGas < 0) { throw new ArgumentOutOfRangeException("vespeneGas", "The amount of vespene gas to be taken cannot be negative!"); }
+
+            if (this.minerals.Read() < minerals || this.vespeneGas.Read() < vespeneGas) { return false; }
+
+            this.minerals.Write(this.minerals.Read() - minerals);
+            this.vespeneGas.Write(this.vespeneGas.Read() - vespeneGas);
+            return true;
+        }
+
+        /// <summary>
+        /// Gives the given amount of minerals and vespene gas to this player.
+        /// </summary>
+        /// <param name="minerals">The amount of minerals to be given.</param>
+        /// <param name="vespeneGas">The amount of vespene gas to be given.</param>
+        public void GiveResources(int minerals, int vespeneGas)
+        {
+            if (minerals < 0) { throw new ArgumentOutOfRangeException("minerals", "The amount of minerals to be given cannot be negative!"); }
+            if (vespeneGas < 0) { throw new ArgumentOutOfRangeException("vespeneGas", "The amount of vespene gas to be given cannot be negative!"); }
+
+            this.minerals.Write(this.minerals.Read() + minerals);
+            this.vespeneGas.Write(this.vespeneGas.Read() + vespeneGas);
+        }
+
+        /// <summary>
+        /// Locks the given amount of supplies of this player.
+        /// </summary>
+        /// <param name="supply">The amount of minerals to be locked.</param>
+        /// <returns>True if the given amount of supplies has been locked successfully.</returns>
+        public bool LockSupply(int supply)
+        {
+            if (supply < 0) { throw new ArgumentOutOfRangeException("supply", "The amount of supply to be locked cannot be negative!"); }
+
+            if (this.usedSupplyCache.Value + supply > this.totalSupplyCache.Value) { return false; }
+
+            this.lockedSupplies.Write(this.lockedSupplies.Read() + supply);
+            this.usedSupplyCache.Invalidate();
+            return true;
+        }
+
+        /// <summary>
+        /// Unlocks the given amount of supplies of this player.
+        /// </summary>
+        /// <param name="supply">The amount of minerals to be unlocked.</param>
+        public void UnlockSupply(int supply)
+        {
+            if (supply < 0) { throw new ArgumentOutOfRangeException("supply", "The amount of supply to be unlocked cannot be negative!"); }
+            if (supply > this.lockedSupplies.Read()) { throw new ArgumentOutOfRangeException("supply", "The amount of supply to be unlocked cannot be greater than the amount of actually locked supplies!"); }
+
+            this.lockedSupplies.Write(this.lockedSupplies.Read() - supply);
+            this.usedSupplyCache.Invalidate();
         }
 
         /// <summary>
@@ -251,6 +343,31 @@ namespace RC.Engine.Simulator.Engine
             }
         }
 
+        /// <summary>
+        /// Gets the current amount of minerals of this player.
+        /// </summary>
+        public int Minerals { get { return this.minerals.Read(); } }
+
+        /// <summary>
+        /// Gets the current amount of vespene gas of this player.
+        /// </summary>
+        public int VespeneGas { get { return this.vespeneGas.Read(); } }
+
+        /// <summary>
+        /// Gets the amount of the supplies currently used by this player.
+        /// </summary>
+        public int UsedSupply { get { return this.usedSupplyCache.Value; } }
+
+        /// <summary>
+        /// Gets the total amount of supplies owned by this player.
+        /// </summary>
+        public int TotalSupply { get { return this.totalSupplyCache.Value; } }
+
+        /// <summary>
+        /// Gets the maximum amount of supplies can be owned by this player.
+        /// </summary>
+        public int MaxSupply { get { return MAX_SUPPLY; } }
+
         #region IDisposable methods
 
         /// <see cref="IDisposable.Dispose"/>
@@ -263,6 +380,41 @@ namespace RC.Engine.Simulator.Engine
         }
 
         #endregion IDisposable methods
+
+        /// <summary>
+        /// Calculates the amount of supplies used by this player.
+        /// </summary>
+        /// <returns>The calculated value.</returns>
+        private int CalculateUsedSupply()
+        {
+            int supplyUsed = this.lockedSupplies.Read();
+            foreach (Entity entity in this.Entities)
+            {
+                if (!entity.Biometrics.IsUnderConstruction && entity.ElementType.SupplyUsed != null)
+                {
+                    supplyUsed += entity.ElementType.SupplyUsed.Read();
+                }
+            }
+            return supplyUsed;
+        }
+
+        /// <summary>
+        /// Calculates the total amount of supplies owned by this player.
+        /// </summary>
+        /// <returns></returns>
+        private int CalculateTotalSupply()
+        {
+            int totalSupply = 0;
+            foreach (Entity entity in this.Entities)
+            {
+                if (!entity.Biometrics.IsUnderConstruction && entity.ElementType.SupplyProvided != null)
+                {
+                    totalSupply += entity.ElementType.SupplyProvided.Read();
+                    if (totalSupply >= MAX_SUPPLY) { return MAX_SUPPLY; }
+                }
+            }
+            return totalSupply;
+        }
 
         #region Heaped members
 
@@ -286,6 +438,21 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         private readonly HeapedValue<RCIntRectangle> quadraticStartPosition;
 
+        /// <summary>
+        /// The current amount of minerals of this player.
+        /// </summary>
+        private readonly HeapedValue<int> minerals;
+
+        /// <summary>
+        /// The current amount of vespene gas of this player.
+        /// </summary>
+        private readonly HeapedValue<int> vespeneGas;
+
+        /// <summary>
+        /// The amount of supplies locked temporarily (for example by production jobs).
+        /// </summary>
+        private readonly HeapedValue<int> lockedSupplies;
+
         #endregion Heaped members
 
         /// <summary>
@@ -307,8 +474,25 @@ namespace RC.Engine.Simulator.Engine
         private readonly Dictionary<string, RCSet<Unit>> units;
 
         /// <summary>
+        /// The amount of the supplies currently used by this player.
+        /// </summary>
+        private readonly CachedValue<int> usedSupplyCache;
+
+        /// <summary>
+        /// The total amount of supplies owned by this player.
+        /// </summary>
+        private readonly CachedValue<int> totalSupplyCache;
+
+        /// <summary>
         /// The maximum number of players.
         /// </summary>
         public const int MAX_PLAYERS = 8;
+
+        /// <summary>
+        /// Resources related constants.
+        /// </summary>
+        private const int INITIAL_MINERALS = 10;
+        private const int INITIAL_VESPENE_GAS = 10;
+        private const int MAX_SUPPLY = 200;
     }
 }

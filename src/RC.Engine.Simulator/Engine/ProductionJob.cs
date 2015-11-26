@@ -50,11 +50,17 @@ namespace RC.Engine.Simulator.Engine
         {
             if (this.IsStarted) { throw new InvalidOperationException("This production job has already been started!"); }
 
-            /// TODO: Check if the player of the owner entity has enough minerals and vespene gas to create this job (send error message & return false if not)!
-            /// TODO: Remove the necessary amount of minerals and vespene has from the player of the owner entity!
-            this.lockedMinerals.Write(this.product.MineralCost != null ? this.product.MineralCost.Read() : 0);
-            this.lockedVespeneGas.Write(this.product.GasCost != null ? this.product.GasCost.Read() : 0);
-            return true;
+            int mineralsNeeded = this.product.MineralCost != null ? this.product.MineralCost.Read() : 0;
+            int vespeneGasNeeded = this.product.GasCost != null ? this.product.GasCost.Read() : 0;
+
+            /// Take the necessary amount of minerals and vespene gas from the owner player.
+            if (this.ownerPlayer.Read().TakeResources(mineralsNeeded, vespeneGasNeeded))
+            {
+                this.lockedMinerals.Write(mineralsNeeded);
+                this.lockedVespeneGas.Write(vespeneGasNeeded);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -65,12 +71,15 @@ namespace RC.Engine.Simulator.Engine
         {
             if (this.IsStarted) { throw new InvalidOperationException("This production job has already been started!"); }
 
-            /// TODO: Check if the player of the owner entity has enough supplies to start this job (send error message & return false if not)!
+            /// Lock the necessary supplies of the owner player to start this job. (TODO: send error message if not enough supply!)
+            int supplyNeeded = this.product.SupplyUsed != null ? this.product.SupplyUsed.Read() : 0;
+            if (!this.ownerPlayer.Read().LockSupply(supplyNeeded)) { return false; }
+            this.lockedSupplies.Write(supplyNeeded);
 
             /// Execute the optional additional operation of the derived class.
             if (!this.StartImpl()) { return false; }
 
-            this.lockedSupplies.Write(this.product.FoodCost != null ? this.product.FoodCost.Read() : 0);
+            /// Start the progress of this job.
             this.progress.Write(0);
             return true;
         }
@@ -83,47 +92,31 @@ namespace RC.Engine.Simulator.Engine
         {
             if (!this.IsStarted) { throw new InvalidOperationException("This production job has not yet been started!"); }
 
-            /// Increment the progress and execute the optional additional operation of the derived class.
-            this.progress.Write(this.progress.Read() + 1);
-            if (this.ContinueImpl())
+            /// Execute the optional continue operation of the derived class.
+            if (!this.ContinueImpl())
             {
+                /// This job cannot be continued for some reason -> minerals and vespene gas taken from the player will be lost.
                 this.lockedMinerals.Write(0);
                 this.lockedVespeneGas.Write(0);
-                this.lockedSupplies.Write(0);
-                this.progress.Write(-1);
                 return true;
             }
 
             /// Check if the progress reached the build time of the product being produced.
-            if (this.progress.Read() >= this.product.BuildTime.Read())
+            this.progress.Write(this.progress.Read() + 1);
+            if (this.progress.Read() == this.product.BuildTime.Read())
             {
                 /// Current job finished -> create the product using the factory component.
                 TraceManager.WriteAllTrace(string.Format("Production of '{0}' completed.", this.product.Name), TraceFilters.INFO);
-                if (!this.CompleteImpl())
+                if (this.CompleteImpl())
                 {
-                    /// TODO: if completion was unsuccessful, give back the locked minerals, vespene gas and supply to the player!
+                    /// Job completed successfully -> resources spent.
+                    this.lockedMinerals.Write(0);
+                    this.lockedVespeneGas.Write(0);
                 }
 
-                this.lockedMinerals.Write(0);
-                this.lockedVespeneGas.Write(0);
-                this.lockedSupplies.Write(0);
-                this.progress.Write(-1);
                 return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Aborts this job.
-        /// </summary>
-        public void Abort()
-        {
-            this.AbortImpl();
-
-            this.lockedMinerals.Write(0);
-            this.lockedVespeneGas.Write(0);
-            this.lockedSupplies.Write(0);
-            this.progress.Write(-1);
         }
 
         #endregion Public interface
@@ -139,18 +132,21 @@ namespace RC.Engine.Simulator.Engine
         protected ProductionJob(Entity owner, IScenarioElementType product, int jobID)
         {
             if (owner == null) { throw new ArgumentNullException("owner"); }
+            if (owner.Owner == null) { throw new ArgumentException("The owner entity is neutral!", "owner"); }
             if (product == null) { throw new ArgumentNullException("product"); }
             if (jobID < 0) { throw new ArgumentOutOfRangeException("jobID", "Job identifier cannot be negative!"); }
 
             this.elementFactory = ComponentManager.GetInterface<IElementFactory>();
             
             this.owner = this.ConstructField<Entity>("owner");
+            this.ownerPlayer = this.ConstructField<Player>("ownerPlayer");
             this.jobID = this.ConstructField<int>("jobID");
             this.progress = this.ConstructField<int>("progress");
             this.lockedMinerals = this.ConstructField<int>("lockedMinerals");
             this.lockedVespeneGas = this.ConstructField<int>("lockedVespeneGas");
             this.lockedSupplies = this.ConstructField<int>("lockedSupplies");
             this.owner.Write(owner);
+            this.ownerPlayer.Write(owner.Owner);
             this.jobID.Write(jobID);
             this.progress.Write(-1);
             this.lockedMinerals.Write(0);
@@ -159,10 +155,35 @@ namespace RC.Engine.Simulator.Engine
             this.product = product;
         }
 
+        /// <see cref="HeapedObject.DisposeImpl"/>
+        protected override void DisposeImpl()
+        {
+            if (this.IsStarted && this.progress.Read() < this.product.BuildTime.Read())
+            {
+                /// If this job is currently running but not yet finished -> abort it.
+                this.AbortImpl(this.lockedMinerals.Read(), this.lockedVespeneGas.Read(), this.lockedSupplies.Read());
+                this.lockedMinerals.Write(0);
+                this.lockedVespeneGas.Write(0);
+                this.lockedSupplies.Write(0);
+                this.progress.Write(-1);
+            }
+            else
+            {
+                /// Otherwise give back the locked resources and supply to the owner player.
+                this.ownerPlayer.Read().GiveResources(this.lockedMinerals.Read(), this.lockedVespeneGas.Read());
+                this.ownerPlayer.Read().UnlockSupply(this.lockedSupplies.Read());
+            }
+        }
+
         /// <summary>
         /// Gets the element factory component.
         /// </summary>
         protected IElementFactory ElementFactory { get { return this.elementFactory; } }
+
+        /// <summary>
+        /// Gets the player that this production job belongs to.
+        /// </summary>
+        protected Player OwnerPlayer { get { return this.ownerPlayer.Read(); } }
 
         #endregion Protected members
 
@@ -177,16 +198,21 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// By overriding this method the derived classes can perform additional operations when this job is being continued.
         /// </summary>
-        /// <returns>True if this job has finished working; otherwise false.</returns>
-        protected virtual bool ContinueImpl() { return false; }
+        /// <returns>True if this job can continue its execution; otherwise false.</returns>
+        protected virtual bool ContinueImpl() { return true; }
 
         /// <summary>
         /// By overriding this method the derived classes can perform additional operations when this job is being aborted.
         /// </summary>
+        /// <param name="lockedMinerals">The amount of locked minerals.</param>
+        /// <param name="lockedVespeneGas">The amount of locked vespene gas.</param>
+        /// <param name="lockedSupplies">The amount of locked supplies.</param>
         /// <remarks>The default implementation gives back all the locked resources to the player of the owner entity.</remarks>
-        protected virtual void AbortImpl()
+        protected virtual void AbortImpl(int lockedMinerals, int lockedVespeneGas, int lockedSupplies)
         {
-            /// TODO: Give back the locked resources and supply to the player of the owner entity!
+            /// Give back the locked resources and supply to the owner player.  
+            this.ownerPlayer.Read().GiveResources(lockedMinerals, lockedVespeneGas);
+            this.ownerPlayer.Read().UnlockSupply(lockedSupplies);
         }
 
         /// <summary>
@@ -206,6 +232,11 @@ namespace RC.Engine.Simulator.Engine
         /// The owner entity of this job.
         /// </summary>
         private readonly HeapedValue<Entity> owner;
+
+        /// <summary>
+        /// Reference to the player of the owner that this production job belongs to.
+        /// </summary>
+        private readonly HeapedValue<Player> ownerPlayer;
 
         /// <summary>
         /// The ID of this job.

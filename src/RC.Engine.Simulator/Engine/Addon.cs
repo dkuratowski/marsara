@@ -28,7 +28,7 @@ namespace RC.Engine.Simulator.Engine
         {
             get
             {
-                if (this.MapObject == null) { throw new InvalidOperationException("This addon is detached from the map!"); }
+                if (this.MapObject == null) { return null; }
 
                 if (this.MotionControl.Status != MotionControlStatusEnum.Fixed) { return null; }
                 RCIntVector buildingPosition = new RCIntVector(this.MapObject.QuadraticPosition.Left - 1, this.MapObject.QuadraticPosition.Bottom - 1);

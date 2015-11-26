@@ -2,7 +2,7 @@
 <metadata>
   <unitType name="SCV" hasOwner="true" displayedName="Terran SCV">
     <costs>
-      <food>1</food>
+      <supplyUsed>1</supplyUsed>
       <mineral>50</mineral>
       <buildTime>300</buildTime>
     </costs>
@@ -138,7 +138,7 @@
   
   <unitType name="Marine" hasOwner="true" displayedName="Terran Marine">
     <costs>
-      <food>1</food>
+      <supplyUsed>1</supplyUsed>
       <mineral>50</mineral>
       <buildTime>360</buildTime>
     </costs>
@@ -255,7 +255,7 @@
   
   <unitType name="Firebat" hasOwner="true" displayedName="Terran Firebat">
     <costs>
-      <food>1</food>
+      <supplyUsed>1</supplyUsed>
       <mineral>50</mineral>
       <gas>25</gas>
       <buildTime>360</buildTime>
@@ -283,7 +283,7 @@
   
   <unitType name="Ghost" hasOwner="true" displayedName="Terran Ghost">
     <costs>
-      <food>1</food>
+      <supplyUsed>1</supplyUsed>
       <mineral>25</mineral>
       <gas>75</gas>
       <buildTime>750</buildTime>
@@ -318,7 +318,7 @@
   
   <unitType name="Vulture" hasOwner="true" displayedName="Terran Vulture">
     <costs>
-      <food>2</food>
+      <supplyUsed>2</supplyUsed>
       <mineral>75</mineral>
       <buildTime>450</buildTime>
     </costs>
@@ -343,7 +343,7 @@
   
   <unitType name="SiegeTank" hasOwner="true" displayedName="Terran Siege Tank">
     <costs>
-      <food>2</food>
+      <supplyUsed>2</supplyUsed>
       <mineral>150</mineral>
       <gas>100</gas>
       <buildTime>750</buildTime>
@@ -369,7 +369,7 @@
   
   <unitType name="Goliath" hasOwner="true" displayedName="Terran Goliath">
     <costs>
-      <food>2</food>
+      <supplyUsed>2</supplyUsed>
       <mineral>100</mineral>
       <gas>50</gas>
       <buildTime>600</buildTime>
@@ -403,7 +403,7 @@
   
   <unitType name="Wraith" hasOwner="true" displayedName="Terran Wraith">
     <costs>
-      <food>2</food>
+      <supplyUsed>2</supplyUsed>
       <mineral>150</mineral>
       <gas>100</gas>
       <buildTime>900</buildTime>
@@ -437,7 +437,7 @@
   
   <unitType name="Dropship" hasOwner="true" displayedName="Terran Dropship">
     <costs>
-      <food>2</food>
+      <supplyUsed>2</supplyUsed>
       <mineral>100</mineral>
       <gas>100</gas>
       <buildTime>750</buildTime>
@@ -456,7 +456,7 @@
   
   <unitType name="ScienceVessel" hasOwner="true" displayedName="Terran Science Vessel">
     <costs>
-      <food>2</food>
+      <supplyUsed>2</supplyUsed>
       <mineral>100</mineral>
       <gas>225</gas>
       <buildTime>1200</buildTime>
@@ -477,7 +477,7 @@
   
   <unitType name="Battlecruiser" hasOwner="true" displayedName="Terran Battlecruiser">
     <costs>
-      <food>6</food>
+      <supplyUsed>6</supplyUsed>
       <mineral>400</mineral>
       <gas>300</gas>
       <buildTime>1995</buildTime>

@@ -54,9 +54,12 @@ namespace RC.UI
 
             /// Fill the ribbon and create the internal data structures for rendering this string.
             this.Initialize();
-            //this.stringRibbon.Save(format + ".png");
-            this.stringRibbon.TransparentColor = this.fontSprite.TransparentColor;
-            this.stringRibbon.Upload();
+            if (this.stringRibbon != null)
+            {
+                //this.stringRibbon.Save(format + ".png");
+                this.stringRibbon.TransparentColor = this.fontSprite.TransparentColor;
+                this.stringRibbon.Upload();
+            }
             this.allFragmentCache = null;
             this.widthCache = new CachedValue<int>(this.ComputeWidth);
         }
@@ -195,7 +198,10 @@ namespace RC.UI
         /// <see cref="IDisposable.Dispose"/>
         public void Dispose()
         {
-            UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(this.stringRibbon);
+            if (this.stringRibbon != null)
+            {
+                UIRoot.Instance.GraphicsPlatform.SpriteManager.DestroySprite(this.stringRibbon);
+            }
         }
 
         #region Internal methods
@@ -209,8 +215,9 @@ namespace RC.UI
             this.variableFragments = new Dictionary<int, List<UIStringFragment>>();
             this.variableParts = new Dictionary<int, string>();
 
-            IUIRenderContext ctx =
-                UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateRenderContext(this.stringRibbon);
+            IUIRenderContext ctx = this.stringRibbon != null
+                                 ? UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateRenderContext(this.stringRibbon)
+                                 : null;
 
             int cursorX = 0;
             int cursorY = this.font.CharTopMaximum;
@@ -272,7 +279,7 @@ namespace RC.UI
                 }
             }
 
-            UIRoot.Instance.GraphicsPlatform.SpriteManager.CloseRenderContext(this.stringRibbon);
+            if (this.stringRibbon != null) { UIRoot.Instance.GraphicsPlatform.SpriteManager.CloseRenderContext(this.stringRibbon); }
         }
 
         /// <summary>
@@ -407,7 +414,9 @@ namespace RC.UI
         /// <param name="fragmentStrings">The fragments of the string.</param>
         /// <param name="font">The font of the string.</param>
         /// <param name="fontSprite">The font sprite.</param>
-        /// <returns>An empty string ribbon that can be filled with the constant fragments of the string.</returns>
+        /// <returns>
+        /// An empty string ribbon that can be filled with the constant fragments of the string or null if the string has no constant fragments.
+        /// </returns>
         private static UISprite CreateEmptyStringRibbon(List<string> fragmentStrings, UIFont font, UISprite fontSprite)
         {
             /// Compute the width of the ribbon.
@@ -438,11 +447,12 @@ namespace RC.UI
             }
 
             /// Creates the empty ribbon.
-            UISprite stringRibbon =
-                UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(font.TransparentColor,
-                                                                            new RCIntVector(ribbonWidth,
-                                                                                         font.MinimumLineHeight),
-                                                                            fontSprite.PixelSize);
+            UISprite stringRibbon = ribbonWidth > 0
+                ? UIRoot.Instance.GraphicsPlatform.SpriteManager.CreateSprite(
+                    font.TransparentColor,
+                    new RCIntVector(ribbonWidth, font.MinimumLineHeight),
+                    fontSprite.PixelSize)
+                : null;
             return stringRibbon;
         }
 
@@ -545,7 +555,7 @@ namespace RC.UI
         private UISprite fontSprite;
 
         /// <summary>
-        /// The ribbon that contains the constant fragments of this UIString.
+        /// The ribbon that contains the constant fragments of this UIString or null if this UIString has no constant fragments.
         /// </summary>
         private UISprite stringRibbon;
 
