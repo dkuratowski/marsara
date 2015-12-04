@@ -17,7 +17,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// <param name="basisVectors">The list of basis vectors.</param>
         /// <param name="maxSpeed">The maximum speed.</param>
         /// <param name="accelerationDuration">The number of frames needed to reach the maximum speed.</param>
-        protected BasicVelocityGraph(List<RCNumVector> basisVectors, RCNumber maxSpeed, int accelerationDuration) : base(CalculateVelocityGraph(basisVectors, maxSpeed, accelerationDuration))
+        protected BasicVelocityGraph(List<RCNumVector> basisVectors, RCNumber maxSpeed, int accelerationDuration) : base(maxSpeed, CalculateVelocityGraph(basisVectors, maxSpeed, accelerationDuration))
         {
         }
 

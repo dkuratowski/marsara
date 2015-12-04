@@ -80,6 +80,7 @@
     <characterMapping char="/" base="339;8" top="-5" bottom="0" width="3" />
     <characterMapping char="(" base="41;8" top="-5" bottom="1" width="2" />
     <characterMapping char=")" base="44;8" top="-5" bottom="1" width="2" />
+	<characterMapping char="+" base="343;8" top="-3" bottom="0" width="3" />
     <!--characterMapping char="&apos;" base="55;95" top="-5" bottom="0" width="2" />
     <characterMapping char="&quot;" base="59;95" top="-6" bottom="0" width="5" />
     <characterMapping char="&amp;" base="65;72" top="-5" bottom="0" width="6" />

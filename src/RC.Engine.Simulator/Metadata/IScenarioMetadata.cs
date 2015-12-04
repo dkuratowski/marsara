@@ -54,6 +54,13 @@ namespace RC.Engine.Simulator.Metadata
         bool HasCustomType(string customTypeName);
 
         /// <summary>
+        /// Checks whether an element type with the given name has been defined in this metadata.
+        /// </summary>
+        /// <param name="typeName">The name of the type to check.</param>
+        /// <returns>True if the element type with the given name exists, false otherwise.</returns>
+        bool HasElementType(string typeName);
+
+        /// <summary>
         /// Gets the unit type with the given name.
         /// </summary>
         /// <param name="unitTypeName">The name of the unit type.</param>

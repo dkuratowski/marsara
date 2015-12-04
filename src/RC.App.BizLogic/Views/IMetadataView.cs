@@ -35,5 +35,11 @@ namespace RC.App.BizLogic.Views
         /// </summary>
         /// <returns>The displayed names of all map object types mapped by their type IDs.</returns>
         Dictionary<int, string> GetMapObjectDisplayedTypeNames();
+
+        /// <summary>
+        /// Gets the displayed names of all weapons defined in the metadata mapped by their names.
+        /// </summary>
+        /// <returns>The displayed names of all weapons defined in the metadata mapped by their names.</returns>
+        Dictionary<string, string> GetWeaponDisplayedNames();
     }
 }

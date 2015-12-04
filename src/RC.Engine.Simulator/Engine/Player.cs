@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Engine.Simulator.Metadata;
+using RC.Engine.Simulator.Metadata.Core;
+using RC.Common.ComponentModel;
+using RC.Engine.Simulator.ComponentInterfaces;
 
 namespace RC.Engine.Simulator.Engine
 {
@@ -23,6 +27,11 @@ namespace RC.Engine.Simulator.Engine
             if (startLocation == null) { throw new ArgumentNullException("startLocation"); }
             if (startLocation.Scenario == null) { throw new SimulatorException("The given start location doesn't belong to a scenario!"); }
             if (!startLocation.HasMapObject(MapObjectLayerEnum.GroundObjects)) { throw new SimulatorException("The given start location has already been initialized!"); }
+
+            ScenarioMetadataUpgrade metadata = new ScenarioMetadataUpgrade();
+            metadata.AttachMetadata(ComponentManager.GetInterface<IScenarioLoader>().Metadata);
+            this.metadata = metadata;
+            this.metadataUpgrade = metadata;
 
             this.playerIndex = this.ConstructField<int>("playerIndex");
             this.startLocation = this.ConstructField<StartLocation>("startLocation");
@@ -368,6 +377,16 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         public int MaxSupply { get { return MAX_SUPPLY; } }
 
+        /// <summary>
+        /// Gets the player-level metadata.
+        /// </summary>
+        public IScenarioMetadata Metadata { get { return this.metadata; } }
+
+        /// <summary>
+        /// Gets the upgrade interface of the player-level metadata.
+        /// </summary>
+        public IScenarioMetadataUpgrade MetadataUpgrade { get { return this.metadataUpgrade; } }
+
         #region IDisposable methods
 
         /// <see cref="IDisposable.Dispose"/>
@@ -484,6 +503,16 @@ namespace RC.Engine.Simulator.Engine
         private readonly CachedValue<int> totalSupplyCache;
 
         /// <summary>
+        /// Reference to the player-level metadata.
+        /// </summary>
+        private readonly IScenarioMetadata metadata;
+
+        /// <summary>
+        /// Reference to the upgrade interface of the player-level metadata.
+        /// </summary>
+        private readonly IScenarioMetadataUpgrade metadataUpgrade;
+
+        /// <summary>
         /// The maximum number of players.
         /// </summary>
         public const int MAX_PLAYERS = 8;
@@ -491,8 +520,8 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Resources related constants.
         /// </summary>
-        private const int INITIAL_MINERALS = 10;
-        private const int INITIAL_VESPENE_GAS = 10;
+        private const int INITIAL_MINERALS = 500;
+        private const int INITIAL_VESPENE_GAS = 500;
         private const int MAX_SUPPLY = 200;
     }
 }

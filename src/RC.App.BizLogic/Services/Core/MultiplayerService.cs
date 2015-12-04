@@ -9,6 +9,7 @@ using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.MotionControl;
 using RC.App.BizLogic.BusinessComponents.Core;
 using RC.App.BizLogic.BusinessComponents;
+using RC.Engine.Simulator.Metadata;
 
 namespace RC.App.BizLogic.Services.Core
 {
@@ -65,6 +66,7 @@ namespace RC.App.BizLogic.Services.Core
             this.playerManager[2].ConnectRandomPlayer(RaceEnum.Terran);
             this.playerManager[3].ConnectRandomPlayer(RaceEnum.Terran);
             this.playerManager.Lock();
+
             this.selectionManager.Reset(this.playerManager[0].Player);
             this.fogOfWarBC.StartFogOfWar(this.playerManager[0].Player);
             this.mapWindowBC.ScrollTo(this.playerManager[0].StartPosition);

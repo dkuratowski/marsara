@@ -9,7 +9,7 @@ namespace RC.Engine.Simulator.Metadata.Core
     /// <summary>
     /// Contains the definition of a missile type.
     /// </summary>
-    class MissileType : ScenarioElementType, IMissileType
+    class MissileType : ScenarioElementType, IMissileTypeInternal
     {
         /// <summary>
         /// Constructs a new missile type.
@@ -27,27 +27,27 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.impactAnimation = null;
         }
 
-        #region IMissileType members
+        #region IMissileTypeInternal members
 
-        /// <see cref="IMissileType.LaunchAnimation"/>
+        /// <see cref="IMissileTypeInternal.LaunchAnimation"/>
         public string LaunchAnimation { get { return this.launchAnimation; } }
 
-        /// <see cref="IMissileType.LaunchDelay"/>
+        /// <see cref="IMissileTypeInternal.LaunchDelay"/>
         public int LaunchDelay { get { return this.launchDelay; } }
 
-        /// <see cref="IMissileType.FlyingAnimation"/>
+        /// <see cref="IMissileTypeInternal.FlyingAnimation"/>
         public string FlyingAnimation { get { return this.flyingAnimation; } }
 
-        /// <see cref="IMissileType.TrailAnimation"/>
+        /// <see cref="IMissileTypeInternal.TrailAnimation"/>
         public string TrailAnimation { get { return this.trailAnimation; } }
 
-        /// <see cref="IMissileType.TrailAnimationFrequency"/>
+        /// <see cref="IMissileTypeInternal.TrailAnimationFrequency"/>
         public int TrailAnimationFrequency { get { return this.trailAnimationFrequency; } }
 
-        /// <see cref="IMissileType.ImpactAnimation"/>
+        /// <see cref="IMissileTypeInternal.ImpactAnimation"/>
         public string ImpactAnimation { get { return this.impactAnimation; } }
 
-        #endregion IMissileType members
+        #endregion IMissileTypeInternal members
 
         #region MissileType buildup methods
 

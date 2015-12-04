@@ -15,12 +15,16 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// Constructs a weapon data struct for an element type.
         /// </summary>
+        /// <param name="name">The name of this weapon.</param>
         /// <param name="metadata">The metadata object that this weapon data belongs to.</param>
         /// <param name="weaponType">The type of this weapon.</param>
-        public WeaponData(ScenarioMetadata metadata, WeaponTypeEnum weaponType)
+        public WeaponData(string name, ScenarioMetadata metadata, WeaponTypeEnum weaponType)
         {
+            if (name == null) { throw new ArgumentNullException("name"); }
             if (metadata == null) { throw new ArgumentNullException("metadata"); }
 
+            this.name = name;
+            this.displayedName = null;
             this.weaponType = new ConstValue<WeaponTypeEnum>(weaponType);
             this.cooldown = null;
             this.damage = null;
@@ -36,29 +40,35 @@ namespace RC.Engine.Simulator.Metadata.Core
 
         #region IWeaponData methods
 
+        /// <see cref="IWeaponData.Name"/>
+        public string Name { get { return this.name; } }
+
+        /// <see cref="IWeaponData.DisplayedName"/>
+        public string DisplayedName { get { return this.displayedName; } }
+
         /// <see cref="IWeaponData.WeaponType"/>
-        public ConstValue<WeaponTypeEnum> WeaponType { get { return this.weaponType; } }
+        public IValueRead<WeaponTypeEnum> WeaponType { get { return this.weaponType; } }
 
         /// <see cref="IWeaponData.Cooldown"/>
-        public ConstValue<int> Cooldown { get { return this.cooldown; } }
+        public IValueRead<int> Cooldown { get { return this.cooldown; } }
 
         /// <see cref="IWeaponData.Damage"/>
-        public ConstValue<int> Damage { get { return this.damage; } }
+        public IValueRead<int> Damage { get { return this.damage; } }
 
         /// <see cref="IWeaponData.DamageType"/>
-        public ConstValue<DamageTypeEnum> DamageType { get { return this.damageType; } }
+        public IValueRead<DamageTypeEnum> DamageType { get { return this.damageType; } }
 
         /// <see cref="IWeaponData.Increment"/>
-        public ConstValue<int> Increment { get { return this.increment; } }
+        public IValueRead<int> Increment { get { return this.increment; } }
 
         /// <see cref="IWeaponData.RangeMax"/>
-        public ConstValue<int> RangeMax { get { return this.rangeMax; } }
+        public IValueRead<int> RangeMax { get { return this.rangeMax; } }
 
         /// <see cref="IWeaponData.RangeMin"/>
-        public ConstValue<int> RangeMin { get { return this.rangeMin; } }
+        public IValueRead<int> RangeMin { get { return this.rangeMin; } }
 
         /// <see cref="IWeaponData.SplashType"/>
-        public ConstValue<SplashTypeEnum> SplashType { get { return this.splashType; } }
+        public IValueRead<SplashTypeEnum> SplashType { get { return this.splashType; } }
 
         /// <see cref="IWeaponData.Missiles"/>
         public IEnumerable<IMissileData> Missiles { get { return this.missiles; } }
@@ -66,6 +76,15 @@ namespace RC.Engine.Simulator.Metadata.Core
         #endregion IWeaponData methods
 
         #region WeaponData buildup methods
+
+        /// <summary>
+        /// Sets the displayed name of this weapon. Default value is null.
+        /// </summary>
+        public void SetDisplayedName(string displayedName)
+        {
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            this.displayedName = displayedName;
+        }
 
         /// <summary>
         /// Sets the cooldown value of the weapon. No default value, must be set.
@@ -196,5 +215,15 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// Reference to the metadata that this weapon data struct belongs to.
         /// </summary>
         private readonly ScenarioMetadata metadata;
+
+        /// <summary>
+        /// The name of this weapon.
+        /// </summary>
+        private readonly string name;
+
+        /// <summary>
+        /// The displayed name of this weapon.
+        /// </summary>
+        private string displayedName;
     }
 }

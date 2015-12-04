@@ -18,12 +18,11 @@ namespace RC.Engine.Simulator.Engine
         /// <param name="elementTypeName">The name of the element type of the resource object.</param>
         /// <param name="initialAmount">The initial amount of resources in this resource object.</param>
         protected ResourceObject(string elementTypeName, int initialAmount)
-            : base(elementTypeName, false)
+            : base(elementTypeName, false, new ResourceObjectBehavior())
         {
             if (initialAmount < 0) { throw new ArgumentOutOfRangeException("initialAmount"); }
 
             this.resourceAmount = this.ConstructField<int>("resourceAmount");
-            this.resourceAmount.ValueChanged += this.OnResourceAmountChanged;
             this.resourceAmount.Write(initialAmount);
         }
 
@@ -52,11 +51,41 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// This method is called when the amount of resources in this resource object has been changed.
         /// </summary>
-        private void OnResourceAmountChanged(object sender, EventArgs args)
+        private void OnResourceAmountChanged()
         {
             if (this.resourceAmount.Read() < 0) { throw new InvalidOperationException("The amount of resources cannot be negative!"); }
-
             if (this.MapObject != null) { this.SetAnimationsImpl(); }
+        }
+
+        /// <summary>
+        /// The base class of the behaviors of the resource objects.
+        /// </summary>
+        private class ResourceObjectBehavior : EntityBehavior
+        {
+            /// <summary>
+            /// Constructs a ResourceObjectBehavior instance.
+            /// </summary>
+            public ResourceObjectBehavior()
+            {
+                this.lastKnownResourceAmount = this.ConstructField<int>("lastKnownResourceAmount");
+                this.lastKnownResourceAmount.Write(-1);
+            }
+
+            /// <see cref="EntityBehavior.UpdateMapObject"/>
+            public override void UpdateMapObject(Entity entity)
+            {
+                ResourceObject resourceObj = (ResourceObject)entity;
+                if (this.lastKnownResourceAmount.Read() == -1 ||
+                    this.lastKnownResourceAmount.Read() != resourceObj.ResourceAmount.Read())
+                {
+                    resourceObj.OnResourceAmountChanged();
+                }
+            }
+
+            /// <summary>
+            /// Stores the last known value of resource amount or -1 if no such value is known yet.
+            /// </summary>
+            private HeapedValue<int> lastKnownResourceAmount;
         }
 
         /// <summary>

@@ -107,6 +107,16 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.race = RaceEnum.Terran;
         }
 
+        /// TODO: Only for debugging!
+        public Player PlayerObj
+        {
+            get
+            {
+                if (this.state != PlayerSlotStateEnum.Connected) { throw new InvalidOperationException("No connected player on slot!"); }
+                return this.player;
+            }
+        }
+
         #endregion IPlayerSlot methods
 
         /// <summary>

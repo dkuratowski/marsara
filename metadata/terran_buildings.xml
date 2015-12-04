@@ -274,7 +274,7 @@
       <armor>0</armor>
       <sightRange>11</sightRange>
     </generalData>
-    <airWeapon>
+    <airWeapon name="MissileTurretWeapon" displayedName="Missile Turret Weapon">
       <damage>20</damage>
       <rangeMax>7</rangeMax>
       <damageType>Explosive</damageType>

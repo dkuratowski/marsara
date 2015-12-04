@@ -3,6 +3,8 @@ using RC.App.BizLogic.BusinessComponents;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Simulator.Engine;
+using System.Collections.Generic;
+using RC.Engine.Simulator.Metadata;
 
 namespace RC.App.BizLogic.Views.Core
 {
@@ -157,6 +159,49 @@ namespace RC.App.BizLogic.Views.Core
             else
             {
                 return -1;
+            }
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetArmorInfo"/>
+        public Tuple<int, int> GetArmorInfo(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            Entity entity = this.GetEntity(objectID);
+            if (entity.Owner != null && entity.Owner.PlayerIndex == (int)this.selectionManager.LocalPlayer && entity.ElementType.Armor != null)
+            {
+                int currentArmor = entity.ElementType.Armor.Read();
+                int armorUpgrade = entity.ElementTypeUpgrade.CumulatedArmorUpgrade;
+                return Tuple.Create(currentArmor - armorUpgrade, armorUpgrade);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <see cref="IMapObjectDetailsView.GetWeaponInfo"/>
+        public List<Tuple<string, int, int>> GetWeaponInfo(int objectID)
+        {
+            if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
+
+            Entity entity = this.GetEntity(objectID);
+            if (entity.Owner != null && entity.Owner.PlayerIndex == (int)this.selectionManager.LocalPlayer)
+            {
+                List<Tuple<string, int, int>> retList = new List<Tuple<string, int, int>>();
+                List<IWeaponData> weaponDataList = new List<IWeaponData>(entity.ElementType.StandardWeapons);
+                List<IWeaponDataUpgrade> weaponUpgradeList = new List<IWeaponDataUpgrade>(entity.ElementTypeUpgrade.WeaponUpgrades);
+                for (int i = 0; i < weaponDataList.Count; i++)
+                {
+                    int currentDamage = weaponDataList[i].Damage.Read();
+                    int damageUpgrade = weaponUpgradeList[i].CumulatedDamageUpgrade;
+                    retList.Add(Tuple.Create(weaponDataList[i].Name, currentDamage - damageUpgrade, damageUpgrade));
+                }
+                return retList;
+            }
+            else
+            {
+                return new List<Tuple<string,int,int>>();
             }
         }
 

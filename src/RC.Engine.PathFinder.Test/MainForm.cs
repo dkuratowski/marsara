@@ -44,8 +44,8 @@ namespace RC.Engine.PathFinder.Test
         {
             /// Create and initialize the pathfinder.
             this.pathfinder = new Simulator.MotionControl.PathFinder();
-            //this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\maps\\testmap4.rcm"), 5000);
-            this.pathfinder.Initialize(this.ReadTestMapFromImg("pathfinder_testmap.png"), 5000);
+            this.pathfinder.Initialize(this.ReadTestMap("..\\..\\..\\..\\maps\\testmap4.rcm"), 5000);
+            //this.pathfinder.Initialize(this.ReadTestMapFromImg("pathfinder_testmap.png"), 5000);
 
             /// Draw the navmesh nodes.
             this.originalOutputImg = new Bitmap(this.pathfinder.Navmesh.GridSize.X * CELL_SIZE, this.pathfinder.Navmesh.GridSize.Y * CELL_SIZE, PixelFormat.Format24bppRgb);

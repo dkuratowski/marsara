@@ -12,7 +12,7 @@ namespace RC.Engine.Simulator.Metadata.Core
     /// <summary>
     /// Contains the definition of an addon type.
     /// </summary>
-    class AddonType : ScenarioElementType, IAddonType
+    class AddonType : ScenarioElementType, IAddonTypeInternal
     {
         /// <summary>
         /// Constructs a new addon type.
@@ -26,25 +26,25 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.mainBuilding = null;
         }
 
-        #region IAddonType members
+        #region IAddonTypeInternal members
 
-        /// <see cref="IAddonType.HasUpgradeType"/>
+        /// <see cref="IAddonTypeInternal.HasUpgradeType"/>
         public bool HasUpgradeType(string upgradeTypeName)
         {
             if (upgradeTypeName == null) { throw new ArgumentNullException("upgradeTypeName"); }
             return this.upgradeTypes.ContainsKey(upgradeTypeName);
         }
 
-        /// <see cref="IAddonType.GetUpgradeType"/>
-        public IUpgradeType GetUpgradeType(string upgradeTypeName)
+        /// <see cref="IAddonTypeInternal.GetUpgradeType"/>
+        public IUpgradeTypeInternal GetUpgradeType(string upgradeTypeName)
         {
             return this.GetUpgradeTypeImpl(upgradeTypeName);
         }
 
-        /// <see cref="IAddonType.UpgradeTypes"/>
-        public IEnumerable<IUpgradeType> UpgradeTypes { get { return this.upgradeTypes.Values; } }
+        /// <see cref="IAddonTypeInternal.UpgradeTypes"/>
+        public IEnumerable<IUpgradeTypeInternal> UpgradeTypes { get { return this.upgradeTypes.Values; } }
 
-        /// <see cref="IAddonType.CheckPlacementConstraints"/>
+        /// <see cref="IAddonTypeInternal.CheckPlacementConstraints"/>
         public RCSet<RCIntVector> CheckPlacementConstraints(Building mainBuilding, RCIntVector position)
         {
             if (mainBuilding == null) { throw new ArgumentNullException("mainBuilding"); }
@@ -55,7 +55,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             return this.CheckPlacementConstraintsImpl(mainBuilding, position);
         }
 
-        #endregion IAddonType members
+        #endregion IAddonTypeInternal members
 
         #region Internal public methods
 

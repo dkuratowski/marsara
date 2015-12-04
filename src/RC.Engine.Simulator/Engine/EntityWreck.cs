@@ -24,12 +24,14 @@ namespace RC.Engine.Simulator.Engine
 
             this.playerIndex = this.ConstructField<int>("playerIndex");
             this.motionControlStatus = this.ConstructField<byte>("motionControlStatus");
+            this.position = this.ConstructField<RCNumVector>("position");
             this.playerIndex.Write(entity.LastOwnerIndex);
             this.weapons = entity.Armour.DetachWeapons();
 
             this.destructionAnimationName = destructionAnimationName;
             this.destructionMapObject = null;
             this.motionControlStatus.Write((byte)entity.MotionControl.Status);
+            this.position.Write(RCNumVector.Undefined);
         }
 
         /// <summary>
@@ -42,6 +44,7 @@ namespace RC.Engine.Simulator.Engine
         {
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
 
+            this.position.Write(position);
             this.destructionMapObject = this.CreateMapObject(this.CalculateArea(position),
                                                              (MotionControlStatusEnum)this.motionControlStatus.Read() == MotionControlStatusEnum.OnGround ||
                                                              (MotionControlStatusEnum)this.motionControlStatus.Read() == MotionControlStatusEnum.Fixed ?
@@ -49,6 +52,19 @@ namespace RC.Engine.Simulator.Engine
                                                                  MapObjectLayerEnum.AirObjects);
             this.destructionMapObject.StartAnimation(this.destructionAnimationName);
             return true;
+        }
+
+        /// <see cref="ScenarioElement.DetachFromMap"/>
+        public override RCNumVector DetachFromMap()
+        {
+            RCNumVector currentPosition = this.position.Read();
+            if (this.destructionMapObject != null)
+            {
+                this.DestroyMapObject(this.destructionMapObject);
+                this.destructionMapObject = null;
+                this.position.Write(RCNumVector.Undefined);
+            }
+            return currentPosition;
         }
 
         /// <see cref="ScenarioElement.UpdateStateImpl"/>
@@ -96,6 +112,11 @@ namespace RC.Engine.Simulator.Engine
         /// The motion control status of this entity wreck.
         /// </summary>
         private readonly HeapedValue<byte> motionControlStatus;
+
+        /// <summary>
+        /// The position of this entity wreck.
+        /// </summary>
+        private readonly HeapedValue<RCNumVector> position;
 
         /// <summary>
         /// The name of the destruction animation to be played.

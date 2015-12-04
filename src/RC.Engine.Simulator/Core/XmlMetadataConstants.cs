@@ -65,6 +65,8 @@ namespace RC.Engine.Simulator.Core
         public const string COSTS_MINERALCOST_ELEM = "mineral";
         public const string SHADOWDATA_SPRITENAME_ELEM = "spriteName";
         public const string SHADOWDATA_OFFSET_ELEM = "centerOffset";
+        public const string WPN_NAME_ATTR = "name";
+        public const string WPN_DISPLAYEDNAME_ATTR = "displayedName";
         public const string WPN_COOLDOWN_ELEM = "cooldown";
         public const string WPN_DAMAGE_ELEM = "damage";
         public const string WPN_DAMAGETYPE_ELEM = "damageType";

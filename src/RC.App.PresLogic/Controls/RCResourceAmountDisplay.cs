@@ -11,9 +11,9 @@ using System.Text;
 namespace RC.App.PresLogic.Controls
 {
     /// <summary>
-    /// Represents the resource amount display control on the details panel.
+    /// Displays detailed informations about resource amount of the selected map object on the details panel.
     /// </summary>
-    public class RCResourceAmountDisplay : UIControl
+    public class RCResourceAmountDisplay : RCTextInformationDisplay
     {
         /// <summary>
         /// Constructs a RCResourceAmountDisplay control at the given position with the given size.
@@ -28,51 +28,51 @@ namespace RC.App.PresLogic.Controls
             this.selectionDetailsView = viewService.CreateView<ISelectionDetailsView>();
 
             UIFont textFont = UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font5");
-            this.mineralsText = new UIString("Minerals: {0}", textFont, UIWorkspace.Instance.PixelScaling, RCColor.White);
-            this.vespeneGasText = new UIString("Vespene Gas: {0}", textFont, UIWorkspace.Instance.PixelScaling, RCColor.White);
-            this.depletedText = new UIString("Depleted", textFont, UIWorkspace.Instance.PixelScaling, RCColor.White);
-
-            this.textY = size.Y / 2 - textFont.MinimumLineHeight / 2 + textFont.CharTopMaximum;
-            this.middleX = size.X / 2;
+            this.mineralsText = new List<UIString> { new UIString("Minerals: {0}", textFont, UIWorkspace.Instance.PixelScaling, RCColor.White) };
+            this.vespeneGasText = new List<UIString> { new UIString("Vespene Gas: {0}", textFont, UIWorkspace.Instance.PixelScaling, RCColor.White) };
+            this.depletedText = new List<UIString> { new UIString("Depleted", textFont, UIWorkspace.Instance.PixelScaling, RCColor.White) };
         }
 
-        /// <see cref="UIObject.Render_i"/>
-        protected override void Render_i(IUIRenderContext renderContext)
+        /// <see cref="RCTextInformationDisplay.GetDisplayedTexts"/>
+        protected override List<UIString> GetDisplayedTexts()
         {
-            if (this.selectionDetailsView.SelectionCount != 1) { return; }
+            /// Check if there is 1 object is selected.
+            if (this.selectionDetailsView.SelectionCount != 1) { return new List<UIString>(); }
             int mapObjectID = this.selectionDetailsView.GetObjectID(0);
 
+            /// Check if the selected object has informations about its mineral amount to be displayed.
             int minerals = this.mapObjectDetailsView.GetMineralsAmount(mapObjectID);
-            int vespeneGas = this.mapObjectDetailsView.GetVespeneGasAmount(mapObjectID);
             if (minerals != -1)
             {
-                this.mineralsText[0] = minerals;
-                renderContext.RenderString(this.mineralsText, new RCIntVector(this.middleX - this.mineralsText.Width / 2, this.textY));
+                this.mineralsText[0][0] = minerals;
+                return this.mineralsText;
             }
-            else if (vespeneGas != -1)
+
+            /// Check if the selected object has informations about its vespene gas amount to be displayed.
+            int vespeneGas = this.mapObjectDetailsView.GetVespeneGasAmount(mapObjectID);
+            if (vespeneGas != -1)
             {
-                this.vespeneGasText[0] = vespeneGas;
-                UIString stringToRender = vespeneGas > 0 ? this.vespeneGasText : this.depletedText;
-                renderContext.RenderString(stringToRender, new RCIntVector(this.middleX - stringToRender.Width / 2, this.textY));
+                if (vespeneGas > 0)
+                {
+                    this.vespeneGasText[0][0] = vespeneGas;
+                    return this.vespeneGasText;
+                }
+                else
+                {
+                    return this.depletedText;
+                }
             }
+
+            /// No informations to be displayed.
+            return new List<UIString>();
         }
 
         /// <summary>
         /// The texts to be displayed.
         /// </summary>
-        private readonly UIString mineralsText;
-        private readonly UIString vespeneGasText;
-        private readonly UIString depletedText;
-
-        /// <summary>
-        /// The Y coordinate of the text to be displayed.
-        /// </summary>
-        private readonly int textY;
-
-        /// <summary>
-        /// The X coordinate of the middle of this control.
-        /// </summary>
-        private readonly int middleX;
+        private readonly List<UIString> mineralsText;
+        private readonly List<UIString> vespeneGasText;
+        private readonly List<UIString> depletedText;
 
         /// <summary>
         /// Reference to the necessary views.

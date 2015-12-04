@@ -33,10 +33,10 @@ namespace RC.Engine.Simulator.Metadata.Core
         #region IRequirement methods
 
         /// <see cref="IRequirement.RequiredBuildingType"/>
-        public IBuildingType RequiredBuildingType { get { return this.requiredBuildingType; } }
+        public IBuildingType RequiredBuildingType { get { return this.requiredBuildingType != null ? new IBuildingType(this.requiredBuildingType) : null; } }
 
         /// <see cref="IRequirement.RequiredAddonType"/>
-        public IAddonType RequiredAddonType { get { return this.requiredAddonType; } }
+        public IAddonType RequiredAddonType { get { return this.requiredAddonType != null ? new IAddonType(this.requiredAddonType) : null; } }
 
         #endregion IRequirement methods
 

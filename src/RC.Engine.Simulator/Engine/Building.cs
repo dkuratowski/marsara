@@ -9,6 +9,7 @@ using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Core;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Engine.Simulator.Metadata.Core;
 
 namespace RC.Engine.Simulator.Engine
 {
@@ -64,7 +65,7 @@ namespace RC.Engine.Simulator.Engine
         protected Building(string buildingTypeName, params EntityBehavior[] behaviors)
             : base(buildingTypeName, false, behaviors)
         {
-            this.buildingType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetBuildingType(buildingTypeName);
+            this.buildingType = new IBuildingType(this.ElementType.ElementTypeImpl as IBuildingTypeInternal);
 
             // Create and register the basic production lines of this building based on the metadata.
             List<IUnitType> unitTypes = new List<IUnitType>(this.buildingType.UnitTypes);

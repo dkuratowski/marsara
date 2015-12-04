@@ -53,13 +53,6 @@ namespace RC.Engine.Simulator.Core
             return this.cachedMapDirection;
         }
 
-        /// <see cref="IValueRead&lt;MapDirection&gt;.ValueChanged"/>
-        public event EventHandler ValueChanged
-        {
-            add { throw new NotSupportedException("ValueChanged event is not supported in HeadingToMapDirectionConverter!"); }
-            remove { throw new NotSupportedException("ValueChanged event is not supported in HeadingToMapDirectionConverter!"); }
-        }
-
         #endregion IValueRead<MapDirection> methods
 
         /// <summary>
@@ -177,13 +170,6 @@ namespace RC.Engine.Simulator.Core
             }
 
             return this.cachedMapDirection;
-        }
-
-        /// <see cref="IValueRead&lt;MapDirection&gt;.ValueChanged"/>
-        public event EventHandler ValueChanged
-        {
-            add { throw new NotSupportedException("ValueChanged event is not supported in MapDirValueSrcWrapper!"); }
-            remove { throw new NotSupportedException("ValueChanged event is not supported in MapDirValueSrcWrapper!"); }
         }
 
         #endregion IValueRead<MapDirection> methods

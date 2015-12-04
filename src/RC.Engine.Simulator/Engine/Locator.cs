@@ -81,18 +81,18 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Gets the coordinates of the quadratic tiles that are currently visible by this entity.
         /// </summary>
-        /// TODO: sight-range can vary based on the upgrades!
         public RCSet<RCIntVector> VisibleQuadCoords
         {
             get
             {
                 IQuadTile currentQuadTile = this.owner.Read().Scenario.Map.GetCell(this.owner.Read().MotionControl.PositionVector.Read().Round()).ParentQuadTile;
-                if (this.sightRangeCache == null || this.sightRangeCache.Item1 != currentQuadTile)
+                int currentSightRange = this.GetSightRangeOfOwner();
+                if (this.sightRangeCache == null || this.sightRangeCache.Item1 != currentQuadTile || this.sightRangeCache.Item2 != currentSightRange)
                 {
-                    this.sightRangeCache = new Tuple<IQuadTile, RCSet<RCIntVector>>(currentQuadTile, this.CalculateVisibleQuadCoords());
+                    this.sightRangeCache = new Tuple<IQuadTile, int, RCSet<RCIntVector>>(currentQuadTile, currentSightRange, this.CalculateVisibleQuadCoords());
                 }
 
-                return new RCSet<RCIntVector>(this.sightRangeCache.Item2);
+                return new RCSet<RCIntVector>(this.sightRangeCache.Item3);
             }
         }
 
@@ -126,7 +126,6 @@ namespace RC.Engine.Simulator.Engine
         /// <returns>The actual sight range of the owner entity.</returns>
         private int GetSightRangeOfOwner()
         {
-            /// TODO: sight-range can vary based on the upgrades!
             return this.owner.Read().ElementType.SightRange.Read();
         }
 
@@ -136,8 +135,8 @@ namespace RC.Engine.Simulator.Engine
         private readonly HeapedValue<Entity> owner;
 
         /// <summary>
-        /// Data structure to store the calculated sight range of the owner entity for the last known quadratic tile.
+        /// Data structure to store the calculated sight range of the owner entity for the last known quadratic tile and sight range.
         /// </summary>
-        private Tuple<IQuadTile, RCSet<RCIntVector>> sightRangeCache;
+        private Tuple<IQuadTile, int, RCSet<RCIntVector>> sightRangeCache;
     }
 }

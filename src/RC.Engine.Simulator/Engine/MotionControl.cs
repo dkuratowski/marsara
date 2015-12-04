@@ -59,13 +59,13 @@ namespace RC.Engine.Simulator.Engine
             {
                 this.status.Write((byte)MotionControlStatusEnum.InAir);
                 this.currentPathTracker.Write(this.airPathTracker.Read());
-                this.velocityGraph = new HexadecagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0); // TODO: max speed might change based on upgrades!
+                this.velocityGraph = new HexadecagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0);
             }
             else
             {
                 this.status.Write((byte)MotionControlStatusEnum.OnGround);
                 this.currentPathTracker.Write(this.groundPathTracker.Read());
-                this.velocityGraph = new OctagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0); // TODO: max speed might change based on upgrades!
+                this.velocityGraph = new OctagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0);
             }
         }
 
@@ -364,6 +364,20 @@ namespace RC.Engine.Simulator.Engine
         {
             if (this.currentPathTracker.Read().IsActive)
             {
+                /// Recreate the velocity graph of this motion control if the maximum speed has been upgraded in the meantime.
+                RCNumber currentMaxSpeed = this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0;
+                if (currentMaxSpeed != this.velocityGraph.MaxSpeed)
+                {
+                    if (this.Status == MotionControlStatusEnum.OnGround)
+                    {
+                        this.velocityGraph = new OctagonalVelocityGraph(this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0);
+                    }
+                    else if (this.Status == MotionControlStatusEnum.InAir)
+                    {
+                        this.velocityGraph = new HexadecagonalVelocityGraph(this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0);
+                    }
+                }
+
                 /// Update the velocity of this entity if the path-tracker is still active.
                 int currVelocityIndex = 0;
                 int bestVelocityIndex = -1;
@@ -440,14 +454,14 @@ namespace RC.Engine.Simulator.Engine
                 this.owner.Read().MapObject.SetShadowTransition(MAX_VTOL_TRANSITION_VECTOR);
                 this.status.Write((byte)MotionControlStatusEnum.InAir);
                 this.currentPathTracker.Write(this.airPathTracker.Read());
-                this.velocityGraph = new HexadecagonalVelocityGraph(this.owner.Read().ElementType.Speed.Read()); // TODO: max speed might change based on upgrades!
+                this.velocityGraph = new HexadecagonalVelocityGraph(this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0);
             }
             else
             {
                 this.owner.Read().MapObject.SetShadowTransition(new RCNumVector(0, 0));
                 this.status.Write((byte)MotionControlStatusEnum.OnGround);
                 this.currentPathTracker.Write(this.groundPathTracker.Read());
-                this.velocityGraph = new OctagonalVelocityGraph(this.owner.Read().ElementType.Speed.Read()); // TODO: max speed might change based on upgrades!
+                this.velocityGraph = new OctagonalVelocityGraph(this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0);
             }
         }
 

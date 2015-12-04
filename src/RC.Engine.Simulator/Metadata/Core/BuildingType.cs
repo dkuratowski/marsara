@@ -12,7 +12,7 @@ namespace RC.Engine.Simulator.Metadata.Core
     /// <summary>
     /// Contains the definition of a building type.
     /// </summary>
-    class BuildingType : ScenarioElementType, IBuildingType
+    class BuildingType : ScenarioElementType, IBuildingTypeInternal
     {
         /// <summary>
         /// Constructs a new building type.
@@ -28,58 +28,58 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.suggestionProviders = new List<BuildingPlacementSuggestionProvider>();
         }
 
-        #region IBuildingType members
+        #region IBuildingTypeInternal members
 
-        /// <see cref="IBuildingType.HasAddonType"/>
+        /// <see cref="IBuildingTypeInternal.HasAddonType"/>
         public bool HasAddonType(string addonTypeName)
         {
             if (addonTypeName == null) { throw new ArgumentNullException("addonTypeName"); }
             return this.addonTypes.ContainsKey(addonTypeName);
         }
 
-        /// <see cref="IBuildingType.HasUnitType"/>
+        /// <see cref="IBuildingTypeInternal.HasUnitType"/>
         public bool HasUnitType(string unitTypeName)
         {
             if (unitTypeName == null) { throw new ArgumentNullException("unitTypeName"); }
             return this.unitTypes.ContainsKey(unitTypeName);
         }
 
-        /// <see cref="IBuildingType.HasUpgradeType"/>
+        /// <see cref="IBuildingTypeInternal.HasUpgradeType"/>
         public bool HasUpgradeType(string upgradeTypeName)
         {
             if (upgradeTypeName == null) { throw new ArgumentNullException("upgradeTypeName"); }
             return this.upgradeTypes.ContainsKey(upgradeTypeName);
         }
 
-        /// <see cref="IBuildingType.GetAddonType"/>
-        public IAddonType GetAddonType(string addonTypeName)
+        /// <see cref="IBuildingTypeInternal.GetAddonType"/>
+        public IAddonTypeInternal GetAddonType(string addonTypeName)
         {
             return this.GetAddonTypeImpl(addonTypeName);
         }
 
-        /// <see cref="IBuildingType.GetUnitType"/>
-        public IUnitType GetUnitType(string unitTypeName)
+        /// <see cref="IBuildingTypeInternal.GetUnitType"/>
+        public IUnitTypeInternal GetUnitType(string unitTypeName)
         {
             return this.GetUnitTypeImpl(unitTypeName);
         }
 
-        /// <see cref="IBuildingType.GetUpgradeType"/>
-        public IUpgradeType GetUpgradeType(string upgradeTypeName)
+        /// <see cref="IBuildingTypeInternal.GetUpgradeType"/>
+        public IUpgradeTypeInternal GetUpgradeType(string upgradeTypeName)
         {
             return this.GetUpgradeTypeImpl(upgradeTypeName);
         }
 
-        /// <see cref="IBuildingType.AddonTypes"/>
-        public IEnumerable<IAddonType> AddonTypes { get { return this.addonTypes.Values; } }
+        /// <see cref="IBuildingTypeInternal.AddonTypes"/>
+        public IEnumerable<IAddonTypeInternal> AddonTypes { get { return this.addonTypes.Values; } }
 
-        /// <see cref="IBuildingType.UnitTypes"/>
-        public IEnumerable<IUnitType> UnitTypes { get { return this.unitTypes.Values; } }
+        /// <see cref="IBuildingTypeInternal.UnitTypes"/>
+        public IEnumerable<IUnitTypeInternal> UnitTypes { get { return this.unitTypes.Values; } }
 
-        /// <see cref="IBuildingType.UpgradeTypes"/>
-        public IEnumerable<IUpgradeType> UpgradeTypes { get { return this.upgradeTypes.Values; } }
+        /// <see cref="IBuildingTypeInternal.UpgradeTypes"/>
+        public IEnumerable<IUpgradeTypeInternal> UpgradeTypes { get { return this.upgradeTypes.Values; } }
 
-        /// <see cref="IBuildingType.CheckPlacementConstraints"/>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position, IAddonType addonType)
+        /// <see cref="IBuildingTypeInternal.CheckPlacementConstraints"/>
+        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position, IAddonTypeInternal addonType)
         {
             if (addonType == null) { throw new ArgumentNullException("addonType"); }
             if (!this.HasAddonType(addonType.Name)) { throw new ArgumentException(string.Format("Building type '{0}' is not defined as the main building for addon type '{1}'!", this.Name, addonType.Name)); }
@@ -97,8 +97,8 @@ namespace RC.Engine.Simulator.Metadata.Core
             return retList;
         }
 
-        /// <see cref="IBuildingType.CheckPlacementConstraints"/>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType)
+        /// <see cref="IBuildingTypeInternal.CheckPlacementConstraints"/>
+        public RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonTypeInternal addonType)
         {
             if (addonType == null) { throw new ArgumentNullException("addonType"); }
             if (!this.HasAddonType(addonType.Name)) { throw new ArgumentException(string.Format("Building type '{0}' is not defined as the main building for addon type '{1}'!", this.Name, addonType.Name)); }
@@ -116,7 +116,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             return retList;
         }
 
-        /// <see cref="IBuildingType.GetPlacementSuggestions"/>
+        /// <see cref="IBuildingTypeInternal.GetPlacementSuggestions"/>
         public RCSet<Tuple<RCIntRectangle, RCIntVector>> GetPlacementSuggestions(Scenario scenario, RCIntRectangle area)
         {
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
@@ -132,8 +132,8 @@ namespace RC.Engine.Simulator.Metadata.Core
             return retList;
         }
 
-        /// <see cref="IBuildingType.GetRelativeAddonPosition"/>
-        public RCIntVector GetRelativeAddonPosition(IMapAccess map, IAddonType addonType)
+        /// <see cref="IBuildingTypeInternal.GetRelativeAddonPosition"/>
+        public RCIntVector GetRelativeAddonPosition(IMapAccess map, IAddonTypeInternal addonType)
         {
             if (map == null) { throw new ArgumentNullException("map"); }
             if (addonType == null) { throw new ArgumentNullException("addonType"); }
@@ -144,7 +144,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             return new RCIntVector(buildingQuadSize.X, buildingQuadSize.Y - addonQuadHeight);
         }
 
-        #endregion IBuildingType members
+        #endregion IBuildingTypeInternal members
 
         #region Internal public methods
 
@@ -215,7 +215,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             if (this.Metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (suggestionProvider == null) { throw new ArgumentNullException("suggestionProvider"); }
 
-            suggestionProvider.SetBuildingType(this);
+            suggestionProvider.SetBuildingType(new IBuildingType(this));
             this.suggestionProviders.Add(suggestionProvider);
         }
 

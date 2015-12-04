@@ -51,44 +51,54 @@ namespace RC.Engine.Simulator.Metadata
     public interface IWeaponData
     {
         /// <summary>
+        /// Gets the name of this weapon.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// Gets the displayed name of this weapon.
+        /// </summary>
+        string DisplayedName { get; }
+
+        /// <summary>
         /// Gets the type of the weapon.
         /// </summary>
-        ConstValue<WeaponTypeEnum> WeaponType { get; }
+        IValueRead<WeaponTypeEnum> WeaponType { get; }
             
         /// <summary>
         /// Gets the cooldown value of the weapon.
         /// </summary>
-        ConstValue<int> Cooldown { get; }
+        IValueRead<int> Cooldown { get; }
 
         /// <summary>
         /// Gets the damage value of the weapon.
         /// </summary>
-        ConstValue<int> Damage { get; }
+        IValueRead<int> Damage { get; }
 
         /// <summary>
         /// Gets the damage type of the weapon.
         /// </summary>
-        ConstValue<DamageTypeEnum> DamageType { get; }
+        IValueRead<DamageTypeEnum> DamageType { get; }
 
         /// <summary>
         /// Gets the increment value of the weapon.
         /// </summary>
-        ConstValue<int> Increment { get; }
+        IValueRead<int> Increment { get; }
 
         /// <summary>
         /// Gets the maximum range of the weapon.
         /// </summary>
-        ConstValue<int> RangeMax { get; }
+        IValueRead<int> RangeMax { get; }
 
         /// <summary>
         /// Gets the minimum range of the weapon.
         /// </summary>
-        ConstValue<int> RangeMin { get; }
+        IValueRead<int> RangeMin { get; }
 
         /// <summary>
         /// Gets the splash type of the weapon.
         /// </summary>
-        ConstValue<SplashTypeEnum> SplashType { get; }
+        IValueRead<SplashTypeEnum> SplashType { get; }
 
         /// <summary>
         /// Gets the missiles defined for this weapon data.

@@ -74,71 +74,140 @@ namespace RC.Engine.Simulator.Metadata.Core
             return this.customTypes.ContainsKey(customTypeName);
         }
 
+        /// <see cref="IScenarioMetadata.HasElementType"/>
+        public bool HasElementType(string typeName)
+        {
+            if (typeName == null) { throw new ArgumentNullException("typeName"); }
+
+            return this.unitTypes.ContainsKey(typeName) ||
+                   this.upgradeTypes.ContainsKey(typeName) ||
+                   this.buildingTypes.ContainsKey(typeName) ||
+                   this.addonTypes.ContainsKey(typeName) ||
+                   this.missileTypes.ContainsKey(typeName) ||
+                   this.customTypes.ContainsKey(typeName);
+        }
+
         /// <see cref="IScenarioMetadata.GetUnitType"/>
         public IUnitType GetUnitType(string unitTypeName)
         {
-            return this.GetUnitTypeImpl(unitTypeName);
+            return new IUnitType(this.GetUnitTypeImpl(unitTypeName));
         }
 
         /// <see cref="IScenarioMetadata.GetUpgradeType"/>
         public IUpgradeType GetUpgradeType(string upgradeTypeName)
         {
-            return this.GetUpgradeTypeImpl(upgradeTypeName);
+            return new IUpgradeType(this.GetUpgradeTypeImpl(upgradeTypeName));
         }
 
         /// <see cref="IScenarioMetadata.GetBuildingType"/>
         public IBuildingType GetBuildingType(string buildingTypeName)
         {
-            return this.GetBuildingTypeImpl(buildingTypeName);
+            return new IBuildingType(this.GetBuildingTypeImpl(buildingTypeName));
         }
 
         /// <see cref="IScenarioMetadata.GetAddonType"/>
         public IAddonType GetAddonType(string addonTypeName)
         {
-            return this.GetAddonTypeImpl(addonTypeName);
+            return new IAddonType(this.GetAddonTypeImpl(addonTypeName));
         }
 
         /// <see cref="IScenarioMetadata.GetMissileType"/>
         public IMissileType GetMissileType(string missileTypeName)
         {
-            return this.GetMissileTypeImpl(missileTypeName);
+            return new IMissileType(this.GetMissileTypeImpl(missileTypeName));
         }
 
         /// <see cref="IScenarioMetadata.GetCustomType"/>
         public IScenarioElementType GetCustomType(string customTypeName)
         {
-            return this.GetCustomTypeImpl(customTypeName);
+            return new IScenarioElementType(this.GetCustomTypeImpl(customTypeName));
         }
 
         /// <see cref="IScenarioMetadata.GetElementType"/>
         public IScenarioElementType GetElementType(string typeName)
         {
-            return this.GetElementTypeImpl(typeName);
+            return new IScenarioElementType(this.GetElementTypeImpl(typeName));
         }
 
         /// <see cref="IScenarioMetadata.UnitTypes"/>
-        public IEnumerable<IUnitType> UnitTypes { get { return this.unitTypes.Values; } }
+        public IEnumerable<IUnitType> UnitTypes
+        {
+            get
+            {
+                List<IUnitType> retList = new List<IUnitType>();
+                foreach (IUnitTypeInternal unitType in this.unitTypes.Values) { retList.Add(new IUnitType(unitType)); }
+                return retList;
+            }
+        }
 
         /// <see cref="IScenarioMetadata.UpgradeTypes"/>
-        public IEnumerable<IUpgradeType> UpgradeTypes { get { return this.upgradeTypes.Values; } }
-
+        public IEnumerable<IUpgradeType> UpgradeTypes
+        {
+            get
+            {
+                List<IUpgradeType> retList = new List<IUpgradeType>();
+                foreach (IUpgradeTypeInternal upgradeType in this.upgradeTypes.Values) { retList.Add(new IUpgradeType(upgradeType)); }
+                return retList;
+            }
+        }
+        
         /// <see cref="IScenarioMetadata.BuildingTypes"/>
-        public IEnumerable<IBuildingType> BuildingTypes { get { return this.buildingTypes.Values; } }
+        public IEnumerable<IBuildingType> BuildingTypes
+        {
+            get
+            {
+                List<IBuildingType> retList = new List<IBuildingType>();
+                foreach (IBuildingTypeInternal buildingType in this.buildingTypes.Values) { retList.Add(new IBuildingType(buildingType)); }
+                return retList;
+            }
+        }
 
         /// <see cref="IScenarioMetadata.AddonTypes"/>
-        public IEnumerable<IAddonType> AddonTypes { get { return this.addonTypes.Values; } }
+        public IEnumerable<IAddonType> AddonTypes
+        {
+            get
+            {
+                List<IAddonType> retList = new List<IAddonType>();
+                foreach (IAddonTypeInternal addonType in this.addonTypes.Values) { retList.Add(new IAddonType(addonType)); }
+                return retList;
+            }
+        }
 
         /// <see cref="IScenarioMetadata.MissileTypes"/>
-        public IEnumerable<IMissileType> MissileTypes { get { return this.missileTypes.Values; } }
+        public IEnumerable<IMissileType> MissileTypes
+        {
+            get
+            {
+                List<IMissileType> retList = new List<IMissileType>();
+                foreach (IMissileTypeInternal missileType in this.missileTypes.Values) { retList.Add(new IMissileType(missileType)); }
+                return retList;
+            }
+        }
 
         /// <see cref="IScenarioMetadata.CustomTypes"/>
-        public IEnumerable<IScenarioElementType> CustomTypes { get { return this.customTypes.Values; } }
+        public IEnumerable<IScenarioElementType> CustomTypes
+        {
+            get
+            {
+                List<IScenarioElementType> retList = new List<IScenarioElementType>();
+                foreach (IScenarioElementTypeInternal elementType in this.customTypes.Values) { retList.Add(new IScenarioElementType(elementType)); }
+                return retList;
+            }
+        }
 
         /// <see cref="IScenarioMetadata.AllTypes"/>
-        public IEnumerable<IScenarioElementType> AllTypes { get { return this.allTypes; } }
+        public IEnumerable<IScenarioElementType> AllTypes
+        {
+            get
+            {
+                List<IScenarioElementType> retList = new List<IScenarioElementType>();
+                foreach (IScenarioElementTypeInternal elementType in this.allTypes) { retList.Add(new IScenarioElementType(elementType)); }
+                return retList;
+            }
+        }
 
         /// <see cref="IScenarioMetadata.this[]"/>
-        public IScenarioElementType this[int typeID] { get { return this.allTypes[typeID]; } }
+        public IScenarioElementType this[int typeID] { get { return new IScenarioElementType(this.allTypes[typeID]); } }
 
         /// <see cref="IScenarioMetadata.ShadowPalette"/>
         public ISpritePalette ShadowPalette { get { return this.shadowPalette; } }

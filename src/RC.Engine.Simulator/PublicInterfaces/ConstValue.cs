@@ -27,10 +27,6 @@ namespace RC.Engine.Simulator.PublicInterfaces
             return this.value;
         }
 
-        /// <see cref="IValueRead<T>.ValueChanged"/>
-        /// NOT USED
-        public event EventHandler ValueChanged;
-
         /// <summary>
         /// Gets the string representation of this constant value.
         /// </summary>

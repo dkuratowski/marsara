@@ -8,6 +8,7 @@ using System.Text;
 using RC.Engine.Simulator.Core;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Engine.Simulator.Metadata.Core;
 
 namespace RC.Engine.Simulator.Engine
 {
@@ -49,7 +50,7 @@ namespace RC.Engine.Simulator.Engine
         protected Addon(string addonTypeName, params EntityBehavior[] behaviors)
             : base(addonTypeName, false, behaviors)
         {
-            this.addonType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetAddonType(addonTypeName);
+            this.addonType = new IAddonType(this.ElementType.ElementTypeImpl as IAddonTypeInternal);
 
             // Create and register the basic production lines of this addon based on the metadata.
             List<IUpgradeType> upgradeTypes = new List<IUpgradeType>(this.addonType.UpgradeTypes);

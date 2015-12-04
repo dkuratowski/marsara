@@ -8,6 +8,7 @@ using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Engine.Simulator.Metadata.Core;
 
 namespace RC.Engine.Simulator.Engine
 {
@@ -22,6 +23,11 @@ namespace RC.Engine.Simulator.Engine
         /// Gets a reference to the type of this scenario element.
         /// </summary>
         public IScenarioElementType ElementType { get { return this.elementType; } }
+
+        /// <summary>
+        /// Gets a reference to the upgrade interface of the type of this scenario element.
+        /// </summary>
+        public IScenarioElementTypeUpgrade ElementTypeUpgrade { get { return this.elementTypeUpgrade; } }
 
         /// <summary>
         /// Gets the ID of the map object.
@@ -106,9 +112,12 @@ namespace RC.Engine.Simulator.Engine
         /// <param name="elementTypeName">The name of the type of this element.</param>
         protected ScenarioElement(string elementTypeName)
         {
-            if (elementTypeName == null) { throw new ArgumentNullException("elementTypeName"); }
-
-            this.elementType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetElementType(elementTypeName);
+            ScenarioMetadataUpgrade instanceLevelMetadata = new ScenarioMetadataUpgrade();
+            this.metadata = instanceLevelMetadata;
+            this.metadataUpgrade = instanceLevelMetadata;
+            this.metadataUpgrade.AttachMetadata(ComponentManager.GetInterface<IScenarioLoader>().Metadata);
+            this.elementType = this.metadata.GetElementType(elementTypeName);
+            this.elementTypeUpgrade = this.metadataUpgrade.GetElementTypeUpgrade(elementTypeName);
 
             this.typeID = this.ConstructField<int>("typeID");
             this.id = this.ConstructField<int>("id");
@@ -256,8 +265,11 @@ namespace RC.Engine.Simulator.Engine
             if (owner == null) { throw new ArgumentNullException("owner"); }
             if (this.scenario.Read() == null) { throw new InvalidOperationException("The scenario element doesn't not belong to a scenario!"); }
             if (this.owner.Read() != null) { throw new InvalidOperationException("The scenario element is already added to a player!"); }
+
+            /// Update the reference to the owner and attach the player-level metadata.
             this.owner.Write(owner);
             this.lastOwnerIndex.Write(owner.PlayerIndex);
+            this.metadataUpgrade.AttachMetadata(owner.Metadata);
         }
 
         /// <summary>
@@ -267,7 +279,10 @@ namespace RC.Engine.Simulator.Engine
         {
             if (this.scenario.Read() == null) { throw new InvalidOperationException("The scenario element doesn't not belong to a scenario!"); }
             if (this.owner.Read() == null) { throw new InvalidOperationException("The scenario element doesn't not belong to a player!"); }
+
+            /// Update the reference to the owner and attach the global metadata.
             this.owner.Write(null);
+            this.metadataUpgrade.AttachMetadata(ComponentManager.GetInterface<IScenarioLoader>().Metadata);
         }
 
         #endregion Internal members
@@ -330,8 +345,23 @@ namespace RC.Engine.Simulator.Engine
         private readonly Dictionary<MapObject, MapObjectLayerEnum> mapObjectsOfThisElement;
 
         /// <summary>
-        /// Reference to the type of this scenario element.
+        /// Reference to the instance level type of this scenario element.
         /// </summary>
         private readonly IScenarioElementType elementType;
+
+        /// <summary>
+        /// Reference to the upgrade interface of the instance level type of this scenario element.
+        /// </summary>
+        private readonly IScenarioElementTypeUpgrade elementTypeUpgrade;
+
+        /// <summary>
+        /// Reference to the instance level metadata.
+        /// </summary>
+        private readonly IScenarioMetadata metadata;
+
+        /// <summary>
+        /// Reference to the upgrade interface of the instance level metadata.
+        /// </summary>
+        private readonly IScenarioMetadataUpgrade metadataUpgrade;
     }
 }

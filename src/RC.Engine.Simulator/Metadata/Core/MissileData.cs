@@ -32,7 +32,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         #region IMissileData members
 
         /// <see cref="IMissileData.MissileType"/>
-        public IMissileType MissileType { get { return this.missileType; } }
+        public IMissileType MissileType { get { return new IMissileType(this.missileType); } }
 
         /// <see cref="IMissileData.GetRelativeLaunchPosition"/>
         public RCNumVector GetRelativeLaunchPosition(MapDirection direction)

@@ -11,9 +11,9 @@ using System.Text;
 namespace RC.App.PresLogic.Controls
 {
     /// <summary>
-    /// Represents the supply details display control on the details panel.
+    /// Displays detailed informations about the supplies provided by the selected map object on the details panel.
     /// </summary>
-    public class RCSupplyDetailsDisplay : UIControl
+    public class RCSupplyDetailsDisplay : RCTextInformationDisplay
     {
         /// <summary>
         /// Constructs a RCSupplyDetailsDisplay control at the given position with the given size.
@@ -34,32 +34,33 @@ namespace RC.App.PresLogic.Controls
             this.totalSuppliesText = new UIString("Total Supplies: {0}", textFont, UIWorkspace.Instance.PixelScaling, RCColor.White);
             this.suppliesMaxText = new UIString("Supplies Max: {0}", textFont, UIWorkspace.Instance.PixelScaling, RCColor.White);
 
-            int totalHeightOfTexts = textFont.MinimumLineHeight * 4 + 3;
-            this.suppliesUsedTextY = size.Y / 2 - totalHeightOfTexts / 2 + textFont.CharTopMaximum;
-            this.suppliesProvidedTextY = this.suppliesUsedTextY + textFont.MinimumLineHeight + 1;
-            this.totalSuppliesTextY = this.suppliesProvidedTextY + textFont.MinimumLineHeight + 1;
-            this.suppliesMaxTextY = this.totalSuppliesTextY + textFont.MinimumLineHeight + 1;
-            this.middleX = size.X / 2;
+            this.textList = new List<UIString>
+            {
+                this.suppliesUsedText,
+                this.suppliesProvidedText,
+                this.totalSuppliesText,
+                this.suppliesMaxText
+            };
         }
 
-        /// <see cref="UIObject.Render_i"/>
-        protected override void Render_i(IUIRenderContext renderContext)
+        /// <see cref="RCTextInformationDisplay.GetDisplayedTexts"/>
+        protected override List<UIString> GetDisplayedTexts()
         {
-            if (this.selectionDetailsView.SelectionCount != 1) { return; }
+            /// Check if there is 1 object is selected.
+            if (this.selectionDetailsView.SelectionCount != 1) { return new List<UIString>(); }
             int mapObjectID = this.selectionDetailsView.GetObjectID(0);
 
+            /// Check if the selected object has supply informations that can be displayed.
             int suppliesProvided = this.mapObjectDetailsView.GetSuppliesProvided(mapObjectID);
-            if (suppliesProvided == -1) { return; }
+            if (suppliesProvided == -1) { return new List<UIString>(); }
 
+            /// Refresh the texts with the actual supply informations.
             this.suppliesUsedText[0] = this.playerView.UsedSupply;
             this.suppliesProvidedText[0] = suppliesProvided;
             this.totalSuppliesText[0] = this.playerView.TotalSupply;
             this.suppliesMaxText[0] = this.playerView.MaxSupply;
 
-            renderContext.RenderString(this.suppliesUsedText, new RCIntVector(this.middleX - this.suppliesUsedText.Width / 2, this.suppliesUsedTextY));
-            renderContext.RenderString(this.suppliesProvidedText, new RCIntVector(this.middleX - this.suppliesProvidedText.Width / 2, this.suppliesProvidedTextY));
-            renderContext.RenderString(this.totalSuppliesText, new RCIntVector(this.middleX - this.totalSuppliesText.Width / 2, this.totalSuppliesTextY));
-            renderContext.RenderString(this.suppliesMaxText, new RCIntVector(this.middleX - this.suppliesMaxText.Width / 2, this.suppliesMaxTextY));
+            return this.textList;
         }
 
         /// <summary>
@@ -71,17 +72,9 @@ namespace RC.App.PresLogic.Controls
         private readonly UIString suppliesMaxText;
 
         /// <summary>
-        /// The Y coordinates of the texts to be displayed.
+        /// The texts to be displayed in a list.
         /// </summary>
-        private readonly int suppliesUsedTextY;
-        private readonly int suppliesProvidedTextY;
-        private readonly int totalSuppliesTextY;
-        private readonly int suppliesMaxTextY;
-
-        /// <summary>
-        /// The X coordinate of the middle of this control.
-        /// </summary>
-        private readonly int middleX;
+        private readonly List<UIString> textList;
 
         /// <summary>
         /// Reference to the necessary views.

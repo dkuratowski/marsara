@@ -14,7 +14,7 @@
       <sightRange>7</sightRange>
       <speed>0.625</speed>
     </generalData>
-    <groundWeapon>
+    <groundWeapon name="GaussRifle" displayedName="Gauss Rifle">
       <damage>5</damage>
       <!--rangeMax>1</rangeMax-->
       <rangeMax>5</rangeMax>
@@ -150,14 +150,16 @@
       <sightRange>7</sightRange>
       <speed>0.5</speed>
     </generalData>
-    <groundWeapon>
+	<!-- TODO: make it possible to define weapons that can attack both air and ground objects! -->
+    <groundWeapon name="GaussRifleGround" displayedName="Gauss Rifle">
       <damage>6</damage>
       <increment>1</increment>
       <rangeMax>4</rangeMax>
       <damageType>Normal</damageType>
       <cooldown>15</cooldown>
     </groundWeapon>
-    <airWeapon>
+	<!-- TODO: make it possible to define weapons that can attack both air and ground objects! -->
+    <airWeapon name="GaussRifleAir" displayedName="Gauss Rifle">
       <damage>6</damage>
       <increment>1</increment>
       <rangeMax>4</rangeMax>
@@ -268,7 +270,7 @@
       <sightRange>7</sightRange>
       <speed>0.5</speed>
     </generalData>
-    <groundWeapon>
+    <groundWeapon name="FirebatWeapon" displayedName="Firebat Weapon">
       <damage>16</damage>
       <increment>2</increment>
       <rangeMax>2</rangeMax>
@@ -297,14 +299,16 @@
       <sightRange>9</sightRange>
       <speed>0.5</speed>
     </generalData>
-    <groundWeapon>
+	<!-- TODO: make it possible to define weapons that can attack both air and ground objects! -->
+    <groundWeapon name="GhostWeaponGround" displayedName="Ghost Weapon">
       <damage>10</damage>
       <increment>1</increment>
       <rangeMax>7</rangeMax>
       <damageType>Concussive</damageType>
       <cooldown>22</cooldown>
     </groundWeapon>
-    <airWeapon>
+	<!-- TODO: make it possible to define weapons that can attack both air and ground objects! -->
+    <airWeapon name="GhostWeaponAir" displayedName="Ghost Weapon">
       <damage>10</damage>
       <increment>1</increment>
       <rangeMax>7</rangeMax>
@@ -330,7 +334,7 @@
       <sightRange>8</sightRange>
       <speed>0.834</speed>
     </generalData>
-    <groundWeapon>
+    <groundWeapon name="VultureWeapon" displayedName="Vulture Weapon">
       <damage>20</damage>
       <increment>2</increment>
       <rangeMax>5</rangeMax>
@@ -356,7 +360,7 @@
       <sightRange>10</sightRange>
       <speed>0.5</speed>
     </generalData>
-    <groundWeapon>
+    <groundWeapon name="SiegeTankWeapon" displayedName="Siege Tank Weapon">
       <damage>30</damage>
       <increment>3</increment>
       <rangeMax>7</rangeMax>
@@ -382,14 +386,14 @@
       <sightRange>8</sightRange>
       <speed>0.587</speed>
     </generalData>
-    <groundWeapon>
+    <groundWeapon name="GoliathWeaponGround" displayedName="Goliath Ground Weapon">
       <damage>12</damage>
       <increment>1</increment>
       <rangeMax>6</rangeMax>
       <damageType>Normal</damageType>
       <cooldown>22</cooldown>
     </groundWeapon>
-    <airWeapon>
+    <airWeapon name="GoliathWeaponAir" displayedName="Goliath Air Weapon">
       <damage>20</damage>
       <increment>4</increment>
       <rangeMax>5</rangeMax>
@@ -417,14 +421,14 @@
       <sightRange>7</sightRange>
       <speed>0.834</speed>
     </generalData>
-    <groundWeapon>
+    <groundWeapon name="WraithWeaponGround" displayedName="Wraith Ground Weapon">
       <damage>8</damage>
       <increment>1</increment>
       <rangeMax>5</rangeMax>
       <damageType>Normal</damageType>
       <cooldown>30</cooldown>
     </groundWeapon>
-    <airWeapon>
+    <airWeapon name="WraithWeaponAir" displayedName="Wraith Air Weapon">
       <damage>20</damage>
       <increment>2</increment>
       <rangeMax>5</rangeMax>
@@ -491,14 +495,16 @@
       <sightRange>11</sightRange>
       <speed>0.313</speed>
     </generalData>
-    <groundWeapon>
+	<!-- TODO: make it possible to define weapons that can attack both air and ground objects! -->
+    <groundWeapon name="BattlecruiserWeaponGround" displayedName="Battlecruiser Weapon">
       <damage>25</damage>
       <increment>3</increment>
       <rangeMax>6</rangeMax>
       <damageType>Normal</damageType>
       <cooldown>30</cooldown>
     </groundWeapon>
-    <airWeapon>
+	<!-- TODO: make it possible to define weapons that can attack both air and ground objects! -->
+    <airWeapon name="BattlecruiserWeaponAir" displayedName="Battlecruiser Weapon">
       <damage>25</damage>
       <increment>3</increment>
       <rangeMax>6</rangeMax>

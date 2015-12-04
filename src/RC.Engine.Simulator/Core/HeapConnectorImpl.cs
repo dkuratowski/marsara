@@ -27,10 +27,6 @@ namespace RC.Engine.Simulator.Core
             return this.Heap.ReadByte(this.DataAddress);
         }
 
-        /// <see cref="IValueRead<T>.ValueChanged"/>
-        /// NOT USED
-        public event EventHandler ValueChanged;
-
         #endregion IValueRead<T> methods
 
         #region IValueWrite<T> methods
@@ -62,10 +58,6 @@ namespace RC.Engine.Simulator.Core
         {
             return this.Heap.ReadShort(this.DataAddress);
         }
-
-        /// <see cref="IValueRead<T>.ValueChanged"/>
-        /// NOT USED
-        public event EventHandler ValueChanged;
 
         #endregion IValueRead<T> methods
 
@@ -99,10 +91,6 @@ namespace RC.Engine.Simulator.Core
             return this.Heap.ReadInt(this.DataAddress);
         }
 
-        /// <see cref="IValueRead<T>.ValueChanged"/>
-        /// NOT USED
-        public event EventHandler ValueChanged;
-
         #endregion IValueRead<T> methods
 
         #region IValueWrite<T> methods
@@ -135,10 +123,6 @@ namespace RC.Engine.Simulator.Core
             return this.Heap.ReadLong(this.DataAddress);
         }
 
-        /// <see cref="IValueRead<T>.ValueChanged"/>
-        /// NOT USED
-        public event EventHandler ValueChanged;
-
         #endregion IValueRead<T> methods
 
         #region IValueWrite<T> methods
@@ -170,10 +154,6 @@ namespace RC.Engine.Simulator.Core
         {
             return new RCNumber(this.Heap.ReadInt(this.DataAddress));
         }
-
-        /// <see cref="IValueRead<T>.ValueChanged"/>
-        /// NOT USED
-        public event EventHandler ValueChanged;
 
         #endregion IValueRead<T> methods
 
@@ -209,10 +189,6 @@ namespace RC.Engine.Simulator.Core
                                                this.Heap.ReadInt(this.DataAddress + 5))
                 : RCIntVector.Undefined;
         }
-
-        /// <see cref="IValueRead<T>.ValueChanged"/>
-        /// NOT USED
-        public event EventHandler ValueChanged;
 
         #endregion IValueRead<T> methods
 
@@ -251,10 +227,6 @@ namespace RC.Engine.Simulator.Core
                                                new RCNumber(this.Heap.ReadInt(this.DataAddress + 5)))
                 : RCNumVector.Undefined;
         }
-
-        /// <see cref="IValueRead<T>.ValueChanged"/>
-        /// NOT USED
-        public event EventHandler ValueChanged;
 
         #endregion IValueRead<T> methods
 
@@ -295,10 +267,6 @@ namespace RC.Engine.Simulator.Core
                                                   this.Heap.ReadInt(this.DataAddress + 13))
                 : RCIntRectangle.Undefined;
         }
-
-        /// <see cref="IValueRead<T>.ValueChanged"/>
-        /// NOT USED
-        public event EventHandler ValueChanged;
 
         #endregion IValueRead<T> methods
 
@@ -341,10 +309,6 @@ namespace RC.Engine.Simulator.Core
                                                   new RCNumber(this.Heap.ReadInt(this.DataAddress + 13)))
                 : RCNumRectangle.Undefined;
         }
-
-        /// <see cref="IValueRead<T>.ValueChanged"/>
-        /// NOT USED
-        public event EventHandler ValueChanged;
 
         #endregion IValueRead<T> methods
 

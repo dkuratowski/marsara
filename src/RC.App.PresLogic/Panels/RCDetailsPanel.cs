@@ -43,6 +43,7 @@ namespace RC.App.PresLogic.Panels
             this.constructionProgressDisplay = null;
             this.supplyDetailsDisplay = null;
             this.resourceAmountDisplay = null;
+            this.weaponDetailsDisplay = null;
             this.multiplayerService = null;
             this.selectionDetailsView = null;
             this.mapObjectDetailsView = null;
@@ -93,6 +94,7 @@ namespace RC.App.PresLogic.Panels
             this.constructionProgressDisplay = null;
             this.supplyDetailsDisplay = null;
             this.resourceAmountDisplay = null;
+            this.weaponDetailsDisplay = null;
             this.currentCustomContent = null;
 
             /// Destroy the selection buttons.
@@ -204,6 +206,7 @@ namespace RC.App.PresLogic.Panels
                 this.constructionProgressDisplay = new RCConstructionProgressDisplay(CUSTOM_CONTENT_RECT.Location, CUSTOM_CONTENT_RECT.Size);
                 this.supplyDetailsDisplay = new RCSupplyDetailsDisplay(CUSTOM_CONTENT_RECT.Location, CUSTOM_CONTENT_RECT.Size);
                 this.resourceAmountDisplay = new RCResourceAmountDisplay(CUSTOM_CONTENT_RECT.Location, CUSTOM_CONTENT_RECT.Size);
+                this.weaponDetailsDisplay = new RCWeaponDetailsDisplay(CUSTOM_CONTENT_RECT.Location, CUSTOM_CONTENT_RECT.Size);
 
                 /// Subscribe to the FrameUpdate event.
                 UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate += this.OnFrameUpdate;
@@ -320,12 +323,13 @@ namespace RC.App.PresLogic.Panels
         private UIControl SelectCustomContent()
         {
             // TODO: implement this method accordingly!
+            int idOfSelectedObj = this.selectionDetailsView.GetObjectID(0);
             if (this.productionDetailsView.ConstructionProgressNormalized != -1) { return this.constructionProgressDisplay; }
             else if (this.productionDetailsView.ProductionLineCapacity != 0) { return this.productionLineDisplay; }
-            else if (this.mapObjectDetailsView.GetSuppliesProvided(this.selectionDetailsView.GetObjectID(0)) != -1) { return this.supplyDetailsDisplay; }
+            else if (this.mapObjectDetailsView.GetSuppliesProvided(idOfSelectedObj) != -1) { return this.supplyDetailsDisplay; }
+            else if (this.mapObjectDetailsView.GetArmorInfo(idOfSelectedObj) != null || this.mapObjectDetailsView.GetWeaponInfo(idOfSelectedObj).Count != 0) { return this.weaponDetailsDisplay; }
             else
             {
-                int idOfSelectedObj = this.selectionDetailsView.GetObjectID(0);
                 int minerals = this.mapObjectDetailsView.GetMineralsAmount(idOfSelectedObj);
                 int vespeneGas = this.mapObjectDetailsView.GetVespeneGasAmount(idOfSelectedObj);
                 if (minerals != -1 || vespeneGas != -1)
@@ -376,6 +380,11 @@ namespace RC.App.PresLogic.Panels
         /// Reference to the resource amount display control.
         /// </summary>
         private RCResourceAmountDisplay resourceAmountDisplay;
+
+        /// <summary>
+        /// Reference to the weapon details display control.
+        /// </summary>
+        private RCWeaponDetailsDisplay weaponDetailsDisplay;
 
         /// <summary>
         /// Reference to the currently executed connecting/disconnecting task or null if no such a task is under execution.

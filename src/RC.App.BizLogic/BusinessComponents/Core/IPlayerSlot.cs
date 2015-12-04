@@ -72,5 +72,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// </summary>
         /// <exception cref="InvalidOperationException">If there is no connected player.</exception>
         void DisconnectPlayer();
+
+        /// TODO: Only for debugging!
+        Player PlayerObj { get; }
     }
 }

@@ -1,122 +1,74 @@
-﻿using RC.Common;
-using RC.Engine.Maps.PublicInterfaces;
-using RC.Engine.Simulator.Engine;
-using RC.Engine.Simulator.Metadata.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
+using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Engine;
 
-namespace RC.Engine.Simulator.Metadata
+namespace RC.Engine.Simulator.Metadata.Core
 {
     /// <summary>
-    /// Interface of the building types defined in the metadata.
-    /// This interface is defined as a class because we want to overload the equality/inequality operators.
+    /// Internal interface of the building types defined in the metadata.
     /// </summary>
-    public class IBuildingType : IScenarioElementType
+    interface IBuildingTypeInternal : IScenarioElementTypeInternal
     {
-        #region Interface methods
-
         /// <summary>
         /// Checks whether this building type has an addon type with the given name.
         /// </summary>
         /// <param name="addonTypeName">The name of the searched addon type.</param>
         /// <returns>True if this building type has an addon type with the given name, false otherwise.</returns>
-        public bool HasAddonType(string addonTypeName)
-        {
-            return this.implementation.HasAddonType(addonTypeName);
-        }
+        bool HasAddonType(string addonTypeName);
 
         /// <summary>
         /// Checks whether this building type has a unit type with the given name.
         /// </summary>
         /// <param name="unitTypeName">The name of the searched unit type.</param>
         /// <returns>True if this building type has a unit type with the given name, false otherwise.</returns>
-        public bool HasUnitType(string unitTypeName)
-        {
-            return this.implementation.HasUnitType(unitTypeName);
-        }
-
+        bool HasUnitType(string unitTypeName);
 
         /// <summary>
         /// Checks whether this building type has an upgrade type with the given name.
         /// </summary>
         /// <param name="upgradeTypeName">The name of the searched upgrade type.</param>
         /// <returns>True if this building type has an upgrade type with the given name, false otherwise.</returns>
-        public bool HasUpgradeType(string upgradeTypeName)
-        {
-            return this.implementation.HasUpgradeType(upgradeTypeName);
-        }
-
+        bool HasUpgradeType(string upgradeTypeName);
 
         /// <summary>
         /// Gets the addon type of this building type with the given name.
         /// </summary>
         /// <param name="addonTypeName">The name of the addon type.</param>
         /// <returns>The addon type with the given name.</returns>
-        public IAddonType GetAddonType(string addonTypeName)
-        {
-            return new IAddonType(this.implementation.GetAddonType(addonTypeName));
-        }
+        IAddonTypeInternal GetAddonType(string addonTypeName);
 
         /// <summary>
         /// Gets the unit type of this building type with the given name.
         /// </summary>
         /// <param name="unitTypeName">The name of the unit type.</param>
         /// <returns>The unit type with the given name.</returns>
-        public IUnitType GetUnitType(string unitTypeName)
-        {
-            return new IUnitType(this.implementation.GetUnitType(unitTypeName));
-        }
+        IUnitTypeInternal GetUnitType(string unitTypeName);
 
         /// <summary>
         /// Gets the upgrade type of this building type with the given name.
         /// </summary>
         /// <param name="upgradeTypeName">The name of the upgrade type.</param>
         /// <returns>The upgrade type with the given name.</returns>
-        public IUpgradeType GetUpgradeType(string upgradeTypeName)
-        {
-            return new IUpgradeType(this.implementation.GetUpgradeType(upgradeTypeName));
-        }
+        IUpgradeTypeInternal GetUpgradeType(string upgradeTypeName);
 
         /// <summary>
         /// Gets the addon types of this building type.
         /// </summary>
-        public IEnumerable<IAddonType> AddonTypes
-        {
-            get
-            {
-                List<IAddonType> retList = new List<IAddonType>();
-                foreach (IAddonTypeInternal addonType in this.implementation.AddonTypes) { retList.Add(new IAddonType(addonType)); }
-                return retList;
-            }
-        }
+        IEnumerable<IAddonTypeInternal> AddonTypes { get; }
 
         /// <summary>
         /// Gets the unit types of this building type.
         /// </summary>
-        public IEnumerable<IUnitType> UnitTypes
-        {
-            get
-            {
-                List<IUnitType> retList = new List<IUnitType>();
-                foreach (IUnitTypeInternal unitType in this.implementation.UnitTypes) { retList.Add(new IUnitType(unitType)); }
-                return retList;
-            }
-        }
+        IEnumerable<IUnitTypeInternal> UnitTypes { get; }
 
         /// <summary>
         /// Gets the upgrade types of this building type.
         /// </summary>
-        public IEnumerable<IUpgradeType> UpgradeTypes
-        {
-            get
-            {
-                List<IUpgradeType> retList = new List<IUpgradeType>();
-                foreach (IUpgradeTypeInternal upgradeType in this.implementation.UpgradeTypes) { retList.Add(new IUpgradeType(upgradeType)); }
-                return retList;
-            }
-        }
+        IEnumerable<IUpgradeTypeInternal> UpgradeTypes { get; }
 
         /// <summary>
         /// Checks whether the constraints of this building type allows placing a building of this type together with an addon of the given addon type
@@ -132,10 +84,7 @@ namespace RC.Engine.Simulator.Metadata
         /// <exception cref="ArgumentException">
         /// If this building type is not defined as the main building for the given addon type.
         /// </exception>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position, IAddonType addonType)
-        {
-            return this.implementation.CheckPlacementConstraints(scenario, position, addonType.AddonTypeImpl);
-        }
+        RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position, IAddonTypeInternal addonType);
 
         /// <summary>
         /// Checks whether the constraints of this building type allows placing the given building to its scenario together with an addon of the given addon type
@@ -151,10 +100,7 @@ namespace RC.Engine.Simulator.Metadata
         /// If the type of the given building is not the same as this building type.
         /// If this building type is not defined as the main building for the given addon type.
         /// </exception>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType)
-        {
-            return this.implementation.CheckPlacementConstraints(building, position, addonType.AddonTypeImpl);
-        }
+        RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonTypeInternal addonType);
 
         /// <summary>
         /// Gets the placement suggestion boxes for this building type inside the given area on the map of the given scenario.
@@ -167,11 +113,8 @@ namespace RC.Engine.Simulator.Metadata
         /// checked by the caller. If that area is visible then the RCIntVector component contains the coordinates of the
         /// top-left corner of the suggestion box relative to the RCIntRectangle component.
         /// </returns>
-        public RCSet<Tuple<RCIntRectangle, RCIntVector>> GetPlacementSuggestions(Scenario scenario, RCIntRectangle area)
-        {
-            return this.implementation.GetPlacementSuggestions(scenario, area);
-        }
-
+        RCSet<Tuple<RCIntRectangle, RCIntVector>> GetPlacementSuggestions(Scenario scenario, RCIntRectangle area);
+        
         /// <summary>
         /// Gets the quadratic position of the given addon type relative to the top-left quadratic tile of this building type.
         /// </summary>
@@ -181,31 +124,6 @@ namespace RC.Engine.Simulator.Metadata
         /// <exception cref="ArgumentException">
         /// If this building type is not defined as the main building for the given addon type.
         /// </exception>
-        public RCIntVector GetRelativeAddonPosition(IMapAccess map, IAddonType addonType)
-        {
-            return this.implementation.GetRelativeAddonPosition(map, addonType.AddonTypeImpl);
-        }
-
-        #endregion Interface methods
-
-        /// <summary>
-        /// Constructs an instance of this interface with the given implementation.
-        /// </summary>
-        /// <param name="implementation">The implementation of this interface.</param>
-        internal IBuildingType(IBuildingTypeInternal implementation) : base(implementation)
-        {
-            if (implementation == null) { throw new ArgumentNullException("implementation"); }
-            this.implementation = implementation;
-        }
-
-        /// <summary>
-        /// Gets the implementation of this interface.
-        /// </summary>
-        internal IBuildingTypeInternal BuildingTypeImpl { get { return this.implementation; } }
-
-        /// <summary>
-        /// Reference to the implementation of this interface.
-        /// </summary>
-        private IBuildingTypeInternal implementation;
+        RCIntVector GetRelativeAddonPosition(IMapAccess map, IAddonTypeInternal addonType);
     }
 }

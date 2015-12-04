@@ -96,5 +96,28 @@ namespace RC.App.BizLogic.Views
         /// is not accessible by the local player.
         /// </returns>
         int GetSuppliesProvided(int objectID);
+
+        /// <summary>
+        /// Gets informations about the armor of the given map object.
+        /// </summary>
+        /// <param name="objectID">The ID of the map object.</param>
+        /// <returns>
+        /// The armor informations of the given map object or null if the given map object doesn't have armor informations or if the information
+        /// is not accessible by the local player.
+        /// The first item in the returned tuple is the original armor and the second item is the amount of upgrade on the armor.
+        /// </returns>
+        Tuple<int, int> GetArmorInfo(int objectID);
+
+        /// <summary>
+        /// Gets informations about the weapons of the given map object.
+        /// </summary>
+        /// <param name="objectID">The ID of the map object.</param>
+        /// <returns>
+        /// The weapon informations of the given map object or and empty list if the given map object doesn't have weapons or if the information
+        /// is not accessible by the local player.
+        /// Each item in the returned list is a 3-tuple. The first item in these tuples is the name, the second item is
+        /// original damage and the third item is the amount of upgrade on the damage of the corresponding weapon.
+        /// </returns>
+        List<Tuple<string, int, int>> GetWeaponInfo(int objectID);
     }
 }

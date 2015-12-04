@@ -93,6 +93,8 @@
     <Compile Include="Controls\RCResourceAmountDisplay.cs" />
     <Compile Include="Controls\RCSuggestionBoxDisplay.cs" />
     <Compile Include="Controls\RCSupplyDetailsDisplay.cs" />
+    <Compile Include="Controls\RCTextInformationDisplay.cs" />
+    <Compile Include="Controls\RCWeaponDetailsDisplay.cs" />
     <Compile Include="SignalTracker.cs" />
     <Compile Include="SpriteGroups\CmdButtonSpriteGroup.cs" />
     <Compile Include="Controls\IMapDisplay.cs" />

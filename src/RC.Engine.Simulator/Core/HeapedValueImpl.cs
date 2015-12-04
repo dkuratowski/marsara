@@ -43,7 +43,6 @@ namespace RC.Engine.Simulator.Core
             //if (!this.isReadyToUse) { throw new InvalidOperationException("Heap accessor is not ready to use!"); }
             this.cachedValue = newVal;
             this.SynchToHeap();
-            this.RaiseValueChangedEvt();
         }
 
         #endregion IValue<T> methods

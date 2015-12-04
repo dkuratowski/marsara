@@ -18,12 +18,6 @@ namespace RC.Engine.Simulator.PublicInterfaces
         /// <returns>The simulation data.</returns>
         /// <exception cref="SimulatorException">In case of type mismatch.</exception>
         T Read();
-
-        /// <summary>
-        /// This event is raised when the value behind the read interface has been changed.
-        /// </summary>
-        /// TODO: would be better to change the type of this event!
-        event EventHandler ValueChanged;
     }
 
     /// <summary>

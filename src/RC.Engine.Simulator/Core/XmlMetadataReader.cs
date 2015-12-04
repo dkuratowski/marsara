@@ -479,6 +479,8 @@ namespace RC.Engine.Simulator.Core
         /// <param name="metadata">The metadata object.</param>
         private static WeaponData LoadWeaponData(XElement weaponDataElem, ScenarioMetadata metadata)
         {
+            XAttribute nameAttr = weaponDataElem.Attribute(XmlMetadataConstants.WPN_NAME_ATTR);
+            XAttribute displayedNameAttr = weaponDataElem.Attribute(XmlMetadataConstants.WPN_DISPLAYEDNAME_ATTR);
             XElement cooldownElem = weaponDataElem.Element(XmlMetadataConstants.WPN_COOLDOWN_ELEM);
             XElement damageElem = weaponDataElem.Element(XmlMetadataConstants.WPN_DAMAGE_ELEM);
             XElement damageTypeElem = weaponDataElem.Element(XmlMetadataConstants.WPN_DAMAGETYPE_ELEM);
@@ -487,6 +489,7 @@ namespace RC.Engine.Simulator.Core
             XElement rangeMinElem = weaponDataElem.Element(XmlMetadataConstants.WPN_RANGEMIN_ELEM);
             XElement splashTypeElem = weaponDataElem.Element(XmlMetadataConstants.WPN_SPLASHTYPE_ELEM);
 
+            if (nameAttr == null) { throw new SimulatorException("Weapon name not defined!"); }
             if (cooldownElem == null) { throw new SimulatorException("Cooldown not defined!"); }
             if (damageElem == null) { throw new SimulatorException("Damage not defined!"); }
             if (damageTypeElem == null) { throw new SimulatorException("DamageType not defined!"); }
@@ -498,7 +501,7 @@ namespace RC.Engine.Simulator.Core
                 throw new SimulatorException(string.Format("Unexpected weapon type '{0}' defined in weapon data!", weaponDataElem.Name.LocalName));
             }
 
-            WeaponData weaponData = new WeaponData(metadata, weaponType);
+            WeaponData weaponData = new WeaponData(nameAttr.Value, metadata, weaponType);
             weaponData.SetCooldown(XmlHelper.LoadInt(cooldownElem.Value));
             weaponData.SetDamage(XmlHelper.LoadInt(damageElem.Value));
             weaponData.SetRangeMax(XmlHelper.LoadInt(rangeMaxElem.Value));
@@ -510,6 +513,7 @@ namespace RC.Engine.Simulator.Core
             }
             weaponData.SetDamageType(damageType);
 
+            if (displayedNameAttr != null) { weaponData.SetDisplayedName(displayedNameAttr.Value); }
             if (incrementElem != null) { weaponData.SetIncrement(XmlHelper.LoadInt(incrementElem.Value)); }
             if (rangeMinElem != null) { weaponData.SetRangeMin(XmlHelper.LoadInt(rangeMinElem.Value)); }
             if (splashTypeElem != null)

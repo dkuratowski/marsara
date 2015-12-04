@@ -10,7 +10,7 @@ namespace RC.Engine.Simulator.Metadata.Core
     /// <summary>
     /// Contains the definition of an upgrade type.
     /// </summary>
-    class UpgradeType : ScenarioElementType, IUpgradeType
+    class UpgradeType : ScenarioElementType, IUpgradeTypeInternal
     {
         /// <summary>
         /// Constructs a new upgrade type.
@@ -26,15 +26,15 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.previousLevelName = null;
         }
 
-        #region IUpgradeType members
+        #region IUpgradeTypeInternal members
 
-        /// <see cref="IUpgradeType.PreviousLevel"/>
-        public IUpgradeType PreviousLevel { get { return this.previousLevel; } }
+        /// <see cref="IUpgradeTypeInternal.PreviousLevel"/>
+        public IUpgradeTypeInternal PreviousLevel { get { return this.previousLevel; } }
 
-        /// <see cref="IUpgradeType.NextLevel"/>
-        public IUpgradeType NextLevel { get { return this.nextLevel; } }
+        /// <see cref="IUpgradeTypeInternal.NextLevel"/>
+        public IUpgradeTypeInternal NextLevel { get { return this.nextLevel; } }
 
-        #endregion IUpgradeType members
+        #endregion IUpgradeTypeInternal members
 
         #region UpgradeType buildup methods
 

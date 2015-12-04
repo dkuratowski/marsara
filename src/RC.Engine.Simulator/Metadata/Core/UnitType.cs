@@ -9,7 +9,7 @@ namespace RC.Engine.Simulator.Metadata.Core
     /// <summary>
     /// Contains the definition of a unit type.
     /// </summary>
-    class UnitType : ScenarioElementType, IUnitType
+    class UnitType : ScenarioElementType, IUnitTypeInternal
     {
         /// <summary>
         /// Constructs a new unit type.
@@ -23,12 +23,12 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.createdIn = null;
         }
 
-        #region IUnitType members
+        #region IUnitTypeInternal members
 
-        /// <see cref="IUnitType.NecessaryAddon"/>
-        public IAddonType NecessaryAddon { get { return this.necessaryAddon; } }
+        /// <see cref="IUnitTypeInternal.NecessaryAddon"/>
+        public IAddonTypeInternal NecessaryAddon { get { return this.necessaryAddon; } }
 
-        #endregion IUnitType members
+        #endregion IUnitTypeInternal members
 
         #region UnitType buildup methods
 

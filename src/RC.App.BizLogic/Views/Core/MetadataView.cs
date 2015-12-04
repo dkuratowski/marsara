@@ -85,24 +85,24 @@ namespace RC.App.BizLogic.Views.Core
         public Dictionary<int, string> GetMapObjectDisplayedTypeNames()
         {
             Dictionary<int, string> retList = new Dictionary<int, string>();
+            foreach (IScenarioElementType elementType in this.metadata.AllTypes)
+            {
+                if (elementType.DisplayedName != null) { retList.Add(elementType.ID, elementType.DisplayedName); }
+            }
+            return retList;
+        }
 
-            foreach (IUnitType unitType in this.metadata.UnitTypes)
+        /// <see cref="IMetadataView.GetWeaponDisplayedNames"/>
+        public Dictionary<string, string> GetWeaponDisplayedNames()
+        {
+            Dictionary<string, string> retList = new Dictionary<string, string>();
+            foreach (IScenarioElementType elementType in this.metadata.AllTypes)
             {
-                if (unitType.DisplayedName != null) { retList.Add(unitType.ID, unitType.DisplayedName); }
+                foreach (IWeaponData weaponData in elementType.StandardWeapons)
+                {
+                    if (weaponData.DisplayedName != null) { retList.Add(weaponData.Name, weaponData.DisplayedName); }
+                }
             }
-            foreach (IBuildingType buildingType in this.metadata.BuildingTypes)
-            {
-                if (buildingType.DisplayedName != null) { retList.Add(buildingType.ID, buildingType.DisplayedName); }
-            }
-            foreach (IAddonType addonType in this.metadata.AddonTypes)
-            {
-                if (addonType.DisplayedName != null) { retList.Add(addonType.ID, addonType.DisplayedName); }
-            }
-            foreach (IScenarioElementType customType in this.metadata.CustomTypes)
-            {
-                if (customType.DisplayedName != null) { retList.Add(customType.ID, customType.DisplayedName); }
-            }
-
             return retList;
         }
 

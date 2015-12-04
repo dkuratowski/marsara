@@ -73,7 +73,6 @@ namespace RC.Engine.Simulator.Engine
             bool success = this.MotionControl.OnOwnerAttachingToMap(position);
             if (success)
             {
-                this.MotionControl.PositionVector.ValueChanged += this.OnPositionChanged;
                 this.mapObject = this.CreateMapObject(this.Area, this.MotionControl.IsFlying ? MapObjectLayerEnum.AirObjects : MapObjectLayerEnum.GroundObjects);
             }
             return success;
@@ -87,7 +86,6 @@ namespace RC.Engine.Simulator.Engine
             {
                 if (this.activeProductionLine.Read() != null) { this.activeProductionLine.Read().RemoveAllJobs(); }
                 if (this.MotionControl.Status == MotionControlStatusEnum.Fixed) { this.MotionControl.Unfix(); }
-                this.MotionControl.PositionVector.ValueChanged -= this.OnPositionChanged;
                 this.MotionControl.OnOwnerDetachedFromMap();
                 this.DestroyMapObject(this.mapObject);
                 this.mapObject = null;
@@ -330,8 +328,9 @@ namespace RC.Engine.Simulator.Engine
         {
             if (this.mapObject != null)
             {
-                /// Move the map object of this entity into the appropriate layer if necessary.
+                /// Move the map object of this entity into the appropriate layer and location if necessary.
                 this.ChangeMapObjectLayer(this.mapObject, this.MotionControl.IsFlying ? MapObjectLayerEnum.AirObjects : MapObjectLayerEnum.GroundObjects);
+                this.mapObject.SetLocation(this.Area);
 
                 /// Ask the behaviors to update the map object of this entity.
                 foreach (EntityBehavior behavior in this.behaviors) { behavior.UpdateMapObject(this); }
@@ -461,20 +460,6 @@ namespace RC.Engine.Simulator.Engine
             if (this.Scenario == null) { throw new InvalidOperationException("The entity doesn't not belong to a scenario!"); }
             if (this.affectingCmdExecution.Read() == null) { throw new InvalidOperationException("The entity is not being affected by any command executions!"); }
             this.affectingCmdExecution.Write(null);
-        }
-
-        /// <summary>
-        /// The method is called when the position of the motion control has been changed.
-        /// </summary>
-        private void OnPositionChanged(object sender, EventArgs args)
-        {
-            RCNumVector newPos = this.MotionControl.PositionVector.Read();
-            if (newPos == RCNumVector.Undefined) { throw new InvalidOperationException("Undefined position!"); }
-
-            if (this.mapObject != null)
-            {
-                this.mapObject.SetLocation(this.Area);
-            }
         }
 
         /// <summary>

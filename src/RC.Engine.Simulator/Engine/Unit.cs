@@ -7,6 +7,7 @@ using RC.Common.ComponentModel;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.MotionControl;
+using RC.Engine.Simulator.Metadata.Core;
 
 namespace RC.Engine.Simulator.Engine
 {
@@ -24,7 +25,7 @@ namespace RC.Engine.Simulator.Engine
         protected Unit(string unitTypeName, bool isFlying, params EntityBehavior[] behaviors)
             : base(unitTypeName, isFlying, behaviors)
         {
-            this.unitType = ComponentManager.GetInterface<IScenarioLoader>().Metadata.GetUnitType(unitTypeName);
+            this.unitType = new IUnitType(this.ElementType.ElementTypeImpl as IUnitTypeInternal);
         }
 
         /// <summary>

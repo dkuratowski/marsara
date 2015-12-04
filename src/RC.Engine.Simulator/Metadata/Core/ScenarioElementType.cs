@@ -11,7 +11,7 @@ namespace RC.Engine.Simulator.Metadata.Core
     /// <summary>
     /// Common base class for type definitions of scenario elements.
     /// </summary>
-    class ScenarioElementType : IScenarioElementType
+    class ScenarioElementType : IScenarioElementTypeInternal
     {
         /// <summary>
         /// Constructs a new element type.
@@ -35,96 +35,95 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.spritePalette = null;
             this.hpIconPalette = null;
             this.animationPalette = null;
-            this.relativeQuadCoordsInSight = null; /// TODO: later the sight range will depend on the upgrades of the players!
+            this.relativeQuadCoordsInSight = null;
             this.placementConstraints = new List<EntityPlacementConstraint>();
             this.requirements = new List<Requirement>();
             this.standardWeapons = new List<WeaponData>();
         }
 
-        #region IScenarioElementType members
+        #region IScenarioElementTypeInternal members
 
-        /// <see cref="IScenarioElementType.Name"/>
+        /// <see cref="IScenarioElementTypeInternal.Name"/>
         public string Name { get { return this.name; } }
 
-        /// <see cref="IScenarioElementType.DisplayedName"/>
+        /// <see cref="IScenarioElementTypeInternal.DisplayedName"/>
         public string DisplayedName { get { return this.displayedName; } }
 
-        /// <see cref="IScenarioElementType.ID"/>
+        /// <see cref="IScenarioElementTypeInternal.ID"/>
         public int ID { get { return this.id; } }
 
-        /// <see cref="IScenarioElementType.HasOwner"/>
+        /// <see cref="IScenarioElementTypeInternal.HasOwner"/>
         public bool HasOwner { get { return this.hasOwner; } }
 
-        /// <see cref="IScenarioElementType.ShadowSpriteIndex"/>
+        /// <see cref="IScenarioElementTypeInternal.ShadowSpriteIndex"/>
         public int ShadowSpriteIndex { get { return this.shadowSpriteIndex; } }
 
-        /// <see cref="IScenarioElementType.ShadowOffset"/>
+        /// <see cref="IScenarioElementTypeInternal.ShadowOffset"/>
         public RCNumVector ShadowOffset { get { return this.shadowOffset; } }
 
-        /// <see cref="IScenarioElementType.SpritePalette"/>
+        /// <see cref="IScenarioElementTypeInternal.SpritePalette"/>
         public ISpritePalette<MapDirection> SpritePalette { get { return this.spritePalette; } }
 
-        /// <see cref="IScenarioElementType.HPIconPalette"/>
+        /// <see cref="IScenarioElementTypeInternal.HPIconPalette"/>
         public ISpritePalette HPIconPalette { get { return this.hpIconPalette; } }
 
-        /// <see cref="IScenarioElementType.AnimationPalette"/>
+        /// <see cref="IScenarioElementTypeInternal.AnimationPalette"/>
         public IAnimationPalette AnimationPalette { get { return this.animationPalette; } }
 
-        /// <see cref="IScenarioElementType.RelativeQuadCoordsInSight"/>
-        /// TODO: later the sight range will depend on the upgrades of the players!
+        /// <see cref="IScenarioElementTypeInternal.RelativeQuadCoordsInSight"/>
         public IEnumerable<RCIntVector> RelativeQuadCoordsInSight { get { return this.relativeQuadCoordsInSight; } }
 
-        /// <see cref="IScenarioElementType.StandardWeapons"/>
+        /// <see cref="IScenarioElementTypeInternal.StandardWeapons"/>
         public IEnumerable<IWeaponData> StandardWeapons { get { return this.standardWeapons; } }
 
-        /// <see cref="IScenarioElementType.Requirements"/>
+        /// <see cref="IScenarioElementTypeInternal.Requirements"/>
         public IEnumerable<IRequirement> Requirements { get { return this.requirements; } }
 
         #region Costs data properties
 
-        /// <see cref="IScenarioElementType.BuildTime"/>
-        public ConstValue<int> BuildTime { get { return this.buildTime; } }
+        /// <see cref="IScenarioElementTypeInternal.BuildTime"/>
+        public IValueRead<int> BuildTime { get { return this.buildTime; } }
 
-        /// <see cref="IScenarioElementType.SupplyUsed"/>
-        public ConstValue<int> SupplyUsed { get { return this.supplyUsed; } }
+        /// <see cref="IScenarioElementTypeInternal.SupplyUsed"/>
+        public IValueRead<int> SupplyUsed { get { return this.supplyUsed; } }
 
-        /// <see cref="IScenarioElementType.SupplyProvided"/>
-        public ConstValue<int> SupplyProvided { get { return this.supplyProvided; } }
+        /// <see cref="IScenarioElementTypeInternal.SupplyProvided"/>
+        public IValueRead<int> SupplyProvided { get { return this.supplyProvided; } }
 
-        /// <see cref="IScenarioElementType.MineralCost"/>
-        public ConstValue<int> MineralCost { get { return this.mineralCost; } }
+        /// <see cref="IScenarioElementTypeInternal.MineralCost"/>
+        public IValueRead<int> MineralCost { get { return this.mineralCost; } }
 
-        /// <see cref="IScenarioElementType.GasCost"/>
-        public ConstValue<int> GasCost { get { return this.gasCost; } }
+        /// <see cref="IScenarioElementTypeInternal.GasCost"/>
+        public IValueRead<int> GasCost { get { return this.gasCost; } }
 
         #endregion Costs data properties
 
         #region General data properties
 
-        /// <see cref="IScenarioElementType.Area"/>
-        public ConstValue<RCNumVector> Area { get { return this.area; } }
+        /// <see cref="IScenarioElementTypeInternal.Area"/>
+        public IValueRead<RCNumVector> Area { get { return this.area; } }
 
-        /// <see cref="IScenarioElementType.Armor"/>
-        public ConstValue<int> Armor { get { return this.armor; } }
+        /// <see cref="IScenarioElementTypeInternal.Armor"/>
+        public IValueRead<int> Armor { get { return this.armor; } }
 
-        /// <see cref="IScenarioElementType.MaxEnergy"/>
-        public ConstValue<int> MaxEnergy { get { return this.maxEnergy; } }
+        /// <see cref="IScenarioElementTypeInternal.MaxEnergy"/>
+        public IValueRead<int> MaxEnergy { get { return this.maxEnergy; } }
 
-        /// <see cref="IScenarioElementType.MaxHP"/>
-        public ConstValue<int> MaxHP { get { return this.maxHP; } }
+        /// <see cref="IScenarioElementTypeInternal.MaxHP"/>
+        public IValueRead<int> MaxHP { get { return this.maxHP; } }
 
-        /// <see cref="IScenarioElementType.SightRange"/>
-        public ConstValue<int> SightRange { get { return this.sightRange; } }
+        /// <see cref="IScenarioElementTypeInternal.SightRange"/>
+        public IValueRead<int> SightRange { get { return this.sightRange; } }
 
-        /// <see cref="IScenarioElementType.Size"/>
-        public ConstValue<SizeEnum> Size { get { return this.size; } }
+        /// <see cref="IScenarioElementTypeInternal.Size"/>
+        public IValueRead<SizeEnum> Size { get { return this.size; } }
 
-        /// <see cref="IScenarioElementType.Speed"/>
-        public ConstValue<RCNumber> Speed { get { return this.speed; } }
+        /// <see cref="IScenarioElementTypeInternal.Speed"/>
+        public IValueRead<RCNumber> Speed { get { return this.speed; } }
 
         #endregion General data properties
 
-        /// <see cref="IScenarioElementType.CheckPlacementConstraints"/>
+        /// <see cref="IScenarioElementTypeInternal.CheckPlacementConstraints"/>
         public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position)
         {
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
@@ -143,12 +142,12 @@ namespace RC.Engine.Simulator.Metadata.Core
             return retList;
         }
 
-        /// <see cref="IScenarioElementType.CheckPlacementConstraints"/>
+        /// <see cref="IScenarioElementTypeInternal.CheckPlacementConstraints"/>
         public RCSet<RCIntVector> CheckPlacementConstraints(Entity entity, RCIntVector position)
         {
             if (entity == null) { throw new ArgumentNullException("entity"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-            if (entity.ElementType != this) { throw new ArgumentException("The type of the given entity is not the same as this type!", "entity"); }
+            if (entity.ElementType != new IScenarioElementType(this)) { throw new ArgumentException("The type of the given entity is not the same as this type!", "entity"); }
             if (entity.Scenario == null) { throw new ArgumentException("The given entity is not added to a scenario!", "entity"); }
 
             return this.CheckPlacementConstraintsImpl(entity, position);
@@ -247,7 +246,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (constraint == null) { throw new ArgumentNullException("constraint"); }
 
-            constraint.SetEntityType(this);
+            constraint.SetEntityType(new IScenarioElementType(this));
             this.placementConstraints.Add(constraint);
         }
 
@@ -371,7 +370,6 @@ namespace RC.Engine.Simulator.Metadata.Core
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             this.sightRange = new ConstValue<int>(sightRange);
 
-            /// TODO: later the sight range will depend on the upgrades of the players!
             RCIntVector nullVector = new RCIntVector(0, 0);
             this.relativeQuadCoordsInSight = new RCSet<RCIntVector>();
             for (int x = -this.sightRange.Read(); x <= this.sightRange.Read(); x++)
@@ -606,7 +604,6 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// The quadratic coordinates relative to the origin that are inside the sight range or null if this element type has no sight range defined.
         /// </summary>
-        /// TODO: later the sight range will depend on the upgrades of the players!
         private RCSet<RCIntVector> relativeQuadCoordsInSight;
     }
 }
