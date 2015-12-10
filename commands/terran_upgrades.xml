@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<commands>
+  <spritePalette image="terran_upgrades.png" transparentColor="255;0;255" maskColor="0;255;255">
+    <sprite name="InfantryWeaponsBtn" sourceRegion="1;1;20;20" />
+    <sprite name="InfantryArmorBtn" sourceRegion="22;1;20;20" />
+  </spritePalette>
+  <productionButton product="InfantryWeapons#1" sprite="InfantryWeaponsBtn" panelPosition="0;0" />
+  <productionButton product="InfantryWeapons#2" sprite="InfantryWeaponsBtn" panelPosition="0;0" />
+  <productionButton product="InfantryWeapons#3" sprite="InfantryWeaponsBtn" panelPosition="0;0" />
+  <productionButton product="InfantryArmor#1" sprite="InfantryArmorBtn" panelPosition="0;1" />
+  <productionButton product="InfantryArmor#2" sprite="InfantryArmorBtn" panelPosition="0;1" />
+  <productionButton product="InfantryArmor#3" sprite="InfantryArmorBtn" panelPosition="0;1" />
+</commands>

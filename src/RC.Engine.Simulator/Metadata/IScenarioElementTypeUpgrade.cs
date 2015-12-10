@@ -13,9 +13,9 @@ namespace RC.Engine.Simulator.Metadata
     public interface IScenarioElementTypeUpgrade
     {
         /// <summary>
-        /// Gets or sets the upgrade to the armor of the underlying scenario element type.
+        /// Gets or sets the armor level of the underlying scenario element type.
         /// </summary>
-        int ArmorUpgrade { get; set; }
+        int ArmorLevel { get; set; }
 
         /// <summary>
         /// Gets the cumulated upgrade to the armor of the underlying scenario element type.

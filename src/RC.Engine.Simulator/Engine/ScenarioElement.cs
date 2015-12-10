@@ -176,28 +176,6 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
-        /// Moves the given map object to the given layer of the map.
-        /// </summary>
-        /// <param name="mapObject">The map object to move.</param>
-        /// <param name="targetLayer">The target layer.</param>
-        /// <remarks>If the map object is already in the given layer then this function has no effect.</remarks>
-        protected void ChangeMapObjectLayer(MapObject mapObject, MapObjectLayerEnum targetLayer)
-        {
-            if (this.scenario.Read() == null) { throw new InvalidOperationException("This scenario element doesn't not belong to a scenario!"); }
-            if (mapObject == null) { throw new ArgumentNullException("mapObject"); }
-            if (!this.mapObjectsOfThisElement.ContainsKey(mapObject)) { throw new InvalidOperationException("The given map object doesn't belong to this scenario element!"); }
-
-            MapObjectLayerEnum currentLayer = this.mapObjectsOfThisElement[mapObject];
-            if (currentLayer == targetLayer) { return; }
-
-            this.mapObjectsOfThisElementByLayer[currentLayer].Remove(mapObject);
-            this.mapObjectsOfThisElementByLayer[targetLayer].Add(mapObject);
-            this.mapObjectsOfThisElement[mapObject] = targetLayer;
-            this.mapContext.GetMapObjectLayer(currentLayer).DetachContent(mapObject);
-            this.mapContext.GetMapObjectLayer(targetLayer).AttachContent(mapObject);
-        }
-
-        /// <summary>
         /// Destroys the given map object of this scenario element.
         /// </summary>
         /// <param name="mapObject">The map object to destroy.</param>
@@ -283,6 +261,28 @@ namespace RC.Engine.Simulator.Engine
             /// Update the reference to the owner and attach the global metadata.
             this.owner.Write(null);
             this.metadataUpgrade.AttachMetadata(ComponentManager.GetInterface<IScenarioLoader>().Metadata);
+        }
+
+        /// <summary>
+        /// Moves the given map object to the given layer of the map.
+        /// </summary>
+        /// <param name="mapObject">The map object to move.</param>
+        /// <param name="targetLayer">The target layer.</param>
+        /// <remarks>If the map object is already in the given layer then this function has no effect.</remarks>
+        internal void ChangeMapObjectLayer(MapObject mapObject, MapObjectLayerEnum targetLayer)
+        {
+            if (this.scenario.Read() == null) { throw new InvalidOperationException("This scenario element doesn't not belong to a scenario!"); }
+            if (mapObject == null) { throw new ArgumentNullException("mapObject"); }
+            if (!this.mapObjectsOfThisElement.ContainsKey(mapObject)) { throw new InvalidOperationException("The given map object doesn't belong to this scenario element!"); }
+
+            MapObjectLayerEnum currentLayer = this.mapObjectsOfThisElement[mapObject];
+            if (currentLayer == targetLayer) { return; }
+
+            this.mapObjectsOfThisElementByLayer[currentLayer].Remove(mapObject);
+            this.mapObjectsOfThisElementByLayer[targetLayer].Add(mapObject);
+            this.mapObjectsOfThisElement[mapObject] = targetLayer;
+            this.mapContext.GetMapObjectLayer(currentLayer).DetachContent(mapObject);
+            this.mapContext.GetMapObjectLayer(targetLayer).AttachContent(mapObject);
         }
 
         #endregion Internal members

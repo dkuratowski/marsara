@@ -57,13 +57,13 @@ namespace RC.Engine.Simulator.Engine
             this.airPathTracker.Write(new AirPathTracker(owner, TARGET_DISTANCE_THRESHOLD));
             if (isFlying)
             {
-                this.status.Write((byte)MotionControlStatusEnum.InAir);
+                this.SetStatus(MotionControlStatusEnum.InAir);
                 this.currentPathTracker.Write(this.airPathTracker.Read());
                 this.velocityGraph = new HexadecagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0);
             }
             else
             {
-                this.status.Write((byte)MotionControlStatusEnum.OnGround);
+                this.SetStatus(MotionControlStatusEnum.OnGround);
                 this.currentPathTracker.Write(this.groundPathTracker.Read());
                 this.velocityGraph = new OctagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0);
             }
@@ -131,7 +131,7 @@ namespace RC.Engine.Simulator.Engine
             this.StopMoving();
 
             this.owner.Read().OnFixed();
-            this.status.Write((byte)MotionControlStatusEnum.Fixed);
+            this.SetStatus(MotionControlStatusEnum.Fixed);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace RC.Engine.Simulator.Engine
             if (this.Status != MotionControlStatusEnum.Fixed) { throw new InvalidOperationException("The owner is currently not fixed on the ground!"); }
 
             this.owner.Read().OnUnfixed();
-            this.status.Write((byte)MotionControlStatusEnum.OnGround);
+            this.SetStatus(MotionControlStatusEnum.OnGround);
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace RC.Engine.Simulator.Engine
 
             /// Initialize the VTOL operation for take-off.
             this.Unfix();
-            this.status.Write((byte)MotionControlStatusEnum.TakingOff);
+            this.SetStatus(MotionControlStatusEnum.TakingOff);
             this.vtolOperationProgress.Write(0);
             this.vtolInitialPosition.Write(this.position.Read());
             this.vtolFinalPosition.Write(positionAfterTakeOff);
@@ -228,7 +228,7 @@ namespace RC.Engine.Simulator.Engine
             this.owner.Read().ReservePositionOnGround(positionAfterLand);
 
             /// Initialize the VTOL operation for landing.
-            this.status.Write((byte)MotionControlStatusEnum.Landing);
+            this.SetStatus(MotionControlStatusEnum.Landing);
             this.vtolOperationProgress.Write(0);
             this.vtolInitialPosition.Write(this.position.Read());
             this.vtolFinalPosition.Write(positionAfterLand);
@@ -273,7 +273,7 @@ namespace RC.Engine.Simulator.Engine
                         /// If yes, move the entity exactly to the target position.
                         if (this.currentPathTracker.Read().ValidatePosition(targetPosition))
                         {
-                            this.position.Write(targetPosition);
+                            this.SetPosition(targetPosition);
                         }
                     }
                 }
@@ -290,8 +290,8 @@ namespace RC.Engine.Simulator.Engine
                 }
 
                 /// Calculate the new position vector and adjust the shadow transition of the owner's map object.
-                this.position.Write(this.vtolInitialPosition.Read() * (1 - this.vtolOperationProgress.Read()) +
-                                    this.vtolFinalPosition.Read() * this.vtolOperationProgress.Read());
+                this.SetPosition(this.vtolInitialPosition.Read() * (1 - this.vtolOperationProgress.Read()) +
+                                 this.vtolFinalPosition.Read() * this.vtolOperationProgress.Read());
                 if (this.Status == MotionControlStatusEnum.TakingOff)
                 {
                     this.owner.Read().MapObject.SetShadowTransition(MAX_VTOL_TRANSITION_VECTOR * this.vtolOperationProgress.Read());
@@ -326,7 +326,7 @@ namespace RC.Engine.Simulator.Engine
 
             if (this.currentPathTracker.Read().ValidatePosition(toPosition))
             {
-                this.position.Write(toPosition);
+                this.SetPosition(toPosition);
                 return true;
             }
             return false;
@@ -430,7 +430,7 @@ namespace RC.Engine.Simulator.Engine
                 RCNumVector newPosition = this.position.Read() + this.velocity.Read();
                 if (this.currentPathTracker.Read().ValidatePosition(newPosition))
                 {
-                    this.position.Write(newPosition);
+                    this.SetPosition(newPosition);
                 }
                 else
                 {
@@ -452,16 +452,47 @@ namespace RC.Engine.Simulator.Engine
             if (this.Status == MotionControlStatusEnum.TakingOff)
             {
                 this.owner.Read().MapObject.SetShadowTransition(MAX_VTOL_TRANSITION_VECTOR);
-                this.status.Write((byte)MotionControlStatusEnum.InAir);
+                this.SetStatus(MotionControlStatusEnum.InAir);
                 this.currentPathTracker.Write(this.airPathTracker.Read());
                 this.velocityGraph = new HexadecagonalVelocityGraph(this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0);
             }
             else
             {
                 this.owner.Read().MapObject.SetShadowTransition(new RCNumVector(0, 0));
-                this.status.Write((byte)MotionControlStatusEnum.OnGround);
+                this.SetStatus(MotionControlStatusEnum.OnGround);
                 this.currentPathTracker.Write(this.groundPathTracker.Read());
                 this.velocityGraph = new OctagonalVelocityGraph(this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0);
+            }
+        }
+
+        /// <summary>
+        /// Helper method for setting the position vector and updating the map object of the owner entity.
+        /// </summary>
+        /// <param name="newPosition">The new value of the position vector.</param>
+        private void SetPosition(RCNumVector newPosition)
+        {
+            if (newPosition == RCNumVector.Undefined) { throw new InvalidOperationException("Undefined position!"); }
+
+            this.position.Write(newPosition);
+            if (this.owner.Read().MapObject != null)
+            {
+                this.owner.Read().MapObject.SetLocation(this.owner.Read().Area);
+            }
+        }
+
+        /// <summary>
+        /// Helper method for setting the status of this motion control and the layer of the map object of the owner entity.
+        /// </summary>
+        /// <param name="newStatus">The new status of this motion control</param>
+        private void SetStatus(MotionControlStatusEnum newStatus)
+        {
+            if (this.Status != newStatus)
+            {
+                this.status.Write((byte)newStatus);
+                if (this.owner.Read().MapObject != null)
+                {
+                    this.owner.Read().ChangeMapObjectLayer(this.owner.Read().MapObject, this.IsFlying ? MapObjectLayerEnum.AirObjects : MapObjectLayerEnum.GroundObjects);
+                }
             }
         }
 

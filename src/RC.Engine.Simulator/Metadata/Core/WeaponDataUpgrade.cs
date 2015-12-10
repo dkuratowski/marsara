@@ -73,11 +73,11 @@ namespace RC.Engine.Simulator.Metadata.Core
 
         #region IWeaponDataUpgrade
 
-        /// <see cref="IWeaponDataUpgrade.DamageUpgrade"/>
-        public int DamageUpgrade
+        /// <see cref="IWeaponDataUpgrade.DamageLevel"/>
+        public int DamageLevel
         {
-            get { return this.damageModifier.Modification; }
-            set { this.damageModifier.Modification = value; }
+            get { return this.damageModifier.Modification / this.originalWeaponData.Increment.Read(); }
+            set { this.damageModifier.Modification = this.originalWeaponData.Increment.Read() * value; }
         }
 
         /// <see cref="IWeaponDataUpgrade.CumulatedDamageUpgrade"/>

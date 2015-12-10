@@ -68,18 +68,6 @@ namespace RC.Engine.Simulator.Engine
             }
         }
 
-        ///// <summary>
-        ///// Gets the shadow transition currently set for this map object.
-        ///// </summary>
-        //public RCNumVector ShadowTransition
-        //{
-        //    get
-        //    {
-        //        if (this.owner == null) { throw new ObjectDisposedException("MapObject"); }
-        //        return this.shadowTransition;
-        //    }
-        //}
-
         /// <summary>
         /// Gets the players of the currently active animations of this map object.
         /// </summary>

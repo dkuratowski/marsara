@@ -26,10 +26,23 @@ namespace RC.Engine.Simulator.Engine
             this.dummyField.Write(0);
         }
 
-        /// <see cref="ProductionJob.CompleteImpl"/>
-        protected override bool CompleteImpl()
+        /// <see cref="ProductionJob.StartImpl"/>
+        protected override bool StartImpl()
         {
-            throw new NotImplementedException();
+            /// Create the upgrade.
+            this.OwnerPlayer.AddUpgrade(this.upgradeProduct.Name);
+            return true;
+        }
+
+        /// <see cref="ProductionJob.AbortImpl"/>
+        protected override void AbortImpl(int lockedMinerals, int lockedVespeneGas, int lockedSupplies)
+        {
+            /// Give back the locked resources and supply to the owner player.  
+            this.OwnerPlayer.GiveResources(lockedMinerals, lockedVespeneGas);
+            this.OwnerPlayer.UnlockSupply(lockedSupplies);
+
+            /// Remove the upgrade from the owner player.
+            this.OwnerPlayer.RemoveUpgrade(this.upgradeProduct.Name);
         }
 
         /// <summary>

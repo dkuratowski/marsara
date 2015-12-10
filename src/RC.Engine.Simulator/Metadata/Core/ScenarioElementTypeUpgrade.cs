@@ -314,12 +314,15 @@ namespace RC.Engine.Simulator.Metadata.Core
             }
         }
 
+        /// <see cref="IUpgradeTypeInternal.Effects"/>
+        IEnumerable<IUpgradeEffect> IUpgradeTypeInternal.Effects { get { return this.originalUpgradeType.Effects; } }
+
         #endregion IUpgradeTypeInternal
 
         #region IScenarioElementTypeUpgrade
 
-        /// <see cref="IScenarioElementTypeUpgrade.ArmorUpgrade"/>
-        int IScenarioElementTypeUpgrade.ArmorUpgrade
+        /// <see cref="IScenarioElementTypeUpgrade.ArmorLevel"/>
+        int IScenarioElementTypeUpgrade.ArmorLevel
         {
             get { return this.armorModifier.Modification; }
             set { this.armorModifier.Modification = value; }

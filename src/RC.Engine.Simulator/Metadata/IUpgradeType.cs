@@ -17,12 +17,17 @@ namespace RC.Engine.Simulator.Metadata
         /// <summary>
         /// Gets the previous level of this upgrade type.
         /// </summary>
-        IUpgradeType PreviousLevel { get { return this.implementation.PreviousLevel != null ? new IUpgradeType(this.implementation.PreviousLevel) : null; } }
+        public IUpgradeType PreviousLevel { get { return this.implementation.PreviousLevel != null ? new IUpgradeType(this.implementation.PreviousLevel) : null; } }
 
         /// <summary>
         /// Gets the next level of this upgrade type.
         /// </summary>
-        IUpgradeType NextLevel { get { return this.implementation.NextLevel != null ? new IUpgradeType(this.implementation.NextLevel) : null; } }
+        public IUpgradeType NextLevel { get { return this.implementation.NextLevel != null ? new IUpgradeType(this.implementation.NextLevel) : null; } }
+
+        /// <summary>
+        /// Gets the effects of this upgrade type.
+        /// </summary>
+        public IEnumerable<IUpgradeEffect> Effects { get { return this.implementation.Effects; } }
 
         #endregion Interface methods
 

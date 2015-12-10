@@ -50,6 +50,16 @@ namespace RC.Engine.Simulator.Terran
 
             /// Terran Comsat Station
             extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(ComsatStation.COMSATSTATION_TYPE_NAME));
+
+            /// TEST:
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(ComsatStation.COMSATSTATION_TYPE_NAME,
+                TerranUpgrades.INFANTRY_WEAPONS_1,
+                TerranUpgrades.INFANTRY_WEAPONS_2,
+                TerranUpgrades.INFANTRY_WEAPONS_3,
+                TerranUpgrades.INFANTRY_ARMOR_1,
+                TerranUpgrades.INFANTRY_ARMOR_2,
+                TerranUpgrades.INFANTRY_ARMOR_3));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(ComsatStation.COMSATSTATION_TYPE_NAME));
         }
 
         /// <see cref="IPlugin<T>.Uninstall"/>

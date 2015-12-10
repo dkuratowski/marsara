@@ -1,59 +1,124 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <metadata>
+  <!-- Upgrades -->
   <upgradeType name="InfantryWeapons#1">
     <costs>
       <mineral>100</mineral>
       <gas>100</gas>
-      <buildTime>3990</buildTime>
+	  <!-- TODO: restore -->
+      <!--buildTime>3990</buildTime-->
+      <buildTime>100</buildTime>
     </costs>
-    <researchedIn>EngineeringBay</researchedIn>
+	<effects>
+	  <setWeaponLevel targetType="SCV">1</setWeaponLevel>
+	  <setWeaponLevel targetType="Marine">1</setWeaponLevel>
+	  <setWeaponLevel targetType="Firebat">1</setWeaponLevel>
+	  <setWeaponLevel targetType="Ghost">1</setWeaponLevel>
+	</effects>
+	<!-- TODO: restore -->
+    <researchedIn>ComsatStation</researchedIn>
+    <!--researchedIn>EngineeringBay</researchedIn-->
   </upgradeType>
   <upgradeType name="InfantryWeapons#2">
     <costs>
       <mineral>175</mineral>
       <gas>175</gas>
-      <buildTime>4470</buildTime>
+	  <!-- TODO: restore -->
+      <!--buildTime>4470</buildTime-->
+      <buildTime>100</buildTime>
     </costs>
-    <requires>ScienceFacility</requires>
-    <researchedIn>EngineeringBay</researchedIn>
+	<effects>
+	  <setWeaponLevel targetType="SCV">2</setWeaponLevel>
+	  <setWeaponLevel targetType="Marine">2</setWeaponLevel>
+	  <setWeaponLevel targetType="Firebat">2</setWeaponLevel>
+	  <setWeaponLevel targetType="Ghost">2</setWeaponLevel>
+	</effects>
+	  <!-- TODO: restore -->
+    <!--requires>ScienceFacility</requires-->
+    <researchedIn>ComsatStation</researchedIn>
+	  <!-- TODO: restore -->
+    <!--researchedIn>EngineeringBay</researchedIn-->
     <previousLevel>InfantryWeapons#1</previousLevel>
   </upgradeType>
   <upgradeType name="InfantryWeapons#3">
     <costs>
       <mineral>250</mineral>
       <gas>250</gas>
-      <buildTime>4950</buildTime>
+ 	  <!-- TODO: restore -->
+     <!--buildTime>4950</buildTime-->
+      <buildTime>100</buildTime>
     </costs>
-    <requires>ScienceFacility</requires>
-    <researchedIn>EngineeringBay</researchedIn>
+	<effects>
+	  <setWeaponLevel targetType="SCV">3</setWeaponLevel>
+	  <setWeaponLevel targetType="Marine">3</setWeaponLevel>
+	  <setWeaponLevel targetType="Firebat">3</setWeaponLevel>
+	  <setWeaponLevel targetType="Ghost">3</setWeaponLevel>
+	</effects>
+	  <!-- TODO: restore -->
+    <!--requires>ScienceFacility</requires-->
+    <researchedIn>ComsatStation</researchedIn>
+	  <!-- TODO: restore -->
+    <!--researchedIn>EngineeringBay</researchedIn-->
     <previousLevel>InfantryWeapons#2</previousLevel>
   </upgradeType>
   <upgradeType name="InfantryArmor#1">
     <costs>
       <mineral>100</mineral>
       <gas>100</gas>
-      <buildTime>3990</buildTime>
+	  <!-- TODO: restore -->
+      <!--buildTime>3990</buildTime-->
+      <buildTime>100</buildTime>
     </costs>
-    <researchedIn>EngineeringBay</researchedIn>
+	<effects>
+	  <setArmorLevel targetType="SCV">1</setArmorLevel>
+	  <setArmorLevel targetType="Marine">1</setArmorLevel>
+	  <setArmorLevel targetType="Firebat">1</setArmorLevel>
+	  <setArmorLevel targetType="Ghost">1</setArmorLevel>
+	</effects>
+    <researchedIn>ComsatStation</researchedIn>
+	  <!-- TODO: restore -->
+    <!--researchedIn>EngineeringBay</researchedIn-->
   </upgradeType>
   <upgradeType name="InfantryArmor#2">
     <costs>
       <mineral>175</mineral>
       <gas>175</gas>
-      <buildTime>4470</buildTime>
+	  <!-- TODO: restore -->
+      <!--buildTime>4470</buildTime-->
+      <buildTime>100</buildTime>
     </costs>
-    <requires>ScienceFacility</requires>
-    <researchedIn>EngineeringBay</researchedIn>
+	<effects>
+	  <setArmorLevel targetType="SCV">2</setArmorLevel>
+	  <setArmorLevel targetType="Marine">2</setArmorLevel>
+	  <setArmorLevel targetType="Firebat">2</setArmorLevel>
+	  <setArmorLevel targetType="Ghost">2</setArmorLevel>
+	</effects>
+	  <!-- TODO: restore -->
+    <!--requires>ScienceFacility</requires-->
+    <researchedIn>ComsatStation</researchedIn>
+	  <!-- TODO: restore -->
+    <!--researchedIn>EngineeringBay</researchedIn-->
     <previousLevel>InfantryArmor#1</previousLevel>
   </upgradeType>
   <upgradeType name="InfantryArmor#3">
     <costs>
       <mineral>250</mineral>
       <gas>250</gas>
-      <buildTime>4950</buildTime>
+	  <!-- TODO: restore -->
+      <!--buildTime>4950</buildTime-->
+      <buildTime>100</buildTime>
     </costs>
-    <requires>ScienceFacility</requires>
-    <researchedIn>EngineeringBay</researchedIn>
+	<effects>
+	  <setArmorLevel targetType="SCV">3</setArmorLevel>
+	  <setArmorLevel targetType="Marine">3</setArmorLevel>
+	  <setArmorLevel targetType="Firebat">3</setArmorLevel>
+	  <setArmorLevel targetType="Ghost">3</setArmorLevel>
+	</effects>
+	  <!-- TODO: restore -->
+    <!--requires>ScienceFacility</requires-->
+    <researchedIn>ComsatStation</researchedIn>
+	  <!-- TODO: restore -->
+    <!--researchedIn>EngineeringBay</researchedIn-->
     <previousLevel>InfantryArmor#2</previousLevel>
   </upgradeType>
   <upgradeType name="VehicleWeapons#1">
@@ -62,6 +127,11 @@
       <gas>100</gas>
       <buildTime>3990</buildTime>
     </costs>
+	<effects>
+	  <setWeaponLevel targetType="Vulture">1</setWeaponLevel>
+	  <setWeaponLevel targetType="SiegeTank">1</setWeaponLevel>
+	  <setWeaponLevel targetType="Goliath">1</setWeaponLevel>
+	</effects>
     <researchedIn>Armory</researchedIn>
   </upgradeType>
   <upgradeType name="VehicleWeapons#2">
@@ -70,6 +140,11 @@
       <gas>175</gas>
       <buildTime>4470</buildTime>
     </costs>
+	<effects>
+	  <setWeaponLevel targetType="Vulture">2</setWeaponLevel>
+	  <setWeaponLevel targetType="SiegeTank">2</setWeaponLevel>
+	  <setWeaponLevel targetType="Goliath">2</setWeaponLevel>
+	</effects>
     <requires>ScienceFacility</requires>
     <researchedIn>Armory</researchedIn>
     <previousLevel>VehicleWeapons#1</previousLevel>
@@ -80,6 +155,11 @@
       <gas>250</gas>
       <buildTime>4950</buildTime>
     </costs>
+	<effects>
+	  <setWeaponLevel targetType="Vulture">3</setWeaponLevel>
+	  <setWeaponLevel targetType="SiegeTank">3</setWeaponLevel>
+	  <setWeaponLevel targetType="Goliath">3</setWeaponLevel>
+	</effects>
     <requires>ScienceFacility</requires>
     <researchedIn>Armory</researchedIn>
     <previousLevel>VehicleWeapons#2</previousLevel>
@@ -90,6 +170,11 @@
       <gas>100</gas>
       <buildTime>3990</buildTime>
     </costs>
+	<effects>
+	  <setArmorLevel targetType="Vulture">1</setArmorLevel>
+	  <setArmorLevel targetType="SiegeTank">1</setArmorLevel>
+	  <setArmorLevel targetType="Goliath">1</setArmorLevel>
+	</effects>
     <researchedIn>Armory</researchedIn>
   </upgradeType>
   <upgradeType name="VehiclePlating#2">
@@ -98,6 +183,11 @@
       <gas>175</gas>
       <buildTime>4470</buildTime>
     </costs>
+	<effects>
+	  <setArmorLevel targetType="Vulture">2</setArmorLevel>
+	  <setArmorLevel targetType="SiegeTank">2</setArmorLevel>
+	  <setArmorLevel targetType="Goliath">2</setArmorLevel>
+	</effects>
     <requires>ScienceFacility</requires>
     <researchedIn>Armory</researchedIn>
     <previousLevel>VehiclePlating#1</previousLevel>
@@ -108,6 +198,11 @@
       <gas>250</gas>
       <buildTime>4950</buildTime>
     </costs>
+	<effects>
+	  <setArmorLevel targetType="Vulture">3</setArmorLevel>
+	  <setArmorLevel targetType="SiegeTank">3</setArmorLevel>
+	  <setArmorLevel targetType="Goliath">3</setArmorLevel>
+	</effects>
     <requires>ScienceFacility</requires>
     <researchedIn>Armory</researchedIn>
     <previousLevel>VehiclePlating#2</previousLevel>
@@ -118,6 +213,12 @@
       <gas>100</gas>
       <buildTime>3990</buildTime>
     </costs>
+	<effects>
+	  <setWeaponLevel targetType="Wraith">1</setWeaponLevel>
+	  <setWeaponLevel targetType="Dropship">1</setWeaponLevel>
+	  <setWeaponLevel targetType="ScienceVessel">1</setWeaponLevel>
+	  <setWeaponLevel targetType="Battlecruiser">1</setWeaponLevel>
+	</effects>
     <researchedIn>Armory</researchedIn>
   </upgradeType>
   <upgradeType name="ShipWeapons#2">
@@ -126,6 +227,12 @@
       <gas>175</gas>
       <buildTime>4470</buildTime>
     </costs>
+	<effects>
+	  <setWeaponLevel targetType="Wraith">2</setWeaponLevel>
+	  <setWeaponLevel targetType="Dropship">2</setWeaponLevel>
+	  <setWeaponLevel targetType="ScienceVessel">2</setWeaponLevel>
+	  <setWeaponLevel targetType="Battlecruiser">2</setWeaponLevel>
+	</effects>
     <requires>ScienceFacility</requires>
     <researchedIn>Armory</researchedIn>
     <previousLevel>ShipWeapons#1</previousLevel>
@@ -136,6 +243,12 @@
       <gas>250</gas>
       <buildTime>4950</buildTime>
     </costs>
+	<effects>
+	  <setWeaponLevel targetType="Wraith">3</setWeaponLevel>
+	  <setWeaponLevel targetType="Dropship">3</setWeaponLevel>
+	  <setWeaponLevel targetType="ScienceVessel">3</setWeaponLevel>
+	  <setWeaponLevel targetType="Battlecruiser">3</setWeaponLevel>
+	</effects>
     <requires>ScienceFacility</requires>
     <researchedIn>Armory</researchedIn>
     <previousLevel>ShipWeapons#2</previousLevel>
@@ -146,6 +259,12 @@
       <gas>150</gas>
       <buildTime>3990</buildTime>
     </costs>
+	<effects>
+	  <setArmorLevel targetType="Wraith">1</setArmorLevel>
+	  <setArmorLevel targetType="Dropship">1</setArmorLevel>
+	  <setArmorLevel targetType="ScienceVessel">1</setArmorLevel>
+	  <setArmorLevel targetType="Battlecruiser">1</setArmorLevel>
+	</effects>
     <researchedIn>Armory</researchedIn>
   </upgradeType>
   <upgradeType name="ShipPlating#2">
@@ -154,6 +273,12 @@
       <gas>225</gas>
       <buildTime>4470</buildTime>
     </costs>
+	<effects>
+	  <setArmorLevel targetType="Wraith">2</setArmorLevel>
+	  <setArmorLevel targetType="Dropship">2</setArmorLevel>
+	  <setArmorLevel targetType="ScienceVessel">2</setArmorLevel>
+	  <setArmorLevel targetType="Battlecruiser">2</setArmorLevel>
+	</effects>
     <requires>ScienceFacility</requires>
     <researchedIn>Armory</researchedIn>
     <previousLevel>ShipPlating#1</previousLevel>
@@ -164,6 +289,12 @@
       <gas>300</gas>
       <buildTime>4950</buildTime>
     </costs>
+	<effects>
+	  <setArmorLevel targetType="Wraith">3</setArmorLevel>
+	  <setArmorLevel targetType="Dropship">3</setArmorLevel>
+	  <setArmorLevel targetType="ScienceVessel">3</setArmorLevel>
+	  <setArmorLevel targetType="Battlecruiser">3</setArmorLevel>
+	</effects>
     <requires>ScienceFacility</requires>
     <researchedIn>Armory</researchedIn>
     <previousLevel>ShipPlating#2</previousLevel>
@@ -174,6 +305,9 @@
       <gas>150</gas>
       <buildTime>1500</buildTime>
     </costs>
+	<effects>
+	  <increaseAttackRange targetType="Marine">1</increaseAttackRange>
+	</effects>
     <researchedIn>Academy</researchedIn>
   </upgradeType>
   <upgradeType name="IonThrusters">
@@ -182,6 +316,9 @@
       <gas>100</gas>
       <buildTime>1500</buildTime>
     </costs>
+	<effects>
+	  <increaseSpeed targetType="Vulture">0.416</increaseSpeed>
+	</effects>
     <researchedIn>MachineShop</researchedIn>
   </upgradeType>
   <upgradeType name="TitanReactor">
@@ -190,6 +327,9 @@
       <gas>150</gas>
       <buildTime>2490</buildTime>
     </costs>
+	<effects>
+	  <increaseEnergy targetType="ScienceVessel">50</increaseEnergy>
+	</effects>
     <researchedIn>ScienceFacility</researchedIn>
   </upgradeType>
   <upgradeType name="OcularImplants">
@@ -198,6 +338,9 @@
       <gas>100</gas>
       <buildTime>2490</buildTime>
     </costs>
+	<effects>
+	  <increaseSightRange targetType="Ghost">2</increaseSightRange>
+	</effects>
     <researchedIn>CovertOps</researchedIn>
   </upgradeType>
   <upgradeType name="MoebiusReactor">
@@ -206,6 +349,9 @@
       <gas>150</gas>
       <buildTime>2490</buildTime>
     </costs>
+	<effects>
+	  <increaseEnergy targetType="Ghost">50</increaseEnergy>
+	</effects>
     <researchedIn>CovertOps</researchedIn>
   </upgradeType>
   <upgradeType name="ApolloReactor">
@@ -214,6 +360,9 @@
       <gas>200</gas>
       <buildTime>2490</buildTime>
     </costs>
+	<effects>
+	  <increaseEnergy targetType="Wraith">50</increaseEnergy>
+	</effects>
     <researchedIn>ControlTower</researchedIn>
   </upgradeType>
   <upgradeType name="ColossusReactor">
@@ -222,6 +371,83 @@
       <gas>150</gas>
       <buildTime>2490</buildTime>
     </costs>
+	<effects>
+	  <increaseEnergy targetType="Battlecruiser">50</increaseEnergy>
+	</effects>
     <researchedIn>PhysicsLab</researchedIn>
+  </upgradeType>
+  
+  <!-- Abilities -->
+  <upgradeType name="StimPacks">
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>1200</buildTime>
+    </costs>
+    <researchedIn>Academy</researchedIn>
+  </upgradeType>
+  <upgradeType name="Lockdown">
+    <costs>
+      <mineral>200</mineral>
+      <gas>200</gas>
+      <buildTime>1500</buildTime>
+    </costs>
+    <researchedIn>CovertOps</researchedIn>
+  </upgradeType>
+  <upgradeType name="EMPShockwave">
+    <costs>
+      <mineral>200</mineral>
+      <gas>200</gas>
+      <buildTime>1800</buildTime>
+    </costs>
+    <researchedIn>ScienceFacility</researchedIn>
+  </upgradeType>
+  <upgradeType name="SpiderMines">
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>1200</buildTime>
+    </costs>
+    <researchedIn>MachineShop</researchedIn>
+  </upgradeType>
+  <upgradeType name="SiegeTech">
+    <costs>
+      <mineral>150</mineral>
+      <gas>150</gas>
+      <buildTime>1200</buildTime>
+    </costs>
+    <researchedIn>MachineShop</researchedIn>
+  </upgradeType>
+  <upgradeType name="Irradiate">
+    <costs>
+      <mineral>200</mineral>
+      <gas>200</gas>
+      <buildTime>1200</buildTime>
+    </costs>
+    <researchedIn>ScienceFacility</researchedIn>
+  </upgradeType>
+  <upgradeType name="YamatoGun">
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>1800</buildTime>
+    </costs>
+    <researchedIn>PhysicsLab</researchedIn>
+  </upgradeType>
+  <upgradeType name="CloakingField">
+    <costs>
+      <mineral>150</mineral>
+      <gas>150</gas>
+      <buildTime>1500</buildTime>
+    </costs>
+    <researchedIn>ControlTower</researchedIn>
+  </upgradeType>
+  <upgradeType name="PersonnelCloaking">
+    <costs>
+      <mineral>100</mineral>
+      <gas>100</gas>
+      <buildTime>1200</buildTime>
+    </costs>
+    <researchedIn>CovertOps</researchedIn>
   </upgradeType>
 </metadata>

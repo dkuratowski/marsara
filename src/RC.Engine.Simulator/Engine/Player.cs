@@ -12,6 +12,16 @@ using RC.Engine.Simulator.ComponentInterfaces;
 namespace RC.Engine.Simulator.Engine
 {
     /// <summary>
+    /// Enumerates the possible statuses of an upgrade at a given player.
+    /// </summary>
+    public enum UpgradeStatus
+    {
+        None = 0,           /// Indicates that the player doesn't have the given upgrade at all.
+        Researching = 1,    /// Indicates that the player is currently researching the given upgrade.
+        Researched = 2      /// Indicates that the player has been researched the given upgrade.
+    }
+
+    /// <summary>
     /// Represents a player of a scenario.
     /// </summary>
     public class Player : HeapedObject
@@ -52,6 +62,7 @@ namespace RC.Engine.Simulator.Engine
             this.buildings = new Dictionary<string, RCSet<Building>>();
             this.addons = new Dictionary<string, RCSet<Addon>>();
             this.units = new Dictionary<string, RCSet<Unit>>();
+            this.upgrades = new Dictionary<string, Upgrade>();
 
             this.minerals.Write(INITIAL_MINERALS);
             this.vespeneGas.Write(INITIAL_VESPENE_GAS);
@@ -110,6 +121,24 @@ namespace RC.Engine.Simulator.Engine
             }
             this.units[unit.ElementType.Name].Add(unit);
             unit.OnAddedToPlayer(this);
+
+            this.usedSupplyCache.Invalidate();
+            this.totalSupplyCache.Invalidate();
+        }
+
+        /// <summary>
+        /// Adds an upgrade to this player.
+        /// </summary>
+        /// <param name="upgradeType">The type of the upgrade to add to this player.</param>
+        public void AddUpgrade(string upgradeType)
+        {
+            if (upgradeType == null) { throw new ArgumentNullException("upgrade"); }
+            if (this.upgrades.ContainsKey(upgradeType)) { throw new InvalidOperationException(string.Format("Upgrade of type '{0}' already exists for player {1}!", upgradeType, this.playerIndex.Read())); }
+
+            Upgrade upgrade = new Upgrade(upgradeType);
+            this.Scenario.AddElementToScenario(upgrade);
+            this.upgrades[upgradeType] = upgrade;
+            upgrade.OnAddedToPlayer(this);
 
             this.usedSupplyCache.Invalidate();
             this.totalSupplyCache.Invalidate();
@@ -200,6 +229,25 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
+        /// Removes the upgrade of the given type from this player.
+        /// </summary>
+        /// <param name="upgradeType">The type of the upgrade to be removed.</param>
+        public void RemoveUpgrade(string upgradeType)
+        {
+            if (upgradeType == null) { throw new ArgumentNullException("upgradeType"); }
+            if (!this.upgrades.ContainsKey(upgradeType)) { throw new InvalidOperationException("The given upgrade is not added to this player!"); }
+            if (!this.upgrades[upgradeType].IsUnderResearch) { throw new InvalidOperationException("The research of the given upgrade is completed! Completed upgrades cannot be removed from a player!"); }
+
+            this.upgrades[upgradeType].OnRemovedFromPlayer();
+            this.Scenario.RemoveElementFromScenario(this.upgrades[upgradeType]);
+            this.upgrades[upgradeType].Dispose();
+            this.upgrades.Remove(upgradeType);
+
+            this.usedSupplyCache.Invalidate();
+            this.totalSupplyCache.Invalidate();
+        }
+
+        /// <summary>
         /// Checks whether this player has at least 1 building of the given type that is not under construction.
         /// </summary>
         /// <param name="buildingType">The name of the building type to check.</param>
@@ -242,6 +290,21 @@ namespace RC.Engine.Simulator.Engine
 
             if (!this.units.ContainsKey(unitType)) { return false; }
             return this.units[unitType].Any(unit => !unit.Biometrics.IsUnderConstruction);
+        }
+
+        /// <summary>
+        /// Gets the status of the given upgrade at this player.
+        /// </summary>
+        /// <param name="upgradeType">The name of the upgrade type to check.</param>
+        /// <returns>
+        /// The status of the given upgrade at this player.
+        /// </returns>
+        public UpgradeStatus GetUpgradeStatus(string upgradeType)
+        {
+            if (upgradeType == null) { throw new ArgumentNullException("upgradeType"); }
+
+            if (!this.upgrades.ContainsKey(upgradeType)) { return UpgradeStatus.None; }
+            return this.upgrades[upgradeType].IsUnderResearch ? UpgradeStatus.Researching : UpgradeStatus.Researched;
         }
 
         /// <summary>
@@ -392,10 +455,18 @@ namespace RC.Engine.Simulator.Engine
         /// <see cref="IDisposable.Dispose"/>
         protected override void DisposeImpl()
         {
+            foreach (Upgrade upgrade in this.upgrades.Values)
+            {
+                upgrade.OnRemovedFromPlayer();
+                this.Scenario.RemoveElementFromScenario(upgrade);
+                upgrade.Dispose();
+            }
+
             foreach (Entity entity in this.Entities) { entity.OnRemovedFromPlayer(); }
             this.units.Clear();
             this.buildings.Clear();
             this.addons.Clear();
+            this.upgrades.Clear();
         }
 
         #endregion IDisposable methods
@@ -414,6 +485,13 @@ namespace RC.Engine.Simulator.Engine
                     supplyUsed += entity.ElementType.SupplyUsed.Read();
                 }
             }
+            foreach (Upgrade upgrade in this.upgrades.Values)
+            {
+                if (!upgrade.IsUnderResearch && upgrade.ElementType.SupplyUsed != null)
+                {
+                    supplyUsed += upgrade.ElementType.SupplyUsed.Read();
+                }
+            }
             return supplyUsed;
         }
 
@@ -430,6 +508,13 @@ namespace RC.Engine.Simulator.Engine
                 {
                     totalSupply += entity.ElementType.SupplyProvided.Read();
                     if (totalSupply >= MAX_SUPPLY) { return MAX_SUPPLY; }
+                }
+            }
+            foreach (Upgrade upgrade in this.upgrades.Values)
+            {
+                if (!upgrade.IsUnderResearch && upgrade.ElementType.SupplyProvided != null)
+                {
+                    totalSupply += upgrade.ElementType.SupplyProvided.Read();
                 }
             }
             return totalSupply;
@@ -493,6 +578,12 @@ namespace RC.Engine.Simulator.Engine
         private readonly Dictionary<string, RCSet<Unit>> units;
 
         /// <summary>
+        /// The upgrades of the player mapped by their types.
+        /// </summary>
+        /// TODO: store the upgrades also in a HeapedArray!
+        private readonly Dictionary<string, Upgrade> upgrades; 
+
+        /// <summary>
         /// The amount of the supplies currently used by this player.
         /// </summary>
         private readonly CachedValue<int> usedSupplyCache;
@@ -520,8 +611,8 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Resources related constants.
         /// </summary>
-        private const int INITIAL_MINERALS = 500;
-        private const int INITIAL_VESPENE_GAS = 500;
+        private const int INITIAL_MINERALS = 5000;
+        private const int INITIAL_VESPENE_GAS = 5000;
         private const int MAX_SUPPLY = 200;
     }
 }

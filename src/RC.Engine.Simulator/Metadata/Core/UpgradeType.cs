@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common;
+using RC.Common.Configuration;
 using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Metadata.Core
@@ -20,6 +21,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         public UpgradeType(string name, ScenarioMetadata metadata)
             : base(name, metadata)
         {
+            this.effects = new List<UpgradeEffectBase>();
             this.previousLevel = null;
             this.nextLevel = null;
             this.researchedIn = null;
@@ -33,6 +35,9 @@ namespace RC.Engine.Simulator.Metadata.Core
 
         /// <see cref="IUpgradeTypeInternal.NextLevel"/>
         public IUpgradeTypeInternal NextLevel { get { return this.nextLevel; } }
+
+        /// <see cref="IUpgradeTypeInternal.Effects"/>
+        public IEnumerable<IUpgradeEffect> Effects { get { return this.effects; } } 
 
         #endregion IUpgradeTypeInternal members
 
@@ -57,6 +62,17 @@ namespace RC.Engine.Simulator.Metadata.Core
             if (this.Metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (previousLevelName == null) { throw new ArgumentNullException("previousLevelName"); }
             this.previousLevelName = previousLevelName;
+        }
+
+        /// <summary>
+        /// Adds the given effect to this upgrade type.
+        /// </summary>
+        /// <param name="effect">The effect to add.</param>
+        public void AddEffect(UpgradeEffectBase effect)
+        {
+            if (this.Metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (effect == null) { throw new ArgumentNullException("effect"); }
+            this.effects.Add(effect);
         }
 
         /// <see cref="ScenarioElementType.BuildupReferencesImpl"/>
@@ -91,6 +107,12 @@ namespace RC.Engine.Simulator.Metadata.Core
             }
         }
 
+        /// <see cref="ScenarioElementType.CheckAndFinalizeImpl"/>
+        protected override void CheckAndFinalizeImpl()
+        {
+            foreach (UpgradeEffectBase effect in this.effects) { effect.CheckAndFinalize(); }
+        }
+
         /// <summary>
         /// Checks the given upgrade type if it is OK to attach to this upgrade type as previous level.
         /// </summary>
@@ -120,6 +142,11 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// Reference to the next level of this upgrade type or null if this upgrade type has no next level.
         /// </summary>
         private UpgradeType nextLevel;
+
+        /// <summary>
+        /// List of the effects of this upgrade type.
+        /// </summary>
+        private readonly List<UpgradeEffectBase> effects; 
 
         /// <summary>
         /// The name of the building/addon type that researches this type of upgrade or null if no such a building/addon

@@ -150,6 +150,15 @@ namespace RC.Engine.Simulator.Core
             XElement previousLevelElem = upgradeTypeElem.Element(XmlMetadataConstants.PREVIOUSLEVEL_ELEM);
             if (previousLevelElem != null) { upgradeType.SetPreviousLevelName(previousLevelElem.Value); }
 
+            XElement effectsElem = upgradeTypeElem.Element(XmlMetadataConstants.EFFECTS_ELEM);
+            if (effectsElem != null)
+            {
+                foreach (XElement effectElem in effectsElem.Elements())
+                {
+                    upgradeType.AddEffect(LoadUpgradeEffect(effectElem, metadata));
+                }
+            }
+
             metadata.AddUpgradeType(upgradeType);
         }
 
@@ -560,11 +569,25 @@ namespace RC.Engine.Simulator.Core
                 }
 
                 RCNumVector relativePosition = XmlHelper.LoadNumVector(positionAttr.Value);
-
                 missile.AddRelativeLaunchPosition(direction, relativePosition);
             }
 
             return missile;
+        }
+
+        /// <summary>
+        /// Loads an upgrade effect definition from the given XML node.
+        /// </summary>
+        /// <param name="effectElem">The XML node to load from.</param>
+        /// <param name="metadata">The metadata object.</param>
+        /// <returns>The constructed upgrade effect definition.</returns>
+        private static UpgradeEffectBase LoadUpgradeEffect(XElement effectElem, ScenarioMetadata metadata)
+        {
+            string actionName = effectElem.Name.ToString();
+            XAttribute targetTypeAttr = effectElem.Attribute(XmlMetadataConstants.EFFECT_TARGETTYPE_ATTR);
+            if (targetTypeAttr == null) { throw new SimulatorException("Target type not defined for an upgrade effect!"); }
+
+            return UpgradeEffectFactory.CreateUpgradeEffect(actionName, effectElem.Value, targetTypeAttr.Value, metadata);
         }
 
         /// <summary>

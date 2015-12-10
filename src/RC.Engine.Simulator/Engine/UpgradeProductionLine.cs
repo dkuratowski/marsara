@@ -29,6 +29,23 @@ namespace RC.Engine.Simulator.Engine
             return new UpgradeProductionJob(this.Owner, this.upgradeProducts[productName], jobID);
         }
 
+        /// <see cref="ProductionLine.IsProductAvailableImpl"/>
+        protected override bool IsProductAvailableImpl(string productName)
+        {
+            /// If the given upgrade has already been researched or is being researched in another production line -> the product is not available here.
+            if (this.Owner.Owner.GetUpgradeStatus(productName) != UpgradeStatus.None) { return false; }
+
+            /// If the given upgrade has a previous level that is not yet researched -> the product is not available.
+            IUpgradeType product = this.upgradeProducts[productName];
+            if (product.PreviousLevel != null && this.Owner.Owner.GetUpgradeStatus(product.PreviousLevel.Name) != UpgradeStatus.Researched)
+            {
+                return false;
+            }
+
+            /// The upgrade is available only if the owner entity is not flying.
+            return !this.Owner.MotionControl.IsFlying;
+        }
+
         /// <summary>
         /// The list of the upgrade types that can be produced by this production line mapped by their names.
         /// </summary>

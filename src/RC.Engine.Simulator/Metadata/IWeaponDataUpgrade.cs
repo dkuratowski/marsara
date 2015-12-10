@@ -11,9 +11,9 @@ namespace RC.Engine.Simulator.Metadata
     public interface IWeaponDataUpgrade
     {
         /// <summary>
-        /// Gets or sets the upgrade to the damage of the underlying weapon.
+        /// Gets or sets the damage level of the underlying weapon.
         /// </summary>
-        int DamageUpgrade { get; set; }
+        int DamageLevel { get; set; }
 
         /// <summary>
         /// Gets the cumulated upgrade to the damage of the underlying weapon.

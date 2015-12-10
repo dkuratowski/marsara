@@ -10,6 +10,7 @@ using RC.Engine.Simulator.PublicInterfaces;
 using System;
 using System.Collections.Generic;
 using RC.Engine.Simulator.MotionControl;
+using RC.Common.Diagnostics;
 
 namespace RC.Engine.Simulator.Engine
 {
@@ -173,6 +174,9 @@ namespace RC.Engine.Simulator.Engine
         {
             if (productName == null) { throw new ArgumentNullException("productName"); }
 
+            /// No product is available if this entity is under construction.
+            if (this.biometrics.Read().IsUnderConstruction) { return false; }
+
             /// Check if the product is available on the active production line.
             if (this.activeProductionLine.Read() != null)
             {
@@ -328,10 +332,6 @@ namespace RC.Engine.Simulator.Engine
         {
             if (this.mapObject != null)
             {
-                /// Move the map object of this entity into the appropriate layer and location if necessary.
-                this.ChangeMapObjectLayer(this.mapObject, this.MotionControl.IsFlying ? MapObjectLayerEnum.AirObjects : MapObjectLayerEnum.GroundObjects);
-                this.mapObject.SetLocation(this.Area);
-
                 /// Ask the behaviors to update the map object of this entity.
                 foreach (EntityBehavior behavior in this.behaviors) { behavior.UpdateMapObject(this); }
             }
@@ -411,6 +411,7 @@ namespace RC.Engine.Simulator.Engine
         /// <remarks>This method is used by the MotionControl of this entity.</remarks>
         internal void OnFixed()
         {
+            //TraceManager.WriteAllTrace(string.Format("OnFixed(): position = {0}; location = {1}; quadposition = {2}", this.MotionControl.PositionVector.Read(), this.MapObject.Location, this.MapObject.QuadraticPosition), TraceFilters.INFO);
             for (int col = this.MapObject.QuadraticPosition.Left; col < this.MapObject.QuadraticPosition.Right; col++)
             {
                 for (int row = this.MapObject.QuadraticPosition.Top; row < this.MapObject.QuadraticPosition.Bottom; row++)
@@ -427,6 +428,7 @@ namespace RC.Engine.Simulator.Engine
         /// <remarks>This method is used by the MotionControl of this entity.</remarks>
         internal void OnUnfixed()
         {
+            //TraceManager.WriteAllTrace(string.Format("OnUnfixed(): position = {0}; location = {1}; quadposition = {2}", this.MotionControl.PositionVector.Read(), this.MapObject.Location, this.MapObject.QuadraticPosition), TraceFilters.INFO);
             for (int col = this.MapObject.QuadraticPosition.Left; col < this.MapObject.QuadraticPosition.Right; col++)
             {
                 for (int row = this.MapObject.QuadraticPosition.Top; row < this.MapObject.QuadraticPosition.Bottom; row++)

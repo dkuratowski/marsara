@@ -19,5 +19,10 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// Gets the next level of this upgrade type.
         /// </summary>
         IUpgradeTypeInternal NextLevel { get; }
+
+        /// <summary>
+        /// Gets the effects of this upgrade type.
+        /// </summary>
+        IEnumerable<IUpgradeEffect> Effects { get; }
     }
 }

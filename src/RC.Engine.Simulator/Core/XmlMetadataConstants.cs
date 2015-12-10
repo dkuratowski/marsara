@@ -28,6 +28,8 @@ namespace RC.Engine.Simulator.Core
         public const string AIRWEAPON_ELEM = "airWeapon";
         public const string CREATEDIN_ELEM = "createdIn";
         public const string MAINBUILDING_ELEM = "mainBuilding";
+        public const string EFFECTS_ELEM = "effects";
+        public const string EFFECT_TARGETTYPE_ATTR = "targetType";
         public const string RESEARCHEDIN_ELEM = "researchedIn";
         public const string PREVIOUSLEVEL_ELEM = "previousLevel";
         public const string REQUIRES_ELEM = "requires";
