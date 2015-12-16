@@ -5,7 +5,7 @@ using System.Text;
 using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Engine
+namespace RC.Engine.Simulator.Engine.Behaviors
 {
     /// <summary>
     /// Implements additional addon-specific logic for Addons.

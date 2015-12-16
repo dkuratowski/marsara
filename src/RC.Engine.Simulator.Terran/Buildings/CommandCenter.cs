@@ -1,5 +1,6 @@
 ﻿using RC.Common;
 using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.Engine.Behaviors;
 
 namespace RC.Engine.Simulator.Terran.Buildings
 {

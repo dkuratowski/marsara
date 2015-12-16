@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<commands>
+  <spritePalette image="terran_abilities.png" transparentColor="255;0;255" maskColor="0;255;255">
+    <sprite name="StimPacksBtn" sourceRegion="1;1;20;20" />
+  </spritePalette>
+  <productionButton product="StimPacks" sprite="StimPacksBtn" panelPosition="0;1" />
+  <commandButton command="StimPacks" sprite="StimPacksBtn" panelPosition="2;0" />
+</commands>

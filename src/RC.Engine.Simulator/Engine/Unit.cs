@@ -5,6 +5,7 @@ using System.Text;
 using RC.Common;
 using RC.Common.ComponentModel;
 using RC.Engine.Simulator.ComponentInterfaces;
+using RC.Engine.Simulator.Engine.Behaviors;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.MotionControl;
 using RC.Engine.Simulator.Metadata.Core;

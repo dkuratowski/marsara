@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Engine
+namespace RC.Engine.Simulator.Engine.Behaviors
 {
     /// <summary>
     /// The abstract base class of the entity behaviors. An entity behavior implements additional functionalities to an entity.

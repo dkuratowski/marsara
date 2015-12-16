@@ -262,6 +262,10 @@ namespace RC.Engine.Simulator.Core
             XElement airWeaponElem = elementTypeElem.Element(XmlMetadataConstants.AIRWEAPON_ELEM);
             if (airWeaponElem != null) { elementType.AddStandardWeapon(LoadWeaponData(airWeaponElem, metadata)); }
 
+            /// Load the air-ground weapon definition of the element type.
+            XElement airGroundWeaponElem = elementTypeElem.Element(XmlMetadataConstants.AIRGROUNDWEAPON_ELEM);
+            if (airGroundWeaponElem != null) { elementType.AddStandardWeapon(LoadWeaponData(airGroundWeaponElem, metadata)); }
+
             /// Load the requirements of the element type.
             XElement requiresElem = elementTypeElem.Element(XmlMetadataConstants.REQUIRES_ELEM);
             if (requiresElem != null)
@@ -340,6 +344,10 @@ namespace RC.Engine.Simulator.Core
                 {
                     instructions.Add(LoadGotoInstruction(instructionElem, labels));
                 }
+                else if (instructionElem.Name == XmlMetadataConstants.WAIT_ELEM)
+                {
+                    instructions.Add(LoadWaitInstruction(instructionElem));
+                }
                 else if (instructionElem.Name == XmlMetadataConstants.REPEAT_ELEM)
                 {
                     instructions.Add(new RepeatInstruction());
@@ -410,6 +418,17 @@ namespace RC.Engine.Simulator.Core
             if (!labels.ContainsKey(labelAttr.Value)) { throw new SimulatorException(string.Format("Label '{0}' doesn't exist!", labelAttr.Value)); }
 
             return new GotoInstruction(labels[labelAttr.Value]);
+        }
+
+        /// <summary>
+        /// Loads a wait instruction from the given XML node.
+        /// </summary>
+        /// <param name="instructionElem">The XML node to load from.</param>
+        /// <returns>The constructed instruction.</returns>
+        private static Animation.IInstruction LoadWaitInstruction(XElement instructionElem)
+        {
+            XAttribute durationAttr = instructionElem.Attribute(XmlMetadataConstants.WAIT_DURATION_ATTR);
+            return new WaitInstruction(durationAttr != null ? XmlHelper.LoadInt(durationAttr.Value) : 1);
         }
 
         /// <summary>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<commands>
+  <spritePalette image="terran_products.png" transparentColor="255;0;255" maskColor="0;255;255">
+    <sprite name="ScvBtn" sourceRegion="1;1;20;20" />
+    <sprite name="MarineBtn" sourceRegion="22;1;20;20" />
+	<sprite name="FirebatBtn" sourceRegion="43;1;20;20" />
+	<sprite name="GhostBtn" sourceRegion="64;1;20;20" />
+	<sprite name="VultureBtn" sourceRegion="1;22;20;20" />
+	<sprite name="GoliathBtn" sourceRegion="22;22;20;20" />
+	<sprite name="SiegeTankBtn" sourceRegion="43;22;20;20" />
+	<sprite name="WraithBtn" sourceRegion="64;22;20;20" />
+	<sprite name="DropshipBtn" sourceRegion="1;43;20;20" />
+	<sprite name="ScienceVesselBtn" sourceRegion="22;43;20;20" />
+	<sprite name="BattlecruiserBtn" sourceRegion="43;43;20;20" />
+	<sprite name="ComsatStationBtn" sourceRegion="64;43;20;20" />
+	<sprite name="CancelBtn" sourceRegion="1;64;20;20" />
+  </spritePalette>
+  <productionButton product="SCV" sprite="ScvBtn" panelPosition="0;0" />
+  <!-- TODO: restore panel position for Marine! -->
+  <!--productionButton product="Marine" sprite="MarineBtn" panelPosition="0;0" /-->
+  <productionButton product="Marine" sprite="MarineBtn" panelPosition="0;1" />
+  <productionButton product="Firebat" sprite="FirebatBtn" panelPosition="0;1" />
+  <productionButton product="Ghost" sprite="GhostBtn" panelPosition="0;2" />
+  <productionButton product="Vulture" sprite="VultureBtn" panelPosition="0;0" />
+  <productionButton product="SiegeTank" sprite="SiegeTankBtn" panelPosition="0;1" />
+  <productionButton product="Goliath" sprite="GoliathBtn" panelPosition="0;2" />
+  <productionButton product="Wraith" sprite="WraithBtn" panelPosition="0;0" />
+  <productionButton product="Dropship" sprite="DropshipBtn" panelPosition="0;1" />
+  <productionButton product="ScienceVessel" sprite="ScienceVesselBtn" panelPosition="0;2" />
+  <productionButton product="Battlecruiser" sprite="BattlecruiserBtn" panelPosition="1;0" />
+  <productionButton product="ComsatStation" sprite="ComsatStationBtn" panelPosition="2;0">
+	<selectTargetPosition>
+	  <currentSelection />
+	  <addonType name="ComsatStation" />
+	</selectTargetPosition>
+    <cancelButton sprite="CancelBtn" panelPosition="2;2" />
+  </productionButton>
+  <cancelProductionButton sprite="CancelBtn" panelPosition="2;2" />
+</commands>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Engine
+namespace RC.Engine.Simulator.Engine.Behaviors
 {
     /// <summary>
     /// Responsible for playing the appropriate animations for the liftoff and landing of entities with such capabilities.

@@ -77,13 +77,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Addons\ComsatStation.cs" />
+    <Compile Include="Behaviors\StimPacksBehavior.cs" />
     <Compile Include="Buildings\CommandCenter.cs" />
     <Compile Include="CommandExecutorPlugin.cs" />
     <Compile Include="ElementFactoryPlugin.cs" />
+    <Compile Include="TerranAbilities.cs" />
     <Compile Include="TerranHeapManagerPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TerranScenarioLoaderPlugin.cs" />
     <Compile Include="TerranUpgrades.cs" />
+    <Compile Include="Units\Marine.cs" />
     <Compile Include="Units\SCV.cs" />
   </ItemGroup>
   <ItemGroup>

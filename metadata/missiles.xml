@@ -56,4 +56,41 @@
       </animation>
     </animationPalette>
 	</missileType>
+	
+	<missileType name="Bullets">
+      <generalData>
+        <area>0.25;0.25</area>
+      </generalData>
+      <launchAnimation launchDelay="0">Launch</launchAnimation>
+      <impactAnimation>Impact</impactAnimation>
+      <spritePalette image="bullets.png" transparentColor="255;0;255">
+        <sprite name="Flash" variant="North" sourceRegion="1;1;3;4" offset="-1;-3" />
+        <sprite name="Flash" variant="NorthEast" sourceRegion="5;1;4;4" offset="0;-2" />
+        <sprite name="Flash" variant="East" sourceRegion="10;1;5;5" offset="0;-2" />
+        <sprite name="Flash" variant="SouthEast" sourceRegion="16;1;4;4" offset="0;0" />
+        <sprite name="Flash" variant="South" sourceRegion="21;1;4;4" offset="-2;0" />
+        <sprite name="Flash" variant="SouthWest" sourceRegion="26;1;4;4" offset="-2;0" />
+        <sprite name="Flash" variant="West" sourceRegion="31;1;5;5" offset="-4;-2" />
+        <sprite name="Flash" variant="NorthWest" sourceRegion="37;1;4;4" offset="-3;-2" />
+	    <sprite name="Impact0" sourceRegion="42;1;4;4" offset="-1;-1" />
+	    <sprite name="Impact1" sourceRegion="47;1;5;4" offset="-2;-1" />
+	    <sprite name="Impact2" sourceRegion="53;1;6;4" offset="-2;-1" />
+      </spritePalette>
+      <animationPalette>
+        <animation name="Launch">
+          <frame sprites="Flash" />
+		  <wait/>
+          <frame sprites="Flash" />
+		  <wait/>
+          <frame sprites="Flash" />
+        </animation>
+        <animation name="Impact">
+          <frame sprites="Impact0" />
+		  <wait/>
+          <frame sprites="Impact1" />
+		  <wait/>
+          <frame sprites="Impact2" />
+        </animation>
+      </animationPalette>
+	</missileType>
 </metadata>

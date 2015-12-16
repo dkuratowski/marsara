@@ -42,7 +42,9 @@ namespace RC.Engine.Simulator.Metadata
         [EnumMapping(XmlMetadataConstants.GROUNDWEAPON_ELEM)]
         Ground = 0,     /// The weapon can target only ground entities.
         [EnumMapping(XmlMetadataConstants.AIRWEAPON_ELEM)]
-        Air = 1         /// The weapon can target only flying entities.
+        Air = 1,        /// The weapon can target only flying entities.
+        [EnumMapping(XmlMetadataConstants.AIRGROUNDWEAPON_ELEM)]
+        AirGround = 2   /// The weapon can target both ground and flying entities.
     }
 
     /// <summary>

@@ -206,6 +206,41 @@ namespace RC.Engine.Simulator.Metadata
     }
 
     /// <summary>
+    /// Represents an animation instruction that shows nothing and waits for a defined time.
+    /// </summary>
+    class WaitInstruction : Animation.IInstruction
+    {
+        /// <summary>
+        /// Constructs a wait instruction.
+        /// </summary>
+        /// <param name="duration">The waiting time in frames.</param>
+        public WaitInstruction(int duration)
+        {
+            if (duration < 0) { throw new ArgumentOutOfRangeException("duration"); }
+            this.duration = duration;
+        }
+
+        #region Animation.IInstruction members
+
+        /// <see cref="Animation.IInstruction.Execute"/>
+        public bool Execute(Animation.IInstructionContext ctx)
+        {
+            ctx.SetFrame(new int[0]);
+            //if (ctx[0] == 0) { ctx.SetFrame(this.spriteIndices[ctx.Direction]); }
+            ctx[0]++;
+            if (ctx[0] >= this.duration) { ctx.InstructionPointer++; }
+            return true;
+        }
+
+        #endregion Animation.IInstruction members
+
+        /// <summary>
+        /// The waiting time in frames.
+        /// </summary>
+        private readonly int duration;
+    }
+
+    /// <summary>
     /// Represents an animation instruction that jumps back to the first instruction.
     /// </summary>
     class RepeatInstruction : Animation.IInstruction

@@ -34,6 +34,7 @@ namespace RC.Engine.Simulator.Terran
             /// TODO: Write installation code here!
             extendedComponent.RegisterPlayerInitializer(RaceEnum.Terran, this.TerranInitializer);
             extendedComponent.RegisterElementFactory<Building>(SCV.SCV_TYPE_NAME, this.CreateScv);
+            extendedComponent.RegisterElementFactory<Building>(Marine.MARINE_TYPE_NAME, this.CreateMarine);
             extendedComponent.RegisterElementFactory<Building>(ComsatStation.COMSATSTATION_TYPE_NAME, this.CreateComsatStation);
         }
 
@@ -71,7 +72,8 @@ namespace RC.Engine.Simulator.Terran
             for (int scvCount = 0; scvCount < NUM_OF_SCVS; scvCount++)
             {
                 /// Create the next SCV
-                SCV scv = new SCV();
+                Marine scv = new Marine();
+                //SCV scv = new SCV();
                 scenario.AddElementToScenario(scv);
                 player.AddUnit(scv);
 
@@ -135,6 +137,46 @@ namespace RC.Engine.Simulator.Terran
             }
 
             return scvPlacedSuccessfully;
+        }
+
+        /// <summary>
+        /// Creates a Marine in the given building.
+        /// </summary>
+        /// <param name="factoryBuilding">The building in which the Marine is created.</param>
+        /// <returns>True if the MArine has been created successfully; otherwise false.</returns>
+        private bool CreateMarine(Building factoryBuilding)
+        {
+            if (factoryBuilding == null) { throw new ArgumentNullException("factoryBuilding"); }
+            if (factoryBuilding.Scenario == null) { throw new ArgumentException("The factory building is not added to a scenario!"); }
+
+            EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(factoryBuilding);
+            IEnumerator<ICell> cellEnumerator = cellIterator.GetEnumerator();
+
+            /// Create the Marine
+            Marine marine = new Marine();
+            factoryBuilding.Scenario.AddElementToScenario(marine);
+            if (factoryBuilding.Owner != null) { factoryBuilding.Owner.AddUnit(marine); }
+
+            /// Search a place for the new Marine on the map.
+            bool marinePlacedSuccessfully = false;
+            while (cellEnumerator.MoveNext())
+            {
+                if (marine.AttachToMap(cellEnumerator.Current.MapCoords))
+                {
+                    marinePlacedSuccessfully = true;
+                    break;
+                }
+            }
+
+            /// Remove the Marine if there is no more place on the map.
+            if (!marinePlacedSuccessfully)
+            {
+                if (factoryBuilding.Owner != null) { factoryBuilding.Owner.RemoveUnit(marine); }
+                factoryBuilding.Scenario.RemoveElementFromScenario(marine);
+                marine.Dispose();
+            }
+
+            return marinePlacedSuccessfully;
         }
 
         /// <summary>

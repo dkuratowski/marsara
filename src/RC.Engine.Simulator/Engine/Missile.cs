@@ -336,6 +336,11 @@ namespace RC.Engine.Simulator.Engine
         private void UpdateVelocity()
         {
             RCNumVector vectorToTarget = this.lastKnownTargetEntityPos.Read() - this.missilePosition.Read();
+            if (this.missileData.MissileType.Speed == null)
+            {
+                this.missileVelocity.Write(vectorToTarget);
+                return;
+            }
 
             int currVelocityIndex = 0;
             int bestVelocityIndex = -1;

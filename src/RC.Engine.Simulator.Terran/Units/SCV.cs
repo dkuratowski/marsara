@@ -1,6 +1,7 @@
 ﻿using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.Engine.Behaviors;
 using RC.Engine.Simulator.MotionControl;
 
 namespace RC.Engine.Simulator.Terran.Units
@@ -14,17 +15,17 @@ namespace RC.Engine.Simulator.Terran.Units
         /// Constructs a Terran SCV instance.
         /// </summary>
         public SCV()
-            : base(SCV_TYPE_NAME, false)
+            : base(SCV_TYPE_NAME, false, new BasicAnimationsBehavior("Moving", "Stopped", "Stopped"))
         {
         }
 
-        /// <see cref="ScenarioElement.AttachToMap"/>
-        public override bool AttachToMap(RCNumVector position)
-        {
-            bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess) { this.MapObject.StartAnimation("Stopped", this.MotionControl.VelocityVector, this.Armour.TargetVector); }
-            return attachToMapSuccess;
-        }
+        ///// <see cref="ScenarioElement.AttachToMap"/>
+        //public override bool AttachToMap(RCNumVector position)
+        //{
+        //    bool attachToMapSuccess = base.AttachToMap(position);
+        //    if (attachToMapSuccess) { this.MapObject.StartAnimation("Stopped", this.MotionControl.VelocityVector, this.Armour.TargetVector); }
+        //    return attachToMapSuccess;
+        //}
 
         /// <see cref="Entity.DestructionAnimationName"/>
         protected override string DestructionAnimationName { get { return "Dying"; } }

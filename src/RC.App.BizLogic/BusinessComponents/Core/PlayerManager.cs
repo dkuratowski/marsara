@@ -69,7 +69,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             StartLocation startLocation = this.freeStartLocations.ElementAt(RandomService.DefaultGenerator.Next(this.freeStartLocations.Count));
 
             /// Create and add the new player to the target scenario.
-            this.targetScenario.CreatePlayer((int)index, startLocation, race);
+            this.targetScenario.InitializePlayer((int)index, startLocation, race);
             Player createdPlayer = this.targetScenario.GetPlayer((int)index);
 
             /// Remove the determined player index and start location from the appropriate sets.
@@ -96,7 +96,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (!this.freeStartLocations.Contains(startLocation)) { throw new InvalidOperationException("The given start location has already been assigned to another slot!"); }
 
             /// Create and add the new player to the target scenario.
-            this.targetScenario.CreatePlayer((int)index, startLocation, race);
+            this.targetScenario.InitializePlayer((int)index, startLocation, race);
             Player createdPlayer = this.targetScenario.GetPlayer((int)index);
 
             /// Remove the determined player index and start location from the appropriate sets.
@@ -121,7 +121,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
 
             /// Delete the player from the target scenario.
-            this.targetScenario.DeletePlayer(player.PlayerIndex);
+            this.targetScenario.UninitializePlayer(player.PlayerIndex);
 
             /// Put the player index and the start location back to the appropriate sets.
             this.freePlayerIndices.Add((PlayerEnum)player.PlayerIndex);

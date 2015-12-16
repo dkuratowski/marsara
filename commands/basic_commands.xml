@@ -6,7 +6,9 @@
     <sprite name="AttackBtn" sourceRegion="43;1;20;20" />
     <sprite name="PatrolBtn" sourceRegion="1;22;20;20" />
     <sprite name="HoldBtn" sourceRegion="22;22;20;20" />
-    <sprite name="CancelBtn" sourceRegion="43;22;20;20" />
+	<sprite name="LiftOffBtn" sourceRegion="43;22;20;20" />
+	<sprite name="LandBtn" sourceRegion="1;43;20;20" />
+    <sprite name="CancelBtn" sourceRegion="43;43;20;20" />
   </spritePalette>
   <commandButton command="Move" sprite="MoveBtn" panelPosition="0;0" priority="2" >
 	<selectTargetPosition />
@@ -22,5 +24,12 @@
 	<cancelButton sprite="CancelBtn" panelPosition="2;2" />
   </commandButton>
   <commandButton command="Hold" sprite="HoldBtn" panelPosition="1;1" priority="1" />
+  <commandButton command="LiftOff" sprite="LiftOffBtn" panelPosition="2;2" />
+  <commandButton command="Land" sprite="LandBtn" panelPosition="2;2">
+	<selectTargetPosition>
+	  <currentSelection />
+	</selectTargetPosition>
+    <cancelButton sprite="CancelBtn" panelPosition="2;2" />
+  </commandButton>
   <cancelConstructionButton sprite="CancelBtn" panelPosition="2;2" />
 </commands>

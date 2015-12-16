@@ -65,18 +65,20 @@ namespace RC.Engine.Simulator.Engine
         #region Public members: Player management
 
         /// <summary>
-        /// Creates a new player to this scenario.
+        /// Initializes the player with the given index at the given start location.
+        /// Initializing a player is only allowed if players have not yet been finalized.
+        /// Players can be finalized using the Scenario.FinalizePlayers method.
         /// </summary>
-        /// <param name="index">The index of the new player.</param>
-        /// <param name="startLocation">The start location of the new player.</param>
-        /// <param name="race">The race of the new player.</param>
-        public void CreatePlayer(int index, StartLocation startLocation, RaceEnum race)
+        /// <param name="index">The index of the player to initialize.</param>
+        /// <param name="startLocation">The start location of the player to initialize.</param>
+        /// <param name="race">The race of the player to initialize.</param>
+        public void InitializePlayer(int index, StartLocation startLocation, RaceEnum race)
         {
             if (this.playersFinalized.Read() != 0x00) { throw new InvalidOperationException("Players already finalized!"); }
             if (startLocation == null) { throw new ArgumentNullException("startLocation"); }
             if (startLocation.Scenario != this) { throw new SimulatorException("The given start location doesn't belong to the scenario!"); }
             if (index < 0 || index >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("index"); }
-            if (this.players[index].Read() != null) { throw new SimulatorException(string.Format("Player with index {0} already exists!", index)); }
+            if (this.players[index].Read() != null) { throw new SimulatorException(string.Format("Player with index {0} has already been initialized!", index)); }
 
             Player newPlayer = new Player(index, startLocation);
             startLocation.DetachFromMap();
@@ -85,18 +87,52 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
-        /// Deletes the given player and all of it's entities from this scenario.
+        /// Uninitializes the player with the given index.
+        /// Uninitializing a player is only allowed if players have not yet been finalized.
+        /// Players can be finalized using the Scenario.FinalizePlayers method.
         /// </summary>
-        /// <param name="index">The index of the player to delete.</param>
-        public void DeletePlayer(int index)
+        /// <param name="index">The index of the player to uninitialize.</param>
+        public void UninitializePlayer(int index)
         {
             if (this.playersFinalized.Read() != 0x00) { throw new InvalidOperationException("Players already finalized!"); }
             if (index < 0 || index >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("index"); }
-            if (this.players[index].Read() == null) { throw new SimulatorException(string.Format("Player with index {0} doesn't exist!", index)); }
+            if (this.players[index].Read() == null) { throw new SimulatorException(string.Format("Player with index {0} has not yet been initialized!", index)); }
 
             StartLocation startLoc = this.players[index].Read().StartLocation;
             startLoc.AttachToMap(this.map.GetQuadTile(this.players[index].Read().QuadraticStartPosition.Location));
             RCSet<Entity> entitiesOfPlayer = new RCSet<Entity>(this.players[index].Read().Entities);
+            this.players[index].Read().Dispose();
+            this.players[index].Write(null);
+
+            /// Destroy entities of the player.
+            foreach (Entity entity in entitiesOfPlayer)
+            {
+                if (entity.HasMapObject(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects)) { entity.DetachFromMap(); }
+                this.RemoveElementFromScenario(entity);
+                entity.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Destroys the player with the given index.
+        /// Destroying a player is only allowed if the players have already been finalized.
+        /// Players can be finalized using the Scenario.FinalizePlayers method.
+        /// </summary>
+        /// <param name="index">The index of the player to be destroyed.</param>
+        public void DestroyPlayer(int index)
+        {
+            if (this.playersFinalized.Read() == 0x00) { throw new InvalidOperationException("Players has not yet been finalized!"); }
+            if (index < 0 || index >= Player.MAX_PLAYERS) { throw new ArgumentOutOfRangeException("index"); }
+            if (this.players[index].Read() == null) { throw new SimulatorException(string.Format("Player with index {0} doesn't exist!", index)); }
+
+            /// Remove all jobs from the active production line of every entity of the player.
+            RCSet<Entity> entitiesOfPlayer = new RCSet<Entity>(this.players[index].Read().Entities);
+            foreach (Entity entityOfPlayer in entitiesOfPlayer)
+            {
+                if (entityOfPlayer.ActiveProductionLine != null) { entityOfPlayer.ActiveProductionLine.RemoveAllJobs(); }
+            }
+
+            /// Destroy the player itself.
             this.players[index].Read().Dispose();
             this.players[index].Write(null);
 
@@ -518,22 +554,18 @@ namespace RC.Engine.Simulator.Engine
         {
             if (this.updateInProgress) { throw new InvalidOperationException("Updating the scenario is currently in progress!"); }
 
-            /// Destroy command executions
+            /// Destroy command executions.
             RCSet<CmdExecutionBase> commandExecutionsCopy = new RCSet<CmdExecutionBase>(this.commandExecutions);
             foreach (CmdExecutionBase cmdExecution in commandExecutionsCopy) { cmdExecution.Dispose(); }
             this.commandExecutions.Clear();
 
-            /// Destroy players
+            /// Destroy players.
             foreach (IValue<Player> player in this.players)
             {
-                if (player.Read() != null)
-                {
-                    player.Read().Dispose();
-                    player.Write(null);
-                }
+                if (player.Read() != null) { this.DestroyPlayer(player.Read().PlayerIndex); }
             }
 
-            /// Destroy scenario elements.
+            /// Destroy the remaining scenario elements.
             List<ScenarioElement> elementSetCopy = new List<ScenarioElement>(this.scenarioElements);
             foreach (ScenarioElement element in elementSetCopy)
             {

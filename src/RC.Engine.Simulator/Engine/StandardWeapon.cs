@@ -36,7 +36,8 @@ namespace RC.Engine.Simulator.Engine
             if (entityToCheck == this.Owner) { return false; }              /// A standard weapon cannot attack its owner.
 
             /// Check the type of this weapon against the entity's current flying status.
-            return (entityToCheck.MotionControl.IsFlying && this.weaponData.WeaponType.Read() == WeaponTypeEnum.Air) ||
+            return this.weaponData.WeaponType.Read() == WeaponTypeEnum.AirGround ||
+                   (entityToCheck.MotionControl.IsFlying && this.weaponData.WeaponType.Read() == WeaponTypeEnum.Air) ||
                    (!entityToCheck.MotionControl.IsFlying && this.weaponData.WeaponType.Read() == WeaponTypeEnum.Ground);
         }
 

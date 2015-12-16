@@ -5,6 +5,7 @@ using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Commands;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Core;
+using RC.Engine.Simulator.Engine.Behaviors;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.PublicInterfaces;
 using System;

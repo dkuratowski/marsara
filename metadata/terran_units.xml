@@ -1,141 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <metadata>
-  <unitType name="SCV" hasOwner="true" displayedName="Terran SCV">
-    <costs>
-      <supplyUsed>1</supplyUsed>
-      <mineral>50</mineral>
-      <buildTime>300</buildTime>
-    </costs>
-    <generalData>
-      <size>Small</size>
-      <area>1.75;1.75</area>
-      <maxHP>60</maxHP>
-      <armor>0</armor>
-      <sightRange>7</sightRange>
-      <speed>0.625</speed>
-    </generalData>
-    <groundWeapon name="GaussRifle" displayedName="Gauss Rifle">
-      <damage>5</damage>
-      <!--rangeMax>1</rangeMax-->
-      <rangeMax>5</rangeMax>
-      <damageType>Normal</damageType>
-      <cooldown>15</cooldown>
-      <!--cooldown>50</cooldown-->
-      <missile type="Rocket">
-        <launch direction="North" relativePosition="-1.25;-1.75" />
-        <launch direction="NorthEast" relativePosition="0.25;-2.0" />
-        <launch direction="East" relativePosition="1.75;-1.25" />		
-        <launch direction="SouthEast" relativePosition="2.0;0.25" />		
-        <launch direction="South" relativePosition="1.25;1.75" />		
-        <launch direction="SouthWest" relativePosition="-2.25;0.25" />		
-        <launch direction="West" relativePosition="-1.75;-1.25" />		
-        <launch direction="NorthWest" relativePosition="-2.25;-0.5" />
-      </missile>
-      <missile type="Rocket">
-        <launch direction="North" relativePosition="1.25;-1.75" />
-        <launch direction="NorthEast" relativePosition="2.0;-0.25" />
-        <launch direction="East" relativePosition="1.75;1.25" />		
-        <launch direction="SouthEast" relativePosition="0.25;2.0" />		
-        <launch direction="South" relativePosition="-1.25;1.75" />		
-        <launch direction="SouthWest" relativePosition="-0.5;2.0" />		
-        <launch direction="West" relativePosition="-1.75;1.25" />		
-        <launch direction="NorthWest" relativePosition="-0.5;-2.25" />
-      </missile>
-    </groundWeapon>
-    <createdIn>CommandCenter</createdIn>
-	<hpIconPalette image="terran_scv_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
-      <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
-      <sprite name="SmallIcon" sourceRegion="34;1;20;20" offset="0;0" />
-	</hpIconPalette>
-    <spritePalette image="terran_scv.png" transparentColor="255;0;255" maskColor="0;255;255">
-      <sprite name="Body" variant="North" sourceRegion="1;1;13;11" offset="-3;-4" />
-      <sprite name="Body" variant="NorthEast" sourceRegion="15;1;12;12" offset="-1;-4" />
-      <sprite name="Body" variant="East" sourceRegion="28;1;11;13" offset="0;-3" />
-      <sprite name="Body" variant="SouthEast" sourceRegion="40;1;12;12" offset="0;0" />
-      <sprite name="Body" variant="South" sourceRegion="53;1;13;11" offset="-3;0" />
-      <sprite name="Body" variant="SouthWest" sourceRegion="67;1;12;12" offset="-5;0" />
-      <sprite name="Body" variant="West" sourceRegion="80;1;11;13" offset="-4;-3" />
-      <sprite name="Body" variant="NorthWest" sourceRegion="92;1;12;12" offset="-5;-5" />	  
-	    <sprite name="Sparkling0" variant="North" sourceRegion="105;1;4;3" offset="6;-6" />
-	    <sprite name="Sparkling0" variant="NorthEast" sourceRegion="105;1;4;3" offset="11;-1" />
-	    <sprite name="Sparkling0" variant="East" sourceRegion="105;1;4;3" offset="10;7" />
-	    <sprite name="Sparkling0" variant="SouthEast" sourceRegion="105;1;4;3" offset="5;12" />
-	    <sprite name="Sparkling0" variant="South" sourceRegion="105;1;4;3" offset="-3;10" />
-	    <sprite name="Sparkling0" variant="SouthWest" sourceRegion="105;1;4;3" offset="-8;5" />
-	    <sprite name="Sparkling0" variant="West" sourceRegion="105;1;4;3" offset="-2;-7" />
-	    <sprite name="Sparkling0" variant="NorthWest" sourceRegion="105;1;4;3" offset="-2;-8" />	  
-	    <sprite name="Sparkling1" variant="North" sourceRegion="110;1;6;4" offset="5;-7" />
-	    <sprite name="Sparkling1" variant="NorthEast" sourceRegion="110;1;6;4" offset="10;-2" />
-	    <sprite name="Sparkling1" variant="East" sourceRegion="110;1;6;4" offset="9;6" />
-	    <sprite name="Sparkling1" variant="SouthEast" sourceRegion="110;1;6;4" offset="4;11" />
-	    <sprite name="Sparkling1" variant="South" sourceRegion="110;1;6;4" offset="-4;9" />
-	    <sprite name="Sparkling1" variant="SouthWest" sourceRegion="110;1;6;4" offset="-9;4" />
-	    <sprite name="Sparkling1" variant="West" sourceRegion="110;1;6;4" offset="-3;-8" />
-	    <sprite name="Sparkling1" variant="NorthWest" sourceRegion="110;1;6;4" offset="-3;-9" />	  
-	    <sprite name="Engine" variant="North" sourceRegion="105;6;5;2" offset="1;7" />
-	    <sprite name="Engine" variant="NorthEast" sourceRegion="105;12;4;4" offset="-2;5" />
-	    <sprite name="Engine" variant="East" sourceRegion="111;6;2;5" offset="-2;1" />
-	    <sprite name="Engine" variant="SouthEast" sourceRegion="110;12;4;4" offset="-1;-1" />
-	    <sprite name="Engine" variant="South" sourceRegion="105;9;5;2" offset="1;-2" />
-	    <sprite name="Engine" variant="SouthWest" sourceRegion="105;12;4;4" offset="4;-1" />
-	    <sprite name="Engine" variant="West" sourceRegion="114;6;2;5" offset="7;1" />
-	    <sprite name="Engine" variant="NorthWest" sourceRegion="110;12;4;4" offset="4;4" />	  
-	    <sprite name="Gas" variant="North" sourceRegion="103;17;5;5" offset="1;-4" />
-	    <sprite name="Gas" variant="NorthEast" sourceRegion="103;17;5;5" offset="4;-2" />
-	    <sprite name="Gas" variant="East" sourceRegion="103;17;5;5" offset="6;1" />
-	    <sprite name="Gas" variant="SouthEast" sourceRegion="103;17;5;5" offset="5;5" />
-	    <sprite name="Gas" variant="South" sourceRegion="103;17;5;5" offset="1;6" />
-	    <sprite name="Gas" variant="SouthWest" sourceRegion="103;17;5;5" offset="-3;5" />
-	    <sprite name="Gas" variant="West" sourceRegion="103;17;5;5" offset="-4;1" />
-	    <sprite name="Gas" variant="NorthWest" sourceRegion="103;17;5;5" offset="-3;-3" />
-	    <sprite name="Minerals" variant="North" sourceRegion="109;17;5;5" offset="1;-4" />
-	    <sprite name="Minerals" variant="NorthEast" sourceRegion="109;17;5;5" offset="4;-2" />
-	    <sprite name="Minerals" variant="East" sourceRegion="109;17;5;5" offset="6;1" />
-	    <sprite name="Minerals" variant="SouthEast" sourceRegion="109;17;5;5" offset="5;5" />
-	    <sprite name="Minerals" variant="South" sourceRegion="109;17;5;5" offset="1;6" />
-	    <sprite name="Minerals" variant="SouthWest" sourceRegion="109;17;5;5" offset="-3;5" />
-	    <sprite name="Minerals" variant="West" sourceRegion="109;17;5;5" offset="-4;1" />
-	    <sprite name="Minerals" variant="NorthWest" sourceRegion="109;17;5;5" offset="-3;-3" />	  
-      <sprite name="Dying0" sourceRegion="1;15;13;11" offset="-3;0" />
-      <sprite name="Dying1" sourceRegion="15;15;14;12" offset="-3;-1" />
-      <sprite name="Dying2" sourceRegion="30;15;16;12" offset="-4;-1" />
-      <sprite name="Dying3" sourceRegion="47;15;17;13" offset="-5;-2" />
-      <sprite name="Dying4" sourceRegion="65;15;18;14" offset="-5;-2" />
-      <sprite name="Dying5" sourceRegion="84;15;18;14" offset="-5;-2" />
-    </spritePalette>
-	<animationPalette>
-		<animation name="Stopped" isPreview="true">
-			<frame sprites="Body" />
-			<repeat/>
-		</animation>
-		<animation name="Moving">
-			<frame sprites="Body,Engine" />
-			<repeat/>
-		</animation>
-		<animation name="Working">
-			<frame sprites="Sparkling0" duration="5"/>
-			<frame sprites="Sparkling1" duration="5"/>
-			<repeat/>
-		</animation>
-		<animation name="Dying">
-			<frame sprites="Dying0" duration="4"/>
-			<frame sprites="Dying1" duration="4"/>
-			<frame sprites="Dying2" duration="4"/>
-			<frame sprites="Dying3" duration="4"/>
-			<frame sprites="Dying4" duration="4"/>
-			<frame sprites="Dying5" duration="4"/>
-		</animation>
-		<animation name="BringingMinerals">
-			<frame sprites="Minerals" />
-			<repeat/>
-		</animation>
-		<animation name="BringingGas">
-			<frame sprites="Gas" />
-			<repeat/>
-		</animation>
-	</animationPalette>
-  </unitType>
-  
   <unitType name="Marine" hasOwner="true" displayedName="Terran Marine">
     <costs>
       <supplyUsed>1</supplyUsed>
@@ -150,23 +14,30 @@
       <sightRange>7</sightRange>
       <speed>0.5</speed>
     </generalData>
-	<!-- TODO: make it possible to define weapons that can attack both air and ground objects! -->
-    <groundWeapon name="GaussRifleGround" displayedName="Gauss Rifle">
+    <airGroundWeapon name="GaussRifle" displayedName="Gauss Rifle">
       <damage>6</damage>
       <increment>1</increment>
       <rangeMax>4</rangeMax>
       <damageType>Normal</damageType>
       <cooldown>15</cooldown>
-    </groundWeapon>
-	<!-- TODO: make it possible to define weapons that can attack both air and ground objects! -->
-    <airWeapon name="GaussRifleAir" displayedName="Gauss Rifle">
-      <damage>6</damage>
-      <increment>1</increment>
-      <rangeMax>4</rangeMax>
-      <damageType>Normal</damageType>
-      <cooldown>15</cooldown>
-    </airWeapon>
-    <createdIn>Barracks</createdIn>
+	  <missile type="Bullets">
+	    <launch direction="North" relativePosition="1.0;-2.5" />
+	    <launch direction="NorthEast" relativePosition="1.5;-2.5" />
+	    <launch direction="East" relativePosition="1.5;-2.0" />
+	    <launch direction="SouthEast" relativePosition="1.75;-1.0" />
+	    <launch direction="South" relativePosition="-0.75;-0.25" />
+	    <launch direction="SouthWest" relativePosition="-1.75;-1.0" />
+	    <launch direction="West" relativePosition="-1.75;-2.0" />
+	    <launch direction="NorthWest" relativePosition="-1.5;-2.5" />
+	  </missile>
+    </airGroundWeapon>
+	<!-- TODO: restore! -->
+    <!--createdIn>Barracks</createdIn-->
+	<createdIn>CommandCenter</createdIn>
+	<hpIconPalette image="terran_marine_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
+      <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
+      <sprite name="SmallIcon" sourceRegion="34;1;20;20" offset="0;0" />
+	</hpIconPalette>
     <spritePalette image="terran_marine.png" transparentColor="255;0;255" maskColor="0;255;255">
       <sprite name="Standing" variant="North" sourceRegion="1;1;9;12" offset="0;-7" />
       <sprite name="Standing" variant="NorthEast" sourceRegion="11;1;6;12" offset="0;-7" />
@@ -176,58 +47,50 @@
       <sprite name="Standing" variant="SouthWest" sourceRegion="44;1;7;12" offset="0;-7" />
       <sprite name="Standing" variant="West" sourceRegion="52;1;7;12" offset="0;-7" />
       <sprite name="Standing" variant="NorthWest" sourceRegion="60;1;6;12" offset="1;-7" />
-      <sprite name="Shooting0" variant="North" sourceRegion="1;14;7;12" offset="1;-7" />
-      <sprite name="Shooting0" variant="NorthEast" sourceRegion="9;14;8;12" offset="1;-7" />
-      <sprite name="Shooting0" variant="East" sourceRegion="18;14;9;12" offset="0;-7" />
-      <sprite name="Shooting0" variant="SouthEast" sourceRegion="28;14;9;12" offset="1;-7" />
-      <sprite name="Shooting0" variant="South" sourceRegion="38;14;6;12" offset="0;-7" />
-      <sprite name="Shooting0" variant="SouthWest" sourceRegion="45;14;9;12" offset="-3;-7" />
-      <sprite name="Shooting0" variant="West" sourceRegion="55;14;9;12" offset="-3;-7" />
-      <sprite name="Shooting0" variant="NorthWest" sourceRegion="65;14;8;12" offset="-2;-7" />
-      <sprite name="Shooting1" variant="North" sourceRegion="1;27;8;15" offset="1;-10" />
-      <sprite name="Shooting1" variant="NorthEast" sourceRegion="10;27;12;15" offset="1;-10" />
-      <sprite name="Shooting1" variant="East" sourceRegion="23;27;14;15" offset="0;-10" />
-      <sprite name="Shooting1" variant="SouthEast" sourceRegion="38;27;13;15" offset="1;-10" />
-      <sprite name="Shooting1" variant="South" sourceRegion="52;27;8;15" offset="-2;-10" />
-      <sprite name="Shooting1" variant="SouthWest" sourceRegion="61;27;12;15" offset="-6;-10" />
-      <sprite name="Shooting1" variant="West" sourceRegion="74;27;14;15" offset="-8;-10" />
-      <sprite name="Shooting1" variant="NorthWest" sourceRegion="89;27;12;15" offset="-6;-10" />
-      <sprite name="Walking0" variant="North" sourceRegion="1;43;8;12" offset="0;-7" />
-      <sprite name="Walking0" variant="NorthEast" sourceRegion="10;43;6;12" offset="0;-7" />
-      <sprite name="Walking0" variant="East" sourceRegion="17;43;7;12" offset="0;-7" />
-      <sprite name="Walking0" variant="SouthEast" sourceRegion="25;43;6;12" offset="1;-7" />
-      <sprite name="Walking0" variant="South" sourceRegion="32;43;8;12" offset="-1;-7" />
-      <sprite name="Walking0" variant="SouthWest" sourceRegion="41;43;6;12" offset="0;-7" />
-      <sprite name="Walking0" variant="West" sourceRegion="48;43;7;12" offset="0;-7" />
-      <sprite name="Walking0" variant="NorthWest" sourceRegion="56;43;6;12" offset="0;-7" />
-      <sprite name="Walking1" variant="North" sourceRegion="1;56;9;12" offset="0;-7" />
-      <sprite name="Walking1" variant="NorthEast" sourceRegion="11;56;6;12" offset="0;-7" />
-      <sprite name="Walking1" variant="East" sourceRegion="18;56;7;12" offset="0;-7" />
-      <sprite name="Walking1" variant="SouthEast" sourceRegion="26;56;7;12" offset="1;-7" />
-      <sprite name="Walking1" variant="South" sourceRegion="34;56;9;12" offset="-2;-7" />
-      <sprite name="Walking1" variant="SouthWest" sourceRegion="44;56;7;12" offset="-1;-7" />
-      <sprite name="Walking1" variant="West" sourceRegion="52;56;7;12" offset="0;-7" />
-      <sprite name="Walking1" variant="NorthWest" sourceRegion="60;56;6;12" offset="0;-7" />
-      <sprite name="Walking2" variant="North" sourceRegion="1;69;9;12" offset="0;-7" />
-      <sprite name="Walking2" variant="NorthEast" sourceRegion="11;69;7;12" offset="0;-7" />
-      <sprite name="Walking2" variant="East" sourceRegion="19;69;7;12" offset="0;-7" />
-      <sprite name="Walking2" variant="SouthEast" sourceRegion="27;69;8;12" offset="0;-7" />
-      <sprite name="Walking2" variant="South" sourceRegion="36;69;9;12" offset="-2;-7" />
-      <sprite name="Walking2" variant="SouthWest" sourceRegion="46;69;8;12" offset="-2;-7" />
-      <sprite name="Walking2" variant="West" sourceRegion="55;69;7;12" offset="-1;-7" />
-      <sprite name="Walking2" variant="NorthWest" sourceRegion="63;69;7;12" offset="-1;-7" />
-      <sprite name="Walking3" variant="North" sourceRegion="1;82;9;12" offset="0;-7" />
-      <sprite name="Walking3" variant="NorthEast" sourceRegion="11;82;7;12" offset="0;-7" />
-      <sprite name="Walking3" variant="East" sourceRegion="19;82;6;12" offset="0;-7" />
-      <sprite name="Walking3" variant="SouthEast" sourceRegion="26;82;7;12" offset="0;-7" />
-      <sprite name="Walking3" variant="South" sourceRegion="34;82;9;12" offset="-2;-7" />
-      <sprite name="Walking3" variant="SouthWest" sourceRegion="44;82;7;12" offset="-1;-7" />
-      <sprite name="Walking3" variant="West" sourceRegion="52;82;6;12" offset="0;-7" />
-      <sprite name="Walking3" variant="NorthWest" sourceRegion="59;82;7;12" offset="-1;-7" />
-      <sprite name="Dying0" sourceRegion="1;95;9;12" offset="-2;-7" />
-      <sprite name="Dying1" sourceRegion="11;95;10;12" offset="-2;-7" />
-      <sprite name="Dying2" sourceRegion="22;95;11;12" offset="-3;-7" />
-      <sprite name="Dying3" sourceRegion="34;95;11;12" offset="-3;-7" />
+      <sprite name="Shooting" variant="North" sourceRegion="1;14;7;12" offset="1;-7" />
+      <sprite name="Shooting" variant="NorthEast" sourceRegion="9;14;8;12" offset="1;-7" />
+      <sprite name="Shooting" variant="East" sourceRegion="18;14;9;12" offset="0;-7" />
+      <sprite name="Shooting" variant="SouthEast" sourceRegion="28;14;9;12" offset="1;-7" />
+      <sprite name="Shooting" variant="South" sourceRegion="38;14;6;12" offset="0;-7" />
+      <sprite name="Shooting" variant="SouthWest" sourceRegion="45;14;9;12" offset="-3;-7" />
+      <sprite name="Shooting" variant="West" sourceRegion="55;14;9;12" offset="-3;-7" />
+      <sprite name="Shooting" variant="NorthWest" sourceRegion="65;14;8;12" offset="-2;-7" />
+      <sprite name="Walking0" variant="North" sourceRegion="1;27;8;12" offset="0;-7" />
+      <sprite name="Walking0" variant="NorthEast" sourceRegion="10;27;6;12" offset="0;-7" />
+      <sprite name="Walking0" variant="East" sourceRegion="17;27;7;12" offset="0;-7" />
+      <sprite name="Walking0" variant="SouthEast" sourceRegion="25;27;6;12" offset="1;-7" />
+      <sprite name="Walking0" variant="South" sourceRegion="32;27;8;12" offset="-1;-7" />
+      <sprite name="Walking0" variant="SouthWest" sourceRegion="41;27;6;12" offset="0;-7" />
+      <sprite name="Walking0" variant="West" sourceRegion="48;27;7;12" offset="0;-7" />
+      <sprite name="Walking0" variant="NorthWest" sourceRegion="56;27;6;12" offset="0;-7" />
+      <sprite name="Walking1" variant="North" sourceRegion="1;40;9;12" offset="0;-7" />
+      <sprite name="Walking1" variant="NorthEast" sourceRegion="11;40;6;12" offset="0;-7" />
+      <sprite name="Walking1" variant="East" sourceRegion="18;40;7;12" offset="0;-7" />
+      <sprite name="Walking1" variant="SouthEast" sourceRegion="26;40;7;12" offset="1;-7" />
+      <sprite name="Walking1" variant="South" sourceRegion="34;40;9;12" offset="-2;-7" />
+      <sprite name="Walking1" variant="SouthWest" sourceRegion="44;40;7;12" offset="-1;-7" />
+      <sprite name="Walking1" variant="West" sourceRegion="52;40;7;12" offset="0;-7" />
+      <sprite name="Walking1" variant="NorthWest" sourceRegion="60;40;6;12" offset="0;-7" />
+      <sprite name="Walking2" variant="North" sourceRegion="1;53;9;12" offset="0;-7" />
+      <sprite name="Walking2" variant="NorthEast" sourceRegion="11;53;7;12" offset="0;-7" />
+      <sprite name="Walking2" variant="East" sourceRegion="19;53;7;12" offset="0;-7" />
+      <sprite name="Walking2" variant="SouthEast" sourceRegion="27;53;8;12" offset="0;-7" />
+      <sprite name="Walking2" variant="South" sourceRegion="36;53;9;12" offset="-2;-7" />
+      <sprite name="Walking2" variant="SouthWest" sourceRegion="46;53;8;12" offset="-2;-7" />
+      <sprite name="Walking2" variant="West" sourceRegion="55;53;7;12" offset="-1;-7" />
+      <sprite name="Walking2" variant="NorthWest" sourceRegion="63;53;7;12" offset="-1;-7" />
+      <sprite name="Walking3" variant="North" sourceRegion="1;66;9;12" offset="0;-7" />
+      <sprite name="Walking3" variant="NorthEast" sourceRegion="11;66;7;12" offset="0;-7" />
+      <sprite name="Walking3" variant="East" sourceRegion="19;66;6;12" offset="0;-7" />
+      <sprite name="Walking3" variant="SouthEast" sourceRegion="26;66;7;12" offset="0;-7" />
+      <sprite name="Walking3" variant="South" sourceRegion="34;66;9;12" offset="-2;-7" />
+      <sprite name="Walking3" variant="SouthWest" sourceRegion="44;66;7;12" offset="-1;-7" />
+      <sprite name="Walking3" variant="West" sourceRegion="52;66;6;12" offset="0;-7" />
+      <sprite name="Walking3" variant="NorthWest" sourceRegion="59;66;7;12" offset="-1;-7" />
+      <sprite name="Dying0" sourceRegion="1;79;9;12" offset="-2;-7" />
+      <sprite name="Dying1" sourceRegion="11;79;10;12" offset="-2;-7" />
+      <sprite name="Dying2" sourceRegion="22;79;11;12" offset="-3;-7" />
+      <sprite name="Dying3" sourceRegion="34;79;11;12" offset="-3;-7" />
     </spritePalette>
 	<animationPalette>
 		<animation name="Standing" isPreview="true">
@@ -235,8 +98,7 @@
 			<repeat/>
 		</animation>
 		<animation name="Shooting">
-			<frame sprites="Shooting0" duration="4"/>
-			<frame sprites="Shooting1" duration="4"/>
+			<frame sprites="Shooting" />
 			<repeat/>
 		</animation>
 		<animation name="Walking">

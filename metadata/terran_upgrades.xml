@@ -5,9 +5,7 @@
     <costs>
       <mineral>100</mineral>
       <gas>100</gas>
-	  <!-- TODO: restore -->
-      <!--buildTime>3990</buildTime-->
-      <buildTime>100</buildTime>
+      <buildTime>3990</buildTime>
     </costs>
 	<effects>
 	  <setWeaponLevel targetType="SCV">1</setWeaponLevel>
@@ -15,17 +13,13 @@
 	  <setWeaponLevel targetType="Firebat">1</setWeaponLevel>
 	  <setWeaponLevel targetType="Ghost">1</setWeaponLevel>
 	</effects>
-	<!-- TODO: restore -->
-    <researchedIn>ComsatStation</researchedIn>
-    <!--researchedIn>EngineeringBay</researchedIn-->
+    <researchedIn>EngineeringBay</researchedIn>
   </upgradeType>
   <upgradeType name="InfantryWeapons#2">
     <costs>
       <mineral>175</mineral>
       <gas>175</gas>
-	  <!-- TODO: restore -->
-      <!--buildTime>4470</buildTime-->
-      <buildTime>100</buildTime>
+      <buildTime>4470</buildTime>
     </costs>
 	<effects>
 	  <setWeaponLevel targetType="SCV">2</setWeaponLevel>
@@ -33,20 +27,15 @@
 	  <setWeaponLevel targetType="Firebat">2</setWeaponLevel>
 	  <setWeaponLevel targetType="Ghost">2</setWeaponLevel>
 	</effects>
-	  <!-- TODO: restore -->
-    <!--requires>ScienceFacility</requires-->
-    <researchedIn>ComsatStation</researchedIn>
-	  <!-- TODO: restore -->
-    <!--researchedIn>EngineeringBay</researchedIn-->
+    <requires>ScienceFacility</requires>
+    <researchedIn>EngineeringBay</researchedIn>
     <previousLevel>InfantryWeapons#1</previousLevel>
   </upgradeType>
   <upgradeType name="InfantryWeapons#3">
     <costs>
       <mineral>250</mineral>
       <gas>250</gas>
- 	  <!-- TODO: restore -->
-     <!--buildTime>4950</buildTime-->
-      <buildTime>100</buildTime>
+      <buildTime>4950</buildTime>
     </costs>
 	<effects>
 	  <setWeaponLevel targetType="SCV">3</setWeaponLevel>
@@ -54,20 +43,15 @@
 	  <setWeaponLevel targetType="Firebat">3</setWeaponLevel>
 	  <setWeaponLevel targetType="Ghost">3</setWeaponLevel>
 	</effects>
-	  <!-- TODO: restore -->
-    <!--requires>ScienceFacility</requires-->
-    <researchedIn>ComsatStation</researchedIn>
-	  <!-- TODO: restore -->
-    <!--researchedIn>EngineeringBay</researchedIn-->
+    <requires>ScienceFacility</requires>
+    <researchedIn>EngineeringBay</researchedIn>
     <previousLevel>InfantryWeapons#2</previousLevel>
   </upgradeType>
   <upgradeType name="InfantryArmor#1">
     <costs>
       <mineral>100</mineral>
       <gas>100</gas>
-	  <!-- TODO: restore -->
-      <!--buildTime>3990</buildTime-->
-      <buildTime>100</buildTime>
+      <buildTime>3990</buildTime>
     </costs>
 	<effects>
 	  <setArmorLevel targetType="SCV">1</setArmorLevel>
@@ -75,17 +59,13 @@
 	  <setArmorLevel targetType="Firebat">1</setArmorLevel>
 	  <setArmorLevel targetType="Ghost">1</setArmorLevel>
 	</effects>
-    <researchedIn>ComsatStation</researchedIn>
-	  <!-- TODO: restore -->
-    <!--researchedIn>EngineeringBay</researchedIn-->
+    <researchedIn>EngineeringBay</researchedIn>
   </upgradeType>
   <upgradeType name="InfantryArmor#2">
     <costs>
       <mineral>175</mineral>
       <gas>175</gas>
-	  <!-- TODO: restore -->
-      <!--buildTime>4470</buildTime-->
-      <buildTime>100</buildTime>
+      <buildTime>4470</buildTime>
     </costs>
 	<effects>
 	  <setArmorLevel targetType="SCV">2</setArmorLevel>
@@ -93,20 +73,15 @@
 	  <setArmorLevel targetType="Firebat">2</setArmorLevel>
 	  <setArmorLevel targetType="Ghost">2</setArmorLevel>
 	</effects>
-	  <!-- TODO: restore -->
-    <!--requires>ScienceFacility</requires-->
-    <researchedIn>ComsatStation</researchedIn>
-	  <!-- TODO: restore -->
-    <!--researchedIn>EngineeringBay</researchedIn-->
+    <requires>ScienceFacility</requires>
+    <researchedIn>EngineeringBay</researchedIn>
     <previousLevel>InfantryArmor#1</previousLevel>
   </upgradeType>
   <upgradeType name="InfantryArmor#3">
     <costs>
       <mineral>250</mineral>
       <gas>250</gas>
-	  <!-- TODO: restore -->
-      <!--buildTime>4950</buildTime-->
-      <buildTime>100</buildTime>
+      <buildTime>4950</buildTime>
     </costs>
 	<effects>
 	  <setArmorLevel targetType="SCV">3</setArmorLevel>
@@ -114,11 +89,8 @@
 	  <setArmorLevel targetType="Firebat">3</setArmorLevel>
 	  <setArmorLevel targetType="Ghost">3</setArmorLevel>
 	</effects>
-	  <!-- TODO: restore -->
-    <!--requires>ScienceFacility</requires-->
-    <researchedIn>ComsatStation</researchedIn>
-	  <!-- TODO: restore -->
-    <!--researchedIn>EngineeringBay</researchedIn-->
+    <requires>ScienceFacility</requires>
+    <researchedIn>EngineeringBay</researchedIn>
     <previousLevel>InfantryArmor#2</previousLevel>
   </upgradeType>
   <upgradeType name="VehicleWeapons#1">
@@ -384,7 +356,9 @@
       <gas>100</gas>
       <buildTime>1200</buildTime>
     </costs>
-    <researchedIn>Academy</researchedIn>
+	<!-- TODO restore -->
+    <!--researchedIn>Academy</researchedIn-->
+    <researchedIn>ComsatStation</researchedIn>
   </upgradeType>
   <upgradeType name="Lockdown">
     <costs>

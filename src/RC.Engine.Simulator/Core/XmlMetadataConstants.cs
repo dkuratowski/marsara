@@ -26,6 +26,7 @@ namespace RC.Engine.Simulator.Core
         public const string SHADOWDATA_ELEM = "shadowData";
         public const string GROUNDWEAPON_ELEM = "groundWeapon";
         public const string AIRWEAPON_ELEM = "airWeapon";
+        public const string AIRGROUNDWEAPON_ELEM = "airGroundWeapon";
         public const string CREATEDIN_ELEM = "createdIn";
         public const string MAINBUILDING_ELEM = "mainBuilding";
         public const string EFFECTS_ELEM = "effects";
@@ -52,6 +53,8 @@ namespace RC.Engine.Simulator.Core
         public const string LABEL_NAME_ATTR = "name";
         public const string GOTO_ELEM = "goto";
         public const string GOTO_LABEL_ATTR = "label";
+        public const string WAIT_ELEM = "wait";
+        public const string WAIT_DURATION_ATTR = "duration";
         public const string REPEAT_ELEM = "repeat";
         public const string GENDATA_AREA_ELEM = "area";
         public const string GENDATA_ARMOR_ELEM = "armor";
