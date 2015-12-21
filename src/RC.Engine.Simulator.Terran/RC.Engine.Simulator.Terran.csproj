@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="Addons\ComsatStation.cs" />
     <Compile Include="Behaviors\StimPacksBehavior.cs" />
+    <Compile Include="Buildings\Barracks.cs" />
     <Compile Include="Buildings\CommandCenter.cs" />
     <Compile Include="CommandExecutorPlugin.cs" />
     <Compile Include="ElementFactoryPlugin.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TerranScenarioLoaderPlugin.cs" />
     <Compile Include="TerranUpgrades.cs" />
+    <Compile Include="Units\Goliath.cs" />
     <Compile Include="Units\Marine.cs" />
     <Compile Include="Units\SCV.cs" />
   </ItemGroup>

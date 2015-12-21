@@ -35,6 +35,7 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterPlayerInitializer(RaceEnum.Terran, this.TerranInitializer);
             extendedComponent.RegisterElementFactory<Building>(SCV.SCV_TYPE_NAME, this.CreateScv);
             extendedComponent.RegisterElementFactory<Building>(Marine.MARINE_TYPE_NAME, this.CreateMarine);
+            extendedComponent.RegisterElementFactory<Building>(Goliath.GOLIATH_TYPE_NAME, this.CreateGoliath);
             extendedComponent.RegisterElementFactory<Building>(ComsatStation.COMSATSTATION_TYPE_NAME, this.CreateComsatStation);
         }
 
@@ -54,7 +55,8 @@ namespace RC.Engine.Simulator.Terran
 
             /// Add a Terran Command Center to the position of the start location.
             Scenario scenario = player.StartLocation.Scenario;
-            CommandCenter commandCenter = new CommandCenter();
+            Barracks commandCenter = new Barracks();
+            //CommandCenter commandCenter = new CommandCenter();
             scenario.AddElementToScenario(commandCenter);
             player.AddBuilding(commandCenter);
             commandCenter.AttachToMap(scenario.Map.GetQuadTile(player.QuadraticStartPosition.Location));
@@ -72,7 +74,7 @@ namespace RC.Engine.Simulator.Terran
             for (int scvCount = 0; scvCount < NUM_OF_SCVS; scvCount++)
             {
                 /// Create the next SCV
-                Marine scv = new Marine();
+                Goliath scv = new Goliath();
                 //SCV scv = new SCV();
                 scenario.AddElementToScenario(scv);
                 player.AddUnit(scv);
@@ -143,7 +145,7 @@ namespace RC.Engine.Simulator.Terran
         /// Creates a Marine in the given building.
         /// </summary>
         /// <param name="factoryBuilding">The building in which the Marine is created.</param>
-        /// <returns>True if the MArine has been created successfully; otherwise false.</returns>
+        /// <returns>True if the Marine has been created successfully; otherwise false.</returns>
         private bool CreateMarine(Building factoryBuilding)
         {
             if (factoryBuilding == null) { throw new ArgumentNullException("factoryBuilding"); }
@@ -177,6 +179,46 @@ namespace RC.Engine.Simulator.Terran
             }
 
             return marinePlacedSuccessfully;
+        }
+
+        /// <summary>
+        /// Creates a Goliath in the given building.
+        /// </summary>
+        /// <param name="factoryBuilding">The building in which the Goliath is created.</param>
+        /// <returns>True if the Goliath has been created successfully; otherwise false.</returns>
+        private bool CreateGoliath(Building factoryBuilding)
+        {
+            if (factoryBuilding == null) { throw new ArgumentNullException("factoryBuilding"); }
+            if (factoryBuilding.Scenario == null) { throw new ArgumentException("The factory building is not added to a scenario!"); }
+
+            EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(factoryBuilding);
+            IEnumerator<ICell> cellEnumerator = cellIterator.GetEnumerator();
+
+            /// Create the Goliath
+            Goliath goliath = new Goliath();
+            factoryBuilding.Scenario.AddElementToScenario(goliath);
+            if (factoryBuilding.Owner != null) { factoryBuilding.Owner.AddUnit(goliath); }
+
+            /// Search a place for the new Goliath on the map.
+            bool goliathPlacedSuccessfully = false;
+            while (cellEnumerator.MoveNext())
+            {
+                if (goliath.AttachToMap(cellEnumerator.Current.MapCoords))
+                {
+                    goliathPlacedSuccessfully = true;
+                    break;
+                }
+            }
+
+            /// Remove the Goliath if there is no more place on the map.
+            if (!goliathPlacedSuccessfully)
+            {
+                if (factoryBuilding.Owner != null) { factoryBuilding.Owner.RemoveUnit(goliath); }
+                factoryBuilding.Scenario.RemoveElementFromScenario(goliath);
+                goliath.Dispose();
+            }
+
+            return goliathPlacedSuccessfully;
         }
 
         /// <summary>

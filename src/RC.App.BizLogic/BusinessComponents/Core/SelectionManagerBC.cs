@@ -72,54 +72,56 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
             if (this.localPlayer == PlayerEnum.Neutral) { throw new InvalidOperationException("Selection manager not initialized!"); }
 
-            bool ownerUnitFound = false;
-            Entity ownerBuilding = null;
-            Entity ownerAddon = null;
+            bool localPlayerUnitFound = false;
+            Entity localPlayerBuilding = null;
+            Entity localPlayerAddon = null;
             Entity otherPlayerUnit = null;
             Entity otherPlayerBuilding = null;
             Entity otherPlayerAddon = null;
             Entity other = null;
-            foreach (Entity entity in this.ActiveScenario.GetElementsOnMap<Entity>(selectionBox, MapObjectLayerEnum.AirObjects, MapObjectLayerEnum.GroundObjects))
+            RCSet<Entity> entitiesInBox = this.ActiveScenario.GetElementsOnMap<Entity>(selectionBox, MapObjectLayerEnum.AirObjects, MapObjectLayerEnum.GroundObjects);
+            if (entitiesInBox.Count == 0) { return; }
+            foreach (Entity entity in entitiesInBox)
             {
                 if (entity is Unit)
                 {
                     /// If the entity is a unit then check its owner.
                     if (entity.Owner != null && entity.Owner.PlayerIndex == (int)this.localPlayer)
                     {
-                        /// If owned by the owner of this selector then add it to the current selection.
-                        if (!ownerUnitFound)
+                        /// If owned by the local player then add it to the current selection.
+                        if (!localPlayerUnitFound)
                         {
                             this.currentSelection.Clear();
-                            ownerUnitFound = true;
+                            localPlayerUnitFound = true;
                         }
 
                         this.currentSelection.Add(entity.ID.Read());
                         if (this.currentSelection.Count == MAX_SELECTION_SIZE) { break; }
                     }
-                    else if (otherPlayerUnit == null && !ownerUnitFound)
+                    else if (otherPlayerUnit == null && !localPlayerUnitFound)
                     {
                         /// If owned by another player then save its reference.
                         otherPlayerUnit = entity;
                     }
                 }
-                else if (entity is Building && !ownerUnitFound)
+                else if (entity is Building && !localPlayerUnitFound)
                 {
                     /// If the entity is a building then check its owner.
                     if (entity.Owner != null && entity.Owner.PlayerIndex == (int)this.localPlayer)
                     {
-                        if (ownerBuilding == null) { ownerBuilding = entity; }
+                        if (localPlayerBuilding == null) { localPlayerBuilding = entity; }
                     }
                     else if (otherPlayerBuilding == null)
                     {
                         otherPlayerBuilding = entity;
                     }
                 }
-                else if (entity is Addon && !ownerUnitFound)
+                else if (entity is Addon && !localPlayerUnitFound)
                 {
                     /// If the entity is an addon then check its owner.
                     if (entity.Owner != null && entity.Owner.PlayerIndex == (int)this.localPlayer)
                     {
-                        if (ownerAddon == null) { ownerAddon = entity; }
+                        if (localPlayerAddon == null) { localPlayerAddon = entity; }
                     }
                     else if (otherPlayerAddon == null)
                     {
@@ -132,11 +134,11 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 }
             }
 
-            if (ownerUnitFound) { return; }
+            if (localPlayerUnitFound) { return; }
 
             this.currentSelection.Clear();
-            if (ownerBuilding != null) { this.currentSelection.Add(ownerBuilding.ID.Read()); return; }
-            if (ownerAddon != null) { this.currentSelection.Add(ownerAddon.ID.Read()); return; }
+            if (localPlayerBuilding != null) { this.currentSelection.Add(localPlayerBuilding.ID.Read()); return; }
+            if (localPlayerAddon != null) { this.currentSelection.Add(localPlayerAddon.ID.Read()); return; }
             if (otherPlayerUnit != null) { this.currentSelection.Add(otherPlayerUnit.ID.Read()); return; }
             if (otherPlayerBuilding != null) { this.currentSelection.Add(otherPlayerBuilding.ID.Read()); return; }
             if (otherPlayerAddon != null) { this.currentSelection.Add(otherPlayerAddon.ID.Read()); return; }

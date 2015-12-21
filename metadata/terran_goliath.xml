@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+  <unitType name="Goliath" hasOwner="true" displayedName="Terran Goliath">
+    <costs>
+      <supplyUsed>2</supplyUsed>
+      <mineral>100</mineral>
+      <gas>50</gas>
+      <buildTime>600</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area>4.0;4.0</area>
+      <maxHP>125</maxHP>
+      <armor>1</armor>
+      <sightRange>8</sightRange>
+      <speed>0.587</speed>
+    </generalData>
+    <groundWeapon name="TwinAutocannons" displayedName="Twin Autocannons">
+      <damage>12</damage>
+      <increment>1</increment>
+      <rangeMax>6</rangeMax>
+      <damageType>Normal</damageType>
+      <cooldown>22</cooldown>
+      <missile type="Bullets">
+        <launch direction="North" relativePosition="-1.25;-2.75" />
+        <launch direction="NorthEast" relativePosition="0.75;-2.25" />
+        <launch direction="East" relativePosition="2.25;-1.5" />		
+        <launch direction="SouthEast" relativePosition="2.0;-0.25" />		
+        <launch direction="South" relativePosition="1.75;0.0" />		
+        <launch direction="SouthWest" relativePosition="-1.25;0.5" />		
+        <launch direction="West" relativePosition="-2.0;-0.5" />		
+        <launch direction="NorthWest" relativePosition="-2.5;-1.25" />
+      </missile>
+      <missile type="Bullets">
+        <launch direction="North" relativePosition="0.75;-2.75" />
+        <launch direction="NorthEast" relativePosition="2.5;-1.25" />
+        <launch direction="East" relativePosition="1.75;-0.5" />		
+        <launch direction="SouthEast" relativePosition="0.75;0.75" />		
+        <launch direction="South" relativePosition="-2.0;0.0" />		
+        <launch direction="SouthWest" relativePosition="-2.5;-0.25" />		
+        <launch direction="West" relativePosition="-2.5;-1.5" />		
+        <launch direction="NorthWest" relativePosition="-0.75;-2.25" />
+      </missile>
+    </groundWeapon>
+    <airWeapon name="HellfireMissilePack" displayedName="Hellfire Missile Pack">
+      <damage>20</damage>
+      <increment>4</increment>
+      <rangeMax>5</rangeMax>
+      <damageType>Explosive</damageType>
+      <cooldown>22</cooldown>
+      <missile type="Rocket">
+        <launch direction="North" relativePosition="-0.75;-1.0" />
+        <launch direction="NorthEast" relativePosition="0.5;-1.25" />
+        <launch direction="East" relativePosition="1.0;-0.75" />		
+        <launch direction="SouthEast" relativePosition="1.25;-0.5" />		
+        <launch direction="South" relativePosition="1.0;-0.75" />		
+        <launch direction="SouthWest" relativePosition="0.25;-0.25" />		
+        <launch direction="West" relativePosition="0.0;-0.75" />		
+        <launch direction="NorthWest" relativePosition="-0.75;-0.25" />
+      </missile>
+      <missile type="Rocket">
+        <launch direction="North" relativePosition="1.0;-1.0" />
+        <launch direction="NorthEast" relativePosition="1.25;-0.5" />
+        <launch direction="East" relativePosition="1.5;-1.25" />		
+        <launch direction="SouthEast" relativePosition="0.25;0.0" />		
+        <launch direction="South" relativePosition="-0.75;-0.75" />		
+        <launch direction="SouthWest" relativePosition="-0.75;-0.75" />		
+        <launch direction="West" relativePosition="-1.0;-1.0" />		
+        <launch direction="NorthWest" relativePosition="0.75;-1.0" />
+      </missile>
+    </airWeapon>
+	<!-- TODO: restore -->
+    <!--createdIn>Factory</createdIn-->
+    <createdIn>Barracks</createdIn>
+	<!-- TODO: restore -->
+    <!--requires>Armory</requires-->
+	<hpIconPalette image="terran_goliath_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
+      <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
+      <sprite name="SmallIcon" sourceRegion="34;1;20;20" offset="0;0" />
+	</hpIconPalette>
+    <spritePalette image="terran_goliath.png" transparentColor="255;0;255" maskColor="0;255;255">
+      <sprite name="Body_Standing_Walking1_Walking3" variant="North" sourceRegion="1;1;18;12" offset="-1;-2" />
+      <sprite name="Body_Standing_Walking1_Walking3" variant="NorthEast" sourceRegion="20;1;17;12" offset="1;-1" />
+      <sprite name="Body_Standing_Walking1_Walking3" variant="East" sourceRegion="38;1;16;10" offset="1;0" />
+      <sprite name="Body_Standing_Walking1_Walking3" variant="SouthEast" sourceRegion="55;1;14;11" offset="3;0" />
+      <sprite name="Body_Standing_Walking1_Walking3" variant="South" sourceRegion="1;14;18;10" offset="-1;0" />
+      <sprite name="Body_Standing_Walking1_Walking3" variant="SouthWest" sourceRegion="20;14;14;11" offset="-1;0" />
+      <sprite name="Body_Standing_Walking1_Walking3" variant="West" sourceRegion="35;14;16;10" offset="-1;0" />
+      <sprite name="Body_Standing_Walking1_Walking3" variant="NorthWest" sourceRegion="52;14;17;12" offset="-2;-1" />
+	
+      <sprite name="Body_Walking0" variant="North" sourceRegion="1;1;18;12" offset="-3;-2" />
+      <sprite name="Body_Walking0" variant="NorthEast" sourceRegion="20;1;17;12" offset="0;-2" />
+      <sprite name="Body_Walking0" variant="East" sourceRegion="38;1;16;10" offset="1;-1" />
+      <sprite name="Body_Walking0" variant="SouthEast" sourceRegion="55;1;14;11" offset="4;0" />
+      <sprite name="Body_Walking0" variant="South" sourceRegion="1;14;18;10" offset="0;0" />
+      <sprite name="Body_Walking0" variant="SouthWest" sourceRegion="20;14;14;11" offset="-2;0" />
+      <sprite name="Body_Walking0" variant="West" sourceRegion="35;14;16;10" offset="-1;-1" />
+      <sprite name="Body_Walking0" variant="NorthWest" sourceRegion="52;14;17;12" offset="-1;-2" />
+	
+      <sprite name="Body_Walking2" variant="North" sourceRegion="1;1;18;12" offset="1;-2" />
+      <sprite name="Body_Walking2" variant="NorthEast" sourceRegion="20;1;17;12" offset="2;0" />
+      <sprite name="Body_Walking2" variant="East" sourceRegion="38;1;16;10" offset="1;1" />
+      <sprite name="Body_Walking2" variant="SouthEast" sourceRegion="55;1;14;11" offset="2;0" />
+      <sprite name="Body_Walking2" variant="South" sourceRegion="1;14;18;10" offset="-2;0" />
+      <sprite name="Body_Walking2" variant="SouthWest" sourceRegion="20;14;14;11" offset="0;0" />
+      <sprite name="Body_Walking2" variant="West" sourceRegion="35;14;16;10" offset="-1;1" />
+      <sprite name="Body_Walking2" variant="NorthWest" sourceRegion="52;14;17;12" offset="-3;0" />
+
+      <sprite name="Legs_Standing" variant="North" sourceRegion="39;25;12;8" offset="2;9" />
+      <sprite name="Legs_Standing" variant="NorthEast" sourceRegion="52;27;10;9" offset="1;9" />
+      <sprite name="Legs_Standing" variant="East" sourceRegion="63;27;10;9" offset="1;8" />
+      <sprite name="Legs_Standing" variant="SouthEast" sourceRegion="1;66;10;10" offset="3;7" />
+      <sprite name="Legs_Standing" variant="South" sourceRegion="13;66;12;8" offset="2;9" />
+      <sprite name="Legs_Standing" variant="SouthWest" sourceRegion="26;64;10;10" offset="3;7" />
+      <sprite name="Legs_Standing" variant="West" sourceRegion="38;70;10;9" offset="5;8" />
+      <sprite name="Legs_Standing" variant="NorthWest" sourceRegion="50;71;10;9" offset="5;9" />
+
+      <sprite name="Legs_Walking0" variant="North" sourceRegion="39;34;12;8" offset="1;9" />
+      <sprite name="Legs_Walking0" variant="NorthEast" sourceRegion="52;37;10;7" offset="1;8" />
+      <sprite name="Legs_Walking0" variant="East" sourceRegion="63;37;8;8" offset="2;7" />
+      <sprite name="Legs_Walking0" variant="SouthEast" sourceRegion="1;77;11;8" offset="3;7" />
+      <sprite name="Legs_Walking0" variant="South" sourceRegion="13;75;12;8" offset="2;9" />
+      <sprite name="Legs_Walking0" variant="SouthWest" sourceRegion="26;75;11;8" offset="2;7" />
+      <sprite name="Legs_Walking0" variant="West" sourceRegion="38;80;8;8" offset="6;7" />
+      <sprite name="Legs_Walking0" variant="NorthWest" sourceRegion="50;81;10;7" offset="5;8" />
+
+      <sprite name="Legs_Walking1" variant="North" sourceRegion="39;43;10;8" offset="4;9" />
+      <sprite name="Legs_Walking1" variant="NorthEast" sourceRegion="52;45;10;7" offset="2;9" />
+      <sprite name="Legs_Walking1" variant="East" sourceRegion="63;46;11;8" offset="2;8" />
+      <sprite name="Legs_Walking1" variant="SouthEast" sourceRegion="1;86;9;9" offset="4;7" />
+      <sprite name="Legs_Walking1" variant="South" sourceRegion="13;84;10;8" offset="2;9" />
+      <sprite name="Legs_Walking1" variant="SouthWest" sourceRegion="26;84;9;9" offset="3;7" />
+      <sprite name="Legs_Walking1" variant="West" sourceRegion="38;89;11;8" offset="3;8" />
+      <sprite name="Legs_Walking1" variant="NorthWest" sourceRegion="50;89;10;7" offset="4;9" />
+
+      <sprite name="Legs_Walking2" variant="North" sourceRegion="39;52;12;8" offset="3;9" />
+      <sprite name="Legs_Walking2" variant="NorthEast" sourceRegion="52;53;10;8" offset="3;10" />
+      <sprite name="Legs_Walking2" variant="East" sourceRegion="63;55;11;8" offset="2;9" />
+      <sprite name="Legs_Walking2" variant="SouthEast" sourceRegion="1;96;8;10" offset="4;7" />
+      <sprite name="Legs_Walking2" variant="South" sourceRegion="13;93;12;8" offset="2;9" />
+      <sprite name="Legs_Walking2" variant="SouthWest" sourceRegion="26;94;8;10" offset="4;7" />
+      <sprite name="Legs_Walking2" variant="West" sourceRegion="38;98;11;8" offset="3;9" />
+      <sprite name="Legs_Walking2" variant="NorthWest" sourceRegion="50;97;10;8" offset="3;10" />
+	  
+      <sprite name="Legs_Walking3" variant="North" sourceRegion="39;61;12;8" offset="2;9" />
+      <sprite name="Legs_Walking3" variant="NorthEast" sourceRegion="52;62;9;8" offset="2;9" />
+      <sprite name="Legs_Walking3" variant="East" sourceRegion="63;64;7;8" offset="4;8" />
+      <sprite name="Legs_Walking3" variant="SouthEast" sourceRegion="1;107;8;10" offset="5;7" />
+      <sprite name="Legs_Walking3" variant="South" sourceRegion="13;102;10;8" offset="4;9" />
+      <sprite name="Legs_Walking3" variant="SouthWest" sourceRegion="26;105;8;10" offset="3;7" />
+      <sprite name="Legs_Walking3" variant="West" sourceRegion="38;107;7;8" offset="5;8" />
+      <sprite name="Legs_Walking3" variant="NorthWest" sourceRegion="50;106;9;8" offset="5;9" />
+
+      <sprite name="Dying0" sourceRegion="1;26;18;17" offset="-1;0" />
+      <sprite name="Dying1" sourceRegion="20;26;18;18" offset="-1;-1" />
+      <sprite name="Dying2" sourceRegion="1;45;19;20" offset="-2;-1" />
+      <sprite name="Dying3" sourceRegion="21;45;17;18" offset="1;-1" />
+    </spritePalette>
+	<animationPalette>
+		<animation name="Standing" isPreview="true">
+			<frame sprites="Legs_Standing,Body_Standing_Walking1_Walking3" />
+			<repeat/>
+		</animation>
+		<animation name="Walking">
+			<frame sprites="Legs_Walking0,Body_Walking0" duration="4" />
+			<frame sprites="Legs_Walking1,Body_Standing_Walking1_Walking3" duration="4" />
+			<frame sprites="Legs_Walking2,Body_Walking2" duration="4" />
+			<frame sprites="Legs_Walking3,Body_Standing_Walking1_Walking3" duration="4" />
+			<repeat/>
+		</animation>
+		<animation name="Dying">
+			<frame sprites="Dying0" duration="4"/>
+			<frame sprites="Dying1" duration="4"/>
+			<frame sprites="Dying2" duration="4"/>
+			<frame sprites="Dying3" duration="4"/>
+		</animation>
+	</animationPalette>
+  </unitType>
+</metadata>

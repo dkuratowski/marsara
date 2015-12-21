@@ -16,9 +16,7 @@
 	<sprite name="CancelBtn" sourceRegion="1;64;20;20" />
   </spritePalette>
   <productionButton product="SCV" sprite="ScvBtn" panelPosition="0;0" />
-  <!-- TODO: restore panel position for Marine! -->
-  <!--productionButton product="Marine" sprite="MarineBtn" panelPosition="0;0" /-->
-  <productionButton product="Marine" sprite="MarineBtn" panelPosition="0;1" />
+  <productionButton product="Marine" sprite="MarineBtn" panelPosition="0;0" />
   <productionButton product="Firebat" sprite="FirebatBtn" panelPosition="0;1" />
   <productionButton product="Ghost" sprite="GhostBtn" panelPosition="0;2" />
   <productionButton product="Vulture" sprite="VultureBtn" panelPosition="0;0" />

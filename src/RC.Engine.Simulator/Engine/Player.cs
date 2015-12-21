@@ -348,7 +348,7 @@ namespace RC.Engine.Simulator.Engine
         {
             if (supply < 0) { throw new ArgumentOutOfRangeException("supply", "The amount of supply to be locked cannot be negative!"); }
 
-            if (this.usedSupplyCache.Value + supply > this.totalSupplyCache.Value) { return false; }
+            if (supply > 0 && this.usedSupplyCache.Value + supply > this.totalSupplyCache.Value) { return false; }
 
             this.lockedSupplies.Write(this.lockedSupplies.Read() + supply);
             this.usedSupplyCache.Invalidate();

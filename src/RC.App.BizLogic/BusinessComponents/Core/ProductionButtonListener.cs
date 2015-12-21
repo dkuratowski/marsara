@@ -43,7 +43,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             int mineralsNeeded = selectedProductType.MineralCost != null ? selectedProductType.MineralCost.Read() : 0;
             int vespeneGasNeeded = selectedProductType.GasCost != null ? selectedProductType.GasCost.Read() : 0;
             int supplyNeeded = selectedProductType.SupplyUsed != null ? selectedProductType.SupplyUsed.Read() : 0;
-            if (mineralsNeeded > localPlayer.Minerals || vespeneGasNeeded > localPlayer.VespeneGas || localPlayer.UsedSupply + supplyNeeded > localPlayer.TotalSupply)
+            if (mineralsNeeded > localPlayer.Minerals || vespeneGasNeeded > localPlayer.VespeneGas || (supplyNeeded > 0 && localPlayer.UsedSupply + supplyNeeded > localPlayer.TotalSupply))
             {
                 /// Insufficient resources or supply (TODO: send and error message up to the user!)
                 return CommandInputListener.CompletionResultEnum.FailedButContinue;

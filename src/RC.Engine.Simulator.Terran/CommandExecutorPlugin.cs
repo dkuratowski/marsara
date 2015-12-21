@@ -48,11 +48,19 @@ namespace RC.Engine.Simulator.Terran
                 (recipientMarines, targetPosition, targetEntityID, parameter) =>
                     TerranAbilities.MarineStimPacksFactoryMethod(recipientMarines)));
 
+            /// Terran Goliath
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, Goliath.GOLIATH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, Goliath.GOLIATH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Attack, Goliath.GOLIATH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Patrol, Goliath.GOLIATH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Hold, Goliath.GOLIATH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, Goliath.GOLIATH_TYPE_NAME));
+
             /// Terran Command Center
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, CommandCenter.COMMANDCENTER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, CommandCenter.COMMANDCENTER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, CommandCenter.COMMANDCENTER_TYPE_NAME));
-            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME, SCV.SCV_TYPE_NAME, Marine.MARINE_TYPE_NAME, ComsatStation.COMSATSTATION_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME, SCV.SCV_TYPE_NAME, ComsatStation.COMSATSTATION_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME));
@@ -60,6 +68,16 @@ namespace RC.Engine.Simulator.Terran
 
             /// Terran Comsat Station
             extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(ComsatStation.COMSATSTATION_TYPE_NAME));
+
+            /// Terran Barracks
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, Barracks.BARRACKS_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, Barracks.BARRACKS_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, Barracks.BARRACKS_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Barracks.BARRACKS_TYPE_NAME, Marine.MARINE_TYPE_NAME, Goliath.GOLIATH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(Barracks.BARRACKS_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(Barracks.BARRACKS_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(Barracks.BARRACKS_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(Barracks.BARRACKS_TYPE_NAME));
 
             /// TEST:
             extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(ComsatStation.COMSATSTATION_TYPE_NAME,
