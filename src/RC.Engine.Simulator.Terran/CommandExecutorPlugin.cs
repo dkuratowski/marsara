@@ -79,6 +79,10 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(Barracks.BARRACKS_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(Barracks.BARRACKS_TYPE_NAME));
 
+            /// Terran Academy
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Academy.ACADEMY_TYPE_NAME, TerranUpgrades.U238_SHELLS, TerranAbilities.STIMPACKS));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(Academy.ACADEMY_TYPE_NAME));
+
             /// TEST:
             extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(ComsatStation.COMSATSTATION_TYPE_NAME,
                 TerranUpgrades.INFANTRY_WEAPONS_1,
@@ -86,8 +90,7 @@ namespace RC.Engine.Simulator.Terran
                 TerranUpgrades.INFANTRY_WEAPONS_3,
                 TerranUpgrades.INFANTRY_ARMOR_1,
                 TerranUpgrades.INFANTRY_ARMOR_2,
-                TerranUpgrades.INFANTRY_ARMOR_3,
-                TerranAbilities.STIMPACKS));
+                TerranUpgrades.INFANTRY_ARMOR_3));
             extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(ComsatStation.COMSATSTATION_TYPE_NAME));
         }
 

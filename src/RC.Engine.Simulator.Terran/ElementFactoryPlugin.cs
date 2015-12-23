@@ -33,9 +33,9 @@ namespace RC.Engine.Simulator.Terran
         {
             /// TODO: Write installation code here!
             extendedComponent.RegisterPlayerInitializer(RaceEnum.Terran, this.TerranInitializer);
-            extendedComponent.RegisterElementFactory<Building>(SCV.SCV_TYPE_NAME, this.CreateScv);
-            extendedComponent.RegisterElementFactory<Building>(Marine.MARINE_TYPE_NAME, this.CreateMarine);
-            extendedComponent.RegisterElementFactory<Building>(Goliath.GOLIATH_TYPE_NAME, this.CreateGoliath);
+            extendedComponent.RegisterElementFactory<Building>(SCV.SCV_TYPE_NAME, this.CreateUnit<SCV>);
+            extendedComponent.RegisterElementFactory<Building>(Marine.MARINE_TYPE_NAME, this.CreateUnit<Marine>);
+            extendedComponent.RegisterElementFactory<Building>(Goliath.GOLIATH_TYPE_NAME, this.CreateUnit<Goliath>);
             extendedComponent.RegisterElementFactory<Building>(ComsatStation.COMSATSTATION_TYPE_NAME, this.CreateComsatStation);
         }
 
@@ -55,8 +55,8 @@ namespace RC.Engine.Simulator.Terran
 
             /// Add a Terran Command Center to the position of the start location.
             Scenario scenario = player.StartLocation.Scenario;
-            Barracks commandCenter = new Barracks();
-            //CommandCenter commandCenter = new CommandCenter();
+            //Academy commandCenter = new Academy();
+            CommandCenter commandCenter = new CommandCenter();
             scenario.AddElementToScenario(commandCenter);
             player.AddBuilding(commandCenter);
             commandCenter.AttachToMap(scenario.Map.GetQuadTile(player.QuadraticStartPosition.Location));
@@ -74,8 +74,8 @@ namespace RC.Engine.Simulator.Terran
             for (int scvCount = 0; scvCount < NUM_OF_SCVS; scvCount++)
             {
                 /// Create the next SCV
-                Goliath scv = new Goliath();
-                //SCV scv = new SCV();
+                //Goliath scv = new Goliath();
+                SCV scv = new SCV();
                 scenario.AddElementToScenario(scv);
                 player.AddUnit(scv);
 
@@ -101,12 +101,7 @@ namespace RC.Engine.Simulator.Terran
             }
         }
 
-        /// <summary>
-        /// Creates an SCV in the given building.
-        /// </summary>
-        /// <param name="factoryBuilding">The building in which the SCV is created.</param>
-        /// <returns>True if the SCV has been created successfully; otherwise false.</returns>
-        private bool CreateScv(Building factoryBuilding)
+        private bool CreateUnit<T>(Building factoryBuilding) where T : Unit, new()
         {
             if (factoryBuilding == null) { throw new ArgumentNullException("factoryBuilding"); }
             if (factoryBuilding.Scenario == null) { throw new ArgumentException("The factory building is not added to a scenario!"); }
@@ -114,111 +109,31 @@ namespace RC.Engine.Simulator.Terran
             EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(factoryBuilding);
             IEnumerator<ICell> cellEnumerator = cellIterator.GetEnumerator();
 
-            /// Create the SCV
-            SCV scv = new SCV();
-            factoryBuilding.Scenario.AddElementToScenario(scv);
-            if (factoryBuilding.Owner != null) { factoryBuilding.Owner.AddUnit(scv); }
+            /// Create the unit.
+            T unit = new T();
+            factoryBuilding.Scenario.AddElementToScenario(unit);
+            if (factoryBuilding.Owner != null) { factoryBuilding.Owner.AddUnit(unit); }
 
-            /// Search a place for the new SCV on the map.
-            bool scvPlacedSuccessfully = false;
+            /// Search a place for the new unit on the map.
+            bool unitPlacedSuccessfully = false;
             while (cellEnumerator.MoveNext())
             {
-                if (scv.AttachToMap(cellEnumerator.Current.MapCoords))
+                if (unit.AttachToMap(cellEnumerator.Current.MapCoords))
                 {
-                    scvPlacedSuccessfully = true;
+                    unitPlacedSuccessfully = true;
                     break;
                 }
             }
 
-            /// Remove the SCV if there is no more place on the map.
-            if (!scvPlacedSuccessfully)
+            /// Remove the unit if there is no more place on the map.
+            if (!unitPlacedSuccessfully)
             {
-                if (factoryBuilding.Owner != null) { factoryBuilding.Owner.RemoveUnit(scv); }
-                factoryBuilding.Scenario.RemoveElementFromScenario(scv);
-                scv.Dispose();
+                if (factoryBuilding.Owner != null) { factoryBuilding.Owner.RemoveUnit(unit); }
+                factoryBuilding.Scenario.RemoveElementFromScenario(unit);
+                unit.Dispose();
             }
 
-            return scvPlacedSuccessfully;
-        }
-
-        /// <summary>
-        /// Creates a Marine in the given building.
-        /// </summary>
-        /// <param name="factoryBuilding">The building in which the Marine is created.</param>
-        /// <returns>True if the Marine has been created successfully; otherwise false.</returns>
-        private bool CreateMarine(Building factoryBuilding)
-        {
-            if (factoryBuilding == null) { throw new ArgumentNullException("factoryBuilding"); }
-            if (factoryBuilding.Scenario == null) { throw new ArgumentException("The factory building is not added to a scenario!"); }
-
-            EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(factoryBuilding);
-            IEnumerator<ICell> cellEnumerator = cellIterator.GetEnumerator();
-
-            /// Create the Marine
-            Marine marine = new Marine();
-            factoryBuilding.Scenario.AddElementToScenario(marine);
-            if (factoryBuilding.Owner != null) { factoryBuilding.Owner.AddUnit(marine); }
-
-            /// Search a place for the new Marine on the map.
-            bool marinePlacedSuccessfully = false;
-            while (cellEnumerator.MoveNext())
-            {
-                if (marine.AttachToMap(cellEnumerator.Current.MapCoords))
-                {
-                    marinePlacedSuccessfully = true;
-                    break;
-                }
-            }
-
-            /// Remove the Marine if there is no more place on the map.
-            if (!marinePlacedSuccessfully)
-            {
-                if (factoryBuilding.Owner != null) { factoryBuilding.Owner.RemoveUnit(marine); }
-                factoryBuilding.Scenario.RemoveElementFromScenario(marine);
-                marine.Dispose();
-            }
-
-            return marinePlacedSuccessfully;
-        }
-
-        /// <summary>
-        /// Creates a Goliath in the given building.
-        /// </summary>
-        /// <param name="factoryBuilding">The building in which the Goliath is created.</param>
-        /// <returns>True if the Goliath has been created successfully; otherwise false.</returns>
-        private bool CreateGoliath(Building factoryBuilding)
-        {
-            if (factoryBuilding == null) { throw new ArgumentNullException("factoryBuilding"); }
-            if (factoryBuilding.Scenario == null) { throw new ArgumentException("The factory building is not added to a scenario!"); }
-
-            EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(factoryBuilding);
-            IEnumerator<ICell> cellEnumerator = cellIterator.GetEnumerator();
-
-            /// Create the Goliath
-            Goliath goliath = new Goliath();
-            factoryBuilding.Scenario.AddElementToScenario(goliath);
-            if (factoryBuilding.Owner != null) { factoryBuilding.Owner.AddUnit(goliath); }
-
-            /// Search a place for the new Goliath on the map.
-            bool goliathPlacedSuccessfully = false;
-            while (cellEnumerator.MoveNext())
-            {
-                if (goliath.AttachToMap(cellEnumerator.Current.MapCoords))
-                {
-                    goliathPlacedSuccessfully = true;
-                    break;
-                }
-            }
-
-            /// Remove the Goliath if there is no more place on the map.
-            if (!goliathPlacedSuccessfully)
-            {
-                if (factoryBuilding.Owner != null) { factoryBuilding.Owner.RemoveUnit(goliath); }
-                factoryBuilding.Scenario.RemoveElementFromScenario(goliath);
-                goliath.Dispose();
-            }
-
-            return goliathPlacedSuccessfully;
+            return unitPlacedSuccessfully;
         }
 
         /// <summary>
@@ -249,6 +164,6 @@ namespace RC.Engine.Simulator.Terran
             return comsatStationPlacedSuccessfully;
         }
 
-        private const int NUM_OF_SCVS = 6;
+        private const int NUM_OF_SCVS = 4;
     }
 }

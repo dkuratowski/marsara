@@ -1,12 +1,12 @@
 ﻿using RC.Common;
 using RC.Common.ComponentModel;
+using RC.Engine.Simulator.Behaviors;
 using RC.Engine.Simulator.ComponentInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Engine.Simulator.Core;
-using RC.Engine.Simulator.Engine.Behaviors;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Simulator.Metadata.Core;

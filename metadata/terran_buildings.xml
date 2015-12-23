@@ -1,20 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <metadata>
-  <buildingType name="SupplyDepot" hasOwner="true" displayedName="Terran Supply Depot">
-    <costs>
-	  <supplyProvided>8</supplyProvided>
-      <mineral>100</mineral>
-      <buildTime>600</buildTime>
-    </costs>
-    <generalData>
-      <size>Large</size>
-      <area>1.0;1.0</area>
-      <maxHP>500</maxHP>
-      <armor>1</armor>
-      <sightRange>11</sightRange>
-    </generalData>
-    <!--spritePalette image="terran_commandcenter.png" /-->
-  </buildingType>
   <buildingType name="Refinery" hasOwner="true" displayedName="Terran Refinery">
     <costs>
       <mineral>100</mineral>
@@ -27,21 +12,6 @@
       <armor>1</armor>
       <sightRange>11</sightRange>
     </generalData>
-    <!--spritePalette image="terran_commandcenter.png" /-->
-  </buildingType>
-  <buildingType name="Academy" hasOwner="true" displayedName="Terran Academy">
-    <costs>
-      <mineral>150</mineral>
-      <buildTime>1200</buildTime>
-    </costs>
-    <generalData>
-      <size>Large</size>
-      <area>1.0;1.0</area>
-      <maxHP>600</maxHP>
-      <armor>1</armor>
-      <sightRange>11</sightRange>
-    </generalData>
-    <requires>Barracks</requires>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
   <buildingType name="Factory" hasOwner="true" displayedName="Terran Factory">

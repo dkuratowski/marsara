@@ -9,18 +9,16 @@ using RC.Engine.Simulator.Engine;
 namespace RC.Engine.Simulator.Terran.Buildings
 {
     /// <summary>
-    /// Represents a Terran Barracks.
+    /// Represents a Terran Supply Depot.
     /// </summary>
-    class Barracks : Building
+    class SupplyDepot : Building
     {
         /// <summary>
-        /// Constructs a Terran Barracks instance.
+        /// Constructs a Terran Supply Depot instance.
         /// </summary>
-        public Barracks()
-            : base(BARRACKS_TYPE_NAME,
-                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000),
-                   new LiftoffBehavior("Normal", "TakingOff", "Flying", "Landing"),
-                   new ProductionAnimationBehavior("Producing", "Normal"))
+        public SupplyDepot()
+            : base(SUPPLYDEPOT_TYPE_NAME,
+                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000))
         {
         }
 
@@ -31,24 +29,17 @@ namespace RC.Engine.Simulator.Terran.Buildings
             if (attachToMapSuccess)
             {
                 this.MotionControl.Fix();
+                this.MapObject.StartAnimation("Normal");
             }
             return attachToMapSuccess;
         }
 
         /// <see cref="Entity.DestructionAnimationName"/>
-        protected override string DestructionAnimationName
-        {
-            get
-            {
-                return this.MotionControl.IsFlying
-                    ? "DestructionFlying"
-                    : "DestructionNormal";
-            }
-        }
+        protected override string DestructionAnimationName { get { return "Destruction"; } }
 
         /// <summary>
-        /// The name of the Barracks element type.
+        /// The name of the Supply Depot element type.
         /// </summary>
-        public const string BARRACKS_TYPE_NAME = "Barracks";
+        public const string SUPPLYDEPOT_TYPE_NAME = "SupplyDepot";
     }
 }

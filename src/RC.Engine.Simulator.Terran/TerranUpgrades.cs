@@ -16,5 +16,6 @@ namespace RC.Engine.Simulator.Terran
         public const string INFANTRY_ARMOR_1 = "InfantryArmor#1";
         public const string INFANTRY_ARMOR_2 = "InfantryArmor#2";
         public const string INFANTRY_ARMOR_3 = "InfantryArmor#3";
+        public const string U238_SHELLS = "U238Shells";
     }
 }

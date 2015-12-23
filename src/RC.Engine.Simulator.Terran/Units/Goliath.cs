@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Engine.Simulator.Behaviors;
 using RC.Engine.Simulator.Engine;
-using RC.Engine.Simulator.Engine.Behaviors;
 
 namespace RC.Engine.Simulator.Terran.Units
 {

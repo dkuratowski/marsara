@@ -27,9 +27,9 @@
       <sprite name="Construction1" sourceRegion="66;1;64;48" offset="0;0" />
       <sprite name="Construction2" sourceRegion="1;50;64;48" offset="0;0" />
       <sprite name="MainPart" sourceRegion="66;50;64;48" offset="0;0" />
-      <sprite name="LeftWindowLight" sourceRegion="165;76;6;4" offset="8;21" />
-      <sprite name="MiddleWindowLight" sourceRegion="165;76;6;4" offset="23;24" />
-      <sprite name="RightWindowLight" sourceRegion="165;76;6;4" offset="39;27" />
+      <sprite name="LeftWindowLight" sourceRegion="165;76;6;4" offset="7;20" />
+      <sprite name="MiddleWindowLight" sourceRegion="165;76;6;4" offset="22;23" />
+      <sprite name="RightWindowLight" sourceRegion="165;76;6;4" offset="38;26" />
 	  
       <sprite name="LeftLeg" sourceRegion="166;50;9;8" offset="0;32" />
       <sprite name="LeftLeg_TakingOff0" sourceRegion="166;50;9;8" offset="0;31" />
@@ -80,8 +80,8 @@
 		<repeat/>
       </animation>
       <animation name="Producing">
-        <frame sprites="LeftLeg,LeftMiddleLeg,RightMiddleLeg,RightLeg,MainPart" duration="24" />
-        <frame sprites="LeftLeg,LeftMiddleLeg,RightMiddleLeg,RightLeg,MainPart,LeftWindowLight,MiddleWindowLight,RightWindowLight" duration="10" />
+        <frame sprites="LeftLeg,LeftMiddleLeg,RightMiddleLeg,RightLeg,MainPart,LeftWindowLight,MiddleWindowLight,RightWindowLight" duration="24" />
+        <frame sprites="LeftLeg,LeftMiddleLeg,RightMiddleLeg,RightLeg,MainPart" duration="10" />
 		<repeat/>
       </animation>
       <animation name="TakingOff">

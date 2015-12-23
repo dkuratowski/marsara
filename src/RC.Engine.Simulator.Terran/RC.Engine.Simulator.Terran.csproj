@@ -78,8 +78,10 @@
   <ItemGroup>
     <Compile Include="Addons\ComsatStation.cs" />
     <Compile Include="Behaviors\StimPacksBehavior.cs" />
+    <Compile Include="Buildings\Academy.cs" />
     <Compile Include="Buildings\Barracks.cs" />
     <Compile Include="Buildings\CommandCenter.cs" />
+    <Compile Include="Buildings\SupplyDepot.cs" />
     <Compile Include="CommandExecutorPlugin.cs" />
     <Compile Include="ElementFactoryPlugin.cs" />
     <Compile Include="TerranAbilities.cs" />

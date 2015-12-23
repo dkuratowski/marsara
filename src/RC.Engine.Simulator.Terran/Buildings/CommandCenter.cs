@@ -1,6 +1,6 @@
 ﻿using RC.Common;
+using RC.Engine.Simulator.Behaviors;
 using RC.Engine.Simulator.Engine;
-using RC.Engine.Simulator.Engine.Behaviors;
 
 namespace RC.Engine.Simulator.Terran.Buildings
 {
@@ -15,7 +15,8 @@ namespace RC.Engine.Simulator.Terran.Buildings
         public CommandCenter()
             : base(COMMANDCENTER_TYPE_NAME,
                    new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000),
-                   new LiftoffBehavior("Normal", "TakingOff", "Flying", "Landing"))
+                   new LiftoffBehavior("Normal", "TakingOff", "Flying", "Landing"),
+                   new ProductionAnimationBehavior("Producing", "Normal", "SCV"))
         {
         }
 
@@ -26,7 +27,6 @@ namespace RC.Engine.Simulator.Terran.Buildings
             if (attachToMapSuccess)
             {
                 this.MotionControl.Fix();
-                this.MapObject.StartAnimation("Normal");
             }
             return attachToMapSuccess;
         }

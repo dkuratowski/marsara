@@ -1,7 +1,7 @@
 ﻿using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Behaviors;
 using RC.Engine.Simulator.Engine;
-using RC.Engine.Simulator.Engine.Behaviors;
 using RC.Engine.Simulator.MotionControl;
 
 namespace RC.Engine.Simulator.Terran.Units

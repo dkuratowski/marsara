@@ -1,5 +1,5 @@
 ﻿using RC.Common;
-using RC.Engine.Simulator.Engine.Behaviors;
+using RC.Engine.Simulator.Behaviors;
 using RC.Engine.Simulator.PublicInterfaces;
 using System;
 using System.Collections.Generic;

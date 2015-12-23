@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Engine.Behaviors
+namespace RC.Engine.Simulator.Behaviors
 {
     /// <summary>
     /// Responsible for playing construction animation on buildings and addons.
