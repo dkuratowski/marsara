@@ -65,37 +65,6 @@
     <requires>Starport</requires>
     <!--spritePalette image="terran_commandcenter.png" /-->
   </buildingType>
-  <buildingType name="EngineeringBay" hasOwner="true" displayedName="Terran Engineering Bay">
-    <costs>
-      <mineral>125</mineral>
-      <buildTime>900</buildTime>
-    </costs>
-    <generalData>
-      <size>Large</size>
-      <area>1.0;1.0</area>
-      <maxHP>850</maxHP>
-      <armor>1</armor>
-      <sightRange>11</sightRange>
-    </generalData>
-    <requires>CommandCenter</requires>
-    <!--spritePalette image="terran_commandcenter.png" /-->
-  </buildingType>
-  <buildingType name="Armory" hasOwner="true" displayedName="Terran Armory">
-    <costs>
-      <mineral>100</mineral>
-      <gas>50</gas>
-      <buildTime>1200</buildTime>
-    </costs>
-    <generalData>
-      <size>Large</size>
-      <area>1.0;1.0</area>
-      <maxHP>750</maxHP>
-      <armor>1</armor>
-      <sightRange>11</sightRange>
-    </generalData>
-    <requires>Factory</requires>
-    <!--spritePalette image="terran_commandcenter.png" /-->
-  </buildingType>
   <buildingType name="MissileTurret" hasOwner="true" displayedName="Terran Missile Turret">
     <costs>
       <mineral>75</mineral>

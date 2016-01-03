@@ -55,8 +55,8 @@ namespace RC.Engine.Simulator.Terran
 
             /// Add a Terran Command Center to the position of the start location.
             Scenario scenario = player.StartLocation.Scenario;
-            //Academy commandCenter = new Academy();
-            CommandCenter commandCenter = new CommandCenter();
+            EngineeringBay commandCenter = new EngineeringBay();
+            //CommandCenter commandCenter = new CommandCenter();
             scenario.AddElementToScenario(commandCenter);
             player.AddBuilding(commandCenter);
             commandCenter.AttachToMap(scenario.Map.GetQuadTile(player.QuadraticStartPosition.Location));

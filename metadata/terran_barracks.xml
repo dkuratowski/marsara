@@ -16,7 +16,6 @@
     <requires>CommandCenter</requires>
 	<shadowData>
 	  <spriteName>Shadow_4</spriteName>
-	  <!-- TODO: check if shadow offset is OK! -->
 	  <centerOffset>7.5;7.5</centerOffset>
 	</shadowData>
 	<hpIconPalette image="terran_barracks_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
