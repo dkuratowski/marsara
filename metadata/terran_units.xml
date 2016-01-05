@@ -118,7 +118,7 @@
   
   <unitType name="Wraith" hasOwner="true" displayedName="Terran Wraith">
     <costs>
-      <supplyUsed>2</supplyUsed>
+      <!--supplyUsed>2</supplyUsed-->
       <mineral>150</mineral>
       <gas>100</gas>
       <buildTime>900</buildTime>
@@ -152,7 +152,7 @@
   
   <unitType name="Dropship" hasOwner="true" displayedName="Terran Dropship">
     <costs>
-      <supplyUsed>2</supplyUsed>
+      <!--supplyUsed>2</supplyUsed-->
       <mineral>100</mineral>
       <gas>100</gas>
       <buildTime>750</buildTime>

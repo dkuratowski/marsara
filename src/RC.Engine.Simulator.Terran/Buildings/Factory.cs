@@ -1,23 +1,26 @@
-﻿using RC.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using RC.Common;
 using RC.Engine.Simulator.Behaviors;
 using RC.Engine.Simulator.Engine;
-using RC.Engine.Simulator.Terran.Units;
 
 namespace RC.Engine.Simulator.Terran.Buildings
 {
     /// <summary>
-    /// Represents a Terran Command Center.
+    /// Represents a Terran Factory.
     /// </summary>
-    class CommandCenter : Building
+    class Factory : Building
     {
         /// <summary>
-        /// Constructs a Terran Command Center instance.
+        /// Constructs a Terran Factory instance.
         /// </summary>
-        public CommandCenter()
-            : base(COMMANDCENTER_TYPE_NAME,
-                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000),
+        public Factory()
+            : base(FACTORY_TYPE_NAME,
+                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78 / (RCNumber)1000),
                    new LiftoffBehavior("Normal", "TakingOff", "Flying", "Landing"),
-                   new ProductionAnimationBehavior("Producing", "Normal", SCV.SCV_TYPE_NAME))
+                   new ProductionAnimationBehavior("Producing", "Normal"))
         {
         }
 
@@ -44,8 +47,8 @@ namespace RC.Engine.Simulator.Terran.Buildings
         }
 
         /// <summary>
-        /// The name of the Command Center element type.
+        /// The name of the Factory element type.
         /// </summary>
-        public const string COMMANDCENTER_TYPE_NAME = "CommandCenter";
+        public const string FACTORY_TYPE_NAME = "Factory";
     }
 }

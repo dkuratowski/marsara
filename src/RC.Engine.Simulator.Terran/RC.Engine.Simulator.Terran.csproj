@@ -83,6 +83,9 @@
     <Compile Include="Buildings\Barracks.cs" />
     <Compile Include="Buildings\CommandCenter.cs" />
     <Compile Include="Buildings\EngineeringBay.cs" />
+    <Compile Include="Buildings\Factory.cs" />
+    <Compile Include="Buildings\ScienceFacility.cs" />
+    <Compile Include="Buildings\Starport.cs" />
     <Compile Include="Buildings\SupplyDepot.cs" />
     <Compile Include="CommandExecutorPlugin.cs" />
     <Compile Include="ElementFactoryPlugin.cs" />

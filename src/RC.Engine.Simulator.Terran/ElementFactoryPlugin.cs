@@ -36,6 +36,8 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterElementFactory<Building>(SCV.SCV_TYPE_NAME, this.CreateUnit<SCV>);
             extendedComponent.RegisterElementFactory<Building>(Marine.MARINE_TYPE_NAME, this.CreateUnit<Marine>);
             extendedComponent.RegisterElementFactory<Building>(Goliath.GOLIATH_TYPE_NAME, this.CreateUnit<Goliath>);
+            extendedComponent.RegisterElementFactory<Building>("Wraith", building => true);
+            extendedComponent.RegisterElementFactory<Building>("Dropship", building => true);
             extendedComponent.RegisterElementFactory<Building>(ComsatStation.COMSATSTATION_TYPE_NAME, this.CreateComsatStation);
         }
 
@@ -55,7 +57,7 @@ namespace RC.Engine.Simulator.Terran
 
             /// Add a Terran Command Center to the position of the start location.
             Scenario scenario = player.StartLocation.Scenario;
-            EngineeringBay commandCenter = new EngineeringBay();
+            ScienceFacility commandCenter = new ScienceFacility();
             //CommandCenter commandCenter = new CommandCenter();
             scenario.AddElementToScenario(commandCenter);
             player.AddBuilding(commandCenter);
@@ -74,8 +76,8 @@ namespace RC.Engine.Simulator.Terran
             for (int scvCount = 0; scvCount < NUM_OF_SCVS; scvCount++)
             {
                 /// Create the next SCV
-                //Goliath scv = new Goliath();
-                SCV scv = new SCV();
+                Marine scv = new Marine();
+                //SCV scv = new SCV();
                 scenario.AddElementToScenario(scv);
                 player.AddUnit(scv);
 

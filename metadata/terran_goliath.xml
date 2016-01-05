@@ -69,9 +69,7 @@
         <launch direction="NorthWest" relativePosition="0.75;-1.0" />
       </missile>
     </airWeapon>
-	<!-- TODO: restore -->
-    <!--createdIn>Factory</createdIn-->
-    <createdIn>Barracks</createdIn>
+    <createdIn>Factory</createdIn>
 	<!-- TODO: restore -->
     <!--requires>Armory</requires-->
 	<hpIconPalette image="terran_goliath_icons.png" transparentColor="255;0;255" maskColor="0;255;255">

@@ -45,9 +45,9 @@
     </spritePalette>
     <animationPalette>
       <animation name="Construction">
-        <frame sprites="Construction0" duration="166" />
-        <frame sprites="Construction1" duration="167" />
-        <frame sprites="Construction2" duration="167" />
+        <frame sprites="Construction0" duration="200" />
+        <frame sprites="Construction1" duration="200" />
+        <frame sprites="Construction2" duration="200" />
       </animation>
       <animation name="Normal" isPreview="true">
         <frame sprites="MainPart,TopVentilator0,LeftSideVentilator0,RightSideVentilator0" duration="3" />

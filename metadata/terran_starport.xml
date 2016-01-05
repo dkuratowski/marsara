@@ -1,49 +1,46 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <metadata>
-  <buildingType name="EngineeringBay" hasOwner="true" displayedName="Terran Engineering Bay">
+  <buildingType name="Starport" hasOwner="true" displayedName="Terran Starport">
     <costs>
-      <mineral>125</mineral>
-      <buildTime>900</buildTime>
+      <mineral>150</mineral>
+      <gas>100</gas>
+      <buildTime>1050</buildTime>
     </costs>
     <generalData>
       <size>Large</size>
       <area>16.0;12.0</area>
-      <maxHP>850</maxHP>
+      <maxHP>1300</maxHP>
       <armor>1</armor>
       <sightRange>11</sightRange>
       <speed>0.25</speed>
-	</generalData>
-    <requires>CommandCenter</requires>
+    </generalData>
+    <requires>Factory</requires>
 	<shadowData>
 	  <spriteName>Shadow_4</spriteName>
 	  <!-- TODO: check if shadow offset is OK! -->
 	  <centerOffset>7.5;7.5</centerOffset>
 	</shadowData>
-	<hpIconPalette image="terran_engineeringbay_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
+	<hpIconPalette image="terran_starport_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
       <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
 	</hpIconPalette>
-    <spritePalette image="terran_engineeringbay.png" transparentColor="255;0;255" maskColor="0;255;255">
+    <spritePalette image="terran_starport.png" transparentColor="255;0;255" maskColor="0;255;255">
       <sprite name="Construction0" sourceRegion="1;1;64;48" offset="0;0" />
       <sprite name="Construction1" sourceRegion="66;1;64;48" offset="0;0" />
       <sprite name="Construction2" sourceRegion="1;50;64;48" offset="0;0" />
       <sprite name="MainPart" sourceRegion="66;50;64;48" offset="0;0" />
-      <sprite name="LeftWindowLight" sourceRegion="165;86;16;9" offset="10;21" />
-      <sprite name="RightWindowLight" sourceRegion="154;125;16;9" offset="38;23" />
+      <sprite name="LeftWindowLight" sourceRegion="131;91;2;1" offset="10;18" />
+      <sprite name="MiddleWindowLight" sourceRegion="134;91;3;1" offset="31;3" />
+      <sprite name="RightWindowLight" sourceRegion="131;91;2;1" offset="54;18" />
 	  
-      <sprite name="LeftLeg" sourceRegion="166;50;11;6" offset="1;24" />
-      <sprite name="LeftLeg_TakingOff0" sourceRegion="166;50;11;6" offset="2;23" />
-      <sprite name="LeftLeg_TakingOff1" sourceRegion="166;65;8;8" offset="1;21" />
-      <sprite name="LeftLeg_TakingOff2" sourceRegion="184;66;5;11" offset="2;19" />
+      <sprite name="LeftLegs" sourceRegion="93;145;16;18" offset="5;28" />
+      <sprite name="LeftLegs_TakingOff0" sourceRegion="1;148;16;15" offset="5;28" />
+      <sprite name="LeftLegs_TakingOff1" sourceRegion="35;150;14;13" offset="7;28" />
+      <sprite name="LeftLegs_TakingOff2" sourceRegion="65;149;13;14" offset="8;25" />
 	  
-      <sprite name="MiddleLeg" sourceRegion="178;50;12;8" offset="30;37" />
-      <sprite name="MiddleLeg_TakingOff0" sourceRegion="178;50;12;8" offset="30;35" />
-      <sprite name="MiddleLeg_TakingOff1" sourceRegion="178;59;10;6" offset="29;36" />
-      <sprite name="MiddleLeg_TakingOff2" sourceRegion="171;75;10;7" offset="29;34" />
-	  
-      <sprite name="RightLeg" sourceRegion="166;57;11;7" offset="52;26" />
-      <sprite name="RightLeg_TakingOff0" sourceRegion="166;57;11;7" offset="51;25" />
-      <sprite name="RightLeg_TakingOff1" sourceRegion="175;66;8;8" offset="56;23" />
-      <sprite name="RightLeg_TakingOff2" sourceRegion="165;74;5;11" offset="57;20" />
+      <sprite name="RightLegs" sourceRegion="110;145;16;18" offset="44;28" />
+      <sprite name="RightLegs_TakingOff0" sourceRegion="18;148;16;15" offset="44;28" />
+      <sprite name="RightLegs_TakingOff1" sourceRegion="50;150;14;13" offset="44;28" />
+      <sprite name="RightLegs_TakingOff2" sourceRegion="79;149;13;14" offset="44;25" />
 	  
       <sprite name="FlameLL0" sourceRegion="131;50;6;19" offset="9;1" />
       <sprite name="FlameLL1" sourceRegion="131;70;8;20" offset="7;0" />
@@ -65,50 +62,50 @@
 	</spritePalette>
     <animationPalette>
       <animation name="Construction">
-        <frame sprites="Construction0" duration="300" />
-        <frame sprites="Construction1" duration="300" />
-        <frame sprites="Construction2" duration="300" />
+        <frame sprites="Construction0" duration="350" />
+        <frame sprites="Construction1" duration="350" />
+        <frame sprites="Construction2" duration="350" />
       </animation>
       <animation name="Normal" isPreview="true">
-        <frame sprites="LeftLeg,MiddleLeg,RightLeg,MainPart" />
+        <frame sprites="MainPart,LeftLegs,RightLegs" />
 		<repeat/>
       </animation>
       <animation name="Producing">
-        <frame sprites="LeftLeg,MiddleLeg,RightLeg,MainPart,LeftWindowLight,RightWindowLight" duration="24" />
-        <frame sprites="LeftLeg,MiddleLeg,RightLeg,MainPart" duration="10" />
+        <frame sprites="MainPart,LeftLegs,RightLegs,LeftWindowLight,MiddleWindowLight,RightWindowLight" duration="24" />
+        <frame sprites="MainPart,LeftLegs,RightLegs" duration="10" />
 		<repeat/>
       </animation>
       <animation name="TakingOff">
-        <frame sprites="LeftLeg,MiddleLeg,RightLeg,MainPart" duration="12" />
-        <frame sprites="LeftLeg_TakingOff0,MiddleLeg_TakingOff0,RightLeg_TakingOff0,MainPart" duration="20" />
-        <frame sprites="MainPart,LeftLeg_TakingOff1,MiddleLeg_TakingOff1,RightLeg_TakingOff1" duration="20" />
+        <frame sprites="MainPart,LeftLegs,RightLegs" duration="12" />
+        <frame sprites="MainPart,LeftLegs_TakingOff0,RightLegs_TakingOff0" duration="20" />
+        <frame sprites="MainPart,LeftLegs_TakingOff1,RightLegs_TakingOff1" duration="20" />
 		<label name="TakeOffComplete" />
-        <frame sprites="MainPart,LeftLeg_TakingOff2,MiddleLeg_TakingOff2,RightLeg_TakingOff2" duration="20" />
+        <frame sprites="MainPart,LeftLegs_TakingOff2,RightLegs_TakingOff2" duration="20" />
 		<goto label="TakeOffComplete" />
       </animation>
       <animation name="Flying">
-        <frame sprites="MainPart,LeftLeg_TakingOff2,MiddleLeg_TakingOff2,RightLeg_TakingOff2" />
+        <frame sprites="MainPart,LeftLegs_TakingOff2,RightLegs_TakingOff2" />
 		<repeat/>
       </animation>
       <animation name="Landing">
-        <frame sprites="MainPart,LeftLeg_TakingOff2,MiddleLeg_TakingOff2,RightLeg_TakingOff2" duration="20" />
-        <frame sprites="MainPart,LeftLeg_TakingOff1,MiddleLeg_TakingOff1,RightLeg_TakingOff1" duration="20" />
-        <frame sprites="LeftLeg_TakingOff0,MiddleLeg_TakingOff0,RightLeg_TakingOff0,MainPart" duration="20" />
+        <frame sprites="MainPart,LeftLegs_TakingOff2,RightLegs_TakingOff2" duration="20" />
+        <frame sprites="MainPart,LeftLegs_TakingOff1,RightLegs_TakingOff1" duration="20" />
+        <frame sprites="MainPart,LeftLegs_TakingOff0,RightLegs_TakingOff0" duration="20" />
 		<label name="LandingComplete" />
-        <frame sprites="LeftLeg,MiddleLeg,RightLeg,MainPart" />
+        <frame sprites="MainPart,LeftLegs,RightLegs" />
 		<goto label="LandingComplete" />
       </animation>
       <animation name="DestructionNormal">
-        <frame sprites="LeftLeg,MiddleLeg,RightLeg,MainPart,DestructionBurn0" duration="4" />
-        <frame sprites="LeftLeg,MiddleLeg,RightLeg,MainPart,DestructionBurn1" duration="4" />
+        <frame sprites="MainPart,LeftLegs,RightLegs,DestructionBurn0" duration="4" />
+        <frame sprites="MainPart,LeftLegs,RightLegs,DestructionBurn1" duration="4" />
         <frame sprites="DestructionBurn2" duration="4" />
         <frame sprites="DestructionBurn3" duration="4" />
         <frame sprites="DestructionBurn4" duration="4" />
         <frame sprites="DestructionBurn5" duration="4" />
       </animation>
       <animation name="DestructionFlying">
-        <frame sprites="MainPart,LeftLeg_TakingOff2,MiddleLeg_TakingOff2,RightLeg_TakingOff2,DestructionBurn0" duration="4" />
-        <frame sprites="MainPart,LeftLeg_TakingOff2,MiddleLeg_TakingOff2,RightLeg_TakingOff2,DestructionBurn1" duration="4" />
+        <frame sprites="MainPart,LeftLegs_TakingOff2,RightLegs_TakingOff2,DestructionBurn0" duration="4" />
+        <frame sprites="MainPart,LeftLegs_TakingOff2,RightLegs_TakingOff2,DestructionBurn1" duration="4" />
         <frame sprites="DestructionBurn2" duration="4" />
         <frame sprites="DestructionBurn3" duration="4" />
         <frame sprites="DestructionBurn4" duration="4" />

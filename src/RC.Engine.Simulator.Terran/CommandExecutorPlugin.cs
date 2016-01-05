@@ -73,11 +73,32 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, Barracks.BARRACKS_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, Barracks.BARRACKS_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, Barracks.BARRACKS_TYPE_NAME));
-            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Barracks.BARRACKS_TYPE_NAME, Marine.MARINE_TYPE_NAME, Goliath.GOLIATH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Barracks.BARRACKS_TYPE_NAME, Marine.MARINE_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(Barracks.BARRACKS_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(Barracks.BARRACKS_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(Barracks.BARRACKS_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(Barracks.BARRACKS_TYPE_NAME));
+
+            /// Terran Factory
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, Factory.FACTORY_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, Factory.FACTORY_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, Factory.FACTORY_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Factory.FACTORY_TYPE_NAME, Goliath.GOLIATH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(Factory.FACTORY_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(Factory.FACTORY_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(Factory.FACTORY_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(Factory.FACTORY_TYPE_NAME));
+
+            /// Terran Starport
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, Starport.STARPORT_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, Starport.STARPORT_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, Starport.STARPORT_TYPE_NAME));
+            // TODO
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Starport.STARPORT_TYPE_NAME, "Wraith", "Dropship"));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(Starport.STARPORT_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(Starport.STARPORT_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(Starport.STARPORT_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(Starport.STARPORT_TYPE_NAME));
 
             /// Terran Academy
             extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Academy.ACADEMY_TYPE_NAME, TerranUpgrades.U238_SHELLS, TerranAbilities.STIMPACKS));
@@ -108,6 +129,14 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(EngineeringBay.ENGINEERINGBAY_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(EngineeringBay.ENGINEERINGBAY_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(EngineeringBay.ENGINEERINGBAY_TYPE_NAME));
+
+            /// Terran Science Facility
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, ScienceFacility.SCIENCEFACILITY_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, ScienceFacility.SCIENCEFACILITY_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, ScienceFacility.SCIENCEFACILITY_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(ScienceFacility.SCIENCEFACILITY_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(ScienceFacility.SCIENCEFACILITY_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(ScienceFacility.SCIENCEFACILITY_TYPE_NAME));
 
             /// TEST:
             //extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(ComsatStation.COMSATSTATION_TYPE_NAME,
