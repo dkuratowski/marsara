@@ -38,29 +38,36 @@ namespace RC.Engine.Simulator.Behaviors
         {
             if (entity.MotionControl.VelocityVector.Read() != new RCNumVector(0, 0))
             {
-                entity.MapObject.StopAnimation(this.normalAnimation);
-                entity.MapObject.StopAnimation(this.attackAnimation);
-                entity.MapObject.StartAnimation(this.movementAnimation, entity.MotionControl.VelocityVector, entity.Armour.TargetVector);
+                this.StopStartAnimations(entity,
+                    new RCSet<string> { this.normalAnimation, this.attackAnimation },
+                    new RCSet<string> { this.movementAnimation },
+                    entity.MotionControl.VelocityVector, entity.Armour.TargetVector);
             }
             else
             {
-                entity.MapObject.StopAnimation(this.movementAnimation);
                 if (this.normalAnimation != this.attackAnimation)
                 {
                     if (entity.Armour.Target != null)
                     {
-                        entity.MapObject.StopAnimation(this.normalAnimation);
-                        entity.MapObject.StartAnimation(this.attackAnimation, entity.MotionControl.VelocityVector, entity.Armour.TargetVector);
+                        this.StopStartAnimations(entity,
+                            new RCSet<string> { this.movementAnimation, this.normalAnimation },
+                            new RCSet<string> { this.attackAnimation },
+                            entity.MotionControl.VelocityVector, entity.Armour.TargetVector);
                     }
                     else
                     {
-                        entity.MapObject.StopAnimation(this.attackAnimation);
-                        entity.MapObject.StartAnimation(this.normalAnimation, entity.MotionControl.VelocityVector, entity.Armour.TargetVector);
+                        this.StopStartAnimations(entity,
+                            new RCSet<string> { this.movementAnimation, this.attackAnimation },
+                            new RCSet<string> { this.normalAnimation },
+                            entity.MotionControl.VelocityVector, entity.Armour.TargetVector);
                     }
                 }
                 else
                 {
-                    entity.MapObject.StartAnimation(this.normalAnimation, entity.MotionControl.VelocityVector, entity.Armour.TargetVector);
+                    this.StopStartAnimations(entity,
+                        new RCSet<string> { this.movementAnimation },
+                        new RCSet<string> { this.normalAnimation },
+                        entity.MotionControl.VelocityVector, entity.Armour.TargetVector);
                 }
             }
         }

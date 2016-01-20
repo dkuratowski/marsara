@@ -38,7 +38,8 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterElementFactory<Building>(Goliath.GOLIATH_TYPE_NAME, this.CreateUnit<Goliath>);
             extendedComponent.RegisterElementFactory<Building>("Wraith", building => true);
             extendedComponent.RegisterElementFactory<Building>("Dropship", building => true);
-            extendedComponent.RegisterElementFactory<Building>(ComsatStation.COMSATSTATION_TYPE_NAME, this.CreateComsatStation);
+            extendedComponent.RegisterElementFactory<Building>(ComsatStation.COMSATSTATION_TYPE_NAME, this.CreateAddon<ComsatStation>);
+            extendedComponent.RegisterElementFactory<Building>(ControlTower.CONTROLTOWER_TYPE_NAME, this.CreateAddon<ControlTower>);
         }
 
         /// <see cref="IPlugin.Uninstall"/>
@@ -57,7 +58,7 @@ namespace RC.Engine.Simulator.Terran
 
             /// Add a Terran Command Center to the position of the start location.
             Scenario scenario = player.StartLocation.Scenario;
-            ScienceFacility commandCenter = new ScienceFacility();
+            Starport commandCenter = new Starport();
             //CommandCenter commandCenter = new CommandCenter();
             scenario.AddElementToScenario(commandCenter);
             player.AddBuilding(commandCenter);
@@ -76,7 +77,7 @@ namespace RC.Engine.Simulator.Terran
             for (int scvCount = 0; scvCount < NUM_OF_SCVS; scvCount++)
             {
                 /// Create the next SCV
-                Marine scv = new Marine();
+                Goliath scv = new Goliath();
                 //SCV scv = new SCV();
                 scenario.AddElementToScenario(scv);
                 player.AddUnit(scv);
@@ -103,10 +104,17 @@ namespace RC.Engine.Simulator.Terran
             }
         }
 
+        /// <summary>
+        /// Creates the given type of unit in the given factory building.
+        /// </summary>
+        /// <typeparam name="T">The type of the unit to create.</typeparam>
+        /// <param name="factoryBuilding">The factory building for which the unit is created.</param>
+        /// <returns>True if the unit has been created successfully; otherwise false.</returns>
         private bool CreateUnit<T>(Building factoryBuilding) where T : Unit, new()
         {
             if (factoryBuilding == null) { throw new ArgumentNullException("factoryBuilding"); }
             if (factoryBuilding.Scenario == null) { throw new ArgumentException("The factory building is not added to a scenario!"); }
+            if (factoryBuilding.MapObject == null) { throw new ArgumentException("The factory building is detached from the map!", "factoryBuilding"); }
 
             EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(factoryBuilding);
             IEnumerator<ICell> cellEnumerator = cellIterator.GetEnumerator();
@@ -139,31 +147,32 @@ namespace RC.Engine.Simulator.Terran
         }
 
         /// <summary>
-        /// Creates a ComsatStation addon for the given main building.
+        /// Creates the given type of addon for the given main building.
         /// </summary>
-        /// <param name="mainBuilding">The main building for which the ComsatStation addon is created.</param>
-        /// <returns>True if the ComsatStation addon has been created successfully; otherwise false.</returns>
-        private bool CreateComsatStation(Building mainBuilding)
+        /// <typeparam name="T">The type of the addon to create.</typeparam>
+        /// <param name="mainBuilding">The main building for which the addon is created.</param>
+        /// <returns>True if the addon has been created successfully; otherwise false.</returns>
+        private bool CreateAddon<T>(Building mainBuilding) where T : Addon, new()
         {
             if (mainBuilding == null) { throw new ArgumentNullException("mainBuilding"); }
             if (mainBuilding.Scenario == null) { throw new ArgumentException("The main building is not added to a scenario!", "mainBuilding"); }
             if (mainBuilding.MapObject == null) { throw new ArgumentException("The main building is detached from the map!", "mainBuilding"); }
 
-            /// Create the ComsatStation.
-            ComsatStation comsatStation = new ComsatStation();
-            mainBuilding.Scenario.AddElementToScenario(comsatStation);
+            /// Create the addon.
+            T addon = new T();
+            mainBuilding.Scenario.AddElementToScenario(addon);
 
-            /// Try to attach the ComsatStation to the map.
-            RCIntVector relativeAddonPosition = mainBuilding.BuildingType.GetRelativeAddonPosition(mainBuilding.Scenario.Map, comsatStation.AddonType);
+            /// Try to attach the addon to the map.
+            RCIntVector relativeAddonPosition = mainBuilding.BuildingType.GetRelativeAddonPosition(mainBuilding.Scenario.Map, addon.AddonType);
             RCIntVector addonPosition = mainBuilding.MapObject.QuadraticPosition.Location + relativeAddonPosition;
-            bool comsatStationPlacedSuccessfully = comsatStation.AttachToMap(mainBuilding.Scenario.Map.GetQuadTile(addonPosition));
-            if (!comsatStationPlacedSuccessfully)
+            bool addonPlacedSuccessfully = addon.AttachToMap(mainBuilding.Scenario.Map.GetQuadTile(addonPosition));
+            if (!addonPlacedSuccessfully)
             {
-                mainBuilding.Scenario.RemoveElementFromScenario(comsatStation);
-                comsatStation.Dispose();
+                mainBuilding.Scenario.RemoveElementFromScenario(addon);
+                addon.Dispose();
             }
 
-            return comsatStationPlacedSuccessfully;
+            return addonPlacedSuccessfully;
         }
 
         private const int NUM_OF_SCVS = 4;

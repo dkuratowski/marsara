@@ -13,7 +13,8 @@
 	<sprite name="ScienceVesselBtn" sourceRegion="22;43;20;20" />
 	<sprite name="BattlecruiserBtn" sourceRegion="43;43;20;20" />
 	<sprite name="ComsatStationBtn" sourceRegion="64;43;20;20" />
-	<sprite name="CancelBtn" sourceRegion="1;64;20;20" />
+	<sprite name="ControlTowerBtn" sourceRegion="1;64;20;20" />
+	<sprite name="CancelBtn" sourceRegion="64;64;20;20" />
   </spritePalette>
   <productionButton product="SCV" sprite="ScvBtn" panelPosition="0;0" />
   <productionButton product="Marine" sprite="MarineBtn" panelPosition="0;0" />
@@ -30,6 +31,13 @@
 	<selectTargetPosition>
 	  <currentSelection />
 	  <addonType name="ComsatStation" />
+	</selectTargetPosition>
+    <cancelButton sprite="CancelBtn" panelPosition="2;2" />
+  </productionButton>
+  <productionButton product="ControlTower" sprite="ControlTowerBtn" panelPosition="2;0">
+	<selectTargetPosition>
+	  <currentSelection />
+	  <addonType name="ControlTower" />
 	</selectTargetPosition>
     <cancelButton sprite="CancelBtn" panelPosition="2;2" />
   </productionButton>

@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+  <addonType name="ComsatStation" hasOwner="true" displayedName="Terran Comsat Station">
+    <costs>
+      <mineral>50</mineral>
+      <gas>50</gas>
+      <buildTime>600</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area>8.0;8.0</area>
+      <maxHP>500</maxHP>
+      <maxEnergy>200</maxEnergy>
+      <armor>1</armor>
+      <sightRange>11</sightRange>
+    </generalData>
+    <mainBuilding>CommandCenter</mainBuilding>
+	<!-- TODO -->
+    <!--requires>Academy</requires-->
+	<hpIconPalette image="terran_comsatstation_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
+      <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
+	</hpIconPalette>
+    <spritePalette image="terran_comsatstation.png" transparentColor="255;0;255" maskColor="0;255;255">
+      <sprite name="Construction0" sourceRegion="1;34;32;32" offset="0;0" />
+      <sprite name="Construction1" sourceRegion="34;35;32;32" offset="0;0" />
+      <sprite name="Construction2" sourceRegion="68;1;32;32" offset="0;0" />
+      <sprite name="MainPart" sourceRegion="1;1;32;32" offset="0;0" />
+      <sprite name="Corridor0" sourceRegion="34;1;9;8" offset="1;9" />
+      <sprite name="Corridor1" sourceRegion="44;1;12;9" offset="-2;8" />
+      <sprite name="Corridor2" sourceRegion="34;11;15;10" offset="-5;7" />
+      <sprite name="Corridor3" sourceRegion="50;11;17;10" offset="-7;7" />
+	  <sprite name="Antenna0" sourceRegion="34;22;5;5" offset="23;5" />
+	  <sprite name="Antenna1" sourceRegion="40;22;5;4" offset="23;6" />
+	  <sprite name="Antenna2" sourceRegion="46;22;5;4" offset="23;6" />
+	  <sprite name="Antenna3" sourceRegion="52;22;5;5" offset="23;5" />
+	  <sprite name="Antenna4" sourceRegion="58;22;4;5" offset="23;5" />
+	  <sprite name="Antenna5" sourceRegion="34;28;5;6" offset="23;6" />
+	  <sprite name="Antenna6" sourceRegion="40;27;5;6" offset="23;6" />
+	  <sprite name="Antenna7" sourceRegion="46;27;4;5" offset="23;5" />
+      <sprite name="FlameL0" sourceRegion="1;100;5;14" offset="7;4" />
+      <sprite name="FlameL1" sourceRegion="1;115;6;15" offset="6;3" />
+      <sprite name="FlameM0" sourceRegion="7;100;4;14" offset="14;4" />
+      <sprite name="FlameM1" sourceRegion="8;115;4;15" offset="14;3" />
+      <sprite name="FlameR0" sourceRegion="12;100;5;14" offset="22;4" />
+      <sprite name="FlameR1" sourceRegion="13;115;4;15" offset="21;3" />
+      <sprite name="DestructionBurn0" sourceRegion="67;34;29;16" offset="2;10" />
+      <sprite name="DestructionBurn1" sourceRegion="67;51;29;25" offset="2;3" />
+      <sprite name="DestructionBurn2" sourceRegion="1;67;32;32" offset="0;0" />
+      <sprite name="DestructionBurn3" sourceRegion="34;68;32;32" offset="0;0" />
+      <sprite name="DestructionBurn4" sourceRegion="67;77;32;32" offset="0;0" />
+    </spritePalette>
+    <animationPalette>
+	  <animation name="Preview" isPreview="true">
+		<frame sprites="MainPart,Corridor3,Antenna0" />
+		<repeat/>
+	  </animation>
+      <animation name="Construction">
+        <frame sprites="Construction0" duration="200" />
+        <frame sprites="Construction1" duration="200" />
+        <frame sprites="Construction2" duration="200" />
+      </animation>
+	  <animation name="Offline">
+		<frame sprites="MainPart,Corridor3,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor2,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor1,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor0,Antenna0" duration="5" />
+		<label name="Disconnected" />
+		<frame sprites="MainPart,Antenna0" />
+		<goto label="Disconnected" />
+	  </animation>
+	  <animation name="Online">
+		<frame sprites="MainPart,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor0,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor1,Antenna0" duration="5" />
+		<frame sprites="MainPart,Corridor2,Antenna0" duration="5" />
+		<label name="Connected" />
+		<frame sprites="MainPart,Corridor3,Antenna0" duration="3" />
+		<frame sprites="MainPart,Corridor3,Antenna1" duration="3" />
+		<frame sprites="MainPart,Corridor3,Antenna2" duration="3" />
+		<frame sprites="MainPart,Corridor3,Antenna3" duration="3" />
+		<frame sprites="MainPart,Corridor3,Antenna4" duration="3" />
+		<frame sprites="MainPart,Corridor3,Antenna5" duration="3" />
+		<frame sprites="MainPart,Corridor3,Antenna6" duration="3" />
+		<frame sprites="MainPart,Corridor3,Antenna7" duration="3" />
+		<goto label="Connected" />
+	  </animation>
+      <animation name="DestructionOffline">
+        <frame sprites="MainPart,DestructionBurn0" duration="5" />
+        <frame sprites="MainPart,DestructionBurn1" duration="5" />
+        <frame sprites="DestructionBurn2" duration="5" />
+        <frame sprites="DestructionBurn3" duration="5" />
+        <frame sprites="DestructionBurn4" duration="4" />
+      </animation>
+      <animation name="DestructionOnline">
+        <frame sprites="MainPart,Corridor2,DestructionBurn0" duration="5" />
+        <frame sprites="MainPart,Corridor1,DestructionBurn1" duration="5" />
+        <frame sprites="DestructionBurn2" duration="5" />
+        <frame sprites="DestructionBurn3" duration="5" />
+        <frame sprites="DestructionBurn4" duration="4" />
+      </animation>
+	  <animation name="SmallBurn">
+		<frame sprites="FlameL0,FlameR0" duration="10" />
+		<frame sprites="FlameL1,FlameR1" duration="10" />
+		<repeat/>
+	  </animation>
+	  <animation name="HeavyBurn">
+		<frame sprites="FlameL0,FlameM0,FlameR0" duration="10" />
+		<frame sprites="FlameL1,FlameM1,FlameR1" duration="10" />
+		<repeat/>
+	  </animation>
+    </animationPalette>
+  </addonType>
+</metadata>

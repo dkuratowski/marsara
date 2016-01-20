@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Addons\ComsatStation.cs" />
+    <Compile Include="Addons\ControlTower.cs" />
     <Compile Include="Behaviors\StimPacksBehavior.cs" />
     <Compile Include="Buildings\Academy.cs" />
     <Compile Include="Buildings\Armory.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Buildings\CommandCenter.cs" />
     <Compile Include="Buildings\EngineeringBay.cs" />
     <Compile Include="Buildings\Factory.cs" />
+    <Compile Include="Buildings\MissileTurret.cs" />
     <Compile Include="Buildings\ScienceFacility.cs" />
     <Compile Include="Buildings\Starport.cs" />
     <Compile Include="Buildings\SupplyDepot.cs" />

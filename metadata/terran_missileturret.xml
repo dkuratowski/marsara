@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+  <buildingType name="MissileTurret" hasOwner="true" displayedName="Terran Missile Turret">
+    <costs>
+      <mineral>75</mineral>
+      <buildTime>450</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area>8.0;8.0</area>
+      <maxHP>200</maxHP>
+      <armor>0</armor>
+      <sightRange>11</sightRange>
+    </generalData>
+    <airWeapon name="LongboltMissile" displayedName="Longbolt Missile">
+      <damage>20</damage>
+      <rangeMax>7</rangeMax>
+      <damageType>Explosive</damageType>
+      <cooldown>15</cooldown>
+      <missile type="Rocket">
+        <launch direction="North" relativePosition="-0.5;-3.5" />
+        <launch direction="NorthEast" relativePosition="0.5;-3.25" />
+        <launch direction="East" relativePosition="2.0;-2.75" />		
+        <launch direction="SouthEast" relativePosition="1.5;-2.0" />		
+        <launch direction="South" relativePosition="1.5;-2.0" />		
+        <launch direction="SouthWest" relativePosition="-0.5;-1.75" />		
+        <launch direction="West" relativePosition="-1.5;-1.5" />		
+        <launch direction="NorthWest" relativePosition="-1.75;-2.25" />
+      </missile>
+      <missile type="Rocket">
+        <launch direction="North" relativePosition="0.75;-3.5" />
+        <launch direction="NorthEast" relativePosition="1.75;-2.75" />
+        <launch direction="East" relativePosition="2.0;-1.75" />		
+        <launch direction="SouthEast" relativePosition="0.75;-1.25" />		
+        <launch direction="South" relativePosition="-1.0;-2.0" />		
+        <launch direction="SouthWest" relativePosition="-1.25;-2.0" />		
+        <launch direction="West" relativePosition="-1.5;-2.75" />		
+        <launch direction="NorthWest" relativePosition="-0.5;-3.0" />
+      </missile>
+    </airWeapon>
+    <requires>EngineeringBay</requires>
+	<hpIconPalette image="terran_missileturret_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
+      <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
+	</hpIconPalette>
+    <spritePalette image="terran_missileturret.png" transparentColor="255;0;255" maskColor="0;255;255">
+      <sprite name="Construction0" sourceRegion="1;1;32;32" offset="0;0" />
+      <sprite name="Construction1" sourceRegion="34;1;32;32" offset="0;0" />
+      <sprite name="Construction2" sourceRegion="67;1;32;32" offset="0;0" />
+	  
+      <sprite name="MainPart" sourceRegion="100;1;32;32" offset="0;0" />
+	  
+	  <sprite name="TowerAttack" variant="North" sourceRegion="1;67;12;12" offset="10;2" />
+	  <sprite name="TowerAttack" variant="NorthEast" sourceRegion="14;67;15;12" offset="9;2" />
+	  <sprite name="TowerAttack" variant="East" sourceRegion="30;67;14;12" offset="9;2" />
+	  <sprite name="TowerAttack" variant="SouthEast" sourceRegion="45;67;16;12" offset="8;3" />
+	  <sprite name="TowerAttack" variant="South" sourceRegion="1;80;15;10" offset="9;4" />
+	  <sprite name="TowerAttack" variant="SouthWest" sourceRegion="17;80;16;12" offset="8;3" />
+	  <sprite name="TowerAttack" variant="West" sourceRegion="34;80;14;12" offset="8;2" />
+	  <sprite name="TowerAttack" variant="NorthWest" sourceRegion="49;80;15;12" offset="8;2" />
+	  
+	  <sprite name="TowerN" sourceRegion="1;67;12;12" offset="10;2" />
+	  <sprite name="TowerNE" sourceRegion="14;67;15;12" offset="9;2" />
+	  <sprite name="TowerE" sourceRegion="30;67;14;12" offset="9;2" />
+	  <sprite name="TowerSE" sourceRegion="45;67;16;12" offset="8;3" />
+	  <sprite name="TowerS" sourceRegion="1;80;15;10" offset="9;4" />
+	  <sprite name="TowerSW" sourceRegion="17;80;16;12" offset="8;3" />
+	  <sprite name="TowerW" sourceRegion="34;80;14;12" offset="8;2" />
+	  <sprite name="TowerNW" sourceRegion="49;80;15;12" offset="8;2" />
+	  
+      <sprite name="FlameL0" sourceRegion="95;67;5;14" offset="7;4" />
+      <sprite name="FlameL1" sourceRegion="100;51;6;15" offset="6;3" />
+      <sprite name="FlameM0" sourceRegion="101;67;4;14" offset="14;4" />
+      <sprite name="FlameM1" sourceRegion="107;51;4;15" offset="14;3" />
+      <sprite name="FlameR0" sourceRegion="106;67;5;14" offset="22;4" />
+      <sprite name="FlameR1" sourceRegion="112;51;4;15" offset="21;3" />
+	  
+      <sprite name="DestructionBurn0" sourceRegion="100;34;29;16" offset="2;10" />
+      <sprite name="DestructionBurn1" sourceRegion="65;67;29;25" offset="2;3" />
+      <sprite name="DestructionBurn2" sourceRegion="1;34;32;32" offset="0;0" />
+      <sprite name="DestructionBurn3" sourceRegion="34;34;32;32" offset="0;0" />
+      <sprite name="DestructionBurn4" sourceRegion="67;34;32;32" offset="0;0" />
+    </spritePalette>
+    <animationPalette>
+	  <animation name="Preview" isPreview="true">
+		<frame sprites="MainPart,TowerSE" />
+		<repeat/>
+	  </animation>
+      <animation name="Construction">
+        <frame sprites="Construction0" duration="150" />
+        <frame sprites="Construction1" duration="150" />
+        <frame sprites="Construction2" duration="150" />
+      </animation>
+	  <animation name="Attack">
+		<frame sprites="MainPart,TowerAttack" />
+		<repeat/>
+	  </animation>
+	  <animation name="Normal">
+		<frame sprites="MainPart,TowerSE" duration="3" />
+		<frame sprites="MainPart,TowerS" duration="3" />
+		<frame sprites="MainPart,TowerSW" duration="3" />
+		<frame sprites="MainPart,TowerW" duration="3" />
+		<frame sprites="MainPart,TowerNW" duration="3" />
+		<frame sprites="MainPart,TowerN" duration="3" />
+		<frame sprites="MainPart,TowerNE" duration="3" />
+		<frame sprites="MainPart,TowerE" duration="3" />
+		<repeat/>
+	  </animation>
+      <animation name="Destruction">
+        <frame sprites="MainPart,TowerSE,DestructionBurn0" duration="5" />
+        <frame sprites="MainPart,TowerSE,DestructionBurn1" duration="5" />
+        <frame sprites="DestructionBurn2" duration="5" />
+        <frame sprites="DestructionBurn3" duration="5" />
+        <frame sprites="DestructionBurn4" duration="4" />
+      </animation>
+	  <animation name="SmallBurn">
+		<frame sprites="FlameL0,FlameR0" duration="10" />
+		<frame sprites="FlameL1,FlameR1" duration="10" />
+		<repeat/>
+	  </animation>
+	  <animation name="HeavyBurn">
+		<frame sprites="FlameL0,FlameM0,FlameR0" duration="10" />
+		<frame sprites="FlameL1,FlameM1,FlameR1" duration="10" />
+		<repeat/>
+	  </animation>
+    </animationPalette>
+  </buildingType>
+</metadata>

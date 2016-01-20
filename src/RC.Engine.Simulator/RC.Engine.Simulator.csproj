@@ -80,6 +80,9 @@
     <Compile Include="Behaviors\ProductionAnimationBehavior.cs" />
     <Compile Include="Commands\AttackExecution.cs" />
     <Compile Include="Commands\BasicCmdExecutionFactory.cs" />
+    <Compile Include="Commands\DefensiveAttackExecution.cs" />
+    <Compile Include="Commands\DefenseCmdExecutionFactory.cs" />
+    <Compile Include="Commands\DefensiveStopExecution.cs" />
     <Compile Include="Commands\ConstructionCancelExecution.cs" />
     <Compile Include="Commands\ConstructionCancelExecutionFactory.cs" />
     <Compile Include="Commands\HoldExecution.cs" />

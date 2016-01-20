@@ -9,18 +9,17 @@ using RC.Engine.Simulator.Engine;
 namespace RC.Engine.Simulator.Terran.Buildings
 {
     /// <summary>
-    /// Represents a Terran Starport.
+    /// Represents a Terran Academy.
     /// </summary>
-    class Starport : Building
+    class MissileTurret : Building
     {
         /// <summary>
-        /// Constructs a Terran Starport instance.
+        /// Constructs a Terran Missile Turret instance.
         /// </summary>
-        public Starport()
-            : base(STARPORT_TYPE_NAME,
+        public MissileTurret()
+            : base(MISSILETURRET_TYPE_NAME,
                    new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78 / (RCNumber)1000),
-                   new LiftoffBehavior("Normal", "TakingOff", "Flying", "Landing"),
-                   new ProductionAnimationBehavior("Producing", "Normal", "Wraith", "Dropship")) // TODO!
+                   new BasicAnimationsBehavior("Normal", "Attack", "Normal"))
         {
         }
 
@@ -36,19 +35,11 @@ namespace RC.Engine.Simulator.Terran.Buildings
         }
 
         /// <see cref="Entity.DestructionAnimationName"/>
-        protected override string DestructionAnimationName
-        {
-            get
-            {
-                return this.MotionControl.IsFlying
-                    ? "DestructionFlying"
-                    : "DestructionNormal";
-            }
-        }
+        protected override string DestructionAnimationName { get { return "Destruction"; } }
 
         /// <summary>
-        /// The name of the Starport element type.
+        /// The name of the Missile Turret element type.
         /// </summary>
-        public const string STARPORT_TYPE_NAME = "Starport";
+        public const string MISSILETURRET_TYPE_NAME = "MissileTurret";
     }
 }

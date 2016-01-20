@@ -69,6 +69,9 @@ namespace RC.Engine.Simulator.Terran
             /// Terran Comsat Station
             extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(ComsatStation.COMSATSTATION_TYPE_NAME));
 
+            /// Terran Control Tower
+            extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(ControlTower.CONTROLTOWER_TYPE_NAME));
+
             /// Terran Barracks
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, Barracks.BARRACKS_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, Barracks.BARRACKS_TYPE_NAME));
@@ -94,7 +97,7 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, Starport.STARPORT_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, Starport.STARPORT_TYPE_NAME));
             // TODO
-            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Starport.STARPORT_TYPE_NAME, "Wraith", "Dropship"));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Starport.STARPORT_TYPE_NAME, "Wraith", "Dropship", ControlTower.CONTROLTOWER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(Starport.STARPORT_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(Starport.STARPORT_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(Starport.STARPORT_TYPE_NAME));
@@ -137,6 +140,12 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(ScienceFacility.SCIENCEFACILITY_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(ScienceFacility.SCIENCEFACILITY_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(ScienceFacility.SCIENCEFACILITY_TYPE_NAME));
+
+            /// Terran Missile Turret
+            extendedComponent.RegisterCommandExecutionFactory(new DefenseCmdExecutionFactory(DefenseCommandEnum.Stop, MissileTurret.MISSILETURRET_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new DefenseCmdExecutionFactory(DefenseCommandEnum.Attack, MissileTurret.MISSILETURRET_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new DefenseCmdExecutionFactory(DefenseCommandEnum.Undefined, MissileTurret.MISSILETURRET_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(MissileTurret.MISSILETURRET_TYPE_NAME));
 
             /// TEST:
             //extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(ComsatStation.COMSATSTATION_TYPE_NAME,

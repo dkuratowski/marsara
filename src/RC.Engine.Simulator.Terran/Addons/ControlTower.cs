@@ -5,21 +5,20 @@ using System.Text;
 using RC.Common;
 using RC.Engine.Simulator.Behaviors;
 using RC.Engine.Simulator.Engine;
-using RC.Engine.Simulator.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Terran.Addons
 {
     /// <summary>
-    /// Represents a Terran Comsat Station.
+    /// Represents a Terran Control Tower.
     /// </summary>
-    class ComsatStation : Addon
+    class ControlTower : Addon
     {
         /// <summary>
-        /// Constructs a Terran Comsat Station.
+        /// Constructs a Terran Control Tower.
         /// </summary>
-        public ComsatStation()
-            : base(COMSATSTATION_TYPE_NAME,
-                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000),
+        public ControlTower()
+            : base(CONTROLTOWER_TYPE_NAME,
+                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78 / (RCNumber)1000),
                    new ConstructionBehavior("Construction", "Online"),
                    new AddonBehavior("Online", "Offline"))
         {
@@ -46,8 +45,8 @@ namespace RC.Engine.Simulator.Terran.Addons
         }
 
         /// <summary>
-        /// The name of the Comsat Station element type.
+        /// The name of the Control Tower element type.
         /// </summary>
-        public const string COMSATSTATION_TYPE_NAME = "ComsatStation";
+        public const string CONTROLTOWER_TYPE_NAME = "ControlTower";
     }
 }
