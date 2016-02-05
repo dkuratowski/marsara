@@ -19,7 +19,7 @@ namespace RC.Engine.Simulator.Terran.Addons
         public ControlTower()
             : base(CONTROLTOWER_TYPE_NAME,
                    new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78 / (RCNumber)1000),
-                   new ConstructionBehavior("Construction", "Online"),
+                   new ConstructionBehavior("Construction0", "Construction1", "Construction2"),
                    new AddonBehavior("Online", "Offline"))
         {
         }

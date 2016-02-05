@@ -164,7 +164,6 @@
     <Compile Include="Metadata\Core\UpgradeEffect.cs" />
     <Compile Include="MotionControl\AirPathTracker.cs" />
     <Compile Include="MotionControl\BasicVelocityGraph.cs" />
-    <Compile Include="MotionControl\DynamicObstacleInfo.cs" />
     <Compile Include="MotionControl\GroundPathTracker.cs" />
     <Compile Include="MotionControl\HexadecagonalVelocityGraph.cs" />
     <Compile Include="MotionControl\OctagonalVelocityGraph.cs" />

@@ -116,10 +116,13 @@ namespace RC.App.BizLogic.BusinessComponents
         /// </summary>
         /// <param name="elementType">The type to be checked.</param>
         /// <param name="position">The position to be checked.</param>
+        /// <param name="entitiesToIgnore">
+        /// The list of entities to be ignored during the check. All entities in this list shall belong to the active scenario.
+        /// </param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating the placement constraints of the given element type.
         /// </returns>
-        RCSet<RCIntVector> CheckPlacementConstraints(IScenarioElementType elementType, RCIntVector position);
+        RCSet<RCIntVector> CheckPlacementConstraints(IScenarioElementType elementType, RCIntVector position, RCSet<Entity> entitiesToIgnore);
 
         /// <summary>
         /// Checks whether the placement constraints of the given building type allows placing a building of this type (optionally together with an addon
@@ -129,10 +132,13 @@ namespace RC.App.BizLogic.BusinessComponents
         /// <param name="buildingType">The building type to be checked.</param>
         /// <param name="position">The position to be checked.</param>
         /// <param name="addonType">The addon type to be checked.</param>
+        /// <param name="entitiesToIgnore">
+        /// The list of entities to be ignored during the check. All entities in this list shall belong to the active scenario.
+        /// </param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating the placement constraints of the given building type.
         /// </returns>
-        RCSet<RCIntVector> CheckPlacementConstraints(IBuildingType buildingType, RCIntVector position, IAddonType addonType);
+        RCSet<RCIntVector> CheckPlacementConstraints(IBuildingType buildingType, RCIntVector position, IAddonType addonType, RCSet<Entity> entitiesToIgnore);
 
         /// <summary>
         /// Checks whether the placement constraints of the given entity allows it to be placed at the given quadratic position and collects all the
@@ -140,10 +146,13 @@ namespace RC.App.BizLogic.BusinessComponents
         /// </summary>
         /// <param name="entity">The entity to be checked.</param>
         /// <param name="position">The position to be checked.</param>
+        /// <param name="entitiesToIgnore">
+        /// The list of entities to be ignored during the check. All entities in this list shall belong to the active scenario.
+        /// </param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating the constraints of the given entity.
         /// </returns>
-        RCSet<RCIntVector> CheckPlacementConstraints(Entity entity, RCIntVector position);
+        RCSet<RCIntVector> CheckPlacementConstraints(Entity entity, RCIntVector position, RCSet<Entity> entitiesToIgnore);
 
         /// <summary>
         /// Checks whether the placement constraints of the given building allows it to be placed (optionally together with an addon of the given addon type)
@@ -152,10 +161,13 @@ namespace RC.App.BizLogic.BusinessComponents
         /// <param name="building">The building to be checked.</param>
         /// <param name="position">The position to be checked.</param>
         /// <param name="addonType">The addon type to be checked.</param>
+        /// <param name="entitiesToIgnore">
+        /// The list of entities to be ignored during the check. All entities in this list shall belong to the active scenario.
+        /// </param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating the constraints of the given building.
         /// </returns>
-        RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType);
+        RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType, RCSet<Entity> entitiesToIgnore);
 
         /// <summary>
         /// Gets the placement suggestion boxes for the given building type inside the area of the attached window.

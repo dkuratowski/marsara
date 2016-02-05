@@ -42,7 +42,7 @@ namespace RC.Engine.Simulator.Engine
 
             /// Initialize the non-heaped members.
             this.map = map;
-            this.entityFactory = ComponentManager.GetInterface<IElementFactory>();
+            this.elementFactory = ComponentManager.GetInterface<IElementFactory>();
             this.mapObjects = new Dictionary<MapObjectLayerEnum, ISearchTree<MapObject>>
             {
                 { MapObjectLayerEnum.GroundObjects, this.CreateSearchTree() },
@@ -83,7 +83,7 @@ namespace RC.Engine.Simulator.Engine
             Player newPlayer = new Player(index, startLocation);
             startLocation.DetachFromMap();
             this.players[index].Write(newPlayer);
-            this.entityFactory.InitializePlayer(newPlayer, race);
+            this.elementFactory.InitializePlayer(newPlayer, race);
         }
 
         /// <summary>
@@ -288,10 +288,10 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Gets the scenario element of the given type with the given ID that is attached to at least one of the given layers of the map.
         /// </summary>
+        /// <typeparam name="T">The type of the scenario element.</typeparam>
         /// <param name="id">The ID of the scenario element.</param>
         /// <param name="firstLayer">The first layer to search in.</param>
         /// <param name="furtherLayers">List of the further layers to search in.</param>
-        /// <typeparam name="T">The type of the scenario element.</typeparam>
         /// <returns>
         /// The scenario element with the given ID or null if no scenario element of the given type with the given ID is attached to at
         /// least one of the given layers of the map.
@@ -313,9 +313,9 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Gets the scenario elements of the given type that are attached to at least one of the given layers of the map.
         /// </summary>
+        /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
         /// <param name="firstLayer">The first layer to search in.</param>
         /// <param name="furtherLayers">List of the further layers to search in.</param>
-        /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
         /// <returns>
         /// A list that contains the scenario elements of the given type that are attached to at least one of the given layers of the map.
         /// </returns>
@@ -343,10 +343,10 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Gets the scenario elements of the given type that are attached to at least one of the given layers of the map at the given position.
         /// </summary>
-        /// <param name="firstLayer">The first layer to search in.</param>
-        /// <param name="furtherLayers">List of the further layers to search in.</param>
         /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
         /// <param name="position">The position to search.</param>
+        /// <param name="firstLayer">The first layer to search in.</param>
+        /// <param name="furtherLayers">List of the further layers to search in.</param>
         /// <returns>
         /// A list that contains the scenario elements of the given type that are attached to at least one of the given layers of the map at
         /// the given position.
@@ -376,10 +376,10 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Gets the scenario elements of the given type that are attached to at least one of the given layers of the map inside the given area.
         /// </summary>
-        /// <param name="firstLayer">The first layer to search in.</param>
-        /// <param name="furtherLayers">List of the further layers to search in.</param>
         /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
         /// <param name="area">
+        /// <param name="firstLayer">The first layer to search in.</param>
+        /// <param name="furtherLayers">List of the further layers to search in.</param>
         /// The area to search.
         /// </param>
         /// <returns>
@@ -415,6 +415,8 @@ namespace RC.Engine.Simulator.Engine
         /// <typeparam name="T">The type of the scenario elements to get.</typeparam>
         /// <param name="position">The given position.</param>
         /// <param name="searchRadius">The radius of the search area given in quadratic tiles.</param>
+        /// <param name="firstLayer">The first layer to search in.</param>
+        /// <param name="furtherLayers">List of the further layers to search in.</param>
         /// <returns>
         /// A list that contains the scenario elements of the given type that are attached to at least one of the given layers of the map inside
         /// the search area.
@@ -451,6 +453,8 @@ namespace RC.Engine.Simulator.Engine
         /// Gets the map objects inside the given area of the given layers.
         /// </summary>
         /// <param name="area">The area to search.</param>
+        /// <param name="firstLayer">The first layer to search in.</param>
+        /// <param name="furtherLayers">List of the further layers to search in.</param>
         /// <returns>A list that contains the map objects inside the given area of the given layers.</returns>
         public RCSet<MapObject> GetMapObjects(RCNumRectangle area, MapObjectLayerEnum firstLayer, params MapObjectLayerEnum[] furtherLayers)
         {
@@ -662,9 +666,9 @@ namespace RC.Engine.Simulator.Engine
         private readonly RCSet<ScenarioElement> elementsToRemoveAfterUpdate;
 
         /// <summary>
-        /// Reference to the entity factory component.
+        /// Reference to the element factory component.
         /// </summary>
-        private readonly IElementFactory entityFactory;
+        private readonly IElementFactory elementFactory;
 
         /// <summary>
         /// This flag indicates if adding and removing scenario elements is currently forbidden or not.

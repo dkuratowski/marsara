@@ -192,7 +192,7 @@ namespace RC.Common
         /// <summary>
         /// List of the contents that have intersection with the area covered by this BspSearchTreeNode.
         /// </summary>
-        private RCSet<T> contents;
+        private readonly RCSet<T> contents;
 
         /// <summary>
         /// Reference to the first child of this BspSearchTreeNode.
@@ -212,12 +212,12 @@ namespace RC.Common
         /// <summary>
         /// The maximum number of contents this node can hold without subdivision.
         /// </summary>
-        private int capacity;
+        private readonly int capacity;
 
         /// <summary>
         /// The minimum size of a BSP-node.
         /// </summary>
-        private int minSize;
+        private readonly int minSize;
 
         /// <summary>
         /// The rectangular area covered by this BspSearchTreeNode.

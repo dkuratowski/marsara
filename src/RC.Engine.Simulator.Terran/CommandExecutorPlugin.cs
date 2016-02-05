@@ -8,6 +8,7 @@ using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Simulator.Terran.Buildings;
+using RC.Engine.Simulator.Terran.Commands;
 using RC.Engine.Simulator.Terran.Units;
 using RC.Engine.Simulator.Terran.Addons;
 
@@ -30,12 +31,17 @@ namespace RC.Engine.Simulator.Terran
         public void Install(ICommandExecutorPluginInstall extendedComponent)
         {
             /// Terran SCV
-            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, SCV.SCV_TYPE_NAME));
-            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, SCV.SCV_TYPE_NAME));
-            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Attack, SCV.SCV_TYPE_NAME));
-            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Patrol, SCV.SCV_TYPE_NAME));
-            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Hold, SCV.SCV_TYPE_NAME));
-            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, SCV.SCV_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new SCVCmdExecutionFactory(SCVCommandEnum.Move));
+            extendedComponent.RegisterCommandExecutionFactory(new SCVCmdExecutionFactory(SCVCommandEnum.Stop));
+            extendedComponent.RegisterCommandExecutionFactory(new SCVCmdExecutionFactory(SCVCommandEnum.Attack));
+            extendedComponent.RegisterCommandExecutionFactory(new SCVCmdExecutionFactory(SCVCommandEnum.Patrol));
+            extendedComponent.RegisterCommandExecutionFactory(new SCVCmdExecutionFactory(SCVCommandEnum.Hold));
+            extendedComponent.RegisterCommandExecutionFactory(new SCVCmdExecutionFactory(SCVCommandEnum.Repair));
+            extendedComponent.RegisterCommandExecutionFactory(new SCVCmdExecutionFactory(SCVCommandEnum.Gather));
+            extendedComponent.RegisterCommandExecutionFactory(new SCVCmdExecutionFactory(SCVCommandEnum.Return));
+            extendedComponent.RegisterCommandExecutionFactory(new SCVCmdExecutionFactory(SCVCommandEnum.Build));
+            extendedComponent.RegisterCommandExecutionFactory(new SCVCmdExecutionFactory(SCVCommandEnum.StopBuild));
+            extendedComponent.RegisterCommandExecutionFactory(new SCVCmdExecutionFactory(SCVCommandEnum.Undefined));
 
             /// Terran Marine
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, Marine.MARINE_TYPE_NAME));

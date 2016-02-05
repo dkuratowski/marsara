@@ -29,14 +29,14 @@
   <productionButton product="Battlecruiser" sprite="BattlecruiserBtn" panelPosition="1;0" />
   <productionButton product="ComsatStation" sprite="ComsatStationBtn" panelPosition="2;0">
 	<selectTargetPosition>
-	  <currentSelection />
+	  <selectedBuilding />
 	  <addonType name="ComsatStation" />
 	</selectTargetPosition>
     <cancelButton sprite="CancelBtn" panelPosition="2;2" />
   </productionButton>
   <productionButton product="ControlTower" sprite="ControlTowerBtn" panelPosition="2;0">
 	<selectTargetPosition>
-	  <currentSelection />
+	  <selectedBuilding />
 	  <addonType name="ControlTower" />
 	</selectTargetPosition>
     <cancelButton sprite="CancelBtn" panelPosition="2;2" />

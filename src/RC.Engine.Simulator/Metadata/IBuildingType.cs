@@ -126,34 +126,18 @@ namespace RC.Engine.Simulator.Metadata
         /// <param name="scenario">Reference to the given scenario.</param>
         /// <param name="position">The position to be checked.</param>
         /// <param name="addonType">The addon type to be checked.</param>
+        /// <param name="entitiesToIgnore">
+        /// The list of entities to be ignored during the check. All entities in this list shall belong to the given scenario.
+        /// </param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating the placement constraints of this building type.
         /// </returns>
         /// <exception cref="ArgumentException">
         /// If this building type is not defined as the main building for the given addon type.
         /// </exception>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position, IAddonType addonType)
+        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position, IAddonType addonType, RCSet<Entity> entitiesToIgnore)
         {
-            return this.implementation.CheckPlacementConstraints(scenario, position, addonType.AddonTypeImpl);
-        }
-
-        /// <summary>
-        /// Checks whether the constraints of this building type allows placing the given building to its scenario together with an addon of the given addon type
-        /// at the given quadratic position and collects all the violating quadratic coordinates relative to the given position.
-        /// </summary>
-        /// <param name="building">Reference to the building to be checked.</param>
-        /// <param name="position">The position to be checked.</param>
-        /// <param name="addonType">The addon type to be checked.</param>
-        /// <returns>
-        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this building type.
-        /// </returns>
-        /// <exception cref="ArgumentException">
-        /// If the type of the given building is not the same as this building type.
-        /// If this building type is not defined as the main building for the given addon type.
-        /// </exception>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType)
-        {
-            return this.implementation.CheckPlacementConstraints(building, position, addonType.AddonTypeImpl);
+            return this.implementation.CheckPlacementConstraints(scenario, position, addonType.AddonTypeImpl, entitiesToIgnore);
         }
 
         /// <summary>

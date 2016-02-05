@@ -11,7 +11,7 @@ namespace RC.Engine.Simulator.Terran.Buildings
     /// <summary>
     /// Represents a Terran Academy.
     /// </summary>
-    class MissileTurret : Building
+    class MissileTurret : TerranBuilding
     {
         /// <summary>
         /// Constructs a Terran Missile Turret instance.
@@ -19,19 +19,9 @@ namespace RC.Engine.Simulator.Terran.Buildings
         public MissileTurret()
             : base(MISSILETURRET_TYPE_NAME,
                    new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78 / (RCNumber)1000),
+                   new ConstructionBehavior("Construction0", "Construction1", "Construction2"),
                    new BasicAnimationsBehavior("Normal", "Attack", "Normal"))
         {
-        }
-
-        /// <see cref="ScenarioElement.AttachToMap"/>
-        public override bool AttachToMap(RCNumVector position)
-        {
-            bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess)
-            {
-                this.MotionControl.Fix();
-            }
-            return attachToMapSuccess;
         }
 
         /// <see cref="Entity.DestructionAnimationName"/>

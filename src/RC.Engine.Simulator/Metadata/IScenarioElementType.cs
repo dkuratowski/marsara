@@ -161,29 +161,15 @@ namespace RC.Engine.Simulator.Metadata
         /// </summary>
         /// <param name="scenario">Reference to the given scenario.</param>
         /// <param name="position">The position to be checked.</param>
+        /// <param name="entitiesToIgnore">
+        /// The list of entities to be ignored during the check. All entities in this list shall belong to the given scenario.
+        /// </param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating the placement constraints of this element type.
         /// </returns>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position)
+        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position, RCSet<Entity> entitiesToIgnore)
         {
-            return this.implementation.CheckPlacementConstraints(scenario, position);
-        }
-
-        /// <summary>
-        /// Checks whether the constraints of this element type allows placing the given entity to its scenario at the given quadratic position and
-        /// collects all the violating quadratic coordinates relative to the given position.
-        /// </summary>
-        /// <param name="entity">Reference to the entity to be checked.</param>
-        /// <param name="position">The position to be checked.</param>
-        /// <returns>
-        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this element type.
-        /// </returns>
-        /// <exception cref="ArgumentException">
-        /// If the type of the given entity is not the same as this type or if the entity is not added to a scenario.
-        /// </exception>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Entity entity, RCIntVector position)
-        {
-            return this.implementation.CheckPlacementConstraints(entity, position);
+            return this.implementation.CheckPlacementConstraints(scenario, position, entitiesToIgnore);
         }
 
         #endregion Interface methods

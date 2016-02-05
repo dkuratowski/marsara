@@ -11,27 +11,17 @@ namespace RC.Engine.Simulator.Terran.Buildings
     /// <summary>
     /// Represents a Terran Supply Depot.
     /// </summary>
-    class SupplyDepot : Building
+    class SupplyDepot : TerranBuilding
     {
         /// <summary>
         /// Constructs a Terran Supply Depot instance.
         /// </summary>
         public SupplyDepot()
             : base(SUPPLYDEPOT_TYPE_NAME,
-                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000))
+                   new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000),
+                   new ConstructionBehavior("Construction0", "Construction1", "Construction2"),
+                   new BasicAnimationsBehavior("Normal", "Normal", "Normal"))
         {
-        }
-
-        /// <see cref="ScenarioElement.AttachToMap"/>
-        public override bool AttachToMap(RCNumVector position)
-        {
-            bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess)
-            {
-                this.MotionControl.Fix();
-                this.MapObject.StartAnimation("Normal");
-            }
-            return attachToMapSuccess;
         }
 
         /// <see cref="Entity.DestructionAnimationName"/>

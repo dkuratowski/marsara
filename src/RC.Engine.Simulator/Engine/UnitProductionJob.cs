@@ -21,7 +21,7 @@ namespace RC.Engine.Simulator.Engine
         /// <param name="unitProduct">The type of unit to be created by this job.</param>
         /// <param name="jobID">The ID of this job.</param>
         public UnitProductionJob(Building ownerBuilding, IUnitType unitProduct, int jobID)
-            : base(ownerBuilding, unitProduct, jobID)
+            : base(ownerBuilding.Owner, unitProduct, jobID)
         {
             this.unitProduct = unitProduct;
             this.ownerBuilding = this.ConstructField<Building>("ownerBuilding");

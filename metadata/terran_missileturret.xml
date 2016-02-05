@@ -85,10 +85,17 @@
 		<frame sprites="MainPart,TowerSE" />
 		<repeat/>
 	  </animation>
-      <animation name="Construction">
-        <frame sprites="Construction0" duration="150" />
-        <frame sprites="Construction1" duration="150" />
-        <frame sprites="Construction2" duration="150" />
+      <animation name="Construction0">
+        <frame sprites="Construction0"/>
+		<repeat/>
+      </animation>
+      <animation name="Construction1">
+        <frame sprites="Construction1"/>
+		<repeat/>
+      </animation>
+      <animation name="Construction2">
+        <frame sprites="Construction2"/>
+		<repeat/>
       </animation>
 	  <animation name="Attack">
 		<frame sprites="MainPart,TowerAttack" />

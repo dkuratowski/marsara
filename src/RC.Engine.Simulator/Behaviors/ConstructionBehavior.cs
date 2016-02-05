@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
 
@@ -13,18 +14,23 @@ namespace RC.Engine.Simulator.Behaviors
     public class ConstructionBehavior : EntityBehavior
     {
         /// <summary>
-        /// Constructs a ConstructionBehavior with the given parameters.
+        /// Constructs a ConstructionBehavior with the given animations.
         /// </summary>
-        /// <param name="constructionAnimation">The name of the construction animation to be played.</param>
-        /// <param name="afterConstructionAnimation">The name of the animation to be played when the construction is completed.</param>
-        public ConstructionBehavior(string constructionAnimation, string afterConstructionAnimation)
+        /// <param name="firstAnimation">The name of the first construction animation to be played.</param>
+        /// <param name="furtherAnimations">The name of the further construction animation to be played.</param>
+        public ConstructionBehavior(string firstAnimation, params string[] furtherAnimations)
         {
-            if (constructionAnimation == null) { throw new ArgumentNullException("constructionAnimation"); }
-            if (afterConstructionAnimation == null) { throw new ArgumentNullException("afterConstructionAnimation"); }
+            if (firstAnimation == null) { throw new ArgumentNullException("firstAnimation"); }
+            if (furtherAnimations == null) { throw new ArgumentNullException("furtherAnimations"); }
 
             this.dummyField = this.ConstructField<byte>("dummyField");
-            this.constructionAnimation = constructionAnimation;
-            this.afterConstructionAnimation = afterConstructionAnimation;
+
+            this.constructionAnimations = new string[furtherAnimations.Length + 1];
+            this.constructionAnimations[0] = firstAnimation;
+            for (int i = 0; i < furtherAnimations.Length; i++)
+            {
+                this.constructionAnimations[i + 1] = furtherAnimations[i];
+            }
         }
 
         #region Overrides
@@ -34,27 +40,40 @@ namespace RC.Engine.Simulator.Behaviors
         {
             if (entity.Biometrics.IsUnderConstruction)
             {
-                entity.MapObject.StopAnimation(this.afterConstructionAnimation);
-                entity.MapObject.StartAnimation(this.constructionAnimation);
+                /// Entity is under construction -> play the animation that belongs to the current construction progress.
+                RCNumber progressPerIndex = (RCNumber) entity.ElementType.BuildTime.Read()
+                                          / (RCNumber) (this.constructionAnimations.Length);
+                this.PlayConstructionAnimation(entity, (int)(entity.Biometrics.ConstructionProgress / progressPerIndex));
             }
             else
             {
-                entity.MapObject.StopAnimation(this.constructionAnimation);
-                entity.MapObject.StartAnimation(this.afterConstructionAnimation);
+                /// Entity is not under construction -> stop every construction animations.
+                this.StopStartAnimations(entity, new RCSet<string>(this.constructionAnimations), new RCSet<string>());
             }
         }
 
         #endregion Overrides
 
         /// <summary>
-        /// The name of the construction animation.
+        /// Starts the construction animation at the given index and stops playing every other construction animation.
         /// </summary>
-        private readonly string constructionAnimation;
+        /// <param name="entity">The target entity.</param>
+        /// <param name="index">The index of the construction animation to be played.</param>
+        private void PlayConstructionAnimation(Entity entity, int index)
+        {
+            RCSet<string> animationsToStop = new RCSet<string>();
+            RCSet<string> animationsToStart = new RCSet<string>() { this.constructionAnimations[index] };
+            for (int i = 0; i < this.constructionAnimations.Length; i++)
+            {
+                if (i != index) { animationsToStop.Add(this.constructionAnimations[i]); }
+            }
+            this.StopStartAnimations(entity, animationsToStop, animationsToStart);
+        }
 
         /// <summary>
-        /// The name of the animation to be played when the construction is completed.
+        /// The names of the construction animations to be played.
         /// </summary>
-        private readonly string afterConstructionAnimation;
+        private readonly string[] constructionAnimations;
 
         /// <summary>
         /// Dummy heaped value because we are deriving from HeapedObject.

@@ -28,7 +28,9 @@ namespace RC.Engine.Simulator.Commands
             if (entitiesToHandle.Count != 1) { return AvailabilityEnum.Unavailable; }
 
             Entity recipientEntity = entitiesToHandle.First();
-            return recipientEntity.MotionControl.Status == MotionControlStatusEnum.Fixed && recipientEntity.ActiveProductionLine == null ? AvailabilityEnum.Enabled : AvailabilityEnum.Unavailable;
+            return !recipientEntity.Biometrics.IsUnderConstruction &&
+                   recipientEntity.MotionControl.Status == MotionControlStatusEnum.Fixed &&
+                   recipientEntity.ActiveProductionLine == null ? AvailabilityEnum.Enabled : AvailabilityEnum.Unavailable;
         }
 
         /// <see cref="CommandExecutionFactoryBase.CreateCommandExecutions"/>

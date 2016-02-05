@@ -15,11 +15,11 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Constructs a UpgradeProductionJob instance.
         /// </summary>
-        /// <param name="owner">The owner entity of this job.</param>
+        /// <param name="ownerPlayer">The owner player of the entity that this job belongs to.</param>
         /// <param name="upgradeProduct">The type of upgrade to be created by this job.</param>
         /// <param name="jobID">The ID of this job.</param>
-        public UpgradeProductionJob(Entity owner, IUpgradeType upgradeProduct, int jobID)
-            : base(owner, upgradeProduct, jobID)
+        public UpgradeProductionJob(Player ownerPlayer, IUpgradeType upgradeProduct, int jobID)
+            : base(ownerPlayer, upgradeProduct, jobID)
         {
             this.upgradeProduct = upgradeProduct;
             this.dummyField = this.ConstructField<int>("dummyField");

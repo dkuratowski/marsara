@@ -36,10 +36,17 @@
       <sprite name="DestructionBurn5" sourceRegion="121;34;25;18" offset="11;7" />
     </spritePalette>
     <animationPalette>
-      <animation name="Construction">
-        <frame sprites="Construction0" duration="400" />
-        <frame sprites="Construction1" duration="400" />
-        <frame sprites="Construction2" duration="400" />
+      <animation name="Construction0">
+        <frame sprites="Construction0"/>
+		<repeat/>
+      </animation>
+      <animation name="Construction1">
+        <frame sprites="Construction1"/>
+		<repeat/>
+      </animation>
+      <animation name="Construction2">
+        <frame sprites="Construction2"/>
+		<repeat/>
       </animation>
       <animation name="Normal" isPreview="true">
         <frame sprites="MainPart" />

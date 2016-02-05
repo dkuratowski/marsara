@@ -36,6 +36,9 @@ namespace RC.Engine.Simulator.Behaviors
         /// <see cref="EntityBehavior.UpdateMapObject"/>
         public override void UpdateMapObject(Entity entity)
         {
+            /// Do nothing while under construction.
+            if (entity.Biometrics.IsUnderConstruction) { return; }
+
             if (entity.MotionControl.VelocityVector.Read() != new RCNumVector(0, 0))
             {
                 this.StopStartAnimations(entity,

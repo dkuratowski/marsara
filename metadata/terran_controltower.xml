@@ -43,10 +43,17 @@
 		<frame sprites="MainPart,Corridor3" />
 		<repeat/>
 	  </animation>
-      <animation name="Construction">
-        <frame sprites="Construction0" duration="200" />
-        <frame sprites="Construction1" duration="200" />
-        <frame sprites="Construction2" duration="200" />
+      <animation name="Construction0">
+        <frame sprites="Construction0"/>
+		<repeat/>
+      </animation>
+      <animation name="Construction1">
+        <frame sprites="Construction1"/>
+		<repeat/>
+      </animation>
+      <animation name="Construction2">
+        <frame sprites="Construction2"/>
+		<repeat/>
       </animation>
 	  <animation name="Offline">
 		<frame sprites="MainPart,Corridor3" duration="5" />

@@ -8,7 +8,7 @@ namespace RC.Engine.Simulator.Terran.Buildings
     /// <summary>
     /// Represents a Terran Command Center.
     /// </summary>
-    class CommandCenter : Building
+    class CommandCenter : TerranBuilding
     {
         /// <summary>
         /// Constructs a Terran Command Center instance.
@@ -16,20 +16,10 @@ namespace RC.Engine.Simulator.Terran.Buildings
         public CommandCenter()
             : base(COMMANDCENTER_TYPE_NAME,
                    new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78/(RCNumber)1000),
+                   new ConstructionBehavior("Construction0", "Construction1", "Construction2"),
                    new LiftoffBehavior("Normal", "TakingOff", "Flying", "Landing"),
                    new ProductionAnimationBehavior("Producing", "Normal", SCV.SCV_TYPE_NAME))
         {
-        }
-
-        /// <see cref="ScenarioElement.AttachToMap"/>
-        public override bool AttachToMap(RCNumVector position)
-        {
-            bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess)
-            {
-                this.MotionControl.Fix();
-            }
-            return attachToMapSuccess;
         }
 
         /// <see cref="Entity.DestructionAnimationName"/>

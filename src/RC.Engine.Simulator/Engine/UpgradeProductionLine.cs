@@ -26,7 +26,7 @@ namespace RC.Engine.Simulator.Engine
         /// <see cref="ProductionLine.CreateJob"/>
         protected override ProductionJob CreateJob(string productName, int jobID)
         {
-            return new UpgradeProductionJob(this.Owner, this.upgradeProducts[productName], jobID);
+            return new UpgradeProductionJob(this.Owner.Owner, this.upgradeProducts[productName], jobID);
         }
 
         /// <see cref="ProductionLine.IsProductAvailableImpl"/>

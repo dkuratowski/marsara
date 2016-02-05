@@ -34,12 +34,22 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             }
         }
 
+        /// <see cref="CommandInputListener.CheckCompletionStatus"/>
+        public override bool CheckCompletionStatus()
+        {
+            return this.commandExecutor.GetCommandAvailability(
+                this.scenarioManagerBC.ActiveScenario,
+                ProductionButtonListener.COMMAND_TYPE,
+                this.selectedProductTypeName,
+                this.selectionManagerBC.CurrentSelection) == AvailabilityEnum.Enabled;
+        }
+
         /// <see cref="CommandInputListener.TryComplete"/>
         public override CommandInputListener.CompletionResultEnum TryComplete()
         {
             /// First we have to check the resources of the local player.
             Player localPlayer = this.scenarioManagerBC.ActiveScenario.GetPlayer((int)this.selectionManagerBC.LocalPlayer);
-            IScenarioElementType selectedProductType = this.scenarioLoader.Metadata.GetElementType(this.selectedProductTypeName);
+            IScenarioElementType selectedProductType = localPlayer.Metadata.GetElementType(this.selectedProductTypeName);
             int mineralsNeeded = selectedProductType.MineralCost != null ? selectedProductType.MineralCost.Read() : 0;
             int vespeneGasNeeded = selectedProductType.GasCost != null ? selectedProductType.GasCost.Read() : 0;
             int supplyNeeded = selectedProductType.SupplyUsed != null ? selectedProductType.SupplyUsed.Read() : 0;
@@ -67,7 +77,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.commandExecutor = ComponentManager.GetInterface<ICommandExecutor>();
             this.selectionManagerBC = ComponentManager.GetInterface<ISelectionManagerBC>();
             this.scenarioManagerBC = ComponentManager.GetInterface<IScenarioManagerBC>();
-            this.scenarioLoader = ComponentManager.GetInterface<IScenarioLoader>();
         }
 
         /// <summary>
@@ -89,11 +98,6 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// Reference to the scenario manager business component.
         /// </summary>
         private IScenarioManagerBC scenarioManagerBC;
-
-        /// <summary>
-        /// Reference to the scenario loader component.
-        /// </summary>
-        private IScenarioLoader scenarioLoader;
 
         /// <summary>
         /// The supported XML-nodes and attributes.

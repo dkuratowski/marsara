@@ -50,12 +50,16 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <param name="position">The position to be checked.</param>
         /// <param name="addonType">The addon type to be checked.</param>
+        /// <param name="entitiesToIgnore">
+        /// The list of entities to be ignored during the check. All entities in this list shall belong to the scenario of this entity.
+        /// </param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this building.
         /// </returns>
-        public RCSet<RCIntVector> CheckPlacementConstraints(RCIntVector position, IAddonType addonType)
+        public RCSet<RCIntVector> CheckPlacementConstraints(RCIntVector position, IAddonType addonType, RCSet<Entity> entitiesToIgnore)
         {
-            return this.buildingType.CheckPlacementConstraints(this, position, addonType);
+            RCSet<Entity> entitiesToIgnoreSet = new RCSet<Entity>(entitiesToIgnore) { this };
+            return this.buildingType.CheckPlacementConstraints(this.Scenario, position, addonType, entitiesToIgnoreSet);
         }
 
         /// <summary>

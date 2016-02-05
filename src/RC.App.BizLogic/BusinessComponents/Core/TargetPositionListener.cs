@@ -39,7 +39,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 if (this.addonTypeName == null)
                 {
                     /// There is no additional addon type.
-                    if (this.fogOfWarBC.CheckPlacementConstraints(selectedBuilding, (RCIntVector)this.CommandBuilder.TargetPosition).Count == 0)
+                    if (this.fogOfWarBC.CheckPlacementConstraints(selectedBuilding, (RCIntVector)this.CommandBuilder.TargetPosition, new RCSet<Entity>()).Count == 0)
                     {
                         /// Selected position is OK.
                         return CommandInputListener.CompletionResultEnum.Succeeded;
@@ -56,7 +56,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                     /// Additional addon type has to be checked as well.
                     IAddonType addonType = this.scenarioManagerBC.Metadata.GetAddonType(this.addonTypeName);
                     if (addonType == null) { throw new InvalidOperationException(string.Format("Addon type '{0}' is not defined in the metadata!", this.addonTypeName)); }
-                    if (this.fogOfWarBC.CheckPlacementConstraints(selectedBuilding, (RCIntVector)this.CommandBuilder.TargetPosition, addonType).Count == 0)
+                    if (this.fogOfWarBC.CheckPlacementConstraints(selectedBuilding, (RCIntVector)this.CommandBuilder.TargetPosition, addonType, new RCSet<Entity>()).Count == 0)
                     {
                         /// Selected position is OK.
                         return CommandInputListener.CompletionResultEnum.Succeeded;
@@ -75,9 +75,16 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 IBuildingType buildingType = this.scenarioManagerBC.Metadata.GetBuildingType(this.buildingTypeName);
                 if (buildingType == null) { throw new InvalidOperationException(string.Format("Building type '{0}' is not defined in the metadata!", this.buildingTypeName)); }
 
+                RCSet<Entity> currentSelection = new RCSet<Entity>();
+                foreach (int selectedEntityID in this.selectionManagerBC.CurrentSelection)
+                {
+                    currentSelection.Add(this.scenarioManagerBC.ActiveScenario.GetElement<Entity>(selectedEntityID));
+                }
+
+
                 if (this.addonTypeName == null)
                 {
-                    if (this.fogOfWarBC.CheckPlacementConstraints(buildingType, (RCIntVector) this.CommandBuilder.TargetPosition).Count == 0)
+                    if (this.fogOfWarBC.CheckPlacementConstraints(buildingType, (RCIntVector) this.CommandBuilder.TargetPosition, currentSelection).Count == 0)
                     {
                         /// Selected position is OK.
                         return CompletionResultEnum.Succeeded;
@@ -94,7 +101,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                     /// Additional addon type has to be checked as well.
                     IAddonType addonType = this.scenarioManagerBC.Metadata.GetAddonType(this.addonTypeName);
                     if (addonType == null) { throw new InvalidOperationException(string.Format("Addon type '{0}' is not defined in the metadata!", this.addonTypeName)); }
-                    if (this.fogOfWarBC.CheckPlacementConstraints(buildingType, (RCIntVector)this.CommandBuilder.TargetPosition, addonType).Count == 0)
+                    if (this.fogOfWarBC.CheckPlacementConstraints(buildingType, (RCIntVector)this.CommandBuilder.TargetPosition, addonType, currentSelection).Count == 0)
                     {
                         /// Selected position is OK.
                         return CommandInputListener.CompletionResultEnum.Succeeded;
@@ -119,7 +126,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             base.Init(listenerElem);
 
-            XElement currentSelectionElem = listenerElem.Element(CURRENT_SELECTION_ELEM);
+            XElement currentSelectionElem = listenerElem.Element(SELECTED_BUILDING_ELEM);
             if (currentSelectionElem != null) { this.placeSelectedBuilding = true; }
 
             XElement buildingTypeElem = listenerElem.Element(BUILDING_TYPE_ELEM);
@@ -226,7 +233,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <summary>
         /// The supported XML-nodes and attributes.
         /// </summary>
-        private const string CURRENT_SELECTION_ELEM = "currentSelection";
+        private const string SELECTED_BUILDING_ELEM = "selectedBuilding";
         private const string BUILDING_TYPE_ELEM = "buildingType";
         private const string ADDON_TYPE_ELEM = "addonType";
         private const string TYPE_NAME_ATTR = "name";

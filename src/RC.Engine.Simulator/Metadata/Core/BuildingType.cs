@@ -79,40 +79,21 @@ namespace RC.Engine.Simulator.Metadata.Core
         public IEnumerable<IUpgradeTypeInternal> UpgradeTypes { get { return this.upgradeTypes.Values; } }
 
         /// <see cref="IBuildingTypeInternal.CheckPlacementConstraints"/>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position, IAddonTypeInternal addonType)
+        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position, IAddonTypeInternal addonType, RCSet<Entity> entitiesToIgnore)
         {
             if (addonType == null) { throw new ArgumentNullException("addonType"); }
             if (!this.HasAddonType(addonType.Name)) { throw new ArgumentException(string.Format("Building type '{0}' is not defined as the main building for addon type '{1}'!", this.Name, addonType.Name)); }
 
-            RCSet<RCIntVector> retList = this.CheckPlacementConstraints(scenario, position);
+            RCSet<RCIntVector> retList = this.CheckPlacementConstraints(scenario, position, entitiesToIgnore);
 
             RCIntVector relativeAddonPos = this.GetRelativeAddonPosition(scenario.Map, addonType);
             RCIntVector addonPos = position + relativeAddonPos;
 
-            foreach (RCIntVector quadCoordViolatingByAddon in addonType.CheckPlacementConstraints(scenario, addonPos))
+            foreach (RCIntVector quadCoordViolatingByAddon in addonType.CheckPlacementConstraints(scenario, addonPos, entitiesToIgnore))
             {
                 retList.Add(quadCoordViolatingByAddon + relativeAddonPos);
             }
             
-            return retList;
-        }
-
-        /// <see cref="IBuildingTypeInternal.CheckPlacementConstraints"/>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonTypeInternal addonType)
-        {
-            if (addonType == null) { throw new ArgumentNullException("addonType"); }
-            if (!this.HasAddonType(addonType.Name)) { throw new ArgumentException(string.Format("Building type '{0}' is not defined as the main building for addon type '{1}'!", this.Name, addonType.Name)); }
-
-            RCSet<RCIntVector> retList = this.CheckPlacementConstraints(building, position);
-
-            RCIntVector relativeAddonPos = this.GetRelativeAddonPosition(building.Scenario.Map, addonType);
-            RCIntVector addonPos = position + relativeAddonPos;
-
-            foreach (RCIntVector quadCoordViolatingByAddon in addonType.CheckPlacementConstraints(building, addonPos))
-            {
-                retList.Add(quadCoordViolatingByAddon + relativeAddonPos);
-            }
-
             return retList;
         }
 

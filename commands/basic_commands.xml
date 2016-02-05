@@ -27,7 +27,7 @@
   <commandButton command="LiftOff" sprite="LiftOffBtn" panelPosition="2;2" />
   <commandButton command="Land" sprite="LandBtn" panelPosition="2;2">
 	<selectTargetPosition>
-	  <currentSelection />
+	  <selectedBuilding />
 	</selectTargetPosition>
     <cancelButton sprite="CancelBtn" panelPosition="2;2" />
   </commandButton>

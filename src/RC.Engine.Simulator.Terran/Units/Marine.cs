@@ -88,6 +88,6 @@ namespace RC.Engine.Simulator.Terran.Units
         /// <summary>
         /// The remaining time from the effect of StimPacks or 0 if StimPacks is not used currently.
         /// </summary>
-        private HeapedValue<int> remainingStimPacksTime;
+        private readonly HeapedValue<int> remainingStimPacksTime;
     }
 }

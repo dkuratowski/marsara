@@ -248,12 +248,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="IFogOfWarBC.CheckPlacementConstraints"/>
-        public RCSet<RCIntVector> CheckPlacementConstraints(IScenarioElementType elementType, RCIntVector position)
+        public RCSet<RCIntVector> CheckPlacementConstraints(IScenarioElementType elementType, RCIntVector position, RCSet<Entity> entitiesToIgnore)
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(elementType.Area.Read());
-            RCSet<RCIntVector> violatingQuadCoords = elementType.CheckPlacementConstraints(this.ActiveScenario, position);
+            RCSet<RCIntVector> violatingQuadCoords = elementType.CheckPlacementConstraints(this.ActiveScenario, position, entitiesToIgnore);
             for (int x = 0; x < objectQuadraticSize.X; x++)
             {
                 for (int y = 0; y < objectQuadraticSize.Y; y++)
@@ -272,12 +272,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="IFogOfWarBC.CheckPlacementConstraints"/>
-        public RCSet<RCIntVector> CheckPlacementConstraints(IBuildingType buildingType, RCIntVector position, IAddonType addonType)
+        public RCSet<RCIntVector> CheckPlacementConstraints(IBuildingType buildingType, RCIntVector position, IAddonType addonType, RCSet<Entity> entitiesToIgnore)
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(buildingType.Area.Read());
-            RCSet<RCIntVector> violatingQuadCoords = buildingType.CheckPlacementConstraints(this.ActiveScenario, position, addonType);
+            RCSet<RCIntVector> violatingQuadCoords = buildingType.CheckPlacementConstraints(this.ActiveScenario, position, addonType, entitiesToIgnore);
             for (int x = 0; x < objectQuadraticSize.X; x++)
             {
                 for (int y = 0; y < objectQuadraticSize.Y; y++)
@@ -296,12 +296,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="IFogOfWarBC.CheckPlacementConstraints"/>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Entity entity, RCIntVector position)
+        public RCSet<RCIntVector> CheckPlacementConstraints(Entity entity, RCIntVector position, RCSet<Entity> entitiesToIgnore)
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(entity.ElementType.Area.Read());
-            RCSet<RCIntVector> violatingQuadCoords = entity.CheckPlacementConstraints(position);
+            RCSet<RCIntVector> violatingQuadCoords = entity.CheckPlacementConstraints(position, entitiesToIgnore);
             for (int x = 0; x < objectQuadraticSize.X; x++)
             {
                 for (int y = 0; y < objectQuadraticSize.Y; y++)
@@ -320,12 +320,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="IFogOfWarBC.CheckPlacementConstraints"/>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType)
+        public RCSet<RCIntVector> CheckPlacementConstraints(Building building, RCIntVector position, IAddonType addonType, RCSet<Entity> entitiesToIgnore)
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
             RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(building.ElementType.Area.Read());
-            RCSet<RCIntVector> violatingQuadCoords = building.CheckPlacementConstraints(position, addonType);
+            RCSet<RCIntVector> violatingQuadCoords = building.CheckPlacementConstraints(position, addonType, entitiesToIgnore);
             for (int x = 0; x < objectQuadraticSize.X; x++)
             {
                 for (int y = 0; y < objectQuadraticSize.Y; y++)

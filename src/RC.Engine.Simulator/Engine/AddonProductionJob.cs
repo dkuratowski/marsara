@@ -24,7 +24,7 @@ namespace RC.Engine.Simulator.Engine
         /// <param name="addonProduct">The type of addon to be created by this job.</param>
         /// <param name="jobID">The ID of this job.</param>
         public AddonProductionJob(Building ownerBuilding, IAddonType addonProduct, int jobID)
-            : base(ownerBuilding, addonProduct, jobID)
+            : base(ownerBuilding.Owner, addonProduct, jobID)
         {
             this.addonProduct = addonProduct;
             this.ownerBuilding = this.ConstructField<Building>("ownerBuilding");

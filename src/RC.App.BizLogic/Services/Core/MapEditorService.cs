@@ -102,7 +102,7 @@ namespace RC.App.BizLogic.Services.Core
                                            - new RCNumVector(1, 1) / 2;
                 foreach (Entity affectedEntity in this.scenarioManager.ActiveScenario.GetElementsOnMap<Entity>(isoTileRect, MapObjectLayerEnum.AirObjects, MapObjectLayerEnum.GroundObjects))
                 {
-                    if (affectedEntity.CheckPlacementConstraints(affectedEntity.MapObject.QuadraticPosition.Location).Count != 0)
+                    if (affectedEntity.CheckPlacementConstraints(affectedEntity.MapObject.QuadraticPosition.Location, new RCSet<Entity>()).Count != 0)
                     {
                         affectedEntity.DetachFromMap();
                         this.scenarioManager.ActiveScenario.RemoveElementFromScenario(affectedEntity);
@@ -138,7 +138,7 @@ namespace RC.App.BizLogic.Services.Core
                                            - new RCNumVector(1, 1) / 2;
                 foreach (Entity affectedEntity in this.scenarioManager.ActiveScenario.GetElementsOnMap<Entity>(terrObjRect, MapObjectLayerEnum.AirObjects, MapObjectLayerEnum.GroundObjects))
                 {
-                    if (affectedEntity.CheckPlacementConstraints(affectedEntity.MapObject.QuadraticPosition.Location).Count != 0)
+                    if (affectedEntity.CheckPlacementConstraints(affectedEntity.MapObject.QuadraticPosition.Location, new RCSet<Entity>()).Count != 0)
                     {
                         affectedEntity.DetachFromMap();
                         this.scenarioManager.ActiveScenario.RemoveElementFromScenario(affectedEntity);
@@ -177,7 +177,7 @@ namespace RC.App.BizLogic.Services.Core
             IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(StartLocation.STARTLOCATION_TYPE_NAME);
             RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read());
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
-            if (objectType.CheckPlacementConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords).Count != 0) { return false; }
+            if (objectType.CheckPlacementConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords, new RCSet<Entity>()).Count != 0) { return false; }
 
             /// Check if a start location with the given player index already exists.
             RCSet<StartLocation> startLocations = this.scenarioManager.ActiveScenario.GetAllElements<StartLocation>();
@@ -218,7 +218,7 @@ namespace RC.App.BizLogic.Services.Core
             IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(MineralField.MINERALFIELD_TYPE_NAME);
             RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read());
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
-            if (objectType.CheckPlacementConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords).Count != 0) { return false; }
+            if (objectType.CheckPlacementConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords, new RCSet<Entity>()).Count != 0) { return false; }
 
             MineralField placedMineralField = new MineralField();
             this.scenarioManager.ActiveScenario.AddElementToScenario(placedMineralField);
@@ -238,7 +238,7 @@ namespace RC.App.BizLogic.Services.Core
             IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(VespeneGeyser.VESPENEGEYSER_TYPE_NAME);
             RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read());
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
-            if (objectType.CheckPlacementConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords).Count != 0) { return false; }
+            if (objectType.CheckPlacementConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords, new RCSet<Entity>()).Count != 0) { return false; }
 
             VespeneGeyser placedVespeneGeyser = new VespeneGeyser();
             this.scenarioManager.ActiveScenario.AddElementToScenario(placedVespeneGeyser);

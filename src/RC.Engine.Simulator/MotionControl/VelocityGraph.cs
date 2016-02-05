@@ -23,7 +23,7 @@ namespace RC.Engine.Simulator.MotionControl
         /// </summary>
         /// <param name="currentVelocity">The given velocity.</param>
         /// <returns>All velocities that are admissible from the given velocity.</returns>
-        public IEnumerable<RCNumVector> GetAdmissibleVelocities(RCNumVector currentVelocity)
+        public List<RCNumVector> GetAdmissibleVelocities(RCNumVector currentVelocity)
         {
             if (!this.velocityGraph.ContainsKey(currentVelocity))
             {

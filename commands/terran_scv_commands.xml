@@ -8,27 +8,27 @@
     <sprite name="AdvancedBuildBtn" sourceRegion="22;22;20;20" />
     <sprite name="CancelBtn" sourceRegion="43;22;20;20" />
     <sprite name="CommandCenterBtn" sourceRegion="1;43;20;20" />
-    <sprite name="SupplyDepotBtn" sourceRegion="1;43;20;20" />
-    <sprite name="RefineryBtn" sourceRegion="1;43;20;20" />
-    <sprite name="BarracksBtn" sourceRegion="1;43;20;20" />
-    <sprite name="EngineeringBayBtn" sourceRegion="1;43;20;20" />
-    <sprite name="MissileTurretBtn" sourceRegion="1;43;20;20" />
-    <sprite name="AcademyBtn" sourceRegion="1;43;20;20" />
-    <sprite name="BunkerBtn" sourceRegion="1;43;20;20" />
-    <sprite name="FactoryBtn" sourceRegion="1;43;20;20" />
-    <sprite name="StarportBtn" sourceRegion="1;43;20;20" />
-    <sprite name="ScienceFacilityBtn" sourceRegion="1;43;20;20" />
-    <sprite name="ArmoryBtn" sourceRegion="1;43;20;20" />
+    <sprite name="SupplyDepotBtn" sourceRegion="22;43;20;20" />
+    <sprite name="RefineryBtn" sourceRegion="43;43;20;20" />
+    <sprite name="BarracksBtn" sourceRegion="1;64;20;20" />
+    <sprite name="EngineeringBayBtn" sourceRegion="22;64;20;20" />
+    <sprite name="MissileTurretBtn" sourceRegion="43;64;20;20" />
+    <sprite name="AcademyBtn" sourceRegion="1;85;20;20" />
+    <sprite name="BunkerBtn" sourceRegion="22;85;20;20" />
+    <sprite name="FactoryBtn" sourceRegion="43;85;20;20" />
+    <sprite name="StarportBtn" sourceRegion="1;106;20;20" />
+    <sprite name="ScienceFacilityBtn" sourceRegion="22;106;20;20" />
+    <sprite name="ArmoryBtn" sourceRegion="43;106;20;20" />
   </spritePalette>
-  <commandButton command="Repair" sprite="RepairBtn" panelPosition="1;0">
+  <commandButton command="Repair" sprite="RepairBtn" panelPosition="1;0" priority="5">
 	<selectTargetPosition />
 	<cancelButton sprite="CancelBtn" panelPosition="2;2" />
   </commandButton>
-  <commandButton command="Gather" sprite="GatherBtn" panelPosition="1;1">
+  <commandButton command="Gather" sprite="GatherBtn" panelPosition="1;1" priority="6">
 	<selectTargetPosition />
 	<cancelButton sprite="CancelBtn" panelPosition="2;2" />
   </commandButton>
-  <commandButton command="Return" sprite="ReturnBtn" panelPosition="1;2" />  
+  <commandButton command="Return" sprite="ReturnBtn" panelPosition="1;2" priority="7"/>  
   <commandButton command="Build" sprite="BuildBtn" panelPosition="2;0">
 	<buildingButton building="CommandCenter" sprite="CommandCenterBtn" panelPosition="0;0">
 	  <selectTargetPosition>
@@ -72,12 +72,12 @@
 	  </selectTargetPosition>
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
 	</buildingButton>
-	<buildingButton building="Bunker" sprite="BunkerBtn" panelPosition="2;1">
+	<!--buildingButton building="Bunker" sprite="BunkerBtn" panelPosition="2;1">
 	  <selectTargetPosition>
 	    <buildingType name="Bunker" />
 	  </selectTargetPosition>
 	  <cancelButton sprite="CancelBtn" panelPosition="2;2" />
-	</buildingButton>
+	</buildingButton-->
 	<cancelButton sprite="CancelBtn" panelPosition="2;2" />
   </commandButton>  
   <commandButton command="Build" sprite="AdvancedBuildBtn" panelPosition="2;1">
@@ -107,4 +107,5 @@
 	</buildingButton>
 	<cancelButton sprite="CancelBtn" panelPosition="2;2" />
   </commandButton>
+  <commandButton command="StopBuild" sprite="CancelBtn" panelPosition="2;2" />
 </commands>

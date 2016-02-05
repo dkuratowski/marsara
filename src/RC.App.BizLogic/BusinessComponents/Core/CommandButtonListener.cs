@@ -41,8 +41,14 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="CommandInputListener.CheckCompletionStatus"/>
-        /// TODO: implement this method!
-        public override bool CheckCompletionStatus() { return true; }
+        public override bool CheckCompletionStatus()
+        {
+            return this.commandExecutor.GetCommandAvailability(
+                this.scenarioManagerBC.ActiveScenario,
+                this.selectedCommandType,
+                null,
+                this.selectionManagerBC.CurrentSelection) == AvailabilityEnum.Enabled;
+        }
 
         /// <see cref="CommandInputListener.TryComplete"/>
         /// TODO: implement this method!

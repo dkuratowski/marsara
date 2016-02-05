@@ -50,8 +50,11 @@ namespace RC.Engine.Simulator.MotionControl
         /// <summary>
         /// Gets the list of the dynamic obstacles in the environment of the controlled target.
         /// </summary>
-        /// <returns>A list that contains the dynamic obstacles in the environment of the controlled target.</returns>
-        public IEnumerable<DynamicObstacleInfo> DynamicObstacles
+        /// <returns>
+        /// A list that contains the dynamic obstacles in the environment of the controlled target. A dynamic obstacle is described by
+        /// a rectangle that is the area currently occupied by the obstacle, and a vector that is the current velocity of the obstacle.
+        /// </returns>
+        public IEnumerable<Tuple<RCNumRectangle, RCNumVector>> DynamicObstacles
         {
             get
             {
@@ -103,12 +106,16 @@ namespace RC.Engine.Simulator.MotionControl
         #region Overridable methods
 
         /// <summary>
-        /// Checks whether the given position is valid for the controlled entity.
+        /// Checks whether the given move is valid for the controlled entity.
         /// </summary>
-        /// <param name="position">The position to be checked.</param>
-        /// <returns>True if the given position is valid for the controlled entity; otherwise false.</returns>
+        /// <param name="fromPosition">
+        /// The starting position of the move to be checked or RCNumVector.Undefined if the move has no starting position
+        /// (e.g. to check if the controlled entity can be placed to the given target position onto the map).
+        /// </param>
+        /// <param name="toPosition">The target position of the move to be checked.</param>
+        /// <returns>True if the given move is valid for the controlled entity; otherwise false.</returns>
         /// <remarks>Must be overriden in the derived classes.</remarks>
-        public abstract bool ValidatePosition(RCNumVector position);
+        public abstract bool ValidateMove(RCNumVector fromPosition, RCNumVector toPosition);
 
         /// <summary>
         /// Derived classes can implement additional procedures when the target position of this path tracker has been set by overriding this method.
@@ -125,11 +132,12 @@ namespace RC.Engine.Simulator.MotionControl
         protected abstract RCNumVector CalculatePreferredVelocity();
 
         /// <summary>
-        /// Collects the nearby dynamic obstacles on the map.
+        /// Checks whether the given entity is considered as an obstacle for this path-tracker.
         /// </summary>
-        /// <returns>The enumerable list of nearby dynamic obstacles.</returns>
+        /// <param name="entity">The entity to be checked.</param>
+        /// <returns>True if the given entity is considered as an obstacle for this path-tracker; otherwise false.</returns>
         /// <remarks>This method must be overriden in the derived classes.</remarks>
-        protected abstract IEnumerable<DynamicObstacleInfo> CollectNearbyDynamicObstacles();
+        protected abstract bool IsObstacle(Entity entity);
 
         /// <summary>
         /// Calculates the distance from the current position of the controlled entity to the target.
@@ -165,7 +173,7 @@ namespace RC.Engine.Simulator.MotionControl
             this.targetDistanceThreshold = this.ConstructField<RCNumber>("targetDistanceThreshold");
 
             this.preferredVelocityCache = new CachedValue<RCNumVector>(this.CalculatePreferredVelocity);
-            this.dynamicObstaclesCache = new CachedValue<IEnumerable<DynamicObstacleInfo>>(this.CollectNearbyDynamicObstacles);
+            this.dynamicObstaclesCache = new CachedValue<IEnumerable<Tuple<RCNumRectangle, RCNumVector>>>(this.CollectNearbyDynamicObstacles);
 
             this.targetPosition.Write(RCNumVector.Undefined);
             this.closestDistanceToTarget.Write(-1);
@@ -212,6 +220,26 @@ namespace RC.Engine.Simulator.MotionControl
                    this.timeSinceClosestDistanceReached.Read() > 100;
         }
 
+        /// <summary>
+        /// Collects the nearby dynamic obstacles on the map.
+        /// </summary>
+        /// <returns>The enumerable list of nearby dynamic obstacles.</returns>
+        private IEnumerable<Tuple<RCNumRectangle, RCNumVector>> CollectNearbyDynamicObstacles()
+        {
+            List<Tuple<RCNumRectangle, RCNumVector>> retList = new List<Tuple<RCNumRectangle, RCNumVector>>();
+            RCSet<Entity> entitiesInRange = this.ControlledEntity.Locator.SearchNearbyEntities(ENVIRONMENT_SIGHT_RANGE);
+            foreach (Entity entityInRange in entitiesInRange)
+            {
+                if (this.IsObstacle(entityInRange) &&
+                    !this.controlledEntity.Read().IsOverlapEnabled(entityInRange) &&
+                    !entityInRange.IsOverlapEnabled(this.controlledEntity.Read()))
+                {
+                    retList.Add(Tuple.Create(entityInRange.Area, entityInRange.MotionControl.VelocityVector.Read()));
+                }
+            }
+            return retList;
+        }
+
         #endregion Internal methods
 
         #region Heaped members
@@ -252,6 +280,11 @@ namespace RC.Engine.Simulator.MotionControl
         /// <summary>
         /// Cache that stores the list of the nearby dynamic obstacles.
         /// </summary>
-        private CachedValue<IEnumerable<DynamicObstacleInfo>> dynamicObstaclesCache;
+        private CachedValue<IEnumerable<Tuple<RCNumRectangle, RCNumVector>>> dynamicObstaclesCache;
+
+        /// <summary>
+        /// The range of the environment in quadratic tiles taken into account when collecting dynamic obstacles.
+        /// </summary>
+        private const int ENVIRONMENT_SIGHT_RANGE = 2;
     }
 }

@@ -31,19 +31,5 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// Gets the upgrade types of this addon type.
         /// </summary>
         IEnumerable<IUpgradeTypeInternal> UpgradeTypes { get; }
-
-        /// <summary>
-        /// Checks whether the constraints of this addon type allows placing an addon of this type together with the given main building to its scenario
-        /// at the given quadratic position and collects all the violating quadratic coordinates relative to the given position.
-        /// </summary>
-        /// <param name="mainBuilding">Reference to the main building of the addon to be checked.</param>
-        /// <param name="position">The position to be checked.</param>
-        /// <returns>
-        /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this addon type.
-        /// </returns>
-        /// <exception cref="ArgumentException">
-        /// If the type of the given building is not defined as the main building for this addon type.
-        /// </exception>
-        RCSet<RCIntVector> CheckPlacementConstraints(Building mainBuilding, RCIntVector position);
     }
 }

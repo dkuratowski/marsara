@@ -105,13 +105,27 @@ namespace RC.Engine.Simulator.Engine
         /// collects all the violating quadratic coordinates relative to the given position.
         /// </summary>
         /// <param name="position">The position to be checked.</param>
+        /// <param name="entitiesToIgnore">
+        /// The list of entities to be ignored during the check. All entities in this list shall belong to the scenario of this entity.
+        /// </param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating the constraints of this entity.
         /// </returns>
-        public RCSet<RCIntVector> CheckPlacementConstraints(RCIntVector position)
+        public RCSet<RCIntVector> CheckPlacementConstraints(RCIntVector position, RCSet<Entity> entitiesToIgnore)
         {
-            return this.ElementType.CheckPlacementConstraints(this, position);
+            RCSet<Entity> entitiesToIgnoreSet = new RCSet<Entity>(entitiesToIgnore) { this };
+            return this.ElementType.CheckPlacementConstraints(this.Scenario, position, entitiesToIgnoreSet);
         }
+
+        /// <summary>
+        /// Checks whether this entity can overlap the given other entity.
+        /// </summary>
+        /// <param name="otherEntity">The other entity to be checked.</param>
+        /// <returns>True if this entity can overlap the given other entity; otherwise false.</returns>
+        /// <remarks>
+        /// This method can be overriden by the derived classes. By default, overlap between entities is not enabled.
+        /// </remarks>
+        public virtual bool IsOverlapEnabled(Entity otherEntity) { return false; }
 
         /// <summary>
         /// Gets the type of the command that is currently being executed by this entity or null if there is no command currently

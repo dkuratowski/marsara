@@ -11,7 +11,7 @@ namespace RC.Engine.Simulator.Terran.Buildings
     /// <summary>
     /// Represents a Terran Armory.
     /// </summary>
-    class Armory : Building
+    class Armory : TerranBuilding
     {
         /// <summary>
         /// Constructs a Terran Armory instance.
@@ -19,19 +19,9 @@ namespace RC.Engine.Simulator.Terran.Buildings
         public Armory()
             : base(ARMORY_TYPE_NAME,
                    new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78 / (RCNumber)1000),
+                   new ConstructionBehavior("Construction0", "Construction1", "Construction2"),
                    new ProductionAnimationBehavior("Producing", "Normal"))
         {
-        }
-
-        /// <see cref="ScenarioElement.AttachToMap"/>
-        public override bool AttachToMap(RCNumVector position)
-        {
-            bool attachToMapSuccess = base.AttachToMap(position);
-            if (attachToMapSuccess)
-            {
-                this.MotionControl.Fix();
-            }
-            return attachToMapSuccess;
         }
 
         /// <see cref="Entity.DestructionAnimationName"/>

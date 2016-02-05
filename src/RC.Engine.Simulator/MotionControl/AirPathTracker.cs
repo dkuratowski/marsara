@@ -32,7 +32,7 @@ namespace RC.Engine.Simulator.MotionControl
             if (vtolOnTheSpot)
             {
                 /// Taking-off on the spot.
-                return this.ValidatePosition(this.ControlledEntity.MotionControl.PositionVector.Read()) ?
+                return this.ValidateMove(RCNumVector.Undefined, this.ControlledEntity.MotionControl.PositionVector.Read()) ?
                     this.ControlledEntity.MotionControl.PositionVector.Read() :
                     RCNumVector.Undefined;
             }
@@ -43,27 +43,46 @@ namespace RC.Engine.Simulator.MotionControl
 
             RCNumber transitionValue = topToMapEdgeDistance <= Constants.MAX_VTOL_TRANSITION ? topToMapEdgeDistance : Constants.MAX_VTOL_TRANSITION;
             RCNumVector positionAfterTakeOff = this.ControlledEntity.MotionControl.PositionVector.Read() - new RCNumVector(0, transitionValue);
-            return this.ValidatePosition(positionAfterTakeOff) ? positionAfterTakeOff : RCNumVector.Undefined;
+            return this.ValidateMove(RCNumVector.Undefined, positionAfterTakeOff) ? positionAfterTakeOff : RCNumVector.Undefined;
         }
 
-        /// <see cref="PathTrackerBase.ValidatePosition"/>
-        public override bool ValidatePosition(RCNumVector position)
+        /// <see cref="PathTrackerBase.ValidateMove"/>
+        public override bool ValidateMove(RCNumVector fromPosition, RCNumVector toPosition)
         {
-            if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
+            if (toPosition == RCNumVector.Undefined) { throw new ArgumentNullException("toPosition"); }
 
-            /// Detect collision with other entities in the air.
-            RCNumRectangle newEntityArea = this.ControlledEntity.CalculateArea(position);
-            if (this.ControlledEntity.Scenario.GetElementsOnMap<Entity>(newEntityArea, MapObjectLayerEnum.AirObjects)
-                .Any(
-                    collidingEntity =>
-                        collidingEntity != this.ControlledEntity &&
-                        collidingEntity.MotionControl.Status == MotionControlStatusEnum.InAir))
+            bool collisionAtStart = false;
+            bool collisionAtEnd = true;
+            if (fromPosition != RCNumVector.Undefined)
             {
-                return false;
+                /// Detect collision with other entities at the starting position of the move.
+                RCNumRectangle newEntityArea = this.ControlledEntity.CalculateArea(fromPosition);
+                collisionAtStart =
+                    this.ControlledEntity.Scenario.GetElementsOnMap<Entity>(newEntityArea, MapObjectLayerEnum.AirObjects,
+                        MapObjectLayerEnum.AirReservations)
+                        .Any(
+                            collidingEntity =>
+                                collidingEntity != this.ControlledEntity &&
+                                !this.ControlledEntity.IsOverlapEnabled(collidingEntity) &&
+                                !collidingEntity.IsOverlapEnabled(this.ControlledEntity));
             }
 
-            /// Detect collision with entity reservations in the air.
-            return this.ControlledEntity.Scenario.GetMapObjects(newEntityArea, MapObjectLayerEnum.AirReservations).Count == 0;
+            if (toPosition != fromPosition)
+            {
+                /// Detect collision with other entities at the target position of the move.
+                RCNumRectangle newEntityArea = this.ControlledEntity.CalculateArea(toPosition);
+                collisionAtEnd =
+                    this.ControlledEntity.Scenario.GetElementsOnMap<Entity>(newEntityArea, MapObjectLayerEnum.AirObjects,
+                        MapObjectLayerEnum.AirReservations)
+                        .Any(
+                            collidingEntity =>
+                                collidingEntity != this.ControlledEntity &&
+                                !this.ControlledEntity.IsOverlapEnabled(collidingEntity) &&
+                                !collidingEntity.IsOverlapEnabled(this.ControlledEntity));
+            }
+
+            /// The controlled entity shall collide at the starting position or not collide at either endpoints of the move.
+            return collisionAtStart || !collisionAtEnd;
         }
 
         /// <see cref="PathTrackerBase.CalculatePreferredVelocity"/>
@@ -72,20 +91,10 @@ namespace RC.Engine.Simulator.MotionControl
             return this.TargetPosition - this.ControlledEntity.MotionControl.PositionVector.Read();
         }
 
-        /// <see cref="PathTrackerBase.CollectNearbyDynamicObstacles"/>
-        protected override IEnumerable<DynamicObstacleInfo> CollectNearbyDynamicObstacles()
+        /// <see cref="PathTrackerBase.IsObstacle"/>
+        protected override bool IsObstacle(Entity entity)
         {
-            List<DynamicObstacleInfo> retList = new List<DynamicObstacleInfo>();
-            RCSet<Entity> entitiesInRange = this.ControlledEntity.Locator.SearchNearbyEntities(ENVIRONMENT_SIGHT_RANGE);
-            foreach (Entity entityInRange in entitiesInRange.Where(entity => entity.MotionControl.IsFlying))
-            {
-                retList.Add(new DynamicObstacleInfo()
-                {
-                    Position = entityInRange.Area,
-                    Velocity = entityInRange.MotionControl.VelocityVector.Read()
-                });
-            }
-            return retList;
+            return entity.MotionControl.IsFlying;
         }
 
         /// <see cref="PathTrackerBase.CalculateDistanceToTarget"/>
@@ -103,10 +112,5 @@ namespace RC.Engine.Simulator.MotionControl
         }
 
         #endregion PathTrackerBase overrides
-
-        /// <summary>
-        /// The range of the environment in quadratic tiles taken into account when collecting dynamic obstacles.
-        /// </summary>
-        private const int ENVIRONMENT_SIGHT_RANGE = 2;
     }
 }

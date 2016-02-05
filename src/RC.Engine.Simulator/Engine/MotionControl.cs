@@ -166,6 +166,19 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
+        /// Validates the given target position.
+        /// </summary>
+        /// <param name="position">The target position to be checked.</param>
+        /// <returns>True if the owner entity could be placed at the given position; otherwise false.</returns>
+        public bool ValidatePosition(RCNumVector position)
+        {
+            if (this.Status != MotionControlStatusEnum.OnGround && this.Status != MotionControlStatusEnum.InAir) { throw new InvalidOperationException("Invalid MotionControl state!"); }
+            if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            return this.currentPathTracker.Read().ValidateMove(RCNumVector.Undefined, position);
+        }
+
+        /// <summary>
         /// Orders this motion control to stop at its current position. If the status of this motion control is Fixed, TakingOff or Landing then this function has no effect.
         /// </summary>
         public void StopMoving()
@@ -271,7 +284,7 @@ namespace RC.Engine.Simulator.Engine
                         MapUtils.ComputeDistance(this.position.Read(), targetPosition) < TARGET_DISTANCE_THRESHOLD)
                     {
                         /// If yes, move the entity exactly to the target position.
-                        if (this.currentPathTracker.Read().ValidatePosition(targetPosition))
+                        if (this.currentPathTracker.Read().ValidateMove(this.position.Read(), targetPosition))
                         {
                             this.SetPosition(targetPosition);
                         }
@@ -324,7 +337,7 @@ namespace RC.Engine.Simulator.Engine
             if (this.Status != MotionControlStatusEnum.OnGround && this.Status != MotionControlStatusEnum.InAir) { throw new InvalidOperationException("Invalid MotionControl state!"); }
             if (toPosition == RCNumVector.Undefined) { throw new ArgumentNullException("toPosition"); }
 
-            if (this.currentPathTracker.Read().ValidatePosition(toPosition))
+            if (this.currentPathTracker.Read().ValidateMove(RCNumVector.Undefined, toPosition))
             {
                 this.SetPosition(toPosition);
                 return true;
@@ -382,24 +395,28 @@ namespace RC.Engine.Simulator.Engine
                 int currVelocityIndex = 0;
                 int bestVelocityIndex = -1;
                 RCNumber minPenalty = 0;
-                List<RCNumVector> admissibleVelocities = new List<RCNumVector>(this.velocityGraph.GetAdmissibleVelocities(this.velocity.Read()));
+                List<RCNumVector> admissibleVelocities = this.velocityGraph.GetAdmissibleVelocities(this.velocity.Read());
 
                 foreach (RCNumVector admissibleVelocity in admissibleVelocities)
                 {
                     if (this.currentPathTracker.Read().ValidateVelocity(admissibleVelocity))
                     {
                         RCNumVector checkedVelocity = admissibleVelocity * 2 - this.velocity.Read(); /// We calculate with RVOs instead of VOs.
-                        RCNumber timeToCollisionMin = -1;
-                        foreach (DynamicObstacleInfo obstacle in this.currentPathTracker.Read().DynamicObstacles)
+                        bool collisionDetected = false;
+                        foreach (Tuple<RCNumRectangle, RCNumVector> obstacle in this.currentPathTracker.Read().DynamicObstacles)
                         {
-                            RCNumber timeToCollision = this.CalculateTimeToCollision(this.owner.Read().Area, checkedVelocity, obstacle.Position, obstacle.Velocity);
-                            if (timeToCollision >= 0 && (timeToCollisionMin < 0 || timeToCollision < timeToCollisionMin)) { timeToCollisionMin = timeToCollision; }
+                            RCNumRectangle obstacleArea = obstacle.Item1;
+                            RCNumVector obstacleVelocity = obstacle.Item2;
+                            if (this.DetectCollision(this.owner.Read().Area, checkedVelocity, obstacleArea, obstacleVelocity))
+                            {
+                                collisionDetected = true;
+                                break;
+                            }
                         }
 
-                        if (timeToCollisionMin != 0)
+                        if (!collisionDetected)
                         {
-                            RCNumber penalty = (timeToCollisionMin > 0 ? (RCNumber)1 / timeToCollisionMin : 0)
-                                             + MapUtils.ComputeDistance(this.currentPathTracker.Read().PreferredVelocity, admissibleVelocity);
+                            RCNumber penalty = MapUtils.ComputeDistance(this.currentPathTracker.Read().PreferredVelocity, admissibleVelocity);
                             if (bestVelocityIndex == -1 || penalty < minPenalty)
                             {
                                 minPenalty = penalty;
@@ -428,7 +445,7 @@ namespace RC.Engine.Simulator.Engine
             if (this.velocity.Read() != new RCNumVector(0, 0))
             {
                 RCNumVector newPosition = this.position.Read() + this.velocity.Read();
-                if (this.currentPathTracker.Read().ValidatePosition(newPosition))
+                if (this.currentPathTracker.Read().ValidateMove(this.position.Read(), newPosition))
                 {
                     this.SetPosition(newPosition);
                 }
@@ -497,80 +514,22 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
-        /// Calculates the time to collision between two moving rectangular objects.
+        /// Discrete collision detection between two moving rectangular objects.
         /// </summary>
         /// <param name="rectangleA">The rectangular area of the first object.</param>
         /// <param name="velocityA">The velocity of the first object.</param>
         /// <param name="rectangleB">The rectangular area of the second object.</param>
         /// <param name="velocityB">The velocity of the second object.</param>
-        /// <returns>The time to the collision between the two objects or a negative number if the two objects won't collide in the future.</returns>
-        private RCNumber CalculateTimeToCollision(RCNumRectangle rectangleA, RCNumVector velocityA, RCNumRectangle rectangleB, RCNumVector velocityB)
+        /// <returns>True if the two objects will collide in the next frame but they are not colliding in the current frame; otherwise false.</returns>
+        private bool DetectCollision(RCNumRectangle rectangleA, RCNumVector velocityA, RCNumRectangle rectangleB, RCNumVector velocityB)
         {
-            /// Calculate the relative velocity of A with respect to B.
-            RCNumVector relativeVelocityOfA = velocityA - velocityB;
-            if (relativeVelocityOfA == new RCNumVector(0, 0)) { return -1; }
+            /// No need to detect collision if the two objects are colliding currently.
+            if (rectangleA.IntersectsWith(rectangleB)) { return false; }
 
-            /// Calculate the center of the first object and enlarge the area of the second object with the size of the first object.
-            RCNumVector centerOfA = new RCNumVector((rectangleA.Left + rectangleA.Right) / 2,
-                                                    (rectangleA.Top + rectangleA.Bottom) / 2);
-            RCNumRectangle enlargedB = new RCNumRectangle(rectangleB.X - rectangleA.Width / 2,
-                                                          rectangleB.Y - rectangleA.Height / 2,
-                                                          rectangleA.Width + rectangleB.Width,
-                                                          rectangleA.Height + rectangleB.Height);
-
-            /// Calculate the collision time interval in the X dimension.
-            bool isParallelX = relativeVelocityOfA.X == 0;
-            RCNumber collisionTimeLeft = !isParallelX ? (enlargedB.Left - centerOfA.X) / relativeVelocityOfA.X : 0;
-            RCNumber collisionTimeRight = !isParallelX ? (enlargedB.Right - centerOfA.X) / relativeVelocityOfA.X : 0;
-            RCNumber collisionTimeBeginX = !isParallelX ? (collisionTimeLeft < collisionTimeRight ? collisionTimeLeft : collisionTimeRight) : 0;
-            RCNumber collisionTimeEndX = !isParallelX ? (collisionTimeLeft > collisionTimeRight ? collisionTimeLeft : collisionTimeRight) : 0;
-
-            /// Calculate the collision time interval in the Y dimension.
-            bool isParallelY = relativeVelocityOfA.Y == 0;
-            RCNumber collisionTimeTop = !isParallelY ? (enlargedB.Top - centerOfA.Y) / relativeVelocityOfA.Y : 0;
-            RCNumber collisionTimeBottom = !isParallelY ? (enlargedB.Bottom - centerOfA.Y) / relativeVelocityOfA.Y : 0;
-            RCNumber collisionTimeBeginY = !isParallelY ? (collisionTimeTop < collisionTimeBottom ? collisionTimeTop : collisionTimeBottom) : 0;
-            RCNumber collisionTimeEndY = !isParallelY ? (collisionTimeTop > collisionTimeBottom ? collisionTimeTop : collisionTimeBottom) : 0;
-
-            if (!isParallelX && !isParallelY)
-            {
-                /// Both X and Y dimensions have finite collision time interval.
-                if (collisionTimeBeginX <= collisionTimeBeginY && collisionTimeBeginY < collisionTimeEndX && collisionTimeEndX <= collisionTimeEndY)
-                {
-                    return collisionTimeBeginY;
-                }
-                else if (collisionTimeBeginY <= collisionTimeBeginX && collisionTimeBeginX < collisionTimeEndX && collisionTimeEndX <= collisionTimeEndY)
-                {
-                    return collisionTimeBeginX;
-                }
-                else if (collisionTimeBeginY <= collisionTimeBeginX && collisionTimeBeginX < collisionTimeEndY && collisionTimeEndY <= collisionTimeEndX)
-                {
-                    return collisionTimeBeginX;
-                }
-                else if (collisionTimeBeginX <= collisionTimeBeginY && collisionTimeBeginY < collisionTimeEndY && collisionTimeEndY <= collisionTimeEndX)
-                {
-                    return collisionTimeBeginY;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-            else if (!isParallelX && isParallelY)
-            {
-                /// Only X dimension has finite collision time interval.
-                return centerOfA.Y > enlargedB.Top && centerOfA.Y < enlargedB.Bottom ? collisionTimeBeginX : -1;
-            }
-            else if (isParallelX && !isParallelY)
-            {
-                /// Only Y dimension has finite collision time interval.
-                return centerOfA.X > enlargedB.Left && centerOfA.X < enlargedB.Right ? collisionTimeBeginY : -1;
-            }
-            else
-            {
-                /// None of the dimensions have finite collision time interval.
-                return -1;
-            }
+            /// Otherwise detect collision normally.
+            RCNumRectangle newRectanglePosA = rectangleA + velocityA;
+            RCNumRectangle newRectanglePosB = rectangleB + velocityB;
+            return newRectanglePosA.IntersectsWith(newRectanglePosB);
         }
 
         /// <summary>

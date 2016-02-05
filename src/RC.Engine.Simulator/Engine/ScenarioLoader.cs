@@ -90,7 +90,7 @@ namespace RC.Engine.Simulator.Engine
             /// Check the constraints of the visible entities.
             foreach (Entity entity in scenario.GetElementsOnMap<Entity>(MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects))
             {
-                if (entity.CheckPlacementConstraints(entity.MapObject.QuadraticPosition.Location).Count != 0)
+                if (entity.CheckPlacementConstraints(entity.MapObject.QuadraticPosition.Location, new RCSet<Entity>()).Count != 0)
                 {
                     throw new MapException(string.Format("Entity at {0} is voilating its placement constraints!", entity.MapObject.QuadraticPosition.Location));
                 }

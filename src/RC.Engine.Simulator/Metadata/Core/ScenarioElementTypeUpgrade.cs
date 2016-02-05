@@ -139,15 +139,9 @@ namespace RC.Engine.Simulator.Metadata.Core
         }
 
         /// <see cref="IScenarioElementTypeInternal.CheckPlacementConstraints"/>
-        RCSet<RCIntVector> IScenarioElementTypeInternal.CheckPlacementConstraints(Scenario scenario, RCIntVector position)
+        RCSet<RCIntVector> IScenarioElementTypeInternal.CheckPlacementConstraints(Scenario scenario, RCIntVector position, RCSet<Entity> entitiesToIgnore)
         {
-            return this.originalElementType.CheckPlacementConstraints(scenario, position);
-        }
-
-        /// <see cref="IScenarioElementTypeInternal.CheckPlacementConstraints"/>
-        RCSet<RCIntVector> IScenarioElementTypeInternal.CheckPlacementConstraints(Entity entity, RCIntVector position)
-        {
-            return this.originalElementType.CheckPlacementConstraints(entity, position);
+            return this.originalElementType.CheckPlacementConstraints(scenario, position, entitiesToIgnore);
         }
 
         #endregion IScenarioElementTypeInternal
@@ -173,10 +167,6 @@ namespace RC.Engine.Simulator.Metadata.Core
                 return retList;
             }
         }
-
-
-        /// <see cref="IAddonTypeInternal.CheckPlacementConstraints"/>
-        RCSet<RCIntVector> IAddonTypeInternal.CheckPlacementConstraints(Building mainBuilding, RCIntVector position) { return this.originalAddonType.CheckPlacementConstraints(mainBuilding, position); }
 
         #endregion IAddonTypeInternal
 
@@ -243,10 +233,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         }
 
         /// <see cref="IBuildingTypeInternal.CheckPlacementConstraints"/>
-        RCSet<RCIntVector> IBuildingTypeInternal.CheckPlacementConstraints(Scenario scenario, RCIntVector position, IAddonTypeInternal addonType) { return this.originalBuildingType.CheckPlacementConstraints(scenario, position, addonType); }
-
-        /// <see cref="IBuildingTypeInternal.CheckPlacementConstraints"/>
-        RCSet<RCIntVector> IBuildingTypeInternal.CheckPlacementConstraints(Building building, RCIntVector position, IAddonTypeInternal addonType) { return this.originalBuildingType.CheckPlacementConstraints(building, position, addonType); }
+        RCSet<RCIntVector> IBuildingTypeInternal.CheckPlacementConstraints(Scenario scenario, RCIntVector position, IAddonTypeInternal addonType, RCSet<Entity> entitiesToIgnore) { return this.originalBuildingType.CheckPlacementConstraints(scenario, position, addonType, entitiesToIgnore); }
 
         /// <see cref="IBuildingTypeInternal.GetPlacementSuggestions"/>
         RCSet<Tuple<RCIntRectangle, RCIntVector>> IBuildingTypeInternal.GetPlacementSuggestions(Scenario scenario, RCIntRectangle area) { return this.originalBuildingType.GetPlacementSuggestions(scenario, area); }

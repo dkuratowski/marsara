@@ -31,35 +31,21 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <param name="scenario">Reference to the given scenario.</param>
         /// <param name="position">The position to be checked.</param>
+        /// <param name="entitiesToIgnore">
+        /// The list of entities to be ignored during the check. All entities in this list shall belong to the given scenario.
+        /// </param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating this placement constraint.
         /// </returns>
-        public RCSet<RCIntVector> Check(Scenario scenario, RCIntVector position)
+        public RCSet<RCIntVector> Check(Scenario scenario, RCIntVector position, RCSet<Entity> entitiesToIgnore)
         {
             if (this.entityType == null) { throw new SimulatorException("Entity type has not yet been set for this constraint!"); }
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-
-            return this.CheckImpl(scenario, position, null);
-        }
-
-        /// <summary>
-        /// Checks whether this placement constraint allows placing the given entity to its scenario at the given
-        /// quadratic position and collects all the violating quadratic coordinates relative to the given position.
-        /// </summary>
-        /// <param name="entity">Reference to the entity to be checked.</param>
-        /// <param name="position">The position to be checked.</param>
-        /// <returns>
-        /// The list of the quadratic coordinates (relative to the given position) violating this placement constraint.
-        /// </returns>
-        public RCSet<RCIntVector> Check(Entity entity, RCIntVector position)
-        {
-            if (this.entityType == null) { throw new SimulatorException("Entity type has not yet been set for this constraint!"); }
-            if (entity == null) { throw new ArgumentNullException("entity"); }
-            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-            if (entity.Scenario == null) { throw new ArgumentException("The given entity is not added to a scenario!", "entity"); }
-
-            return this.CheckImpl(entity.Scenario, position, entity);
+            if (entitiesToIgnore == null) { throw new ArgumentNullException("entitiesToIgnore"); }
+            if (entitiesToIgnore.Any(entityToIgnore => entityToIgnore.Scenario != scenario)) { throw new ArgumentException("All entities to be ignored shall belong to the given scenario!", "entitiesToIgnore"); }
+            
+            return this.CheckImpl(scenario, position, entitiesToIgnore);
         }
 
         /// <summary>
@@ -76,15 +62,16 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <param name="scenario">Reference to the given scenario.</param>
         /// <param name="position">The position to be checked.</param>
-        /// <param name="entityNotToConsider">An optional entity considered not to be attached to the map during the check.</param>
+        /// <param name="entitiesToIgnore">The list of entities to be ignored during the check.</param>
         /// <returns>
         /// The list of the quadratic coordinates (relative to the given position) violating this placement constraint.
         /// </returns>
         /// <remarks>
         /// This method shall be implemented in the derived classes.
-        /// Note for the implementors: it is guaranteed that if the given entity is not null then its scenario will always equal to the given scenario.
+        /// Note for the implementors: it is guaranteed that if entitiesToIgnore is not empty then their scenario will always equal
+        ///                            to the given scenario.
         /// </remarks>
-        protected abstract RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position, Entity entityNotToConsider);
+        protected abstract RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position, RCSet<Entity> entitiesToIgnore);
 
         /// <summary>
         /// Gets the entity type that this constraint belongs to.

@@ -13,7 +13,7 @@ namespace RC.Engine.Simulator.Engine
     public class BuildableAreaConstraint : EntityPlacementConstraint
     {
         /// <see cref="EntityPlacementConstraint.CheckImpl"/>
-        protected override RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position, Entity entity)
+        protected override RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position, RCSet<Entity> entitiesToIgnore)
         {
             RCIntRectangle objArea = new RCIntRectangle(position, scenario.Map.CellToQuadSize(this.EntityType.Area.Read()));
             RCSet<RCIntVector> retList = new RCSet<RCIntVector>();

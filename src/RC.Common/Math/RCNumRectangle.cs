@@ -287,7 +287,7 @@ namespace RC.Common
             if (!rect.isDefined) { throw new ArgumentNullException("rect"); }
 
             return this.Contains(rect.x, rect.y) &&
-                   this.Contains(rect.x + rect.width - 1, rect.y + rect.height - 1);
+                   this.Contains(rect.x + rect.width - new RCNumber(1), rect.y + rect.height - new RCNumber(1));
         }
 
         /// <summary>

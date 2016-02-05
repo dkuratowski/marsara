@@ -89,7 +89,10 @@
     <Compile Include="Buildings\ScienceFacility.cs" />
     <Compile Include="Buildings\Starport.cs" />
     <Compile Include="Buildings\SupplyDepot.cs" />
+    <Compile Include="Buildings\TerranBuilding.cs" />
     <Compile Include="CommandExecutorPlugin.cs" />
+    <Compile Include="Commands\SCVStartBuildCmdExecution.cs" />
+    <Compile Include="Commands\SCVCmdExecutionFactory.cs" />
     <Compile Include="ElementFactoryPlugin.cs" />
     <Compile Include="TerranAbilities.cs" />
     <Compile Include="TerranHeapManagerPlugin.cs" />

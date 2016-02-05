@@ -31,15 +31,31 @@ namespace RC.Engine.Simulator.Terran
         /// <see cref="IPlugin.Install"/>
         public void Install(IElementFactoryPluginInstall extendedComponent)
         {
-            /// TODO: Write installation code here!
+            /// Player initializer method for Terran.
             extendedComponent.RegisterPlayerInitializer(RaceEnum.Terran, this.TerranInitializer);
+
+            /// Element factory methods for Terran units.
             extendedComponent.RegisterElementFactory<Building>(SCV.SCV_TYPE_NAME, this.CreateUnit<SCV>);
             extendedComponent.RegisterElementFactory<Building>(Marine.MARINE_TYPE_NAME, this.CreateUnit<Marine>);
             extendedComponent.RegisterElementFactory<Building>(Goliath.GOLIATH_TYPE_NAME, this.CreateUnit<Goliath>);
             extendedComponent.RegisterElementFactory<Building>("Wraith", building => true);
             extendedComponent.RegisterElementFactory<Building>("Dropship", building => true);
+
+            /// Element factory methods for Terran addons.
             extendedComponent.RegisterElementFactory<Building>(ComsatStation.COMSATSTATION_TYPE_NAME, this.CreateAddon<ComsatStation>);
             extendedComponent.RegisterElementFactory<Building>(ControlTower.CONTROLTOWER_TYPE_NAME, this.CreateAddon<ControlTower>);
+
+            /// Element factory methods for Terran buildings.
+            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(Academy.ACADEMY_TYPE_NAME, this.CreateBuilding<Academy>);
+            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(Armory.ARMORY_TYPE_NAME, this.CreateBuilding<Armory>);
+            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(Barracks.BARRACKS_TYPE_NAME, this.CreateBuilding<Barracks>);
+            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(CommandCenter.COMMANDCENTER_TYPE_NAME, this.CreateBuilding<CommandCenter>);
+            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(EngineeringBay.ENGINEERINGBAY_TYPE_NAME, this.CreateBuilding<EngineeringBay>);
+            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(Factory.FACTORY_TYPE_NAME, this.CreateBuilding<Factory>);
+            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(MissileTurret.MISSILETURRET_TYPE_NAME, this.CreateBuilding<MissileTurret>);
+            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(ScienceFacility.SCIENCEFACILITY_TYPE_NAME, this.CreateBuilding<ScienceFacility>);
+            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(Starport.STARPORT_TYPE_NAME, this.CreateBuilding<Starport>);
+            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(SupplyDepot.SUPPLYDEPOT_TYPE_NAME, this.CreateBuilding<SupplyDepot>);
         }
 
         /// <see cref="IPlugin.Uninstall"/>
@@ -58,8 +74,8 @@ namespace RC.Engine.Simulator.Terran
 
             /// Add a Terran Command Center to the position of the start location.
             Scenario scenario = player.StartLocation.Scenario;
-            Starport commandCenter = new Starport();
-            //CommandCenter commandCenter = new CommandCenter();
+            //Starport commandCenter = new Starport();
+            CommandCenter commandCenter = new CommandCenter();
             scenario.AddElementToScenario(commandCenter);
             player.AddBuilding(commandCenter);
             commandCenter.AttachToMap(scenario.Map.GetQuadTile(player.QuadraticStartPosition.Location));
@@ -77,8 +93,9 @@ namespace RC.Engine.Simulator.Terran
             for (int scvCount = 0; scvCount < NUM_OF_SCVS; scvCount++)
             {
                 /// Create the next SCV
-                Goliath scv = new Goliath();
-                //SCV scv = new SCV();
+                //Goliath scv = new Goliath();
+                SCV scv = new SCV();
+                //Unit scv = scvCount % 2 == 0 ? (Unit)new SCV() : (Unit)new Marine();
                 scenario.AddElementToScenario(scv);
                 player.AddUnit(scv);
 
@@ -173,6 +190,35 @@ namespace RC.Engine.Simulator.Terran
             }
 
             return addonPlacedSuccessfully;
+        }
+
+        /// <summary>
+        /// Creates a building to the given position and set the given SCV as the constructor of that building.
+        /// </summary>
+        /// <typeparam name="T">The type of the building to be created.</typeparam>
+        /// <param name="topLeftQuadTile">The coordinates of the top-left quadratic tile of the building to be created.</param>
+        /// <param name="constructorScv">The SCV that is the constructor of the building.</param>
+        /// <returns>True if the building has been created successfully; otherwise false.</returns>
+        private bool CreateBuilding<T>(RCIntVector topLeftQuadTile, SCV constructorScv) where T : TerranBuilding, new()
+        {
+            if (topLeftQuadTile == RCIntVector.Undefined) { throw new ArgumentNullException("topLeftQuadTile"); }
+            if (constructorScv == null) { throw new ArgumentNullException("constructorScv"); }
+            if (constructorScv.Scenario == null) { throw new ArgumentException("The constructor SCV is not added to a scenario!", "constructorScv"); }
+            if (constructorScv.MapObject == null) { throw new ArgumentException("The constructor SCV is detached from the map!", "constructorScv"); }
+
+            /// Create the building.
+            T building = new T();
+            constructorScv.Scenario.AddElementToScenario(building);
+
+            /// Try to start the construction of the building to the map.
+            bool constructionStarted = constructorScv.StartConstruct(building, topLeftQuadTile);
+            if (!constructionStarted)
+            {
+                constructorScv.Scenario.RemoveElementFromScenario(building);
+                building.Dispose();
+            }
+
+            return constructionStarted;
         }
 
         private const int NUM_OF_SCVS = 4;

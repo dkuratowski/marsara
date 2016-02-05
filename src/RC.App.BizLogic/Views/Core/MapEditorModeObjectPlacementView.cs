@@ -43,7 +43,7 @@ namespace RC.App.BizLogic.Views.Core
         /// <see cref="ObjectPlacementView.CheckObjectConstraints"/>
         protected override RCSet<RCIntVector> CheckObjectConstraints(RCIntVector topLeftQuadCoords)
         {
-            return this.fogOfWarBC.CheckPlacementConstraints(this.objectType, topLeftQuadCoords);
+            return this.fogOfWarBC.CheckPlacementConstraints(this.objectType, topLeftQuadCoords, new RCSet<Entity>());
         }
 
         /// <see cref="ObjectPlacementView.GetObjectRelativeQuadRectangles"/>

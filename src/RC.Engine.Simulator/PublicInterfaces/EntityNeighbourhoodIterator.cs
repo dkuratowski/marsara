@@ -23,7 +23,7 @@ namespace RC.Engine.Simulator.PublicInterfaces
 
         #region Overrides from CellIteratorBase
 
-        /// <see cref="CellIteratorBase.GetEnumeratorImpl"/>
+        /// <see cref="CellIteratorBase.ScanOperations"/>
         protected override IEnumerable<ScanOperation> ScanOperations
         {
             get

@@ -27,6 +27,7 @@ namespace RC.App.BizLogic.Views.Core
             this.commandManagerBC = ComponentManager.GetInterface<ICommandManagerBC>();
             this.selectionManagerBC = ComponentManager.GetInterface<ISelectionManagerBC>();
 
+            this.currentSelection = new RCSet<Entity>();
             this.buildingToBePlaced = null;
             this.buildingTypeToBePlaced = null;
             this.addonTypeToBePlaced = null;
@@ -75,14 +76,14 @@ namespace RC.App.BizLogic.Views.Core
             if (this.buildingToBePlaced != null)
             {
                 return this.addonTypeToBePlaced != null
-                    ? this.fogOfWarBC.CheckPlacementConstraints(this.buildingToBePlaced, topLeftQuadCoords, this.addonTypeToBePlaced)
-                    : this.fogOfWarBC.CheckPlacementConstraints(this.buildingToBePlaced, topLeftQuadCoords);
+                    ? this.fogOfWarBC.CheckPlacementConstraints(this.buildingToBePlaced, topLeftQuadCoords, this.addonTypeToBePlaced, new RCSet<Entity>())
+                    : this.fogOfWarBC.CheckPlacementConstraints(this.buildingToBePlaced, topLeftQuadCoords, new RCSet<Entity>());
             }
             else if (this.buildingTypeToBePlaced != null)
             {
                 return this.addonTypeToBePlaced != null
-                    ? this.fogOfWarBC.CheckPlacementConstraints(this.buildingTypeToBePlaced, topLeftQuadCoords, this.addonTypeToBePlaced)
-                    : this.fogOfWarBC.CheckPlacementConstraints(this.buildingTypeToBePlaced, topLeftQuadCoords);
+                    ? this.fogOfWarBC.CheckPlacementConstraints(this.buildingTypeToBePlaced, topLeftQuadCoords, this.addonTypeToBePlaced, this.currentSelection)
+                    : this.fogOfWarBC.CheckPlacementConstraints(this.buildingTypeToBePlaced, topLeftQuadCoords, this.currentSelection);
             }
             else
             {
@@ -165,6 +166,18 @@ namespace RC.App.BizLogic.Views.Core
         }
 
         /// <summary>
+        /// Refreshes the set of currently selected entities.
+        /// </summary>
+        private void RefreshCurrentSelection()
+        {
+            this.currentSelection.Clear();
+            foreach (int selectedEntityID in this.selectionManagerBC.CurrentSelection)
+            {
+                this.currentSelection.Add(this.scenarioManagerBC.ActiveScenario.GetElement<Entity>(selectedEntityID));
+            }
+        }
+
+        /// <summary>
         /// Updates the placement data based on the current state of the game engine.
         /// </summary>
         private void UpdatePlacementData()
@@ -180,6 +193,7 @@ namespace RC.App.BizLogic.Views.Core
                 }
                 else if (this.commandManagerBC.BuildingType != null)
                 {
+                    this.RefreshCurrentSelection();
                     newBuildingTypeToBePlaced = this.scenarioManagerBC.Metadata.GetBuildingType(this.commandManagerBC.BuildingType);
                     if (newBuildingTypeToBePlaced == null) { throw new InvalidOperationException(string.Format("Building type '{0}' is not defined in the metadata!", this.commandManagerBC.BuildingType)); }
                 }
@@ -227,6 +241,11 @@ namespace RC.App.BizLogic.Views.Core
                 }
             }
         }
+
+        /// <summary>
+        /// The set of the currently selected entities.
+        /// </summary>
+        private RCSet<Entity> currentSelection;
 
         /// <summary>
         /// Reference to the building to be placed.

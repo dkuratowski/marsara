@@ -124,7 +124,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         #endregion General data properties
 
         /// <see cref="IScenarioElementTypeInternal.CheckPlacementConstraints"/>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position)
+        public RCSet<RCIntVector> CheckPlacementConstraints(Scenario scenario, RCIntVector position, RCSet<Entity> entitiesToIgnore)
         {
             if (scenario == null) { throw new ArgumentNullException("scenario"); }
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
@@ -133,24 +133,13 @@ namespace RC.Engine.Simulator.Metadata.Core
             RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
             foreach (EntityPlacementConstraint constraint in this.placementConstraints)
             {
-                retList.UnionWith(constraint.Check(scenario, position));
+                retList.UnionWith(constraint.Check(scenario, position, entitiesToIgnore));
             }
 
             /// Check against map boundaries.
             this.CheckMapBorderIntersections(scenario, position, ref retList);
 
             return retList;
-        }
-
-        /// <see cref="IScenarioElementTypeInternal.CheckPlacementConstraints"/>
-        public RCSet<RCIntVector> CheckPlacementConstraints(Entity entity, RCIntVector position)
-        {
-            if (entity == null) { throw new ArgumentNullException("entity"); }
-            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-            if (entity.ElementType != new IScenarioElementType(this)) { throw new ArgumentException("The type of the given entity is not the same as this type!", "entity"); }
-            if (entity.Scenario == null) { throw new ArgumentException("The given entity is not added to a scenario!", "entity"); }
-
-            return this.CheckPlacementConstraintsImpl(entity, position);
         }
 
         #endregion IScenarioElementType members
@@ -474,24 +463,6 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// Gets a reference to the metadata object that this type belongs to.
         /// </summary>
         protected ScenarioMetadata Metadata { get { return this.metadata; } }
-
-        /// <summary>
-        /// The internal implementation of the CheckPlacementConstraints method.
-        /// </summary>
-        protected RCSet<RCIntVector> CheckPlacementConstraintsImpl(Entity entityNotToConsider, RCIntVector position)
-        {
-            /// Check against the constraints defined by this scenario element type.
-            RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
-            foreach (EntityPlacementConstraint constraint in this.placementConstraints)
-            {
-                retList.UnionWith(constraint.Check(entityNotToConsider, position));
-            }
-
-            /// Check against map boundaries.
-            this.CheckMapBorderIntersections(entityNotToConsider.Scenario, position, ref retList);
-
-            return retList;
-        }
 
         /// <summary>
         /// Checks whether placing an entity of this type to the given scenario at the given quadratic position remains inside the boundaries of

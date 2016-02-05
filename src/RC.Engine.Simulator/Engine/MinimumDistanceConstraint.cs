@@ -26,7 +26,7 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <see cref="EntityPlacementConstraint.CheckImpl"/>
-        protected override RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position, Entity entity)
+        protected override RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position, RCSet<Entity> entitiesToIgnore)
         {
             RCIntRectangle objArea = new RCIntRectangle(position, scenario.Map.CellToQuadSize(this.EntityType.Area.Read()));
             RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
@@ -38,22 +38,13 @@ namespace RC.Engine.Simulator.Engine
                     if (absQuadCoords.X >= 0 && absQuadCoords.X < scenario.Map.Size.X &&
                         absQuadCoords.Y >= 0 && absQuadCoords.Y < scenario.Map.Size.Y)
                     {
-                        /// Collect all the entities that are on the ground and too close.
+                        /// Collect all the entities that are on the ground, are too close and not to be ignored.
                         RCIntRectangle checkedQuadRect = new RCIntRectangle(absQuadCoords - this.minimumDistance, this.checkedQuadRectSize);
                         RCNumRectangle checkedArea = (RCNumRectangle)scenario.Map.QuadToCellRect(checkedQuadRect) - new RCNumVector(1, 1) / 2;
                         RCSet<T> entitiesTooClose = scenario.GetElementsOnMap<T>(checkedArea, MapObjectLayerEnum.GroundObjects);
-                        if (entity != null)
+                        if (entitiesTooClose.Any(entityTooClose => !entitiesToIgnore.Contains(entityTooClose)))
                         {
-                            /// If an entity is given then we check whether the entitiesTooClose list contains other entities as well.
-                            if (!(entitiesTooClose.Count == 0 || (entitiesTooClose.Count == 1 && entitiesTooClose.Contains(entity))))
-                            {
-                                retList.Add(absQuadCoords - position);
-                            }
-                        }
-                        else
-                        {
-                            /// If an entity is not given then we check whether the entitiesTooClose list contains at least 1 entity.
-                            if (entitiesTooClose.Count > 0) { retList.Add(absQuadCoords - position); }
+                            retList.Add(absQuadCoords - position);
                         }
                     }
                 }
