@@ -55,8 +55,10 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <see cref="Weapon.IsInRange"/>
-        protected override bool IsInRange(RCNumber quadDistance)
+        protected override bool IsInRange(RCNumber distance)
         {
+            if (this.weaponData.RangeMax.Read() == 0) { return distance <= NEARBY_DISTANCE; }
+            RCNumber quadDistance = MapUtils.CellToQuadDistance(distance);
             return quadDistance >= this.weaponData.RangeMin.Read() && quadDistance <= this.weaponData.RangeMax.Read();
         }
 
@@ -92,5 +94,10 @@ namespace RC.Engine.Simulator.Engine
         /// of the target entity.
         /// </summary>
         private const int LOW_TO_HIGH_GROUNDLEVEL_DAMAGE_PROBABILITY = 70;
+
+        /// <summary>
+        /// The distance to be reached in case of nearby weapons.
+        /// </summary>
+        private static readonly RCNumber NEARBY_DISTANCE = 1;
     }
 }

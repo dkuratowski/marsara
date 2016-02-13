@@ -46,7 +46,7 @@ namespace RC.Engine.Simulator.Commands
 
             /// Perform a state refresh in this frame.
             this.timeSinceLastCheck.Write(0);
-            if (this.targetEntity.Read() == null)
+            if (!this.HasToFollowTarget)
             {
                 /// No target to follow -> simple move operation without any target entity.
                 return !this.recipientEntity.Read().MotionControl.IsMoving;
@@ -61,20 +61,15 @@ namespace RC.Engine.Simulator.Commands
         protected override void InitializeImpl_i()
         {
             this.targetEntity.Write(this.LocateEntity(this.targetEntityID.Read()));
-            if (this.targetEntity.Read() == null)
+            if (!this.HasToFollowTarget)
             {
-                /// Target entity is not defined or could not be located -> simply move to the target position.
+                /// Don't have to follow target entity -> simply move to the target position.
                 this.recipientEntity.Read().MotionControl.StartMoving(this.targetPosition.Read());
             }
             else
             {
-                /// Target entity is defined and could be located -> calculate its distance from the recipient entity.
-                RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().Area, this.targetEntity.Read().Area);
-                if (distance > MAX_DISTANCE)
-                {
-                    /// Too far -> start approaching
-                    this.recipientEntity.Read().MotionControl.StartMoving(this.targetEntity.Read().MotionControl.PositionVector.Read());
-                }
+                /// Target entity has to be followed -> start approaching.
+                this.recipientEntity.Read().MotionControl.StartMoving(this.targetEntity.Read().MotionControl.PositionVector.Read());
             }
         }
 
@@ -105,19 +100,30 @@ namespace RC.Engine.Simulator.Commands
         {
             /// Check if target entity still can be located.
             this.targetEntity.Write(this.LocateEntity(this.targetEntity.Read().ID.Read()));
-            if (this.targetEntity.Read() == null) { return; }
+            if (!this.HasToFollowTarget) { return; }
 
             /// Calculate its distance from the recipient entity.
             RCNumber distance = MapUtils.ComputeDistance(this.recipientEntity.Read().Area, this.targetEntity.Read().Area);
-            if (distance <= MAX_DISTANCE)
-            {
-                /// Close enough -> stop the recipient entity.
-                this.recipientEntity.Read().MotionControl.StopMoving();
-            }
-            else
+            if (distance > MAX_DISTANCE)
             {
                 /// Too far -> start approaching again.
                 this.recipientEntity.Read().MotionControl.StartMoving(this.targetEntity.Read().MotionControl.PositionVector.Read());
+            }
+            //else
+            //{
+            //    /// Close enough -> stop the recipient entity.
+            //    this.recipientEntity.Read().MotionControl.StopMoving();
+            //}
+        }
+
+        /// <summary>
+        /// Helper property to determine if a target has to be followed.
+        /// </summary>
+        private bool HasToFollowTarget
+        {
+            get
+            {
+                return this.targetEntity.Read() != null && this.targetEntity.Read().MotionControl.Status != MotionControlStatusEnum.Fixed;
             }
         }
 

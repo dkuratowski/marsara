@@ -7,6 +7,7 @@ using RC.Engine.Simulator.Commands;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.Metadata;
+using RC.Engine.Simulator.Terran.Buildings;
 using RC.Engine.Simulator.Terran.Units;
 
 namespace RC.Engine.Simulator.Terran.Commands
@@ -106,8 +107,7 @@ namespace RC.Engine.Simulator.Terran.Commands
                 case SCVCommandEnum.Hold:
                     return this.CreateHoldExecutions(scvsToHandle);
                 default:
-                    /// TODO: implement more intelligent handling of undefined commands!
-                    return this.CreateMoveExecutions(scvsToHandle, fullEntitySet, targetPosition, targetEntityID);
+                    return this.CreateUndefinedExecutions(scvsToHandle, fullEntitySet, targetPosition, targetEntityID);
             }
         }
 
@@ -134,9 +134,8 @@ namespace RC.Engine.Simulator.Terran.Commands
         private AvailabilityEnum CheckGatherAvailability(RCSet<SCV> scvsToHandle, RCSet<Entity> fullEntitySet)
         {
             if (scvsToHandle.Count != fullEntitySet.Count) { return AvailabilityEnum.Unavailable; }
-
-            // TODO: implement this method!
-            return AvailabilityEnum.Enabled;
+            return scvsToHandle.Any(scv => !scv.IsConstructing) ? AvailabilityEnum.Enabled : AvailabilityEnum.Unavailable;
+            /// TODO: implement this method!
         }
 
         /// <summary>
@@ -148,9 +147,8 @@ namespace RC.Engine.Simulator.Terran.Commands
         private AvailabilityEnum CheckReturnAvailability(RCSet<SCV> scvsToHandle, RCSet<Entity> fullEntitySet)
         {
             if (scvsToHandle.Count != fullEntitySet.Count) { return AvailabilityEnum.Unavailable; }
-
-            // TODO: implement this method!
-            return AvailabilityEnum.Enabled;
+            return scvsToHandle.Any(scv => !scv.IsConstructing) ? AvailabilityEnum.Enabled : AvailabilityEnum.Unavailable;
+            /// TODO: implement this method!
         }
 
         /// <summary>
@@ -249,12 +247,9 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// <param name="buildingType">The type of the building.</param>
         private IEnumerable<CmdExecutionBase> CreateBuildExecutions(RCSet<SCV> scvsToHandle, RCIntVector topLeftQuadTile, string buildingType)
         {
-            foreach (SCV scv in scvsToHandle)
+            foreach (SCV scv in scvsToHandle.Where(scv => !scv.IsConstructing))
             {
-                if (!scv.IsConstructing)
-                {
-                    yield return new SCVStartBuildCmdExecution(scv, buildingType, topLeftQuadTile);
-                }
+                yield return new SCVStartBuildExecution(scv, buildingType, topLeftQuadTile);
             }
         }
 
@@ -264,8 +259,10 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// <param name="scvsToHandle">The SCVs to stop building.</param>
         private IEnumerable<CmdExecutionBase> CreateStopBuildExecutions(RCSet<SCV> scvsToHandle)
         {
-            // TODO: implement!
-            yield break;
+            foreach (SCV scv in scvsToHandle.Where(scv => scv.IsConstructing))
+            {
+                yield return new SCVStopBuildExecution(scv);
+            }
         }
 
         /// <summary>
@@ -294,7 +291,7 @@ namespace RC.Engine.Simulator.Terran.Commands
             {
                 if (scv.IsConstructing)
                 {
-                    // TODO: yield return new StopBuildExecution(scv);
+                    yield return new SCVStopBuildExecution(scv);
                 }
                 else
                 {
@@ -343,6 +340,43 @@ namespace RC.Engine.Simulator.Terran.Commands
             foreach (SCV scv in scvsToHandle.Where(scv => !scv.IsConstructing))
             {
                 yield return new PatrolExecution(scv, magicBox.GetTargetPosition(scv));
+            }
+        }
+
+        /// <summary>
+        /// Creates command executions for undefined command type.
+        /// </summary>
+        /// <param name="scvsToHandle">The SCVs to order.</param>
+        /// <param name="fullEntitySet">The set of selected entities.</param>
+        /// <param name="targetPosition">The target position.</param>
+        /// <param name="targetEntityID">The ID of the target entity or -1 if undefined.</param>
+        private IEnumerable<CmdExecutionBase> CreateUndefinedExecutions(RCSet<SCV> scvsToHandle, RCSet<Entity> fullEntitySet, RCNumVector targetPosition, int targetEntityID)
+        {
+            Entity targetEntity = scvsToHandle.First().Scenario.GetElementOnMap<Entity>(targetEntityID, MapObjectLayerEnum.GroundObjects);
+            TerranBuilding targetBuilding = targetEntity as TerranBuilding;
+
+            MagicBox magicBox = new MagicBox(fullEntitySet, targetPosition);
+            foreach (SCV scv in scvsToHandle.Where(scv => !scv.IsConstructing))
+            {
+                if (targetBuilding != null && targetBuilding.Owner == scv.Owner &&
+                    targetBuilding.ConstructionJob != null && !targetBuilding.ConstructionJob.IsFinished &&
+                    targetBuilding.ConstructionJob.AttachedSCV == null)
+                {
+                    /// The target entity is a friendly Terran building that is under construction but its construction is
+                    /// not currently in progress -> start a continue build command.
+                    yield return new SCVContinueBuildExecution(scv, targetPosition, targetBuilding.ID.Read());
+                }
+                else if (targetEntity != null && targetEntity.Owner != null && targetEntity.Owner != scv.Owner)
+                {
+                    /// The target entity is an enemy entity -> start an attack execution.
+                    yield return new AttackExecution(scv, magicBox.GetTargetPosition(scv), targetEntityID);
+                }
+                else
+                {
+                    /// In any other cases -> start a move execution.
+                    yield return new MoveExecution(scv, magicBox.GetTargetPosition(scv), targetEntityID);
+                }
+                /// TODO: Handle the cases for Repair, Gather and Return commands!
             }
         }
 

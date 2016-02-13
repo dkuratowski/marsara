@@ -72,6 +72,9 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(CommandCenter.COMMANDCENTER_TYPE_NAME));
 
+            /// Terran Supply Depot
+            extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(SupplyDepot.SUPPLYDEPOT_TYPE_NAME));
+
             /// Terran Comsat Station
             extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(ComsatStation.COMSATSTATION_TYPE_NAME));
 

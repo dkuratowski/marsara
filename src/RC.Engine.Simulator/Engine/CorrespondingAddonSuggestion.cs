@@ -21,7 +21,7 @@ namespace RC.Engine.Simulator.Engine
                 for (int y = area.Top; y < area.Bottom; y++)
                 {
                     RCIntVector quadCoords = new RCIntVector(x, y);
-                    Addon addon = scenario.GetFixedEntity(quadCoords) as Addon;
+                    Addon addon = scenario.GetFixedEntity<Addon>(quadCoords);
                     if (addon == null || processedAddons.Contains(addon) ||
                         addon.CurrentMainBuilding != null || !this.BuildingType.HasAddonType(addon.AddonType.Name)) { continue; }
 

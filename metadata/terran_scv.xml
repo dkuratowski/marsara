@@ -16,30 +16,18 @@
     </generalData>
     <groundWeapon name="FusionCutter" displayedName="Fusion Cutter">
       <damage>5</damage>
-      <!--rangeMax>1</rangeMax-->
-      <rangeMax>5</rangeMax>
+      <rangeMax>0</rangeMax>
       <damageType>Normal</damageType>
       <cooldown>15</cooldown>
-      <!--cooldown>50</cooldown-->
-      <missile type="Rocket">
-        <launch direction="North" relativePosition="-1.25;-1.75" />
-        <launch direction="NorthEast" relativePosition="0.25;-2.0" />
-        <launch direction="East" relativePosition="1.75;-1.25" />		
-        <launch direction="SouthEast" relativePosition="2.0;0.25" />		
-        <launch direction="South" relativePosition="1.25;1.75" />		
-        <launch direction="SouthWest" relativePosition="-2.25;0.25" />		
-        <launch direction="West" relativePosition="-1.75;-1.25" />		
-        <launch direction="NorthWest" relativePosition="-2.25;-0.5" />
-      </missile>
-      <missile type="Rocket">
-        <launch direction="North" relativePosition="1.25;-1.75" />
-        <launch direction="NorthEast" relativePosition="2.0;-0.25" />
-        <launch direction="East" relativePosition="1.75;1.25" />		
-        <launch direction="SouthEast" relativePosition="0.25;2.0" />		
-        <launch direction="South" relativePosition="-1.25;1.75" />		
-        <launch direction="SouthWest" relativePosition="-0.5;2.0" />		
-        <launch direction="West" relativePosition="-1.75;1.25" />		
-        <launch direction="NorthWest" relativePosition="-0.5;-2.25" />
+      <missile type="TorchSparkle">
+        <launch direction="North" relativePosition="1.25;-2.75" />
+        <launch direction="NorthEast" relativePosition="3.0;-1.25" />
+        <launch direction="East" relativePosition="2.75;1.25" />		
+        <launch direction="SouthEast" relativePosition="1.25;3.0" />		
+        <launch direction="South" relativePosition="-1.25;2.75" />		
+        <launch direction="SouthWest" relativePosition="-3.25;1.25" />		
+        <launch direction="West" relativePosition="-2.75;-1.25" />		
+        <launch direction="NorthWest" relativePosition="-1.5;-3.25" />
       </missile>
     </groundWeapon>
     <createdIn>CommandCenter</createdIn>
@@ -56,22 +44,6 @@
       <sprite name="Body" variant="SouthWest" sourceRegion="67;1;12;12" offset="-5;0" />
       <sprite name="Body" variant="West" sourceRegion="80;1;11;13" offset="-4;-3" />
       <sprite name="Body" variant="NorthWest" sourceRegion="92;1;12;12" offset="-5;-5" />	  
-	  <sprite name="Sparkling0" variant="North" sourceRegion="105;1;4;3" offset="6;-6" />
-	  <sprite name="Sparkling0" variant="NorthEast" sourceRegion="105;1;4;3" offset="11;-1" />
-	  <sprite name="Sparkling0" variant="East" sourceRegion="105;1;4;3" offset="10;7" />
-	  <sprite name="Sparkling0" variant="SouthEast" sourceRegion="105;1;4;3" offset="5;12" />
-	  <sprite name="Sparkling0" variant="South" sourceRegion="105;1;4;3" offset="-3;10" />
-	  <sprite name="Sparkling0" variant="SouthWest" sourceRegion="105;1;4;3" offset="-8;5" />
-	  <sprite name="Sparkling0" variant="West" sourceRegion="105;1;4;3" offset="-2;-7" />
-	  <sprite name="Sparkling0" variant="NorthWest" sourceRegion="105;1;4;3" offset="-2;-8" />	  
-	  <sprite name="Sparkling1" variant="North" sourceRegion="110;1;6;4" offset="5;-7" />
-	  <sprite name="Sparkling1" variant="NorthEast" sourceRegion="110;1;6;4" offset="10;-2" />
-	  <sprite name="Sparkling1" variant="East" sourceRegion="110;1;6;4" offset="9;6" />
-	  <sprite name="Sparkling1" variant="SouthEast" sourceRegion="110;1;6;4" offset="4;11" />
-	  <sprite name="Sparkling1" variant="South" sourceRegion="110;1;6;4" offset="-4;9" />
-	  <sprite name="Sparkling1" variant="SouthWest" sourceRegion="110;1;6;4" offset="-9;4" />
-	  <sprite name="Sparkling1" variant="West" sourceRegion="110;1;6;4" offset="-3;-8" />
-	  <sprite name="Sparkling1" variant="NorthWest" sourceRegion="110;1;6;4" offset="-3;-9" />	  
 	  <sprite name="Engine" variant="North" sourceRegion="105;6;5;2" offset="1;7" />
 	  <sprite name="Engine" variant="NorthEast" sourceRegion="105;12;4;4" offset="-2;5" />
 	  <sprite name="Engine" variant="East" sourceRegion="111;6;2;5" offset="-2;1" />
@@ -110,11 +82,6 @@
 		</animation>
 		<animation name="Moving">
 			<frame sprites="Body,Engine" />
-			<repeat/>
-		</animation>
-		<animation name="Working">
-			<frame sprites="Sparkling0" duration="5"/>
-			<frame sprites="Sparkling1" duration="5"/>
 			<repeat/>
 		</animation>
 		<animation name="Dying">

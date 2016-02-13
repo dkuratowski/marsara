@@ -22,6 +22,15 @@ namespace RC.App.BizLogic.BusinessComponents
         IEnumerable<ISpritePalette> SpritePalettes { get; }
 
         /// <summary>
+        /// Notifies the command manager that a fast command has been sent to the given position on the map.
+        /// </summary>
+        /// <param name="position">The position on the map (in map coordinates).</param>
+        /// <exception cref="InvalidOperationException">
+        /// If fast command cannot be sent in the current state.
+        /// </exception>
+        void SendFastCommand(RCNumVector position);
+
+        /// <summary>
         /// Notifies the command manager that the given command button has been pressed on the command panel.
         /// </summary>
         /// <param name="panelPosition">The position of the pressed button on the command panel.</param>

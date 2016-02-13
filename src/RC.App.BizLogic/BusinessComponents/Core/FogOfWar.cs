@@ -133,7 +133,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                             this.RemoveEntitySnapshot(visibleQuadCoord);
 
                             /// If there is a non-friendly Entity fixed on the given quadratic tile -> start monitoring.
-                            Entity entityAtQuadTile = this.owner.Scenario.GetFixedEntity(visibleQuadCoord);
+                            Entity entityAtQuadTile = this.owner.Scenario.GetFixedEntity<Entity>(visibleQuadCoord);
                             if (entityAtQuadTile != null && entityAtQuadTile.Owner != this.owner)
                             {
                                 this.monitoredEntities.Add(entityAtQuadTile.ID.Read());

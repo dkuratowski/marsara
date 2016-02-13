@@ -31,6 +31,11 @@ namespace RC.Engine.Simulator.Engine
         public bool IsStarted { get { return this.progress.Read() != -1; } }
 
         /// <summary>
+        /// Gets whether this job has been finished or not.
+        /// </summary>
+        public bool IsFinished { get { return this.progress.Read() == this.product.BuildTime.Read(); }}
+
+        /// <summary>
         /// Gets the progress of this job.
         /// </summary>
         public int Progress
@@ -91,6 +96,7 @@ namespace RC.Engine.Simulator.Engine
         public bool Continue()
         {
             if (!this.IsStarted) { throw new InvalidOperationException("This production job has not yet been started!"); }
+            if (this.IsFinished) { throw new InvalidOperationException("This production job has already been finished!"); }
 
             /// Execute the optional continue operation of the derived class.
             if (!this.ContinueImpl())
@@ -126,7 +132,7 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Constructs a new ProductionJob instance with the given ID for the given product.
         /// </summary>
-        /// <param name="ownerPlayer">The owner entity of this job.</param>
+        /// <param name="ownerPlayer">The owner player of this job.</param>
         /// <param name="product">The product to be created by this job.</param>
         /// <param name="jobID">The ID of this job.</param>
         protected ProductionJob(Player ownerPlayer, IScenarioElementType product, int jobID)

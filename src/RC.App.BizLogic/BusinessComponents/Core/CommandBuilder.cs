@@ -30,7 +30,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         /// <exception cref="InvalidOperationException">If RCCommand could not be created.</exception>
         public RCCommand CreateCommand()
         {
-            if (this.commandType == null) { throw new InvalidOperationException("Undefined command type!"); }
+            //if (this.commandType == null) { throw new InvalidOperationException("Undefined command type!"); }
 
             RCSet<int> recipientEntities = this.selectionManager.CurrentSelection;
             /// TODO: check if all the recipient entities belong to the local player!

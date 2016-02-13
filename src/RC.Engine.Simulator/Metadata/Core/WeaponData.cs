@@ -179,9 +179,9 @@ namespace RC.Engine.Simulator.Metadata.Core
                 if (this.cooldown.Read() <= 0) { throw new SimulatorException("Cooldown cannot be 0 or less!"); }
                 if (this.damage.Read() <= 0) { throw new SimulatorException("Damage cannot be 0 or less!"); }
                 if (this.increment.Read() < 0) { throw new SimulatorException("Increment must be non-negative!"); }
-                if (this.rangeMax.Read() <= 0) { throw new SimulatorException("RangeMax cannot be 0 or less!"); }
+                if (this.rangeMax.Read() < 0) { throw new SimulatorException("RangeMax must be non-negative!"); }
                 if (this.rangeMin.Read() < 0) { throw new SimulatorException("RangeMin must be non-negative!"); }
-                if (this.rangeMin.Read() >= this.rangeMax.Read()) { throw new SimulatorException("RangeMin must be less than RangeMax!"); }
+                if (this.rangeMin.Read() > this.rangeMax.Read()) { throw new SimulatorException("RangeMin must be less than or equal to RangeMax!"); }
 
                 // TODO: remove this comment when all weapon data has been defined correctly in the metadata!
                 //if (this.missiles.Count == 0) { throw new SimulatorException("A weapon data must have at least 1 missile definition!"); }

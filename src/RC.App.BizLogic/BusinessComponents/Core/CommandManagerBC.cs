@@ -106,6 +106,20 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         }
 
         /// <see cref="ICommandManagerBC.PressCommandButton"/>
+        public void SendFastCommand(RCNumVector position)
+        {
+            if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
+
+            CommandBuilder fastCommandBuilder = new CommandBuilder();
+            fastCommandBuilder.SetEnabled(true);
+            fastCommandBuilder.TargetPosition = position;
+
+            RCCommand fastCommand = fastCommandBuilder.CreateCommand();
+            TraceManager.WriteAllTrace(fastCommand, BizLogicTraceFilters.INFO);
+            if (this.NewCommand != null) { this.NewCommand(fastCommand); }
+        }
+
+        /// <see cref="ICommandManagerBC.PressCommandButton"/>
         public void PressCommandButton(RCIntVector panelPosition)
         {
             if (panelPosition == RCIntVector.Undefined) { throw new ArgumentNullException("panelPosition"); }
@@ -134,11 +148,12 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             int productionJobID = productionLine.GetJobID(panelPosition);
 
             /// Create and send the CancelProduction command.
-            RCCommand cancelProductionCommand = new RCCommand(CANCEL_PRODUCTION_COMMAND_TYPE,
-                                                              currentSelection,
-                                                              RCNumVector.Undefined,
-                                                              -1,
-                                                              productionJobID.ToString(CultureInfo.InvariantCulture));
+            CommandBuilder cancelProductionCommandBuilder = new CommandBuilder();
+            cancelProductionCommandBuilder.SetEnabled(true);
+            cancelProductionCommandBuilder.CommandType = CANCEL_PRODUCTION_COMMAND_TYPE;
+            cancelProductionCommandBuilder.Parameter = productionJobID.ToString(CultureInfo.InvariantCulture);
+
+            RCCommand cancelProductionCommand = cancelProductionCommandBuilder.CreateCommand();
             TraceManager.WriteAllTrace(cancelProductionCommand, BizLogicTraceFilters.INFO);
             if (this.NewCommand != null) { this.NewCommand(cancelProductionCommand); }
         }

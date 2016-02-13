@@ -1,0 +1,106 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using RC.Common;
+using RC.Common.ComponentModel;
+using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Simulator.Commands;
+using RC.Engine.Simulator.ComponentInterfaces;
+using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.Metadata;
+using RC.Engine.Simulator.PublicInterfaces;
+using RC.Engine.Simulator.Terran.Buildings;
+using RC.Engine.Simulator.Terran.Units;
+
+namespace RC.Engine.Simulator.Terran.Commands
+{
+    /// <summary>
+    /// Responsible for executing start build commands for SCVs.
+    /// </summary>
+    class SCVStartBuildExecution : SCVBuildExecutionBase
+    {
+        /// <summary>
+        /// Creates a SCVStartBuildExecution instance.
+        /// </summary>
+        /// <param name="recipientSCV">The recipient SCV of this command execution.</param>
+        /// <param name="buildingType">The typename of the building.</param>
+        /// <param name="topLeftQuadTile">The coordinates of the top-left quadratic tile of the building to be created.</param>
+        public SCVStartBuildExecution(SCV recipientSCV, string buildingType, RCIntVector topLeftQuadTile)
+            : base(recipientSCV)
+        {
+            this.topLeftQuadTile = this.ConstructField<RCIntVector>("topLeftQuadTile");
+            this.topLeftQuadTile.Write(topLeftQuadTile);
+            this.buildingTypeName = buildingType;
+        }
+
+        #region Overrides
+
+        /// <see cref="CmdExecutionBase.InitializeImpl"/>
+        protected override void InitializeImpl()
+        {
+            IBuildingType buildingType = this.RecipientSCV.Owner.Metadata.GetBuildingType(this.buildingTypeName);
+            RCIntVector entityQuadSize = this.Scenario.Map.CellToQuadSize(buildingType.Area.Read());
+            RCIntRectangle targetPositionQuadRect = new RCIntRectangle(this.topLeftQuadTile.Read(), entityQuadSize);
+            RCNumRectangle targetPositionRect = (RCNumRectangle)this.Scenario.Map.QuadToCellRect(targetPositionQuadRect) - new RCNumVector(1, 1) / 2;
+            this.TargetPosition = targetPositionRect.Location + (targetPositionRect.Size / 2);
+            this.RecipientSCV.MotionControl.StartMoving(this.TargetPosition);
+            this.Status = SCVBuildExecutionStatusEnum.MovingToTarget;
+        }
+
+        /// <see cref="SCVBuildExecutionBase.ContinueMovingToTarget"/>
+        protected override bool ContinueMovingToTarget()
+        {
+            if (!this.RecipientSCV.MotionControl.IsMoving)
+            {
+                if (this.RecipientSCV.MotionControl.PositionVector.Read() != this.TargetPosition)
+                {
+                    /// SCV could not reach the target position -> finish this command execution.
+                    return true;
+                }
+
+                TerranBuildingConstructionJob job = new TerranBuildingConstructionJob(
+                    this.RecipientSCV.Owner,
+                    this.RecipientSCV.Owner.Metadata.GetBuildingType(this.buildingTypeName),
+                    this.topLeftQuadTile.Read());
+                if (!job.LockResources())
+                {
+                    /// Unable to lock the necessary resources -> abort the job and cancel.
+                    job.Dispose();
+                    return true;
+                }
+
+                if (!job.Start())
+                {
+                    /// Unable to start the job -> abort the job and cancel.
+                    job.Dispose();
+                    return true;
+                }
+
+                /// Attach the construction job to the recipient SCV.
+                job.AttachSCV(this.RecipientSCV);
+                this.Status = SCVBuildExecutionStatusEnum.Constructing;
+            }
+            return false;
+        }
+
+        /// <see cref="SCVBuildExecutionBase.GetConstructedBuilding"/>
+        protected override TerranBuilding GetConstructedBuilding()
+        {
+            return this.Scenario.GetFixedEntity<TerranBuilding>(this.topLeftQuadTile.Read());
+        }
+
+        #endregion Overrides
+
+        /// <summary>
+        /// The coordinates of the top-left quadratic tile of the building to be created.
+        /// </summary>
+        private readonly HeapedValue<RCIntVector> topLeftQuadTile;
+
+        /// <summary>
+        /// The typename of the building.
+        /// </summary>
+        /// TODO: heap this field!
+        private readonly string buildingTypeName;
+    }
+}

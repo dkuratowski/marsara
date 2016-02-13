@@ -470,16 +470,18 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
-        /// Gets the Entity that is fixed to the quadratic grid at the given position.
+        /// Gets the entity of the given type that is fixed to the quadratic grid at the given position.
         /// </summary>
+        /// <typeparam name="T">The type of the entity to get.</typeparam>
         /// <param name="quadCoords">The quadratic position on the map.</param>
         /// <returns>
-        /// The Entity that is fixed to the quadratic grid at the given position or null if there is no Entity fixed to the map at the given position.
+        /// The entity of the given type that is fixed to the quadratic grid at the given position or null if there is no entity of that type
+        /// fixed to the map at the given position.
         /// </returns>
-        public Entity GetFixedEntity(RCIntVector quadCoords)
+        public T GetFixedEntity<T>(RCIntVector quadCoords) where T : Entity
         {
             if (quadCoords == RCIntVector.Undefined) { throw new ArgumentNullException("quadCoords"); }
-            return this.fixedEntities[quadCoords.X, quadCoords.Y];
+            return this.fixedEntities[quadCoords.X, quadCoords.Y] as T;
         }
 
         #endregion Public members: Map management

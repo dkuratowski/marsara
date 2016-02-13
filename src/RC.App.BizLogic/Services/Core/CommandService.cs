@@ -43,17 +43,20 @@ namespace RC.App.BizLogic.Services.Core
         /// <see cref="ICommandService.SendFastCommand"/>
         public void SendFastCommand(RCIntVector position)
         {
-            /// TODO: This is a PROTOTYPE CODE!
             if (this.scenarioManager.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
+            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
-            if (this.selectionManager.CurrentSelection.Count != 0)
-            {
-                this.multiplayerService.PostCommand(new RCCommand(null,
-                                                                  this.selectionManager.CurrentSelection.ToArray(),
-                                                                  this.mapWindowBC.AttachedWindow.WindowToMapCoords(position),
-                                                                  -1,
-                                                                  null));
-            }
+            this.commandManager.SendFastCommand(this.mapWindowBC.AttachedWindow.WindowToMapCoords(position));
+
+            /// TODO: This is a PROTOTYPE CODE!
+            //if (this.selectionManager.CurrentSelection.Count != 0)
+            //{
+            //    this.multiplayerService.PostCommand(new RCCommand(null,
+            //                                                      this.selectionManager.CurrentSelection.ToArray(),
+            //                                                      this.mapWindowBC.AttachedWindow.WindowToMapCoords(position),
+            //                                                      -1,
+            //                                                      null));
+            //}
         }
 
         /// <see cref="ICommandService.SendFastCommandOnMinimap"/>

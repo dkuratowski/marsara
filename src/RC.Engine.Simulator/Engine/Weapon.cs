@@ -34,8 +34,7 @@ namespace RC.Engine.Simulator.Engine
             RCNumRectangle ownerArea = this.owner.Read().Area;
             RCNumRectangle targetArea = targetEntity.Area;
 
-            RCNumber quadDistance = MapUtils.CellToQuadDistance(MapUtils.ComputeDistance(ownerArea, targetArea));
-            return this.IsInRange(quadDistance);
+            return this.IsInRange(MapUtils.ComputeDistance(ownerArea, targetArea));
         }
 
         /// <summary>
@@ -107,9 +106,9 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Check whether the given distance is in the range of this weapon.
         /// </summary>
-        /// <param name="quadDistance">The distance to be checked in quadratic tiles.</param>
+        /// <param name="distance">The distance to be checked in cells.</param>
         /// <returns>True if the given distance is in the range of this weapon.</returns>
-        protected abstract bool IsInRange(RCNumber quadDistance);
+        protected abstract bool IsInRange(RCNumber distance);
 
         /// <summary>
         /// This method is called when at least 1 missile of a missile group has been successfully launched.

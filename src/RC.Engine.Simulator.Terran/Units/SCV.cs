@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Behaviors;
@@ -6,6 +7,7 @@ using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.MotionControl;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Simulator.Terran.Buildings;
+using RC.Engine.Simulator.Terran.Commands;
 
 namespace RC.Engine.Simulator.Terran.Units
 {
@@ -20,89 +22,78 @@ namespace RC.Engine.Simulator.Terran.Units
         public SCV()
             : base(SCV_TYPE_NAME, false, new BasicAnimationsBehavior("Moving", "Stopped", "Stopped"))
         {
-            this.buildingUnderConstruction = this.ConstructField<TerranBuilding>("buildingUnderConstruction");
-            this.buildingUnderConstruction.Write(null);
+            this.constructionJob = this.ConstructField<TerranBuildingConstructionJob>("constructionJob");
+            this.constructionJob.Write(null);
         }
 
         /// <summary>
-        /// Gets whether this SCV is currently constructing a building.
+        /// Gets whether this SCV is currently performing a construction job.
         /// </summary>
-        public bool IsConstructing { get { return this.buildingUnderConstruction.Read() != null; } }
+        public bool IsConstructing { get { return this.constructionJob.Read() != null; } }
 
         /// <summary>
-        /// TODO: remove when TerranBuildingProductionJob implemented!
+        /// Gets the construction job to which this SCV is attached to or null if this SCV is not attached to a construction job.
         /// </summary>
-        public Building BuildingUnderConstruction { get { return this.buildingUnderConstruction.Read(); } }
+        public TerranBuildingConstructionJob ConstructionJob { get { return this.constructionJob.Read(); } }
 
         /// <summary>
-        /// Places the given building to the given quadratic tile and starts its construction.
+        /// Continues the current construction job of this SCV.
         /// </summary>
-        /// <param name="building">The building to be placed.</param>
-        /// <param name="topLeftQuadTile"></param>
-        /// <returns>True if starting the construction of the building succeeded; otherwise false.</returns>
-        public bool StartConstruct(TerranBuilding building, RCIntVector topLeftQuadTile)
-        {
-            if (topLeftQuadTile == RCIntVector.Undefined) { throw new ArgumentNullException("topLeftQuadTile"); }
-            if (building == null) { throw new ArgumentNullException("building"); }
-            if (building.Scenario != this.Scenario) { throw new ArgumentException("The given building shall belong to the same scenario as this SCV", "building"); }
-            if (this.IsConstructing) { throw new InvalidOperationException("This SCV is already constructing a building!"); }
-            if (building.Biometrics.IsUnderConstruction) { throw new InvalidOperationException("The given building is currently under construction!"); }
-
-            /// Take the necessary amount of minerals and vespene gas from the owner player.
-            int mineralsNeeded = building.BuildingType.MineralCost != null ? building.BuildingType.MineralCost.Read() : 0;
-            int vespeneGasNeeded = building.BuildingType.GasCost != null ? building.BuildingType.GasCost.Read() : 0;
-            bool resourcesLockedSuccessfully = this.Owner.TakeResources(mineralsNeeded, vespeneGasNeeded);
-            if (!resourcesLockedSuccessfully)
-            {
-                /// TODO: send a message to the user about insufficient resources!
-                return false;
-            }
-
-            /// Try to attach the given building onto the map.
-            this.buildingUnderConstruction.Write(building);
-            this.Owner.AddBuilding(this.buildingUnderConstruction.Read());
-            bool buildingPlacedSuccessfully = this.buildingUnderConstruction.Read().AttachToMapAndStartConstruction(this.Scenario.Map.GetQuadTile(topLeftQuadTile));
-            if (!buildingPlacedSuccessfully)
-            {
-                this.Owner.RemoveBuilding(this.buildingUnderConstruction.Read());
-                this.buildingUnderConstruction.Write(null);
-            }
-
-            return buildingPlacedSuccessfully;
-        }
-
-        /// <summary>
-        /// Continues the construction of the building that this SCV is currently constructing.
-        /// </summary>
-        /// <returns>True if the construction has finished; otherwise false.</returns>
+        /// <returns>True if the construction job has finished; otherwise false.</returns>
         public bool ContinueConstruct()
         {
-            if (!this.IsConstructing) { throw new InvalidOperationException("This SCV is not constructing any building!"); }
-
-            if (this.buildingUnderConstruction.Read().Scenario == null)
+            if (this.constructionJob.Read() != null && this.constructionJob.Read().Continue())
             {
-                /// The building has been destroyed -> do not continue the construction!
-                this.buildingUnderConstruction.Write(null);
-                return true;
-            }
-
-            this.buildingUnderConstruction.Read().Biometrics.Construct();
-            if (!this.buildingUnderConstruction.Read().Biometrics.IsUnderConstruction)
-            {
-                /// Construction finished.
-                this.buildingUnderConstruction.Write(null);
+                this.constructionJob.Read().DetachSCV();
+                this.constructionJob.Write(null);
             }
 
             return !this.IsConstructing;
         }
 
+        /// <see cref="Entity.IsOverlapEnabled"/>
+        public override bool IsOverlapEnabled(Entity otherEntity)
+        {
+            return this.constructionJob.Read() != null && this.constructionJob.Read().ConstructedBuilding == otherEntity;
+        }
+
         /// <see cref="Entity.DestructionAnimationName"/>
         protected override string DestructionAnimationName { get { return "Dying"; } }
 
+        /// <see cref="Entity.OnDestroyingImpl"/>
+        protected override void OnDestroyingImpl()
+        {
+            if (this.constructionJob.Read() != null)
+            {
+                this.constructionJob.Read().DetachSCV();
+            }
+        }
+
         /// <summary>
-        /// Reference to the building that is currently under construction.
+        /// This method is called after this SCV is attached to a TerranBuildingConstructionJob.
         /// </summary>
-        private readonly HeapedValue<TerranBuilding> buildingUnderConstruction;
+        /// <param name="job">Reference to the job.</param>
+        internal void OnAttachConstructionJob(TerranBuildingConstructionJob job)
+        {
+            if (job == null) { throw new ArgumentNullException("job"); }
+            if (this.constructionJob.Read() != null) { throw new InvalidOperationException("This SCV has already a construction job attached to it!"); }
+
+            this.constructionJob.Write(job);
+        }
+
+        /// <summary>
+        /// This method is called when this SCV is being detached from a TerranBuildingConstructionJob.
+        /// </summary>
+        internal void OnDetachConstructionJob()
+        {
+            if (this.constructionJob.Read() == null) { throw new InvalidOperationException("This SCV has no construction job attached to it!"); }
+            this.constructionJob.Write(null);
+        }
+
+        /// <summary>
+        /// Reference to the construction job that is currently attached to this SCV.
+        /// </summary>
+        private readonly HeapedValue<TerranBuildingConstructionJob> constructionJob;
 
         /// <summary>
         /// The name of the SCV element type.

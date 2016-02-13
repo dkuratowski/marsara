@@ -314,6 +314,11 @@ namespace RC.Engine.Simulator.Engine
         /// <remarks>Can be overriden in the derived classes.</remarks>
         protected virtual string DestructionAnimationName { get { throw new NotSupportedException("Entity.DestructionAnimationName not supported for this entity!"); } }
 
+        /// <summary>
+        /// Derived classes can perform additional operations when being destroyed.
+        /// </summary>
+        protected virtual void OnDestroyingImpl() { }
+
         /// <see cref="ScenarioElement.UpdateStateImpl"/>
         protected sealed override void UpdateStateImpl()
         {
@@ -484,6 +489,8 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         private void OnDestroying()
         {
+            this.OnDestroyingImpl();
+
             if (this.activeProductionLine.Read() != null) { this.activeProductionLine.Read().RemoveAllJobs(); }
 
             EntityWreck wreck = new EntityWreck(this, this.DestructionAnimationName);

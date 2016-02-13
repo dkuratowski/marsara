@@ -7,6 +7,7 @@ using RC.Engine.Simulator.Behaviors;
 using RC.Engine.Simulator.Engine;
 using RC.Common;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Engine.Simulator.Terran.Commands;
 using RC.Engine.Simulator.Terran.Units;
 
 namespace RC.Engine.Simulator.Terran.Buildings
@@ -16,6 +17,12 @@ namespace RC.Engine.Simulator.Terran.Buildings
     /// </summary>
     abstract class TerranBuilding : Building
     {
+        /// <summary>
+        /// Gets the construction job attached to this Terran building or null if there is no construction job
+        /// attached to this building.
+        /// </summary>
+        public TerranBuildingConstructionJob ConstructionJob { get { return this.constructionJob.Read(); } }
+
         /// <summary>
         /// Attaches this Terran building to the given quadratic tile on the map and starts its construction.
         /// </summary>
@@ -78,12 +85,52 @@ namespace RC.Engine.Simulator.Terran.Buildings
             : base(buildingTypeName, behaviors)
         {
             this.scvAllowedToOverlap = this.ConstructField<SCV>("scvAllowedToOverlap");
+            this.constructionJob = this.ConstructField<TerranBuildingConstructionJob>("constructionJob");
             this.scvAllowedToOverlap.Write(null);
+            this.constructionJob.Write(null);
+        }
+
+        /// <see cref="Entity.OnDestroyingImpl"/>
+        protected override void OnDestroyingImpl()
+        {
+            if (this.constructionJob.Read() != null)
+            {
+                this.constructionJob.Read().DetachSCV();
+            }
+        }
+
+        /// <see cref="HeapedObject.DisposeImpl"/>
+        protected override void DisposeImpl()
+        {
+            if (this.constructionJob.Read() != null)
+            {
+                this.constructionJob.Read().DetachSCV();
+                this.constructionJob.Read().Dispose();
+                this.constructionJob.Write(null);
+            }
+
+            base.DisposeImpl();
+        }
+
+        /// <summary>
+        /// This method is called after this building is created by a TerranBuildingConstructionJob.
+        /// </summary>
+        /// <param name="job">Reference to the job.</param>
+        internal void OnAttachConstructionJob(TerranBuildingConstructionJob job)
+        {
+            if (job == null) { throw new ArgumentNullException("job"); }
+            this.constructionJob.Write(job);
         }
 
         /// <summary>
         /// Reference to the SCV that is allowed to overlap the area of this Terran building.
         /// </summary>
         private readonly HeapedValue<SCV> scvAllowedToOverlap;
+
+        /// <summary>
+        /// Reference to the construction job attached to this Terran building or null if there is no construction job
+        /// attached to this building.
+        /// </summary>
+        private readonly HeapedValue<TerranBuildingConstructionJob> constructionJob;
     }
 }

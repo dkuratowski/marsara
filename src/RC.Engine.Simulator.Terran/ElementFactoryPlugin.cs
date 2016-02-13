@@ -46,16 +46,16 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterElementFactory<Building>(ControlTower.CONTROLTOWER_TYPE_NAME, this.CreateAddon<ControlTower>);
 
             /// Element factory methods for Terran buildings.
-            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(Academy.ACADEMY_TYPE_NAME, this.CreateBuilding<Academy>);
-            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(Armory.ARMORY_TYPE_NAME, this.CreateBuilding<Armory>);
-            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(Barracks.BARRACKS_TYPE_NAME, this.CreateBuilding<Barracks>);
-            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(CommandCenter.COMMANDCENTER_TYPE_NAME, this.CreateBuilding<CommandCenter>);
-            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(EngineeringBay.ENGINEERINGBAY_TYPE_NAME, this.CreateBuilding<EngineeringBay>);
-            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(Factory.FACTORY_TYPE_NAME, this.CreateBuilding<Factory>);
-            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(MissileTurret.MISSILETURRET_TYPE_NAME, this.CreateBuilding<MissileTurret>);
-            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(ScienceFacility.SCIENCEFACILITY_TYPE_NAME, this.CreateBuilding<ScienceFacility>);
-            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(Starport.STARPORT_TYPE_NAME, this.CreateBuilding<Starport>);
-            extendedComponent.RegisterElementFactory<RCIntVector, SCV>(SupplyDepot.SUPPLYDEPOT_TYPE_NAME, this.CreateBuilding<SupplyDepot>);
+            extendedComponent.RegisterElementFactory<Player, RCIntVector>(Academy.ACADEMY_TYPE_NAME, this.CreateBuilding<Academy>);
+            extendedComponent.RegisterElementFactory<Player, RCIntVector>(Armory.ARMORY_TYPE_NAME, this.CreateBuilding<Armory>);
+            extendedComponent.RegisterElementFactory<Player, RCIntVector>(Barracks.BARRACKS_TYPE_NAME, this.CreateBuilding<Barracks>);
+            extendedComponent.RegisterElementFactory<Player, RCIntVector>(CommandCenter.COMMANDCENTER_TYPE_NAME, this.CreateBuilding<CommandCenter>);
+            extendedComponent.RegisterElementFactory<Player, RCIntVector>(EngineeringBay.ENGINEERINGBAY_TYPE_NAME, this.CreateBuilding<EngineeringBay>);
+            extendedComponent.RegisterElementFactory<Player, RCIntVector>(Factory.FACTORY_TYPE_NAME, this.CreateBuilding<Factory>);
+            extendedComponent.RegisterElementFactory<Player, RCIntVector>(MissileTurret.MISSILETURRET_TYPE_NAME, this.CreateBuilding<MissileTurret>);
+            extendedComponent.RegisterElementFactory<Player, RCIntVector>(ScienceFacility.SCIENCEFACILITY_TYPE_NAME, this.CreateBuilding<ScienceFacility>);
+            extendedComponent.RegisterElementFactory<Player, RCIntVector>(Starport.STARPORT_TYPE_NAME, this.CreateBuilding<Starport>);
+            extendedComponent.RegisterElementFactory<Player, RCIntVector>(SupplyDepot.SUPPLYDEPOT_TYPE_NAME, this.CreateBuilding<SupplyDepot>);
         }
 
         /// <see cref="IPlugin.Uninstall"/>
@@ -193,32 +193,32 @@ namespace RC.Engine.Simulator.Terran
         }
 
         /// <summary>
-        /// Creates a building to the given position and set the given SCV as the constructor of that building.
+        /// Creates a building for the given player and attach it to the given position.
         /// </summary>
         /// <typeparam name="T">The type of the building to be created.</typeparam>
+        /// <param name="owner">The owner player of the building.</param>
         /// <param name="topLeftQuadTile">The coordinates of the top-left quadratic tile of the building to be created.</param>
-        /// <param name="constructorScv">The SCV that is the constructor of the building.</param>
         /// <returns>True if the building has been created successfully; otherwise false.</returns>
-        private bool CreateBuilding<T>(RCIntVector topLeftQuadTile, SCV constructorScv) where T : TerranBuilding, new()
+        private bool CreateBuilding<T>(Player owner, RCIntVector topLeftQuadTile) where T : TerranBuilding, new()
         {
+            if (owner == null) { throw new ArgumentNullException("owner"); }
             if (topLeftQuadTile == RCIntVector.Undefined) { throw new ArgumentNullException("topLeftQuadTile"); }
-            if (constructorScv == null) { throw new ArgumentNullException("constructorScv"); }
-            if (constructorScv.Scenario == null) { throw new ArgumentException("The constructor SCV is not added to a scenario!", "constructorScv"); }
-            if (constructorScv.MapObject == null) { throw new ArgumentException("The constructor SCV is detached from the map!", "constructorScv"); }
 
             /// Create the building.
             T building = new T();
-            constructorScv.Scenario.AddElementToScenario(building);
+            owner.Scenario.AddElementToScenario(building);
+            owner.AddBuilding(building);
 
-            /// Try to start the construction of the building to the map.
-            bool constructionStarted = constructorScv.StartConstruct(building, topLeftQuadTile);
-            if (!constructionStarted)
+            /// Try to attach the building onto the map and start its construction.
+            bool buildingPlacedSuccessfully = building.AttachToMapAndStartConstruction(owner.Scenario.Map.GetQuadTile(topLeftQuadTile));
+            if (!buildingPlacedSuccessfully)
             {
-                constructorScv.Scenario.RemoveElementFromScenario(building);
+                owner.RemoveBuilding(building);
+                owner.Scenario.RemoveElementFromScenario(building);
                 building.Dispose();
             }
 
-            return constructionStarted;
+            return buildingPlacedSuccessfully;
         }
 
         private const int NUM_OF_SCVS = 4;
