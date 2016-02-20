@@ -8,6 +8,7 @@ using RC.Engine.Simulator.MotionControl;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Simulator.Terran.Buildings;
 using RC.Engine.Simulator.Terran.Commands;
+using RC.Engine.Simulator.Terran.CustomWeapons;
 
 namespace RC.Engine.Simulator.Terran.Units
 {
@@ -24,6 +25,8 @@ namespace RC.Engine.Simulator.Terran.Units
         {
             this.constructionJob = this.ConstructField<TerranBuildingConstructionJob>("constructionJob");
             this.constructionJob.Write(null);
+
+            this.Armour.AttachCustomWeapon(SCV_BUILD_TOOL_NAME, new SCVBuildTool());
         }
 
         /// <summary>
@@ -51,8 +54,8 @@ namespace RC.Engine.Simulator.Terran.Units
             return !this.IsConstructing;
         }
 
-        /// <see cref="Entity.IsOverlapEnabled"/>
-        public override bool IsOverlapEnabled(Entity otherEntity)
+        /// <see cref="Entity.IsOverlapEnabledImpl"/>
+        protected override bool IsOverlapEnabledImpl(Entity otherEntity)
         {
             return this.constructionJob.Read() != null && this.constructionJob.Read().ConstructedBuilding == otherEntity;
         }
@@ -99,5 +102,10 @@ namespace RC.Engine.Simulator.Terran.Units
         /// The name of the SCV element type.
         /// </summary>
         public const string SCV_TYPE_NAME = "SCV";
+
+        /// <summary>
+        /// The name of the build tool of the SCVs.
+        /// </summary>
+        public const string SCV_BUILD_TOOL_NAME = "BuildTool";
     }
 }

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+  <buildingType name="Refinery" hasOwner="true" displayedName="Terran Refinery">
+    <costs>
+      <mineral>100</mineral>
+      <buildTime>600</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area>16.0;8.0</area>
+      <maxHP>750</maxHP>
+      <armor>1</armor>
+      <sightRange>11</sightRange>
+    </generalData>
+	<hpIconPalette image="terran_refinery_icons.png" transparentColor="255;0;255">
+      <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
+	</hpIconPalette>
+    <spritePalette image="terran_refinery.png" transparentColor="255;0;255">
+      <sprite name="Construction0" sourceRegion="1;1;64;34" offset="0;0" />
+      <sprite name="Construction1" sourceRegion="66;1;64;34" offset="0;0" />
+      <sprite name="Construction2" sourceRegion="1;36;64;41" offset="0;-6" />
+
+      <sprite name="MainPart" sourceRegion="66;36;64;41" offset="0;-6" />
+	  
+      <sprite name="NormalSmokeL0" sourceRegion="66;113;6;10" offset="14;2" />
+      <sprite name="NormalSmokeL1" sourceRegion="73;113;5;10" offset="15;2" />
+      <sprite name="NormalSmokeL2" sourceRegion="79;113;5;10" offset="15;2" />
+      <sprite name="NormalSmokeM0" sourceRegion="85;113;7;10" offset="34;2" />
+      <sprite name="NormalSmokeM1" sourceRegion="93;113;5;10" offset="35;2" />
+      <sprite name="NormalSmokeM2" sourceRegion="99;113;5;10" offset="36;2" />
+      <sprite name="NormalSmokeR0" sourceRegion="105;113;3;10" offset="51;9" />
+      <sprite name="NormalSmokeR1" sourceRegion="109;113;3;10" offset="52;9" />
+      <sprite name="NormalSmokeR2" sourceRegion="113;113;4;10" offset="52;9" />
+      <sprite name="DepletedSmokeL0" sourceRegion="66;124;5;9" offset="16;3" />
+      <sprite name="DepletedSmokeL1" sourceRegion="72;124;4;9" offset="15;3" />
+      <sprite name="DepletedSmokeL2" sourceRegion="77;124;4;9" offset="15;3" />
+      <sprite name="DepletedSmokeM0" sourceRegion="82;124;5;9" offset="37;3" />
+      <sprite name="DepletedSmokeM1" sourceRegion="88;124;4;9" offset="37;3" />
+      <sprite name="DepletedSmokeM2" sourceRegion="93;124;4;9" offset="36;3" />
+      <sprite name="DepletedSmokeR0" sourceRegion="98;124;5;9" offset="52;10" />
+      <sprite name="DepletedSmokeR1" sourceRegion="104;124;3;9" offset="51;10" />
+      <sprite name="DepletedSmokeR2" sourceRegion="108;124;2;9" offset="52;10" />
+	  
+      <sprite name="NormalSmoke0" sourceRegion="85;113;7;10" offset="26;-12" />
+      <sprite name="NormalSmoke1" sourceRegion="93;113;5;10" offset="28;-12" />
+      <sprite name="NormalSmoke2" sourceRegion="99;113;5;10" offset="28;-12" />
+      <sprite name="DepletedSmoke0" sourceRegion="82;124;5;9" offset="30;-11" />
+      <sprite name="DepletedSmoke1" sourceRegion="88;124;4;9" offset="29;-11" />
+      <sprite name="DepletedSmoke2" sourceRegion="93;124;4;9" offset="29;-11" />
+
+      <sprite name="FlameLL0" sourceRegion="64;134;6;19" offset="7;-6" />
+      <sprite name="FlameLL1" sourceRegion="99;134;8;20" offset="6;-7" />
+      <sprite name="FlameL0" sourceRegion="71;134;6;19" offset="17;-5" />
+      <sprite name="FlameL1" sourceRegion="108;134;5;20" offset="18;-6" />
+      <sprite name="FlameM0" sourceRegion="78;134;6;19" offset="29;-6" />
+      <sprite name="FlameM1" sourceRegion="114;134;5;20" offset="29;-7" />
+      <sprite name="FlameR0" sourceRegion="85;134;6;19" offset="39;-4" />
+      <sprite name="FlameR1" sourceRegion="120;134;5;20" offset="40;-5" />
+      <sprite name="FlameRR0" sourceRegion="92;134;6;19" offset="50;-2" />
+      <sprite name="FlameRR1" sourceRegion="126;134;6;20" offset="50;-3" />	  
+
+      <sprite name="DestructionBurn0" sourceRegion="59;155;45;16" offset="9;4" />
+      <sprite name="DestructionBurn1" sourceRegion="1;148;57;31" offset="3;-3" />
+      <sprite name="DestructionBurn2" sourceRegion="1;78;64;41" offset="0;-6" />
+      <sprite name="DestructionBurn3" sourceRegion="66;78;55;34" offset="4;-3" />
+      <sprite name="DestructionBurn4" sourceRegion="1;120;34;27" offset="15;1" />
+      <sprite name="DestructionBurn5" sourceRegion="36;120;27;25" offset="18;3" />
+    </spritePalette>
+    <animationPalette>
+      <animation name="Construction0_Normal">
+        <frame sprites="Construction0,NormalSmokeL0,NormalSmokeM0,NormalSmokeR0" duration="10" />
+        <frame sprites="Construction0,NormalSmokeL1,NormalSmokeM1,NormalSmokeR1" duration="10" />
+        <frame sprites="Construction0,NormalSmokeL2,NormalSmokeM2,NormalSmokeR2" duration="10" />
+		<repeat/>
+      </animation>
+      <animation name="Construction1_Normal">
+        <frame sprites="Construction1,NormalSmokeM0" duration="10" />
+        <frame sprites="Construction1,NormalSmokeM1" duration="10" />
+        <frame sprites="Construction1,NormalSmokeM2" duration="10" />
+		<repeat/>
+      </animation>
+      <animation name="Construction2_Normal">
+        <frame sprites="Construction2,NormalSmokeM0" duration="10" />
+        <frame sprites="Construction2,NormalSmokeM1" duration="10" />
+        <frame sprites="Construction2,NormalSmokeM2" duration="10" />
+		<repeat/>
+      </animation>
+      <animation name="Construction0_Depleted">
+        <frame sprites="Construction0,DepletedSmokeL0,DepletedSmokeM0,DepletedSmokeR0" duration="10" />
+        <frame sprites="Construction0,DepletedSmokeL1,DepletedSmokeM1,DepletedSmokeR1" duration="10" />
+        <frame sprites="Construction0,DepletedSmokeL2,DepletedSmokeM2,DepletedSmokeR2" duration="10" />
+		<repeat/>
+      </animation>
+      <animation name="Construction1_Depleted">
+        <frame sprites="Construction1,DepletedSmokeM0" duration="10" />
+        <frame sprites="Construction1,DepletedSmokeM1" duration="10" />
+        <frame sprites="Construction1,DepletedSmokeM2" duration="10" />
+		<repeat/>
+      </animation>
+      <animation name="Construction2_Depleted">
+        <frame sprites="Construction2,DepletedSmokeM0" duration="10" />
+        <frame sprites="Construction2,DepletedSmokeM1" duration="10" />
+        <frame sprites="Construction2,DepletedSmokeM2" duration="10" />
+		<repeat/>
+      </animation>
+      <animation name="Normal" isPreview="true">
+        <frame sprites="MainPart,NormalSmoke0" duration="10" />
+        <frame sprites="MainPart,NormalSmoke1" duration="10" />
+        <frame sprites="MainPart,NormalSmoke2" duration="10" />
+		<repeat/>
+      </animation>
+      <animation name="Depleted">
+        <frame sprites="MainPart,DepletedSmoke0" duration="10" />
+        <frame sprites="MainPart,DepletedSmoke1" duration="10" />
+        <frame sprites="MainPart,DepletedSmoke2" duration="10" />
+		<repeat/>
+      </animation>
+      <animation name="Destruction">
+        <frame sprites="MainPart,DestructionBurn0" duration="4" />
+        <frame sprites="MainPart,DestructionBurn1" duration="4" />
+        <frame sprites="DestructionBurn2" duration="4" />
+        <frame sprites="DestructionBurn3" duration="4" />
+        <frame sprites="DestructionBurn4" duration="4" />
+        <frame sprites="DestructionBurn5" duration="4" />
+      </animation>
+	  <animation name="SmallBurn">
+		<frame sprites="FlameL0,FlameR0" duration="10" />
+		<frame sprites="FlameL1,FlameR1" duration="10" />
+		<repeat/>
+	  </animation>
+	  <animation name="HeavyBurn">
+		<frame sprites="FlameLL0,FlameL0,FlameM0,FlameR0,FlameRR0" duration="10" />
+		<frame sprites="FlameLL1,FlameL1,FlameM1,FlameR1,FlameRR1" duration="10" />
+		<repeat/>
+	  </animation>
+    </animationPalette>
+  </buildingType>
+</metadata>

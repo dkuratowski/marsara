@@ -1,6 +1,7 @@
 ﻿using RC.Common.ComponentModel;
 using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.PlacementConstraints;
 using RC.Engine.Simulator.Terran.Addons;
 using RC.Engine.Simulator.Terran.Buildings;
 using RC.Common;
@@ -29,6 +30,10 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<StartLocation>(new RCIntVector(3, 3)));
             extendedComponent.RegisterEntityConstraint(CommandCenter.COMMANDCENTER_TYPE_NAME, new MinimumDistanceConstraint<Entity>(new RCIntVector(0, 0)));
             extendedComponent.RegisterPlacementSuggestionProvider(CommandCenter.COMMANDCENTER_TYPE_NAME, new CorrespondingAddonSuggestion());
+
+            /// Terran Refinery
+            extendedComponent.RegisterEntityConstraint(Refinery.REFINERY_TYPE_NAME, new VespeneGeyserConstraint());
+            extendedComponent.RegisterPlacementSuggestionProvider(Refinery.REFINERY_TYPE_NAME, new VespeneGeyserSuggestion());
 
             /// Terran Barracks
             extendedComponent.RegisterEntityConstraint(Barracks.BARRACKS_TYPE_NAME, new BuildableAreaConstraint());

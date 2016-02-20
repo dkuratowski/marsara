@@ -1,6 +1,7 @@
 ﻿using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.PlacementConstraints;
 using RC.Engine.Simulator.PublicInterfaces;
 using System;
 using System.Collections.Generic;

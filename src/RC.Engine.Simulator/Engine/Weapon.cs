@@ -198,5 +198,10 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// TODO: make this member heaped!
         private readonly Dictionary<Missile, RCSet<Missile>> missileGroups;
+
+        /// <summary>
+        /// The distance to be reached in case of nearby weapons.
+        /// </summary>
+        public static readonly RCNumber NEARBY_DISTANCE = 1;
     }
 }

@@ -30,7 +30,9 @@ namespace RC.Engine.Simulator.Terran.Commands
             : base(recipientSCV)
         {
             this.topLeftQuadTile = this.ConstructField<RCIntVector>("topLeftQuadTile");
+            this.targetArea = this.ConstructField<RCNumRectangle>("targetArea");
             this.topLeftQuadTile.Write(topLeftQuadTile);
+            this.targetArea.Write(RCNumRectangle.Undefined);
             this.buildingTypeName = buildingType;
         }
 
@@ -42,8 +44,8 @@ namespace RC.Engine.Simulator.Terran.Commands
             IBuildingType buildingType = this.RecipientSCV.Owner.Metadata.GetBuildingType(this.buildingTypeName);
             RCIntVector entityQuadSize = this.Scenario.Map.CellToQuadSize(buildingType.Area.Read());
             RCIntRectangle targetPositionQuadRect = new RCIntRectangle(this.topLeftQuadTile.Read(), entityQuadSize);
-            RCNumRectangle targetPositionRect = (RCNumRectangle)this.Scenario.Map.QuadToCellRect(targetPositionQuadRect) - new RCNumVector(1, 1) / 2;
-            this.TargetPosition = targetPositionRect.Location + (targetPositionRect.Size / 2);
+            this.targetArea.Write((RCNumRectangle)this.Scenario.Map.QuadToCellRect(targetPositionQuadRect) - new RCNumVector(1, 1) / 2);
+            this.TargetPosition = this.targetArea.Read().Location + (this.targetArea.Read().Size / 2);
             this.RecipientSCV.MotionControl.StartMoving(this.TargetPosition);
             this.Status = SCVBuildExecutionStatusEnum.MovingToTarget;
         }
@@ -51,43 +53,34 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// <see cref="SCVBuildExecutionBase.ContinueMovingToTarget"/>
         protected override bool ContinueMovingToTarget()
         {
-            if (!this.RecipientSCV.MotionControl.IsMoving)
+            /// Check the distance between the SCV and the target area.
+            RCNumber distance = MapUtils.ComputeDistance(this.RecipientSCV.Area, this.targetArea.Read());
+            if (distance > Weapon.NEARBY_DISTANCE)
             {
-                if (this.RecipientSCV.MotionControl.PositionVector.Read() != this.TargetPosition)
-                {
-                    /// SCV could not reach the target position -> finish this command execution.
-                    return true;
-                }
-
-                TerranBuildingConstructionJob job = new TerranBuildingConstructionJob(
-                    this.RecipientSCV.Owner,
-                    this.RecipientSCV.Owner.Metadata.GetBuildingType(this.buildingTypeName),
-                    this.topLeftQuadTile.Read());
-                if (!job.LockResources())
-                {
-                    /// Unable to lock the necessary resources -> abort the job and cancel.
-                    job.Dispose();
-                    return true;
-                }
-
-                if (!job.Start())
-                {
-                    /// Unable to start the job -> abort the job and cancel.
-                    job.Dispose();
-                    return true;
-                }
-
-                /// Attach the construction job to the recipient SCV.
-                job.AttachSCV(this.RecipientSCV);
-                this.Status = SCVBuildExecutionStatusEnum.Constructing;
+                /// Distance not reached yet -> continue execution if SCV is still moving.
+                return !this.RecipientSCV.MotionControl.IsMoving;
             }
-            return false;
-        }
 
-        /// <see cref="SCVBuildExecutionBase.GetConstructedBuilding"/>
-        protected override TerranBuilding GetConstructedBuilding()
-        {
-            return this.Scenario.GetFixedEntity<TerranBuilding>(this.topLeftQuadTile.Read());
+            TerranBuildingConstructionJob job = new TerranBuildingConstructionJob(
+                this.RecipientSCV,
+                this.RecipientSCV.Owner.Metadata.GetBuildingType(this.buildingTypeName),
+                this.topLeftQuadTile.Read());
+            if (!job.LockResources())
+            {
+                /// Unable to lock the necessary resources -> abort the job and cancel.
+                job.Dispose();
+                return true;
+            }
+
+            if (!job.Start())
+            {
+                /// Unable to start the job -> abort the job and cancel.
+                job.Dispose();
+                return true;
+            }
+
+            this.Status = SCVBuildExecutionStatusEnum.Constructing;
+            return false;
         }
 
         #endregion Overrides
@@ -96,6 +89,11 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// The coordinates of the top-left quadratic tile of the building to be created.
         /// </summary>
         private readonly HeapedValue<RCIntVector> topLeftQuadTile;
+
+        /// <summary>
+        /// The target area that the recipient SCV shall reach before it could start constructing the building.
+        /// </summary>
+        private readonly HeapedValue<RCNumRectangle> targetArea;
 
         /// <summary>
         /// The typename of the building.

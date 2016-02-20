@@ -168,20 +168,23 @@ namespace RC.Engine.Simulator.Metadata.Core
         {
             if (!this.metadata.IsFinalized)
             {
-                if (this.cooldown == null) { throw new SimulatorException("Cooldown must be set!"); }
-                if (this.damage == null) { throw new SimulatorException("Damage must be set!"); }
-                if (this.damageType == null) { throw new SimulatorException("DamageType must be set!"); }
-                if (this.increment == null) { throw new SimulatorException("Increment must be set!"); }
-                if (this.rangeMax == null) { throw new SimulatorException("RangeMax must be set!"); }
-                if (this.rangeMin == null) { throw new SimulatorException("RangeMin must be set!"); }
-                if (this.splashType == null) { throw new SimulatorException("SplashType must be set!"); }
+                if (this.weaponType.Read() != WeaponTypeEnum.Custom)
+                {
+                    if (this.cooldown == null) { throw new SimulatorException("Cooldown must be set!"); }
+                    if (this.damage == null) { throw new SimulatorException("Damage must be set!"); }
+                    if (this.damageType == null) { throw new SimulatorException("DamageType must be set!"); }
+                    if (this.increment == null) { throw new SimulatorException("Increment must be set!"); }
+                    if (this.rangeMax == null) { throw new SimulatorException("RangeMax must be set!"); }
+                    if (this.rangeMin == null) { throw new SimulatorException("RangeMin must be set!"); }
+                    if (this.splashType == null) { throw new SimulatorException("SplashType must be set!"); }
 
-                if (this.cooldown.Read() <= 0) { throw new SimulatorException("Cooldown cannot be 0 or less!"); }
-                if (this.damage.Read() <= 0) { throw new SimulatorException("Damage cannot be 0 or less!"); }
-                if (this.increment.Read() < 0) { throw new SimulatorException("Increment must be non-negative!"); }
-                if (this.rangeMax.Read() < 0) { throw new SimulatorException("RangeMax must be non-negative!"); }
-                if (this.rangeMin.Read() < 0) { throw new SimulatorException("RangeMin must be non-negative!"); }
-                if (this.rangeMin.Read() > this.rangeMax.Read()) { throw new SimulatorException("RangeMin must be less than or equal to RangeMax!"); }
+                    if (this.cooldown.Read() <= 0) { throw new SimulatorException("Cooldown cannot be 0 or less!"); }
+                    if (this.damage.Read() <= 0) { throw new SimulatorException("Damage cannot be 0 or less!"); }
+                    if (this.increment.Read() < 0) { throw new SimulatorException("Increment must be non-negative!"); }
+                    if (this.rangeMax.Read() < 0) { throw new SimulatorException("RangeMax must be non-negative!"); }
+                    if (this.rangeMin.Read() < 0) { throw new SimulatorException("RangeMin must be non-negative!"); }
+                    if (this.rangeMin.Read() > this.rangeMax.Read()) { throw new SimulatorException("RangeMin must be less than or equal to RangeMax!"); }
+                }
 
                 // TODO: remove this comment when all weapon data has been defined correctly in the metadata!
                 //if (this.missiles.Count == 0) { throw new SimulatorException("A weapon data must have at least 1 missile definition!"); }
@@ -197,7 +200,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// The values of this weapon data struct.
         /// </summary>
-        private ConstValue<WeaponTypeEnum> weaponType;
+        private readonly ConstValue<WeaponTypeEnum> weaponType;
         private ConstValue<int> cooldown;
         private ConstValue<int> damage;
         private ConstValue<DamageTypeEnum> damageType;

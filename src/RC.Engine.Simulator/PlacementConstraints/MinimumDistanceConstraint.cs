@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Engine.Simulator.Engine;
 
-namespace RC.Engine.Simulator.Engine
+namespace RC.Engine.Simulator.PlacementConstraints
 {
     /// <summary>
     /// This entity constraint checks whether the checked area on the map is enough distance from entities of a given type.

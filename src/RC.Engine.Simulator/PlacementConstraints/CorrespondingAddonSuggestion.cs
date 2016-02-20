@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common;
+using RC.Engine.Simulator.Engine;
 
-namespace RC.Engine.Simulator.Engine
+namespace RC.Engine.Simulator.PlacementConstraints
 {
     /// <summary>
     /// This provider gives suggestions for placing the corresponding building type next to addons to which it can connect to.

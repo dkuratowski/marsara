@@ -36,8 +36,10 @@ namespace RC.Engine.Simulator.Metadata.Core
 
             this.metadataUpgrade = metadataUpgrade;
             this.elementTypeName = elementTypeName;
-            this.weaponDataUpgrades = null;
-            this.weaponDataUpgradesByName = null;
+            this.standardWeaponDataUpgrades = null;
+            this.standardWeaponDataUpgradesByName = null;
+            this.customWeaponDataUpgrades = null;
+            this.customWeaponDataUpgradesByName = null;
 
             this.armorModifier = new IntValueModifier();
             this.maxEnergyModifier = new IntValueModifier();
@@ -116,8 +118,11 @@ namespace RC.Engine.Simulator.Metadata.Core
         IValueRead<RCNumber> IScenarioElementTypeInternal.Speed { get { return this.speedModifier.HasAttachedModifiedValue() ? this.speedModifier : null; } }
 
         /// <see cref="IScenarioElementTypeInternal.StandardWeapons"/>
-        IEnumerable<IWeaponData> IScenarioElementTypeInternal.StandardWeapons { get { return this.weaponDataUpgrades; } }
+        IEnumerable<IWeaponData> IScenarioElementTypeInternal.StandardWeapons { get { return this.standardWeaponDataUpgrades; } }
 
+        /// <see cref="IScenarioElementTypeInternal.CustomWeapons"/>
+        IEnumerable<IWeaponData> IScenarioElementTypeInternal.CustomWeapons { get { return this.customWeaponDataUpgrades; } }
+        
         /// <see cref="IScenarioElementTypeInternal.Requirements"/>
         IEnumerable<IRequirement> IScenarioElementTypeInternal.Requirements { get { return this.originalElementType.Requirements; } }
 
@@ -360,8 +365,8 @@ namespace RC.Engine.Simulator.Metadata.Core
             get { return this.originalUpgradeIface != null ? this.originalUpgradeIface.CumulatedSpeedUpgrade + this.speedModifier.Modification : this.speedModifier.Modification; }
         }
 
-        /// <see cref="IScenarioElementTypeUpgrade.WeaponUpgrades"/>
-        IEnumerable<IWeaponDataUpgrade> IScenarioElementTypeUpgrade.WeaponUpgrades { get { return this.weaponDataUpgrades; } }
+        /// <see cref="IScenarioElementTypeUpgrade.StandardWeaponUpgrades"/>
+        IEnumerable<IWeaponDataUpgrade> IScenarioElementTypeUpgrade.StandardWeaponUpgrades { get { return this.standardWeaponDataUpgrades; } }
 
         #endregion IScenarioElementTypeUpgrade
 
@@ -406,26 +411,44 @@ namespace RC.Engine.Simulator.Metadata.Core
                 this.sightRangeModifier.AttachModifiedValue(this.originalElementType.SightRange);
                 this.speedModifier.AttachModifiedValue(this.originalElementType.Speed);
 
-                if (this.weaponDataUpgrades == null)
+                if (this.standardWeaponDataUpgrades == null && this.customWeaponDataUpgrades == null)
                 {
                     /// First time attach -> create the weapon data upgrades.
-                    this.weaponDataUpgrades = new List<WeaponDataUpgrade>();
-                    this.weaponDataUpgradesByName = new Dictionary<string, WeaponDataUpgrade>();
-                    foreach (IWeaponData weaponData in this.originalElementType.StandardWeapons)
+                    this.standardWeaponDataUpgrades = new List<WeaponDataUpgrade>();
+                    this.standardWeaponDataUpgradesByName = new Dictionary<string, WeaponDataUpgrade>();
+                    this.customWeaponDataUpgrades = new List<WeaponDataUpgrade>();
+                    this.customWeaponDataUpgradesByName = new Dictionary<string, WeaponDataUpgrade>();
+
+                    foreach (IWeaponData standardWeaponData in this.originalElementType.StandardWeapons)
                     {
-                        WeaponDataUpgrade weaponUpgrade = new WeaponDataUpgrade(this.metadataUpgrade, weaponData);
-                        this.weaponDataUpgrades.Add(weaponUpgrade);
-                        this.weaponDataUpgradesByName.Add(weaponData.Name, weaponUpgrade);
+                        WeaponDataUpgrade standardWeaponUpgrade = new WeaponDataUpgrade(this.metadataUpgrade, standardWeaponData);
+                        this.standardWeaponDataUpgrades.Add(standardWeaponUpgrade);
+                        this.standardWeaponDataUpgradesByName.Add(standardWeaponData.Name, standardWeaponUpgrade);
+                    }
+
+                    foreach (IWeaponData customWeaponData in this.originalElementType.CustomWeapons)
+                    {
+                        WeaponDataUpgrade customWeaponUpgrade = new WeaponDataUpgrade(this.metadataUpgrade, customWeaponData);
+                        this.customWeaponDataUpgrades.Add(customWeaponUpgrade);
+                        this.customWeaponDataUpgradesByName.Add(customWeaponData.Name, customWeaponUpgrade);
                     }
                 }
                 else
                 {
                     /// Reattach -> check the compatibility of the existing weapon data upgrades and reset them.
-                    if (this.weaponDataUpgrades.Count != this.originalElementType.StandardWeapons.Count()) { throw new InvalidOperationException("Unable to attach non-compatible scenario element type!"); }
-                    foreach (IWeaponData weaponData in this.originalElementType.StandardWeapons)
+                    if (this.standardWeaponDataUpgrades.Count != this.originalElementType.StandardWeapons.Count()) { throw new InvalidOperationException("Unable to attach non-compatible scenario element type!"); }
+                    if (this.customWeaponDataUpgrades.Count != this.originalElementType.CustomWeapons.Count()) { throw new InvalidOperationException("Unable to attach non-compatible scenario element type!"); }
+
+                    foreach (IWeaponData standardWeaponData in this.originalElementType.StandardWeapons)
                     {
-                        if (!this.weaponDataUpgradesByName.ContainsKey(weaponData.Name)) { throw new InvalidOperationException("Unable to attach non-compatible scenario element type!"); }
-                        this.weaponDataUpgradesByName[weaponData.Name].Reset(weaponData);
+                        if (!this.standardWeaponDataUpgradesByName.ContainsKey(standardWeaponData.Name)) { throw new InvalidOperationException("Unable to attach non-compatible scenario element type!"); }
+                        this.standardWeaponDataUpgradesByName[standardWeaponData.Name].Reset(standardWeaponData);
+                    }
+
+                    foreach (IWeaponData customWeaponData in this.originalElementType.CustomWeapons)
+                    {
+                        if (!this.customWeaponDataUpgradesByName.ContainsKey(customWeaponData.Name)) { throw new InvalidOperationException("Unable to attach non-compatible scenario element type!"); }
+                        this.customWeaponDataUpgradesByName[customWeaponData.Name].Reset(customWeaponData);
                     }
                 }
             }
@@ -487,10 +510,16 @@ namespace RC.Engine.Simulator.Metadata.Core
         private ValueModifier<RCNumber> speedModifier;
 
         /// <summary>
-        /// List of the upgrades of the weapons of the underlying scenario element type.
+        /// List of the upgrades of the standard weapons of the underlying scenario element type.
         /// </summary>
-        private List<WeaponDataUpgrade> weaponDataUpgrades;
-        private Dictionary<string, WeaponDataUpgrade> weaponDataUpgradesByName;
+        private List<WeaponDataUpgrade> standardWeaponDataUpgrades;
+        private Dictionary<string, WeaponDataUpgrade> standardWeaponDataUpgradesByName;
+
+        /// <summary>
+        /// List of the upgrades of the custom weapons of the underlying scenario element type.
+        /// </summary>
+        private List<WeaponDataUpgrade> customWeaponDataUpgrades;
+        private Dictionary<string, WeaponDataUpgrade> customWeaponDataUpgradesByName;
 
         /// <summary>
         /// The quadratic coordinates relative to the origin that are inside the sight range or null if the underlying element type has no sight range defined.

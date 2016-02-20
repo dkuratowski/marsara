@@ -83,7 +83,7 @@ namespace RC.Engine.Simulator.Commands
                 }
 
                 /// ...in case of attack-move execution -> Select an enemy.
-                this.attackedEntity.Write(this.recipientEntity.Read().Armour.SelectEnemy());
+                this.attackedEntity.Write(this.recipientEntity.Read().Armour.SelectEnemyForStandardWeapons());
                 if (this.attackedEntity.Read() == null)
                 {
                     /// No enemy could be selected -> start move to the target position.
@@ -217,7 +217,7 @@ namespace RC.Engine.Simulator.Commands
             }
 
             /// Still moving towards the target position -> select a nearby enemy if possible.
-            this.attackedEntity.Write(this.recipientEntity.Read().Armour.SelectEnemy());
+            this.attackedEntity.Write(this.recipientEntity.Read().Armour.SelectEnemyForStandardWeapons());
             if (this.attackedEntity.Read() == null)
             {
                 /// No enemy could be selected -> continue move to the target position.

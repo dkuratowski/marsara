@@ -40,7 +40,7 @@ namespace RC.Engine.Simulator.Engine
         public int PlayerIndex { get { return this.playerIndex.Read(); } }
 
         /// <see cref="ScenarioElement.AttachToMap"/>
-        public override bool AttachToMap(RCNumVector position)
+        public override bool AttachToMap(RCNumVector position, params ScenarioElement[] elementsToIgnore)
         {
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
 

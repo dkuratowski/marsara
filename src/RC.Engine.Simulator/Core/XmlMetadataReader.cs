@@ -251,20 +251,33 @@ namespace RC.Engine.Simulator.Core
             XElement genDataElem = elementTypeElem.Element(XmlMetadataConstants.GENERALDATA_ELEM);
             if (genDataElem != null) { LoadGeneralData(genDataElem, elementType); }
 
+            /// Load the shadow data of the element type.
             XElement shadowDataElem = elementTypeElem.Element(XmlMetadataConstants.SHADOWDATA_ELEM);
             if (shadowDataElem != null) { LoadShadowData(shadowDataElem, elementType); }
 
-            /// Load the ground weapon definition of the element type.
-            XElement gndWeaponElem = elementTypeElem.Element(XmlMetadataConstants.GROUNDWEAPON_ELEM);
-            if (gndWeaponElem != null) { elementType.AddStandardWeapon(LoadWeaponData(gndWeaponElem, metadata)); }
+            /// Load the ground weapon definitions of the element type.
+            foreach (XElement gndWeaponElem in elementTypeElem.Elements(XmlMetadataConstants.GROUNDWEAPON_ELEM))
+            {
+                elementType.AddWeapon(LoadWeaponData(gndWeaponElem, metadata));
+            }
 
-            /// Load the air weapon definition of the element type.
-            XElement airWeaponElem = elementTypeElem.Element(XmlMetadataConstants.AIRWEAPON_ELEM);
-            if (airWeaponElem != null) { elementType.AddStandardWeapon(LoadWeaponData(airWeaponElem, metadata)); }
+            /// Load the air weapon definitions of the element type.
+            foreach (XElement airWeaponElem in elementTypeElem.Elements(XmlMetadataConstants.AIRWEAPON_ELEM))
+            {
+                elementType.AddWeapon(LoadWeaponData(airWeaponElem, metadata));
+            }
 
-            /// Load the air-ground weapon definition of the element type.
-            XElement airGroundWeaponElem = elementTypeElem.Element(XmlMetadataConstants.AIRGROUNDWEAPON_ELEM);
-            if (airGroundWeaponElem != null) { elementType.AddStandardWeapon(LoadWeaponData(airGroundWeaponElem, metadata)); }
+            /// Load the air-ground weapon definitions of the element type.
+            foreach (XElement airGroundWeaponElem in elementTypeElem.Elements(XmlMetadataConstants.AIRGROUNDWEAPON_ELEM))
+            {
+                elementType.AddWeapon(LoadWeaponData(airGroundWeaponElem, metadata));
+            }
+
+            /// Load the custom weapon definitions of the element type.
+            foreach (XElement customWeaponElem in elementTypeElem.Elements(XmlMetadataConstants.CUSTOMWEAPON_ELEM))
+            {
+                elementType.AddWeapon(LoadWeaponData(customWeaponElem, metadata));
+            }
 
             /// Load the requirements of the element type.
             XElement requiresElem = elementTypeElem.Element(XmlMetadataConstants.REQUIRES_ELEM);
@@ -518,10 +531,6 @@ namespace RC.Engine.Simulator.Core
             XElement splashTypeElem = weaponDataElem.Element(XmlMetadataConstants.WPN_SPLASHTYPE_ELEM);
 
             if (nameAttr == null) { throw new SimulatorException("Weapon name not defined!"); }
-            if (cooldownElem == null) { throw new SimulatorException("Cooldown not defined!"); }
-            if (damageElem == null) { throw new SimulatorException("Damage not defined!"); }
-            if (damageTypeElem == null) { throw new SimulatorException("DamageType not defined!"); }
-            if (rangeMaxElem == null) { throw new SimulatorException("RangeMax not defined!"); }
 
             WeaponTypeEnum weaponType;
             if (!EnumMap<WeaponTypeEnum, string>.TryDemap(weaponDataElem.Name.LocalName, out weaponType))
@@ -530,16 +539,19 @@ namespace RC.Engine.Simulator.Core
             }
 
             WeaponData weaponData = new WeaponData(nameAttr.Value, metadata, weaponType);
-            weaponData.SetCooldown(XmlHelper.LoadInt(cooldownElem.Value));
-            weaponData.SetDamage(XmlHelper.LoadInt(damageElem.Value));
-            weaponData.SetRangeMax(XmlHelper.LoadInt(rangeMaxElem.Value));
+            if (cooldownElem != null) { weaponData.SetCooldown(XmlHelper.LoadInt(cooldownElem.Value)); }
+            if (damageElem != null) { weaponData.SetDamage(XmlHelper.LoadInt(damageElem.Value)); }
+            if (rangeMaxElem != null) { weaponData.SetRangeMax(XmlHelper.LoadInt(rangeMaxElem.Value)); }
 
-            DamageTypeEnum damageType;
-            if (!EnumMap<DamageTypeEnum, string>.TryDemap(damageTypeElem.Value, out damageType))
+            if (damageTypeElem != null)
             {
-                throw new SimulatorException(string.Format("Unexpected damage type '{0}' defined in weapon data!", damageTypeElem.Value));
+                DamageTypeEnum damageType;
+                if (!EnumMap<DamageTypeEnum, string>.TryDemap(damageTypeElem.Value, out damageType))
+                {
+                    throw new SimulatorException(string.Format("Unexpected damage type '{0}' defined in weapon data!", damageTypeElem.Value));
+                }
+                weaponData.SetDamageType(damageType);
             }
-            weaponData.SetDamageType(damageType);
 
             if (displayedNameAttr != null) { weaponData.SetDisplayedName(displayedNameAttr.Value); }
             if (incrementElem != null) { weaponData.SetIncrement(XmlHelper.LoadInt(incrementElem.Value)); }

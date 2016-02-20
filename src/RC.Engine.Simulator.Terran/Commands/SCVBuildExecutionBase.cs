@@ -34,6 +34,17 @@ namespace RC.Engine.Simulator.Terran.Commands
         {
             if (this.Status == SCVBuildExecutionStatusEnum.MovingToTarget)
             {
+                /// Check if we have to do anything in this frame.
+                if (this.timeSinceLastDistanceCheck.Read() < TIME_BETWEEN_DISTANCE_CHECKS)
+                {
+                    /// Nothing to do now.
+                    this.timeSinceLastDistanceCheck.Write(this.timeSinceLastDistanceCheck.Read() + 1);
+                    return false;
+                }
+
+                /// Perform a state refresh in this frame.
+                this.timeSinceLastDistanceCheck.Write(0);
+
                 return this.ContinueMovingToTarget();
             }
             else if (this.Status == SCVBuildExecutionStatusEnum.Constructing)
@@ -77,11 +88,13 @@ namespace RC.Engine.Simulator.Terran.Commands
             this.recipientSCV = this.ConstructField<SCV>("recipientSCV");
             this.status = this.ConstructField<byte>("status");
             this.timeToNextScvMoveDuringConstruction = this.ConstructField<int>("timeToNextScvMoveDuringConstruction");
+            this.timeSinceLastDistanceCheck = this.ConstructField<int>("timeSinceLastDistanceCheck");
 
             this.targetPosition.Write(RCNumVector.Undefined);
             this.recipientSCV.Write(recipientSCV);
             this.Status = SCVBuildExecutionStatusEnum.MovingToTarget;
             this.timeToNextScvMoveDuringConstruction.Write(0);
+            this.timeSinceLastDistanceCheck.Write(0);
         }
 
         /// <summary>
@@ -114,10 +127,10 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// <returns>True if this command execution has been finished; otherwise false.</returns>
         protected abstract bool ContinueMovingToTarget();
 
-        /// <summary>
-        /// Gets the constructed building.
-        /// </summary>
-        protected abstract TerranBuilding GetConstructedBuilding();
+        ///// <summary>
+        ///// Gets the constructed building.
+        ///// </summary>
+        //protected abstract TerranBuilding GetConstructedBuilding();
 
         #region Internal construction management methods
 
@@ -128,7 +141,9 @@ namespace RC.Engine.Simulator.Terran.Commands
         {
             if (this.recipientSCV.Read().ContinueConstruct())
             {
-                /// The SCV has finished the construction -> move it to a free place and finish this command execution.
+                /// The SCV has finished the construction -> stop using the build tool, move the SCV to a free place and finish
+                ///                                          this command execution.
+                this.recipientSCV.Read().Armour.StopAttack();
                 this.MoveScvToFreePlace();
                 this.Status = SCVBuildExecutionStatusEnum.MovingToFreePlace;
                 return false;
@@ -144,22 +159,27 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// </summary>
         private void MakeScvActivityDuringConstruction()
         {
-            /// Decrease the timer.
+            /// Start using the build tool of the SCV and decrease the move-timer.
+            TerranBuilding constructedBuilding = this.RecipientSCV.ConstructionJob.ConstructedBuilding;
             if (this.timeToNextScvMoveDuringConstruction.Read() > 0)
             {
+                if (!this.recipientSCV.Read().MotionControl.IsMoving && this.recipientSCV.Read().Armour.Target == null)
+                {
+                    this.recipientSCV.Read().Armour.StartAttack(constructedBuilding.ID.Read(), SCV.SCV_BUILD_TOOL_NAME);
+                }
                 this.timeToNextScvMoveDuringConstruction.Write(this.timeToNextScvMoveDuringConstruction.Read() - 1);
                 return;
             }
 
             /// Generate a random position inside the building area and move the SCV there.
             /// TODO: do not use the default random generator because the engine shall be deterministic!
-            TerranBuilding constructedBuilding = this.GetConstructedBuilding();
             RCIntRectangle buildingQuadRect = constructedBuilding.MapObject.QuadraticPosition;
             RCIntRectangle buildingCellRect = this.Scenario.Map.QuadToCellRect(buildingQuadRect);
             RCNumVector movePosition = new RCNumVector(
                 RandomService.DefaultGenerator.Next(buildingCellRect.Left, buildingCellRect.Right),
                 RandomService.DefaultGenerator.Next(buildingCellRect.Top, buildingCellRect.Bottom));
             this.recipientSCV.Read().MotionControl.StartMoving(movePosition);
+            this.recipientSCV.Read().Armour.StopAttack();
 
             /// Reset the timer.
             this.timeToNextScvMoveDuringConstruction.Write(TIME_BETWEEN_SCV_MOVES);
@@ -170,12 +190,14 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// </summary>
         private void MoveScvToFreePlace()
         {
-            /// Do nothing if the building has been destroyed in the meantime.
-            TerranBuilding constructedBuilding = this.GetConstructedBuilding();
-            if (constructedBuilding == null || constructedBuilding.Scenario == null) { return; }
+            /// Search for an entity that is behind the recipient SCV. Do nothing if there is no such entity.
+            Entity overlappingEntity =
+                this.Scenario.GetElementsOnMap<Entity>(this.RecipientSCV.MotionControl.PositionVector.Read(),
+                    MapObjectLayerEnum.GroundObjects).FirstOrDefault(entity => entity != this.RecipientSCV);
+            if (overlappingEntity == null) { return; }
 
             /// Otherwise find a free place for the SCV.
-            EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(constructedBuilding);
+            EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(overlappingEntity);
             IEnumerator<ICell> cellEnumerator = cellIterator.GetEnumerator();
 
             RCIntVector targetCell = RCIntVector.Undefined;
@@ -195,8 +217,8 @@ namespace RC.Engine.Simulator.Terran.Commands
             }
             else
             {
-                /// Otherwise move the SCV to the bottom-left corner of the building.
-                RCIntRectangle buildingQuadRect = constructedBuilding.MapObject.QuadraticPosition;
+                /// Otherwise move the SCV to the bottom-left corner of the overlapping entity.
+                RCIntRectangle buildingQuadRect = overlappingEntity.MapObject.QuadraticPosition;
                 RCIntRectangle buildingCellRect = this.Scenario.Map.QuadToCellRect(buildingQuadRect);
                 this.recipientSCV.Read().MotionControl.StartMoving(new RCNumVector(buildingCellRect.Left, buildingCellRect.Bottom - 1));
             }
@@ -223,6 +245,16 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// Time to the next SCV move operation during construction.
         /// </summary>
         private readonly HeapedValue<int> timeToNextScvMoveDuringConstruction;
+
+        /// <summary>
+        /// The elapsed time since last distance check operation.
+        /// </summary>
+        private readonly HeapedValue<int> timeSinceLastDistanceCheck;
+
+        /// <summary>
+        /// The time between distance check operations.
+        /// </summary>
+        private const int TIME_BETWEEN_DISTANCE_CHECKS = 12;
 
         /// <summary>
         /// The number of frames between SCV move operations during construction.

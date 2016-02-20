@@ -86,6 +86,7 @@
     <Compile Include="Buildings\EngineeringBay.cs" />
     <Compile Include="Buildings\Factory.cs" />
     <Compile Include="Buildings\MissileTurret.cs" />
+    <Compile Include="Buildings\Refinery.cs" />
     <Compile Include="Buildings\ScienceFacility.cs" />
     <Compile Include="Buildings\Starport.cs" />
     <Compile Include="Buildings\SupplyDepot.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Commands\SCVCmdExecutionFactory.cs" />
     <Compile Include="Commands\SCVStopBuildExecution.cs" />
     <Compile Include="Commands\TerranBuildingConstructionJob.cs" />
+    <Compile Include="CustomWeapons\SCVBuildTool.cs" />
     <Compile Include="ElementFactoryPlugin.cs" />
     <Compile Include="TerranAbilities.cs" />
     <Compile Include="TerranHeapManagerPlugin.cs" />

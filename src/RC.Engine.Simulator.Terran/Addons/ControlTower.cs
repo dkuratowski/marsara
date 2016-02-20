@@ -25,9 +25,9 @@ namespace RC.Engine.Simulator.Terran.Addons
         }
 
         /// <see cref="ScenarioElement.AttachToMap"/>
-        public override bool AttachToMap(RCNumVector position)
+        public override bool AttachToMap(RCNumVector position, params ScenarioElement[] elementsToIgnore)
         {
-            bool attachToMapSuccess = base.AttachToMap(position);
+            bool attachToMapSuccess = base.AttachToMap(position, elementsToIgnore);
             if (attachToMapSuccess)
             {
                 this.MotionControl.Fix();

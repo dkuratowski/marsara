@@ -19,18 +19,23 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// <summary>
         /// Constructs a TerranBuildingConstructionJob instance.
         /// </summary>
-        /// <param name="owner">The owner player of this job.</param>
+        /// <param name="starterSCV">The SCV to attach to this job automatically when its being started.</param>
         /// <param name="buildingProduct">The type of building to be created by this job.</param>
         /// <param name="topLeftQuadTile">The coordinates of the top-left quadratic tile of the building to be created.</param>
-        public TerranBuildingConstructionJob(Player owner, IBuildingType buildingProduct, RCIntVector topLeftQuadTile)
-            : base(owner, buildingProduct, 0)
+        public TerranBuildingConstructionJob(SCV starterSCV, IBuildingType buildingProduct, RCIntVector topLeftQuadTile)
+            : base(starterSCV.Owner, buildingProduct, 0)
         {
+            if (starterSCV == null) { throw new ArgumentNullException("starterSCV"); }
+            if (topLeftQuadTile == RCIntVector.Undefined) { throw new ArgumentNullException("topLeftQuadTile"); }
+
             this.buildingProduct = buildingProduct;
             this.topLeftQuadTile = this.ConstructField<RCIntVector>("topLeftQuadTile");
             this.constructedBuilding = this.ConstructField<TerranBuilding>("constructedBuilding");
             this.attachedSCV = this.ConstructField<SCV>("attachedSCV");
+            this.starterSCV = this.ConstructField<SCV>("starterSCV");
             this.topLeftQuadTile.Write(topLeftQuadTile);
             this.constructedBuilding.Write(null);
+            this.starterSCV.Write(starterSCV);
         }
 
         /// <summary>
@@ -78,13 +83,15 @@ namespace RC.Engine.Simulator.Terran.Commands
         protected override bool StartImpl()
         {
             /// Create the building and begin its construction.
-            bool success = this.ElementFactory.CreateElement(this.buildingProduct.Name, this.OwnerPlayer, this.topLeftQuadTile.Read());
+            bool success = this.ElementFactory.CreateElement(this.buildingProduct.Name, this.OwnerPlayer, this.topLeftQuadTile.Read(), this.starterSCV.Read());
             if (success)
             {
                 TerranBuilding building = this.OwnerPlayer.Scenario.GetFixedEntity<TerranBuilding>(this.topLeftQuadTile.Read());
                 if (building == null) { throw new InvalidOperationException("Impossible case happened!"); }
                 this.constructedBuilding.Write(building);
                 this.constructedBuilding.Read().OnAttachConstructionJob(this);
+                this.AttachSCV(this.starterSCV.Read());
+                this.starterSCV.Write(null);
             }
             return success;
         }
@@ -136,5 +143,10 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// to this construction job.
         /// </summary>
         private readonly HeapedValue<SCV> attachedSCV;
+
+        /// <summary>
+        /// Reference to the SCV that to be attached automatically to this construction job when it is being started.
+        /// </summary>
+        private readonly HeapedValue<SCV> starterSCV;
     }
 }

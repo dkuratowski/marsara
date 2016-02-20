@@ -36,7 +36,7 @@ namespace RC.Engine.Simulator.Commands
             /// Select an enemy to be attacked.
             if (this.timeSinceLastSearch.Read() == TIME_BETWEEN_ENEMY_SEARCHES)
             {
-                this.enemyToAttack.Write(this.recipientEntity.Read().Armour.SelectEnemy());
+                this.enemyToAttack.Write(this.recipientEntity.Read().Armour.SelectEnemyForStandardWeapons());
                 if (enemyToAttack.Read() != null)
                 {
                     /// Enemy found -> stop execution finished, attack the enemy.

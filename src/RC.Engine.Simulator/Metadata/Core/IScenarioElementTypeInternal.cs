@@ -127,6 +127,11 @@ namespace RC.Engine.Simulator.Metadata.Core
         IEnumerable<IWeaponData> StandardWeapons { get; }
 
         /// <summary>
+        /// Gets the list of the custom weapons of this element type.
+        /// </summary>
+        IEnumerable<IWeaponData> CustomWeapons { get; }
+        
+        /// <summary>
         /// Gets the requirements of this element type.
         /// </summary>
         IEnumerable<IRequirement> Requirements { get; }

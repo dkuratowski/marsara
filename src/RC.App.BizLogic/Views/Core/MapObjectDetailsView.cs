@@ -35,8 +35,16 @@ namespace RC.App.BizLogic.Views.Core
         {
             if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
 
-            VespeneGeyser entityAsVespeneGeyser = this.Scenario.GetElement<VespeneGeyser>(objectID);
-            return entityAsVespeneGeyser != null ? entityAsVespeneGeyser.ResourceAmount.Read() : -1;
+            Entity entity = this.GetEntity(objectID);
+            IResourceProvider entityAsResourceProvider = entity as IResourceProvider;
+            if (entityAsResourceProvider != null && (entity.Owner == null || entity.Owner.PlayerIndex == (int)this.selectionManager.LocalPlayer))
+            {
+                return entityAsResourceProvider.VespeneGasAmount;
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         /// <see cref="IMapObjectDetailsView.GetMineralsAmount"/>
@@ -44,8 +52,16 @@ namespace RC.App.BizLogic.Views.Core
         {
             if (objectID < 0) { throw new ArgumentOutOfRangeException("objectID"); }
 
-            MineralField entityAsMineralField = this.Scenario.GetElement<MineralField>(objectID);
-            return entityAsMineralField != null ? entityAsMineralField.ResourceAmount.Read() : -1;
+            Entity entity = this.GetEntity(objectID);
+            IResourceProvider entityAsResourceProvider = entity as IResourceProvider;
+            if (entityAsResourceProvider != null && (entity.Owner == null || entity.Owner.PlayerIndex == (int)this.selectionManager.LocalPlayer))
+            {
+                return entityAsResourceProvider.MineralsAmount;
+            }
+            else
+            {
+                return -1;
+            }
         }
 
         /// <see cref="IMapObjectDetailsView.GetHPCondition"/>
@@ -190,7 +206,7 @@ namespace RC.App.BizLogic.Views.Core
             {
                 List<Tuple<string, int, int>> retList = new List<Tuple<string, int, int>>();
                 List<IWeaponData> weaponDataList = new List<IWeaponData>(entity.ElementType.StandardWeapons);
-                List<IWeaponDataUpgrade> weaponUpgradeList = new List<IWeaponDataUpgrade>(entity.ElementTypeUpgrade.WeaponUpgrades);
+                List<IWeaponDataUpgrade> weaponUpgradeList = new List<IWeaponDataUpgrade>(entity.ElementTypeUpgrade.StandardWeaponUpgrades);
                 for (int i = 0; i < weaponDataList.Count; i++)
                 {
                     int currentDamage = weaponDataList[i].Damage.Read();

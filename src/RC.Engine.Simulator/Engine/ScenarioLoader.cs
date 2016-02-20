@@ -5,6 +5,7 @@ using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.Metadata.Core;
+using RC.Engine.Simulator.PlacementConstraints;
 using RC.Engine.Simulator.PublicInterfaces;
 using RC.Engine.Simulator.Core;
 using RC.Common;

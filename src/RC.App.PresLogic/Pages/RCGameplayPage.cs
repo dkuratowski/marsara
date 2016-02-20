@@ -107,7 +107,7 @@ namespace RC.App.PresLogic.Pages
             if (this.gameConnection.ConnectionStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("The gameplay page is not offline!"); }
             
             /// TODO: A scenario shall be running at this point!
-            ComponentManager.GetInterface<IMultiplayerService>().CreateNewGame(".\\maps\\testmap4.rcm", GameTypeEnum.Melee, GameSpeedEnum.Fastest);
+            ComponentManager.GetInterface<IMultiplayerService>().CreateNewGame(".\\maps\\testmap4b.rcm", GameTypeEnum.Melee, GameSpeedEnum.Fastest);
             ComponentManager.GetInterface<IScrollService>().AttachWindow(this.mapDisplay.PixelSize);
 
             /// Create and start the map display control.

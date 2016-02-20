@@ -36,7 +36,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <param name="weaponLevel">The new weapon level.</param>
         private static void SetWeaponLevel(IScenarioElementTypeUpgrade upgradeInterface, int weaponLevel)
         {
-            foreach (IWeaponDataUpgrade weaponUpgradeInterface in upgradeInterface.WeaponUpgrades)
+            foreach (IWeaponDataUpgrade weaponUpgradeInterface in upgradeInterface.StandardWeaponUpgrades)
             {
                 weaponUpgradeInterface.DamageLevel = weaponLevel;
             }
@@ -59,7 +59,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <param name="attackRangeUpgrade">The amount of the upgrade on the attack range.</param>
         private static void IncreaseAttackRange(IScenarioElementTypeUpgrade upgradeInterface, int attackRangeUpgrade)
         {
-            foreach (IWeaponDataUpgrade weaponUpgradeInterface in upgradeInterface.WeaponUpgrades)
+            foreach (IWeaponDataUpgrade weaponUpgradeInterface in upgradeInterface.StandardWeaponUpgrades)
             {
                 weaponUpgradeInterface.RangeMaxUpgrade = attackRangeUpgrade;
             }

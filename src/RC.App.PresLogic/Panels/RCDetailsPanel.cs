@@ -327,19 +327,11 @@ namespace RC.App.PresLogic.Panels
             if (this.productionDetailsView.ConstructionProgressNormalized != -1) { return this.constructionProgressDisplay; }
             else if (this.productionDetailsView.ProductionLineCapacity != 0) { return this.productionLineDisplay; }
             else if (this.mapObjectDetailsView.GetSuppliesProvided(idOfSelectedObj) != -1) { return this.supplyDetailsDisplay; }
+            else if (this.mapObjectDetailsView.GetMineralsAmount(idOfSelectedObj) != -1 || this.mapObjectDetailsView.GetVespeneGasAmount(idOfSelectedObj) != -1) { return this.resourceAmountDisplay; }
             else if (this.mapObjectDetailsView.GetArmorInfo(idOfSelectedObj) != null || this.mapObjectDetailsView.GetWeaponInfo(idOfSelectedObj).Count != 0) { return this.weaponDetailsDisplay; }
             else
             {
-                int minerals = this.mapObjectDetailsView.GetMineralsAmount(idOfSelectedObj);
-                int vespeneGas = this.mapObjectDetailsView.GetVespeneGasAmount(idOfSelectedObj);
-                if (minerals != -1 || vespeneGas != -1)
-                {
-                    return this.resourceAmountDisplay;
-                }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         }
 

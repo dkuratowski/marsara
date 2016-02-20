@@ -27,10 +27,8 @@ namespace RC.Engine.Simulator.Terran.Commands
             : base(recipientSCV)
         {
             this.targetBuildingID = this.ConstructField<int>("targetBuildingID");
-            this.timeSinceLastDistanceCheck = this.ConstructField<int>("timeSinceLastDistanceCheck");
             this.TargetPosition = targetPosition;
             this.targetBuildingID.Write(targetBuildingID);
-            this.timeSinceLastDistanceCheck.Write(0);
         }
 
         #region Overrides
@@ -45,17 +43,6 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// <see cref="SCVBuildExecutionBase.ContinueMovingToTarget"/>
         protected override bool ContinueMovingToTarget()
         {
-            /// Check if we have to do anything in this frame.
-            if (this.timeSinceLastDistanceCheck.Read() < TIME_BETWEEN_DISTANCE_CHECKS)
-            {
-                /// Nothing to do now.
-                this.timeSinceLastDistanceCheck.Write(this.timeSinceLastDistanceCheck.Read() + 1);
-                return false;
-            }
-
-            /// Perform a state refresh in this frame.
-            this.timeSinceLastDistanceCheck.Write(0);
-
             /// First try to retrieve the target building from the scenario.
             TerranBuilding targetBuilding = this.Scenario.GetElementOnMap<TerranBuilding>(this.targetBuildingID.Read(), MapObjectLayerEnum.GroundObjects);
             if (targetBuilding == null)
@@ -66,7 +53,7 @@ namespace RC.Engine.Simulator.Terran.Commands
 
             /// Check the distance between the SCV and the target building.
             RCNumber distance = MapUtils.ComputeDistance(this.RecipientSCV.Area, targetBuilding.Area);
-            if (distance > DISTANCE_TO_REACH)
+            if (distance > Weapon.NEARBY_DISTANCE)
             {
                 /// Distance not reached yet -> continue execution if SCV is still moving.
                 return !this.RecipientSCV.MotionControl.IsMoving;
@@ -85,32 +72,11 @@ namespace RC.Engine.Simulator.Terran.Commands
             return false;
         }
 
-        /// <see cref="SCVBuildExecutionBase.GetConstructedBuilding"/>
-        protected override TerranBuilding GetConstructedBuilding()
-        {
-            return this.Scenario.GetElementOnMap<TerranBuilding>(this.targetBuildingID.Read(), MapObjectLayerEnum.GroundObjects);
-        }
-
         #endregion Overrides
 
         /// <summary>
         /// The ID of the building whose construction to be continued.
         /// </summary>
         private readonly HeapedValue<int> targetBuildingID;
-
-        /// <summary>
-        /// The elapsed time since last distance check operation.
-        /// </summary>
-        private readonly HeapedValue<int> timeSinceLastDistanceCheck;
-
-        /// <summary>
-        /// The distance to be reached by the SCV to be able to continue the construction.
-        /// </summary>
-        private static readonly RCNumber DISTANCE_TO_REACH = 1;
-
-        /// <summary>
-        /// The time between distance check operations.
-        /// </summary>
-        private const int TIME_BETWEEN_DISTANCE_CHECKS = 12;
     }
 }

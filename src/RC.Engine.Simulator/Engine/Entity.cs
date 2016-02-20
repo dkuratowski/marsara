@@ -40,6 +40,7 @@ namespace RC.Engine.Simulator.Engine
 
             this.mapObject = null;
             this.reservationObject = null;
+            this.tmpElementsToIgnoreDuringAttach = new RCSet<ScenarioElement>();
             this.affectingCmdExecution.Write(null);
             this.locator.Write(new Locator(this));
             this.armour.Write(new Armour(this));
@@ -57,22 +58,26 @@ namespace RC.Engine.Simulator.Engine
         /// Attaches this entity to the given quadratic tile on the map.
         /// </summary>
         /// <param name="topLeftTile">The quadratic tile at the top-left corner of this entity.</param>
+        /// <param name="elementsToIgnore">An optional list of scenario elements to ignore during attach.</param>
         /// <returns>True if this entity was successfully attached to the map; otherwise false.</returns>
         /// <remarks>Note that the caller has to explicitly call MotionControl.Fix to fix this entity after calling this method.</remarks>
-        public bool AttachToMap(IQuadTile topLeftTile)
+        public bool AttachToMap(IQuadTile topLeftTile, params ScenarioElement[] elementsToIgnore)
         {
             ICell topLeftCell = topLeftTile.GetCell(new RCIntVector(0, 0));
             RCNumVector position = topLeftCell.MapCoords - new RCNumVector(1, 1) / 2 + this.ElementType.Area.Read() / 2;
 
-            return this.AttachToMap(position);
+            return this.AttachToMap(position, elementsToIgnore);
         }
 
         /// <see cref="ScenarioElement.AttachToMap"/>
-        public override bool AttachToMap(RCNumVector position)
+        public override bool AttachToMap(RCNumVector position, params ScenarioElement[] elementsToIgnore)
         {
             if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
+            if (elementsToIgnore == null) { throw new ArgumentNullException("elementsToIgnore"); }
 
+            foreach (ScenarioElement elementToIgnore in elementsToIgnore) { this.tmpElementsToIgnoreDuringAttach.Add(elementToIgnore); }
             bool success = this.MotionControl.OnOwnerAttachingToMap(position);
+            this.tmpElementsToIgnoreDuringAttach.Clear();
             if (success)
             {
                 this.mapObject = this.CreateMapObject(this.Area, this.MotionControl.IsFlying ? MapObjectLayerEnum.AirObjects : MapObjectLayerEnum.GroundObjects);
@@ -122,10 +127,10 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <param name="otherEntity">The other entity to be checked.</param>
         /// <returns>True if this entity can overlap the given other entity; otherwise false.</returns>
-        /// <remarks>
-        /// This method can be overriden by the derived classes. By default, overlap between entities is not enabled.
-        /// </remarks>
-        public virtual bool IsOverlapEnabled(Entity otherEntity) { return false; }
+        public bool IsOverlapEnabled(Entity otherEntity)
+        {
+            return this.tmpElementsToIgnoreDuringAttach.Contains(otherEntity) || this.IsOverlapEnabledImpl(otherEntity);
+        }
 
         /// <summary>
         /// Gets the type of the command that is currently being executed by this entity or null if there is no command currently
@@ -313,6 +318,16 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <remarks>Can be overriden in the derived classes.</remarks>
         protected virtual string DestructionAnimationName { get { throw new NotSupportedException("Entity.DestructionAnimationName not supported for this entity!"); } }
+
+        /// <summary>
+        /// Additional check whether this entity can overlap the given other entity.
+        /// </summary>
+        /// <param name="otherEntity">The other entity to be checked.</param>
+        /// <returns>True if this entity can overlap the given other entity; otherwise false.</returns>
+        /// <remarks>
+        /// This method can be overriden by the derived classes. By default, overlap between entities is not enabled.
+        /// </remarks>
+        protected virtual bool IsOverlapEnabledImpl(Entity otherEntity) { return false; }
 
         /// <summary>
         /// Derived classes can perform additional operations when being destroyed.
@@ -537,6 +552,11 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         private readonly HeapedValue<int> nextProductionJobID;
 
+        /// <summary>
+        /// Reference to the active production line or null if there is no active production line currently.
+        /// </summary>
+        private readonly HeapedValue<ProductionLine> activeProductionLine;
+
         #endregion Heaped members
 
         /// <summary>
@@ -552,9 +572,9 @@ namespace RC.Engine.Simulator.Engine
         private readonly RCSet<ProductionLine> productionLines;
 
         /// <summary>
-        /// Reference to the active production line or null if there is no active production line currently.
+        /// A temporary list of scenario elements to ignore during attach.
         /// </summary>
-        private readonly HeapedValue<ProductionLine> activeProductionLine;
+        private readonly RCSet<ScenarioElement> tmpElementsToIgnoreDuringAttach;
 
         /// <summary>
         /// Reference to the map object that represents this entity on the map or null if this entity is not currently

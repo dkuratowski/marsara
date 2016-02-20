@@ -1,4 +1,5 @@
 ﻿using RC.Common;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.PublicInterfaces;
 using System;
@@ -6,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace RC.Engine.Simulator.Engine
+namespace RC.Engine.Simulator.PlacementConstraints
 {
     /// <summary>
     /// The abstract base class of entity placement constraints.

@@ -45,7 +45,7 @@ namespace RC.Engine.Simulator.Terran.Units
             if (this.remainingStimPacksTime.Read() == 0)
             {
                 this.ElementTypeUpgrade.SpeedUpgrade = TerranAbilities.STIMPACKS_SPEED_UPGRADE;
-                foreach (IWeaponDataUpgrade weaponDataUpgrade in this.ElementTypeUpgrade.WeaponUpgrades)
+                foreach (IWeaponDataUpgrade weaponDataUpgrade in this.ElementTypeUpgrade.StandardWeaponUpgrades)
                 {
                     weaponDataUpgrade.CooldownUpgrade = TerranAbilities.STIMPACKS_COOLDOWN_UPGRADE;
                 }
@@ -70,7 +70,7 @@ namespace RC.Engine.Simulator.Terran.Units
             if (this.remainingStimPacksTime.Read() == 0)
             {
                 this.ElementTypeUpgrade.SpeedUpgrade = 0;
-                foreach (IWeaponDataUpgrade weaponDataUpgrade in this.ElementTypeUpgrade.WeaponUpgrades)
+                foreach (IWeaponDataUpgrade weaponDataUpgrade in this.ElementTypeUpgrade.StandardWeaponUpgrades)
                 {
                     weaponDataUpgrade.CooldownUpgrade = 0;
                 }

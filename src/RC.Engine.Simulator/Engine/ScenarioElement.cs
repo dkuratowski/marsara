@@ -62,9 +62,10 @@ namespace RC.Engine.Simulator.Engine
         /// Attaches this scenario element to the map into the given position.
         /// </summary>
         /// <param name="position">The position where to attach this scenario element.</param>
+        /// <param name="elementsToIgnore">An optional list of scenario elements to ignore during attach.</param>
         /// <returns>True if this scenario element has successfully been attached to the map; otherwise false.</returns>
         /// <remarks>Can be overriden in the derived classes, the default implementation does nothing.</remarks>
-        public virtual bool AttachToMap(RCNumVector position)
+        public virtual bool AttachToMap(RCNumVector position, params ScenarioElement[] elementsToIgnore)
         {
             throw new NotSupportedException("ScenarioElement.AttachToMap is not supported for this scenario element!");
         }

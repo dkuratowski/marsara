@@ -53,8 +53,8 @@ namespace RC.Engine.Simulator.Metadata
         RCNumber CumulatedSpeedUpgrade { get; }
 
         /// <summary>
-        /// Gets the upgrade interfaces of the weapons of the underlying scenario element type.
+        /// Gets the upgrade interfaces of the standard weapons of the underlying scenario element type.
         /// </summary>
-        IEnumerable<IWeaponDataUpgrade> WeaponUpgrades { get; }
+        IEnumerable<IWeaponDataUpgrade> StandardWeaponUpgrades { get; }
     }
 }

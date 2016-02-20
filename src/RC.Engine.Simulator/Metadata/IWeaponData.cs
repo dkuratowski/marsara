@@ -40,11 +40,13 @@ namespace RC.Engine.Simulator.Metadata
     public enum WeaponTypeEnum
     {
         [EnumMapping(XmlMetadataConstants.GROUNDWEAPON_ELEM)]
-        Ground = 0,     /// The weapon can target only ground entities.
+        Ground = 0,     /// Standard weapon targeting ground entities.
         [EnumMapping(XmlMetadataConstants.AIRWEAPON_ELEM)]
-        Air = 1,        /// The weapon can target only flying entities.
+        Air = 1,        /// Standard weapon targeting only flying entities.
         [EnumMapping(XmlMetadataConstants.AIRGROUNDWEAPON_ELEM)]
-        AirGround = 2   /// The weapon can target both ground and flying entities.
+        AirGround = 2,  /// Standard weapon targeting both ground and flying entities.
+        [EnumMapping(XmlMetadataConstants.CUSTOMWEAPON_ELEM)]
+        Custom = 3      /// Custom weapon.
     }
 
     /// <summary>

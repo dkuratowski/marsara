@@ -1,5 +1,6 @@
 ﻿using RC.Common;
 using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.PlacementConstraints;
 using RC.Engine.Simulator.PublicInterfaces;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,7 @@ namespace RC.Engine.Simulator.Metadata.Core
             this.placementConstraints = new List<EntityPlacementConstraint>();
             this.requirements = new List<Requirement>();
             this.standardWeapons = new List<WeaponData>();
+            this.customWeapons = new List<WeaponData>();
         }
 
         #region IScenarioElementTypeInternal members
@@ -75,6 +77,9 @@ namespace RC.Engine.Simulator.Metadata.Core
 
         /// <see cref="IScenarioElementTypeInternal.StandardWeapons"/>
         public IEnumerable<IWeaponData> StandardWeapons { get { return this.standardWeapons; } }
+
+        /// <see cref="IScenarioElementTypeInternal.CustomWeapons"/>
+        public IEnumerable<IWeaponData> CustomWeapons { get { return this.customWeapons; } }
 
         /// <see cref="IScenarioElementTypeInternal.Requirements"/>
         public IEnumerable<IRequirement> Requirements { get { return this.requirements; } }
@@ -251,14 +256,22 @@ namespace RC.Engine.Simulator.Metadata.Core
         }
 
         /// <summary>
-        /// Adds a standard weapon to this element type.
+        /// Adds a weapon to this element type.
         /// </summary>
         /// <param name="weaponData">The definition of the weapon to be added.</param>
-        public void AddStandardWeapon(WeaponData weaponData)
+        public void AddWeapon(WeaponData weaponData)
         {
             if (this.Metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
             if (weaponData == null) { throw new ArgumentNullException("weaponData"); }
-            this.standardWeapons.Add(weaponData);
+
+            if (weaponData.WeaponType.Read() != WeaponTypeEnum.Custom)
+            {
+                this.standardWeapons.Add(weaponData);
+            }
+            else
+            {
+                this.customWeapons.Add(weaponData);
+            }
         }
 
         #region Costs data setters
@@ -412,7 +425,8 @@ namespace RC.Engine.Simulator.Metadata.Core
             if (!this.metadata.IsFinalized)
             {
                 if (this.animationPalette != null) { this.animationPalette.CheckAndFinalize(); }
-                foreach (WeaponData weapon in this.standardWeapons) { weapon.CheckAndFinalize(); }
+                foreach (WeaponData standardWeapon in this.standardWeapons) { standardWeapon.CheckAndFinalize(); }
+                foreach (WeaponData customWeapon in this.customWeapons) { customWeapon.CheckAndFinalize(); }
 
                 if (this.buildTime != null && this.buildTime.Read() < 0) { throw new SimulatorException("BuildTime must be non-negative!"); }
                 if (this.supplyUsed != null && this.supplyUsed.Read() < 0) { throw new SimulatorException("SupplyUsed must be non-negative!"); }
@@ -561,6 +575,11 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// The standard weapons of this element type.
         /// </summary>
         private readonly List<WeaponData> standardWeapons;
+
+        /// <summary>
+        /// The custom weapons of this element type.
+        /// </summary>
+        private readonly List<WeaponData> customWeapons;
 
         /// <summary>
         /// The list of the requirements of this element type.

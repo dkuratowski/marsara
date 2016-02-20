@@ -33,9 +33,9 @@ namespace RC.Engine.Simulator.Engine
         public IValue<int> ResourceAmount { get { return this.resourceAmount; } }
 
         /// <see cref="ScenarioElement.AttachToMap"/>
-        public override bool AttachToMap(RCNumVector position)
+        public override bool AttachToMap(RCNumVector position, params ScenarioElement[] elementsToIgnore)
         {
-            bool attachToMapSuccess = base.AttachToMap(position);
+            bool attachToMapSuccess = base.AttachToMap(position, elementsToIgnore);
             if (attachToMapSuccess)
             {
                 this.MotionControl.Fix();
@@ -86,7 +86,7 @@ namespace RC.Engine.Simulator.Engine
             /// <summary>
             /// Stores the last known value of resource amount or -1 if no such value is known yet.
             /// </summary>
-            private HeapedValue<int> lastKnownResourceAmount;
+            private readonly HeapedValue<int> lastKnownResourceAmount;
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace RC.Engine.Simulator.Engine
     /// <summary>
     /// Represents a mineral field.
     /// </summary>
-    public class MineralField : ResourceObject
+    public class MineralField : ResourceObject, IResourceProvider
     {
         /// <summary>
         /// Constructs a mineral field instance.
@@ -107,6 +107,16 @@ namespace RC.Engine.Simulator.Engine
             : base(MINERALFIELD_TYPE_NAME, INITIAL_RESOURCE_AMOUNT)
         {
         }
+
+        #region IResourceProvider methods
+
+        /// <see cref="IResourceProvider.MineralsAmount"/>
+        int IResourceProvider.MineralsAmount { get { return this.ResourceAmount.Read(); } }
+
+        /// <see cref="IResourceProvider.VespeneGasAmount"/>
+        int IResourceProvider.VespeneGasAmount { get { return -1; } }
+
+        #endregion IResourceProvider methods
 
         /// <see cref="ResourceObject.SetAnimationsImpl"/>
         protected override void SetAnimationsImpl()
@@ -162,7 +172,7 @@ namespace RC.Engine.Simulator.Engine
     /// <summary>
     /// Represents a vespene geyser.
     /// </summary>
-    public class VespeneGeyser : ResourceObject
+    public class VespeneGeyser : ResourceObject, IResourceProvider
     {
         /// <summary>
         /// Constructs a vespene geyser instance.
@@ -171,6 +181,16 @@ namespace RC.Engine.Simulator.Engine
             : base(VESPENEGEYSER_TYPE_NAME, INITIAL_RESOURCE_AMOUNT)
         {
         }
+
+        #region IResourceProvider methods
+
+        /// <see cref="IResourceProvider.MineralsAmount"/>
+        int IResourceProvider.MineralsAmount { get { return -1; } }
+
+        /// <see cref="IResourceProvider.VespeneGasAmount"/>
+        int IResourceProvider.VespeneGasAmount { get { return this.ResourceAmount.Read(); } }
+
+        #endregion IResourceProvider methods
 
         /// <see cref="ResourceObject.SetAnimationsImpl"/>
         protected override void SetAnimationsImpl()

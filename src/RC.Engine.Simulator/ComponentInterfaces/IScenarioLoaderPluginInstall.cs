@@ -1,5 +1,6 @@
 ﻿using RC.Common.ComponentModel;
 using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.PlacementConstraints;
 
 namespace RC.Engine.Simulator.ComponentInterfaces
 {

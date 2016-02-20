@@ -78,6 +78,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behaviors\ProductionAnimationBehavior.cs" />
+    <Compile Include="Behaviors\VespeneGasProviderAnimationsBehavior.cs" />
+    <Compile Include="Behaviors\VespeneGasProviderConstructionBehavior.cs" />
     <Compile Include="Commands\AttackExecution.cs" />
     <Compile Include="Commands\BasicCmdExecutionFactory.cs" />
     <Compile Include="Commands\DefensiveAttackExecution.cs" />
@@ -120,11 +122,14 @@
     <Compile Include="Engine\AddonProductionJob.cs" />
     <Compile Include="Engine\AddonProductionLine.cs" />
     <Compile Include="Engine\Biometrics.cs" />
-    <Compile Include="Engine\BuildingPlacementSuggestionProvider.cs" />
+    <Compile Include="Engine\IResourceProvider.cs" />
+    <Compile Include="PlacementConstraints\BuildingPlacementSuggestionProvider.cs" />
     <Compile Include="Behaviors\BurndownBehavior.cs" />
     <Compile Include="Behaviors\ConstructionBehavior.cs" />
-    <Compile Include="Engine\CorrespondingAddonSuggestion.cs" />
+    <Compile Include="PlacementConstraints\CorrespondingAddonSuggestion.cs" />
     <Compile Include="Behaviors\EntityBehavior.cs" />
+    <Compile Include="Engine\CustomWeapon.cs" />
+    <Compile Include="Engine\CustomWeaponStub.cs" />
     <Compile Include="Engine\EntityWreck.cs" />
     <Compile Include="Behaviors\LiftoffBehavior.cs" />
     <Compile Include="Engine\MapObject.cs" />
@@ -173,6 +178,8 @@
     <Compile Include="MotionControl\PathFindingAlgorithm.cs" />
     <Compile Include="MotionControl\PathTrackerBase.cs" />
     <Compile Include="MotionControl\VelocityGraph.cs" />
+    <Compile Include="PlacementConstraints\VespeneGeyserConstraint.cs" />
+    <Compile Include="PlacementConstraints\VespeneGeyserSuggestion.cs" />
     <Compile Include="PublicInterfaces\EntityNeighbourhoodIterator.cs" />
     <Compile Include="Engine\Addon.cs" />
     <Compile Include="Metadata\Core\AddonType.cs" />
@@ -181,7 +188,7 @@
     <Compile Include="Engine\AnimationPlayer.cs" />
     <Compile Include="Metadata\Core\AnimationPalette.cs" />
     <Compile Include="Engine\Armour.cs" />
-    <Compile Include="Engine\BuildableAreaConstraint.cs" />
+    <Compile Include="PlacementConstraints\BuildableAreaConstraint.cs" />
     <Compile Include="Engine\Building.cs" />
     <Compile Include="Metadata\Core\BuildingType.cs" />
     <Compile Include="Core\Constants.cs" />
@@ -194,7 +201,7 @@
     <Compile Include="Core\HeapConnector.cs" />
     <Compile Include="Engine\Entity.cs" />
     <Compile Include="Metadata\IAnimationPalette.cs" />
-    <Compile Include="Engine\EntityPlacementConstraint.cs" />
+    <Compile Include="PlacementConstraints\EntityPlacementConstraint.cs" />
     <Compile Include="Metadata\Core\IMissileTypeInternal.cs" />
     <Compile Include="Metadata\Core\IScenarioElementTypeInternal.cs" />
     <Compile Include="Metadata\IWeaponData.cs" />
@@ -203,7 +210,7 @@
     <Compile Include="Engine\Player.cs" />
     <Compile Include="Engine\RaceEnum.cs" />
     <Compile Include="Metadata\Core\Requirement.cs" />
-    <Compile Include="Engine\MinimumDistanceConstraint.cs" />
+    <Compile Include="PlacementConstraints\MinimumDistanceConstraint.cs" />
     <Compile Include="Engine\ResourceObject.cs" />
     <Compile Include="Engine\Scenario.cs" />
     <Compile Include="Metadata\Core\ScenarioElementType.cs" />

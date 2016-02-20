@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common;
+using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.PublicInterfaces;
 
-namespace RC.Engine.Simulator.Engine
+namespace RC.Engine.Simulator.PlacementConstraints
 {
     /// <summary>
     /// The abstract base class of building placement suggestion providers.

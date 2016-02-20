@@ -25,11 +25,13 @@ namespace RC.Engine.Simulator.Behaviors
 
             this.dummyField = this.ConstructField<byte>("dummyField");
 
+            this.constructionAnimationsSet = new RCSet<string>() { firstAnimation };
             this.constructionAnimations = new string[furtherAnimations.Length + 1];
             this.constructionAnimations[0] = firstAnimation;
             for (int i = 0; i < furtherAnimations.Length; i++)
             {
                 this.constructionAnimations[i + 1] = furtherAnimations[i];
+                this.constructionAnimationsSet.Add(furtherAnimations[i]);
             }
         }
 
@@ -48,7 +50,7 @@ namespace RC.Engine.Simulator.Behaviors
             else
             {
                 /// Entity is not under construction -> stop every construction animations.
-                this.StopStartAnimations(entity, new RCSet<string>(this.constructionAnimations), new RCSet<string>());
+                this.StopStartAnimations(entity, this.constructionAnimationsSet, new RCSet<string>());
             }
         }
 
@@ -74,6 +76,11 @@ namespace RC.Engine.Simulator.Behaviors
         /// The names of the construction animations to be played.
         /// </summary>
         private readonly string[] constructionAnimations;
+
+        /// <summary>
+        /// The set of the construction animations.
+        /// </summary>
+        private readonly RCSet<string> constructionAnimationsSet;
 
         /// <summary>
         /// Dummy heaped value because we are deriving from HeapedObject.

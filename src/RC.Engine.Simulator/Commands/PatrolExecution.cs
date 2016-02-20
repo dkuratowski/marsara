@@ -59,7 +59,7 @@ namespace RC.Engine.Simulator.Commands
             }
 
             /// Check if an enemy became into sight-range.
-            Entity enemyToAttack = this.recipientEntity.Read().Armour.SelectEnemy();
+            Entity enemyToAttack = this.recipientEntity.Read().Armour.SelectEnemyForStandardWeapons();
             if (enemyToAttack != null)
             {
                 /// Enemy found -> start an attack sub-execution on the enemy.

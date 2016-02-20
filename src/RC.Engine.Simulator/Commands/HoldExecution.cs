@@ -55,7 +55,7 @@ namespace RC.Engine.Simulator.Commands
             }
 
             /// We have no entity to attack -> select a nearby enemy to attack if possible.
-            this.attackedEntity.Write(this.recipientEntity.Read().Armour.SelectEnemy());
+            this.attackedEntity.Write(this.recipientEntity.Read().Armour.SelectEnemyForStandardWeapons());
             if (this.attackedEntity.Read() == null)
             {
                 /// No enemy could be selected -> nothing to do.
@@ -79,7 +79,7 @@ namespace RC.Engine.Simulator.Commands
         protected override void InitializeImpl()
         {
             /// Select a nearby enemy to attack if possible.
-            this.attackedEntity.Write(this.recipientEntity.Read().Armour.SelectEnemy());
+            this.attackedEntity.Write(this.recipientEntity.Read().Armour.SelectEnemyForStandardWeapons());
             if (this.attackedEntity.Read() == null)
             {
                 /// No enemy could be selected -> nothing to do.

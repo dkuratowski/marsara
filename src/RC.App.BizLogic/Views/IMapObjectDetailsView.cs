@@ -19,17 +19,23 @@ namespace RC.App.BizLogic.Views
         int GetObjectTypeID(int objectID);
 
         /// <summary>
-        /// Gets the amount of vespene gas in the given map object if it is a vespene geyser; otherwise -1.
+        /// Gets the amount of vespene gas in the given map object.
         /// </summary>
         /// <param name="objectID">The ID of the map object.</param>
-        /// <returns>The amount of vespene gas in the given map object if it is a vespene geyser; otherwise -1.</returns>
+        /// <returns>
+        /// The amount of vespene gas in the given map object or -1 if the given map object has no vespene gas or if the vespene gas amount is
+        /// not accessible by the local player.
+        /// </returns>
         int GetVespeneGasAmount(int objectID);
 
         /// <summary>
-        /// The amount of minerals in the given map object if it is a mineral field; otherwise -1.
+        /// The amount of minerals in the given map object.
         /// </summary>
         /// <param name="objectID">The ID of the map object.</param>
-        /// <returns>The amount of minerals in the given map object if it is a mineral field; otherwise -1.</returns>
+        /// <returns>
+        /// The amount of minerals in the given map object or -1 if the given map object has no minerals or if the mineral amount is
+        /// not accessible by the local player.
+        /// </returns>
         int GetMineralsAmount(int objectID);
 
         /// <summary>
