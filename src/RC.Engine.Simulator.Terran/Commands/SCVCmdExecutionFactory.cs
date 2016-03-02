@@ -223,8 +223,26 @@ namespace RC.Engine.Simulator.Terran.Commands
         /// <param name="targetEntityID">The ID of the target entity or -1 if undefined.</param>
         private IEnumerable<CmdExecutionBase> CreateRepairExecutions(RCSet<SCV> scvsToHandle, RCNumVector targetPosition, int targetEntityID)
         {
-            // TODO: implement!
-            yield break;
+            MagicBox magicBox = new MagicBox(new RCSet<Entity>(scvsToHandle), targetPosition);
+
+            Entity targetEntity = scvsToHandle.First().Scenario.GetElementOnMap<Entity>(targetEntityID, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
+            if (targetEntity == null)
+            {
+                /// If there is no target entity -> create simple move executions.
+                foreach (SCV scv in scvsToHandle.Where(scv => !scv.IsConstructing))
+                {
+                    yield return new MoveExecution(scv, magicBox.GetTargetPosition(scv), targetEntityID);
+                }
+            }
+
+            /// Create the repair command executions if the target is valid for a repair command.
+            if (this.IsValidTargetForRepair(targetEntity))
+            {
+                foreach (SCV scv in scvsToHandle.Where(scv => !scv.IsConstructing))
+                {
+                    yield return new SCVRepairExecution(scv, targetPosition, targetEntityID);
+                }
+            }
         }
 
         /// <summary>
@@ -366,6 +384,11 @@ namespace RC.Engine.Simulator.Terran.Commands
                     /// not currently in progress -> start a continue build command.
                     yield return new SCVContinueBuildExecution(scv, targetPosition, targetBuilding.ID.Read());
                 }
+                else if (targetEntity != null && targetEntity.Owner == scv.Owner && this.IsValidTargetForRepair(targetEntity))
+                {
+                    /// The target entity is a friendly entity and is valid for a repair command -> start a repair command.
+                    yield return new SCVRepairExecution(scv, targetPosition, targetEntityID);
+                }
                 else if (targetEntity != null && targetEntity.Owner != null && targetEntity.Owner != scv.Owner)
                 {
                     /// The target entity is an enemy entity -> start an attack execution.
@@ -381,6 +404,24 @@ namespace RC.Engine.Simulator.Terran.Commands
         }
 
         #endregion Execution creator methods
+
+        /// <summary>
+        /// Checks whether the given entity is a valid target for a repair command.
+        /// </summary>
+        /// <param name="checkedEntity">The entity to be checked.</param>
+        /// <returns>True if the given entity is a valid target for a repair command; otherwise false.</returns>
+        private bool IsValidTargetForRepair(Entity checkedEntity)
+        {
+            /// Check if the target is a damaged Terran building or addon that is not under construction or is a damaged Terran mechanical unit.
+            // TODO: Check for additional unit types as well!
+            return (checkedEntity is Addon ||
+                    checkedEntity is TerranBuilding ||
+                    checkedEntity is SCV ||
+                    checkedEntity is Goliath) &&
+                  !checkedEntity.Biometrics.IsUnderConstruction &&
+                   checkedEntity.Biometrics.HP != -1 &&
+                   checkedEntity.Biometrics.HP < checkedEntity.ElementType.MaxHP.Read();
+        }
 
         /// <summary>
         /// The type of the command execution that this factory creates.

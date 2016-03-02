@@ -94,11 +94,13 @@
     <Compile Include="CommandExecutorPlugin.cs" />
     <Compile Include="Commands\SCVBuildExecutionBase.cs" />
     <Compile Include="Commands\SCVContinueBuildExecution.cs" />
+    <Compile Include="Commands\SCVRepairExecution.cs" />
     <Compile Include="Commands\SCVStartBuildExecution.cs" />
     <Compile Include="Commands\SCVCmdExecutionFactory.cs" />
     <Compile Include="Commands\SCVStopBuildExecution.cs" />
     <Compile Include="Commands\TerranBuildingConstructionJob.cs" />
     <Compile Include="CustomWeapons\SCVBuildTool.cs" />
+    <Compile Include="CustomWeapons\SCVRepairTool.cs" />
     <Compile Include="ElementFactoryPlugin.cs" />
     <Compile Include="TerranAbilities.cs" />
     <Compile Include="TerranHeapManagerPlugin.cs" />

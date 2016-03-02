@@ -48,8 +48,8 @@ namespace RC.Engine.Simulator.Engine
             this.startPosition = this.ConstructField<RCNumVector>("startPosition");
             this.quadraticStartPosition = this.ConstructField<RCIntRectangle>("quadraticStartPosition");
 
-            this.minerals = this.ConstructField<int>("minerals");
-            this.vespeneGas = this.ConstructField<int>("vespeneGas");
+            this.minerals = this.ConstructField<RCNumber>("minerals");
+            this.vespeneGas = this.ConstructField<RCNumber>("vespeneGas");
             this.lockedSupplies = this.ConstructField<int>("lockedSupplies");
             this.usedSupplyCache = new CachedValue<int>(this.CalculateUsedSupply);
             this.totalSupplyCache = new CachedValue<int>(this.CalculateTotalSupply);
@@ -313,7 +313,7 @@ namespace RC.Engine.Simulator.Engine
         /// <param name="minerals">The amount of minerals to be taken.</param>
         /// <param name="vespeneGas">The amount of vespene gas to be taken.</param>
         /// <returns>True if the given amount of resources has been taken successfully.</returns>
-        public bool TakeResources(int minerals, int vespeneGas)
+        public bool TakeResources(RCNumber minerals, RCNumber vespeneGas)
         {
             if (minerals < 0) { throw new ArgumentOutOfRangeException("minerals", "The amount of minerals to be taken cannot be negative!"); }
             if (vespeneGas < 0) { throw new ArgumentOutOfRangeException("vespeneGas", "The amount of vespene gas to be taken cannot be negative!"); }
@@ -330,7 +330,7 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         /// <param name="minerals">The amount of minerals to be given.</param>
         /// <param name="vespeneGas">The amount of vespene gas to be given.</param>
-        public void GiveResources(int minerals, int vespeneGas)
+        public void GiveResources(RCNumber minerals, RCNumber vespeneGas)
         {
             if (minerals < 0) { throw new ArgumentOutOfRangeException("minerals", "The amount of minerals to be given cannot be negative!"); }
             if (vespeneGas < 0) { throw new ArgumentOutOfRangeException("vespeneGas", "The amount of vespene gas to be given cannot be negative!"); }
@@ -418,12 +418,12 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// Gets the current amount of minerals of this player.
         /// </summary>
-        public int Minerals { get { return this.minerals.Read(); } }
+        public RCNumber Minerals { get { return this.minerals.Read(); } }
 
         /// <summary>
         /// Gets the current amount of vespene gas of this player.
         /// </summary>
-        public int VespeneGas { get { return this.vespeneGas.Read(); } }
+        public RCNumber VespeneGas { get { return this.vespeneGas.Read(); } }
 
         /// <summary>
         /// Gets the amount of the supplies currently used by this player.
@@ -545,12 +545,12 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// The current amount of minerals of this player.
         /// </summary>
-        private readonly HeapedValue<int> minerals;
+        private readonly HeapedValue<RCNumber> minerals;
 
         /// <summary>
         /// The current amount of vespene gas of this player.
         /// </summary>
-        private readonly HeapedValue<int> vespeneGas;
+        private readonly HeapedValue<RCNumber> vespeneGas;
 
         /// <summary>
         /// The amount of supplies locked temporarily (for example by production jobs).

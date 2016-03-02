@@ -28,7 +28,7 @@ namespace RC.App.BizLogic.Views.Core
             get
             {
                 if (this.Scenario == null) { throw new InvalidOperationException("No active scenario!"); }
-                return this.Scenario.GetPlayer((int)this.selectionManager.LocalPlayer).Minerals;
+                return (int)this.Scenario.GetPlayer((int)this.selectionManager.LocalPlayer).Minerals;
             }
         }
 
@@ -38,7 +38,7 @@ namespace RC.App.BizLogic.Views.Core
             get
             {
                 if (this.Scenario == null) { throw new InvalidOperationException("No active scenario!"); }
-                return this.Scenario.GetPlayer((int)this.selectionManager.LocalPlayer).VespeneGas;
+                return (int)this.Scenario.GetPlayer((int)this.selectionManager.LocalPlayer).VespeneGas;
             }
         }
 

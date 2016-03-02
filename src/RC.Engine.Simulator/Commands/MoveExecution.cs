@@ -28,6 +28,7 @@ namespace RC.Engine.Simulator.Commands
             this.targetPosition.Write(targetPosition);
             this.targetEntityID.Write(targetEntityID);
             this.recipientEntity.Write(recipientEntity);
+            this.targetEntity.Write(null);
             this.timeSinceLastCheck.Write(0);
         }
 
@@ -99,7 +100,7 @@ namespace RC.Engine.Simulator.Commands
         private void ContinueFollow()
         {
             /// Check if target entity still can be located.
-            this.targetEntity.Write(this.LocateEntity(this.targetEntity.Read().ID.Read()));
+            this.targetEntity.Write(this.LocateEntity(this.targetEntityID.Read()));
             if (!this.HasToFollowTarget) { return; }
 
             /// Calculate its distance from the recipient entity.

@@ -119,6 +119,44 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
+        /// Perform a repair step on the owner entity.
+        /// </summary>
+        /// <returns>True if the repair step performed successfully; otherwise false.</returns>
+        public bool Repair()
+        {
+            if (this.owner.Read().ElementType.BuildTime == null) { throw new InvalidOperationException("Unable to repair entities if build time is not defined in the metadata!"); }
+            if (this.hp.Read() == -1) { throw new InvalidOperationException("Unable to repair non-attackable entities!"); }
+            if (this.IsUnderConstruction) { throw new InvalidOperationException("Unable to repair entities under construction!"); }
+
+            /// If we reached the maximum HP -> repair step failed to perform.
+            if (this.hp.Read() == this.owner.Read().ElementType.MaxHP.Read()) { return false; }
+
+            /// Calculate the HP to add and the resources to take in this repair step.
+            RCNumber hpToAdd = (RCNumber)this.owner.Read().ElementType.MaxHP.Read() / (RCNumber)this.owner.Read().ElementType.BuildTime.Read();
+            RCNumber totalOriginalMineralCost = this.owner.Read().ElementType.MineralCost != null
+                ? this.owner.Read().ElementType.MineralCost.Read()
+                : 0;
+            RCNumber mineralsToTake = totalOriginalMineralCost * REPAIR_COST_RATE / this.owner.Read().ElementType.BuildTime.Read();
+            RCNumber totalOriginalGasCost = this.owner.Read().ElementType.GasCost != null
+                ? this.owner.Read().ElementType.GasCost.Read()
+                : 0;
+            RCNumber gasToTake = totalOriginalGasCost * REPAIR_COST_RATE / this.owner.Read().ElementType.BuildTime.Read();
+
+            /// Try to take the necessary resources from the player of the owner entity (if it has a player).
+            if (this.owner.Read().Owner != null && !this.owner.Read().Owner.TakeResources(mineralsToTake, gasToTake))
+            {
+                /// Not enough resources -> repair step failed to perform.
+                return false;
+            }
+
+            /// Necessary resources taken successfully (or the entity is neutral) -> modify the HP value and return with success.
+            RCNumber newHP = this.hp.Read() + hpToAdd;
+            if (newHP > this.owner.Read().ElementType.MaxHP.Read()) { newHP = this.owner.Read().ElementType.MaxHP.Read(); }
+            this.hp.Write(newHP);
+            return true;
+        }
+
+        /// <summary>
         /// Begins or continues the construction progress of the owner entity.
         /// </summary>
         public void Construct()
@@ -222,6 +260,11 @@ namespace RC.Engine.Simulator.Engine
         /// <summary>
         /// The initial energy value of the owner entity when its construction begins.
         /// </summary>
-        private static readonly int INITIAL_ENERGY = 50;
+        private const int INITIAL_ENERGY = 50;
+
+        /// <summary>
+        /// The rate of the cost of repairing an entity compared to its original cost.
+        /// </summary>
+        private static readonly RCNumber REPAIR_COST_RATE = (RCNumber)1 / (RCNumber)3;
     }
 }

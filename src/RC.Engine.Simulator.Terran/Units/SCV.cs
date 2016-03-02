@@ -27,6 +27,7 @@ namespace RC.Engine.Simulator.Terran.Units
             this.constructionJob.Write(null);
 
             this.Armour.AttachCustomWeapon(SCV_BUILD_TOOL_NAME, new SCVBuildTool());
+            this.Armour.AttachCustomWeapon(SCV_REPAIR_TOOL_NAME, new SCVRepairTool());
         }
 
         /// <summary>
@@ -104,8 +105,9 @@ namespace RC.Engine.Simulator.Terran.Units
         public const string SCV_TYPE_NAME = "SCV";
 
         /// <summary>
-        /// The name of the build tool of the SCVs.
+        /// The names of the tools of the SCVs.
         /// </summary>
         public const string SCV_BUILD_TOOL_NAME = "BuildTool";
+        public const string SCV_REPAIR_TOOL_NAME = "RepairTool";
     }
 }

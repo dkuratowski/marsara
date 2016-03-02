@@ -114,7 +114,13 @@ namespace RC.Engine.Simulator.Engine
         {
             /// Check if target entity is still on the map.
             Entity targetEntity = this.owner.Read().Scenario.GetElementOnMap<Entity>(targetID, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
-            if (targetEntity == null) { return; }
+            if (targetEntity == null)
+            {
+                /// Target entity is not on the map anymore.
+                this.target.Write(null);
+                this.attackingCustomWeapon.Write(null);
+                return;
+            }
 
             /// Check if target entity is in attack range.
             foreach (Weapon weapon in this.standardWeapons)
@@ -145,7 +151,13 @@ namespace RC.Engine.Simulator.Engine
             
             /// Check if target entity is still on the map.
             Entity targetEntity = this.owner.Read().Scenario.GetElementOnMap<Entity>(targetID, MapObjectLayerEnum.GroundObjects, MapObjectLayerEnum.AirObjects);
-            if (targetEntity == null) { return; }
+            if (targetEntity == null)
+            {
+                /// Target entity is not on the map anymore.
+                this.target.Write(null);
+                this.attackingCustomWeapon.Write(null);
+                return;
+            }
 
             /// Check if the target entity is in attack range for the given weapon.
             Weapon customWeapon = this.customWeapons[customWeaponName];
