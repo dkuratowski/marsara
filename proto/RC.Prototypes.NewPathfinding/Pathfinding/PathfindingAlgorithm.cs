@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RC.Prototypes.NewPathfinding.Pathfinding;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,19 +12,17 @@ namespace RC.Prototypes.NewPathfinding.Pathfinding
     /// Implements the A* pathfinding algorithm.
     /// </summary>
     /// <typeparam name="TNode">The type of the nodes of the graph on which to search.</typeparam>
-    class PathfindingAlgorithm<TNode> where TNode : class, INode<TNode>
+    class PathfindingAlgorithm<TNode>
     {
         /// <summary>
-        /// Constructs a pathfinding algorithm that will search a path from the given source node to the given target node.
+        /// Constructs a pathfinding algorithm that will search a path from the given source node on the given pathfinding graph.
         /// </summary>
-        /// <param name="sourceNode">The source node in the graph.</param>
-        /// <param name="targetNode">The target node in the graph.</param>
-        /// <param name="objectSize">The size of the object for which to pathfind.</param>
-        public PathfindingAlgorithm(TNode sourceNode, TNode targetNode, int objectSize)
+        /// <param name="sourceNode">The source node of the pathfinding.</param>
+        /// <param name="graph">The pathfinding graph.</param>
+        public PathfindingAlgorithm(TNode sourceNode, IGraph<TNode> graph)
         {
-            this.targetNode = targetNode;
             this.sourceNode = sourceNode;
-            this.objectSize = objectSize;
+            this.graph = graph;
         }
 
         /// <summary>
@@ -41,7 +40,7 @@ namespace RC.Prototypes.NewPathfinding.Pathfinding
             this.openSet = new Dictionary<TNode, PathNode<TNode>>();
             this.closedSet = new Dictionary<TNode, PathNode<TNode>>();
 
-            PathNode<TNode> sourcePathNode = new PathNode<TNode>(this.sourceNode, this.sourceNode.Distance(this.targetNode));
+            PathNode<TNode> sourcePathNode = new PathNode<TNode>(this.sourceNode, this.graph);
             this.openQueue.Insert(sourcePathNode);
             this.openSet.Add(sourceNode, sourcePathNode);
 
@@ -61,16 +60,18 @@ namespace RC.Prototypes.NewPathfinding.Pathfinding
                 this.closedSet.Add(currentPathNode.Node, currentPathNode);
 
                 /// Check if the current pathnode is better than the currently best pathnode.
-                if (this.bestPathNode == null || currentPathNode.EstimationToTarget < this.bestPathNode.EstimationToTarget)
+                if (this.bestPathNode == null ||
+                    this.graph.IsTargetNode(currentPathNode.Node) ||
+                    this.graph.EstimationToTarget(currentPathNode.Node) < this.graph.EstimationToTarget(this.bestPathNode.Node))
                 {
                     this.bestPathNode = currentPathNode;
                 }
 
                 /// Finish the algorithm if we reached the target.
-                if (currentPathNode.Node == this.targetNode) { break; }
+                if (this.graph.IsTargetNode(currentPathNode.Node)) { break; }
 
                 /// Process the successors of the current node.
-                foreach (TNode successor in currentPathNode.Node.GetSuccessors(this.objectSize))
+                foreach (TNode successor in this.graph.GetNeighbours(currentPathNode.Node))
                 {
                     //Console.WriteLine("Successor: {0}", successor);
                     if (!this.closedSet.ContainsKey(successor))
@@ -80,8 +81,8 @@ namespace RC.Prototypes.NewPathfinding.Pathfinding
                         {
                             /// If not found, calculate the estimated distance from the successor to the target,
                             /// create a new pathnode for it and put it into the open set.
-                            int successorEstimation = successor.Distance(this.targetNode);
-                            PathNode<TNode> successorPathNode = new PathNode<TNode>(successor, successorEstimation, currentPathNode);
+                            int successorEstimation = this.graph.EstimationToTarget(successor);
+                            PathNode<TNode> successorPathNode = new PathNode<TNode>(successor, this.graph, currentPathNode);
                             this.openQueue.Insert(successorPathNode);
                             this.openSet[successor] = successorPathNode;
                         }
@@ -131,18 +132,13 @@ namespace RC.Prototypes.NewPathfinding.Pathfinding
         private PathNode<TNode> bestPathNode;
 
         /// <summary>
-        /// The target node.
-        /// </summary>
-        private TNode targetNode;
-
-        /// <summary>
         /// The source node.
         /// </summary>
         private TNode sourceNode;
 
         /// <summary>
-        /// The size of the object for which to pathfind.
+        /// The pathfinding graph.
         /// </summary>
-        private int objectSize;
+        private IGraph<TNode> graph;
     }
 }

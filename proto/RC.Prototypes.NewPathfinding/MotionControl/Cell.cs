@@ -11,7 +11,7 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
     /// <summary>
     /// Represents a cell on the grid.
     /// </summary>
-    class Cell : INode<Cell>
+    class Cell
     {
         /// <summary>
         /// Constructs a Cell that is walkable for objects with any size.
@@ -45,41 +45,6 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
             if (this.neighbours[GridDirections.NORTH_EAST] != null) { this.neighbours[GridDirections.NORTH_EAST].neighbours[GridDirections.SOUTH_WEST] = this; }
             if (this.neighbours[GridDirections.WEST] != null) { this.neighbours[GridDirections.WEST].neighbours[GridDirections.EAST] = this; }
         }
-
-        #region INode<Cell> methods
-
-        /// <see cref="INode&lt;Cell&gt;.Distance"/>
-        public int Distance(Cell other)
-        {
-            int horizontalDistance = Math.Abs(other.coords.X - this.coords.X);
-            int verticalDistance = Math.Abs(other.coords.Y - this.coords.Y);
-            int difference = Math.Abs(horizontalDistance - verticalDistance);
-            return Math.Min(horizontalDistance, verticalDistance) * Grid.DIAGONAL_UNIT_DISTANCE + difference * Grid.STRAIGHT_UNIT_DISTANCE;
-        }
-
-        /// <see cref="INode&lt;Cell&gt;.GetSuccessors"/>
-        public IEnumerable<Cell> GetSuccessors(int objectSize)
-        {
-            /// TODO: This implementation returns all the walkable neighbours of this cell. Implement jump point search here!
-            Cell north = this.neighbours[GridDirections.NORTH];
-            if (north != null && objectSize <= north.maxObjectSizeHeap.TopItem) { yield return north; }
-            Cell northEast = this.neighbours[GridDirections.NORTH_EAST];
-            if (northEast != null && objectSize <= northEast.maxObjectSizeHeap.TopItem) { yield return northEast; }
-            Cell east = this.neighbours[GridDirections.EAST];
-            if (east != null && objectSize <= east.maxObjectSizeHeap.TopItem) { yield return east; }
-            Cell southEast = this.neighbours[GridDirections.SOUTH_EAST];
-            if (southEast != null && objectSize <= southEast.maxObjectSizeHeap.TopItem) { yield return southEast; }
-            Cell south = this.neighbours[GridDirections.SOUTH];
-            if (south != null && objectSize <= south.maxObjectSizeHeap.TopItem) { yield return south; }
-            Cell southWest = this.neighbours[GridDirections.SOUTH_WEST];
-            if (southWest != null && objectSize <= southWest.maxObjectSizeHeap.TopItem) { yield return southWest; }
-            Cell west = this.neighbours[GridDirections.WEST];
-            if (west != null && objectSize <= west.maxObjectSizeHeap.TopItem) { yield return west; }
-            Cell northWest = this.neighbours[GridDirections.NORTH_WEST];
-            if (northWest != null && objectSize <= northWest.maxObjectSizeHeap.TopItem) { yield return northWest; }
-        }
-
-        #endregion INode<Cell> methods
 
         /// <summary>
         /// Gets the neighbour of this cell at the given direction.

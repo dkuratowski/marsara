@@ -10,7 +10,7 @@ namespace RC.Prototypes.NewPathfinding.Pathfinding
     /// Implements a min-heap that can be used as the priority queue of an A* pathfinding algorithm.
     /// </summary>
     /// <typeparam name="TNode">The type of the nodes of the graph on which the pathfinding is searching.</typeparam>
-    class PriorityQueue<TNode> where TNode : INode<TNode>
+    class PriorityQueue<TNode>
     {
         /// <summary>
         /// Constructs a PriorityQueue instance.

@@ -10,7 +10,7 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
     /// <summary>
     /// Represents a region of a sector on a motion control grid.
     /// </summary>
-    class Region : INode<Region>
+    class Region
     {
         /// <summary>
         /// Constructs a region instance.
@@ -18,13 +18,14 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
         /// <param name="objectSize">The maximum size of objects that can use this region.</param>
         /// <param name="sector">The sector that this region belongs to.</param>
         /// <param name="exitCells">The exit cells of this region for each directions.</param>
-        public Region(int objectSize, Sector sector, HashSet<Cell>[] exitCells)
+        public Region(int objectSize, Sector sector, HashSet<Cell>[] exitCells, HashSet<Cell> allCells)
         {
             this.objectSize = objectSize;
             this.sector = sector;
             this.isUpToDate = true;
             this.exitsToNeighbours = null;
             this.exitCells = exitCells;
+            this.allCells = allCells;
         }
 
         /// <summary>
@@ -40,24 +41,27 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
         /// </summary>
         public bool IsUpToDate { get { return this.isUpToDate; } }
 
-        #region INode<Region> methods
+        /// <summary>
+        /// Gets the sector that this region belongs to.
+        /// </summary>
+        public Sector Sector { get { return this.sector; } }
 
-        /// <see cref="INode&lt;Region&gt;.Distance"/>
-        public int Distance(Region other)
-        {
-            int horizontalDistance = Math.Abs(other.sector.Center.X - this.sector.Center.X);
-            int verticalDistance = Math.Abs(other.sector.Center.Y - this.sector.Center.Y);
-            int difference = Math.Abs(horizontalDistance - verticalDistance);
-            return Math.Min(horizontalDistance, verticalDistance) * Grid.DIAGONAL_UNIT_DISTANCE + difference * Grid.STRAIGHT_UNIT_DISTANCE;
-        }
+        /// <summary>
+        /// Gets the maximum size of objects that can use this region.
+        /// </summary>
+        public int ObjectSize { get { return this.objectSize; } }
 
-        /// <see cref="INode&lt;Region&gt;.GetSuccessors"/>
-        public IEnumerable<Region> GetSuccessors(int objectSize)
+        /// <summary>
+        /// Gets the neighbours of this region.
+        /// </summary>
+        /// <returns>The neighbours of this region.</returns>
+        public IEnumerable<Region> GetNeighbours()
         {
+            if (!this.isUpToDate) { throw new InvalidOperationException("Unable to get the neighbours of an out-of-date region!"); }
+
             if (this.exitsToNeighbours == null)
             {
-                if (!this.isUpToDate) { throw new InvalidOperationException("Unable to calculate the successors of an out-of-date region!"); }
-
+                this.exitsToNeighbours = new Dictionary<Region, HashSet<Cell>>();
                 for (int direction = 0; direction < exitCells.Length; direction++)
                 {
                     foreach (Cell exitCell in this.exitCells[direction])
@@ -79,7 +83,15 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
             return this.exitsToNeighbours.Keys;
         }
 
-        #endregion INode<Cell> methods
+        /// <summary>
+        /// Gets the exit cells to the given neighbour region.
+        /// </summary>
+        /// <param name="neighbour">The neighbour region.</param>
+        /// <returns>The exit cells to the given neighbour region.</returns>
+        public HashSet<Cell> GetExistsToNeighbours(Region neighbour)
+        {
+            return this.exitsToNeighbours.ContainsKey(neighbour) ? this.exitsToNeighbours[neighbour] : new HashSet<Cell>();
+        }
 
         /// <summary>
         /// The maximum size of objects that can use this region.
@@ -97,10 +109,14 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
         private readonly HashSet<Cell>[] exitCells;
         public HashSet<Cell>[] ExitCells { get { return this.exitCells; } } /// TODO: this is for debugging!
 
+        /// TODO: this is for debugging!
+        private readonly HashSet<Cell> allCells;
+        public HashSet<Cell> AllCells { get { return this.allCells; } }
+
         /// <summary>
         /// Stores the exit cells of this region for each of its neighbours.
         /// </summary>
-        private readonly Dictionary<Region, HashSet<Cell>> exitsToNeighbours;
+        private Dictionary<Region, HashSet<Cell>> exitsToNeighbours;
 
         /// <summary>
         /// This flag indicates whether this region is up-to-date.

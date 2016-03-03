@@ -57,8 +57,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MotionControl\Region.cs" />
+    <Compile Include="MotionControl\GridTopologyGraph.cs" />
     <Compile Include="MotionControl\Sector.cs" />
-    <Compile Include="Pathfinding\INode.cs" />
+    <Compile Include="MotionControl\TargetRegionGraph.cs" />
+    <Compile Include="MotionControl\TransitRegionGraph.cs" />
+    <Compile Include="Pathfinding\IGraph.cs" />
     <Compile Include="Pathfinding\PathfindingAlgorithm.cs" />
     <Compile Include="Pathfinding\PathfindingResult.cs" />
     <Compile Include="Pathfinding\PathNode.cs" />

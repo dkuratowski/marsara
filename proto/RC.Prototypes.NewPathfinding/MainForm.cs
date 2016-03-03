@@ -11,7 +11,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using RC.Prototypes.NewPathfinding.MotionControl;
 using RC.Prototypes.NewPathfinding.Pathfinding;
-using JPS = RC.Prototypes.NewPathfinding.MotionControl;
+using MC = RC.Prototypes.NewPathfinding.MotionControl;
+using RC.Prototypes.NewPathfinding.MotionControl;
+using RC.Prototypes.JumpPointSearch.MotionControl;
 
 namespace RC.Prototypes.NewPathfinding
 {
@@ -30,26 +32,19 @@ namespace RC.Prototypes.NewPathfinding
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             e.Graphics.DrawImage(this.mapImage, 0, 0, this.mapImage.Width * CELL_SIZE, this.mapImage.Height * CELL_SIZE);
             e.Graphics.DrawImage(this.resultImage, 0, 0, this.resultImage.Width * CELL_SIZE, this.resultImage.Height * CELL_SIZE);
-            if (this.lastResult != null)
-            {
-                Console.WriteLine("Search time: {0} ms", this.lastResult.ElapsedTime);
-                Console.WriteLine("Explored nodes: {0}", this.lastResult.ExploredNodes.Count);
-                //e.Graphics.DrawString(string.Format("Search time: {0} ms", this.lastResult.ElapsedTime), SystemFonts.CaptionFont, Brushes.Blue, 0.0f, 0.0f);
-                //e.Graphics.DrawString(string.Format("Explored nodes: {0}", this.lastResult.ExploredNodes.Count), SystemFonts.CaptionFont, Brushes.Blue, 0.0f, 10.0f);
-            }
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.mapImage = (Bitmap)Image.FromFile("maze.png");
+            this.mapImage = (Bitmap)Image.FromFile("pathfinder_testmap2.png");
             this.grid = new Grid(this.mapImage);
 
             //this.DrawLabelsOutput(this.grid);
 
-            this.DrawRegionsToOutput(1, this.grid);
-            this.DrawRegionsToOutput(2, this.grid);
-            this.DrawRegionsToOutput(3, this.grid);
-            this.DrawRegionsToOutput(4, this.grid);
+            //this.DrawRegionsToOutput(1, this.grid);
+            //this.DrawRegionsToOutput(2, this.grid);
+            //this.DrawRegionsToOutput(3, this.grid);
+            //this.DrawRegionsToOutput(4, this.grid);
 
             this.ClientSize = new Size(this.mapImage.Width * CELL_SIZE, this.mapImage.Height * CELL_SIZE);
 
@@ -62,41 +57,58 @@ namespace RC.Prototypes.NewPathfinding
         {
             if (e.Button == MouseButtons.Left)
             {
-                /// Left-click event handling.
+                /// Source cell selection.
                 this.sourceCell = this.grid[e.X / CELL_SIZE, e.Y / CELL_SIZE];
             }
             else if (e.Button == MouseButtons.Right)
             {
-                /// Right-click event handling.
+                /// Target cell selection.
                 if (this.sourceCell == null) { return; }
                 this.targetCell = this.grid[e.X / CELL_SIZE, e.Y / CELL_SIZE];
 
-                /// Execute and measure the pathfinding.
-                PathfindingAlgorithm<Cell> pathfinding = new PathfindingAlgorithm<Cell>(this.sourceCell, this.targetCell, OBJECT_SIZE);
-                //PathfindingOperation pathfinding = new PathfindingOperation(this.walkabilityGrid, this.fromCoord, this.toCoord, OBJECT_SIZE);
-                //PathfindingOperation pathfinding = new PathfindingOperation(this.walkabilityGrid, new Point(0, 4), new Point(7, 4), OBJECT_SIZE);
-                this.lastResult = pathfinding.Run();
+                /// Execute the high-level pathfinding.
+                PathfindingAlgorithm<MC.Region> pathfinding =
+                    new PathfindingAlgorithm<MC.Region>(this.sourceCell.GetRegion(OBJECT_SIZE), new GridTopologyGraph(this.targetCell, OBJECT_SIZE));
+                this.lastHighLevelResult = pathfinding.Run();
+                this.currentRegionIndex = 0;
+                this.currentStartCell = this.sourceCell;
 
                 /// Draw the result.
                 this.resultImageGC.Clear(Color.FromArgb(0, Color.White));
+                foreach (MC.Region currentRegion in this.lastHighLevelResult.ExploredNodes) { this.DrawRegion(currentRegion, Color.LightGray); }
+                foreach (MC.Region currentRegion in this.lastHighLevelResult.Path) { this.DrawRegion(currentRegion, Color.Gray); }
 
-                foreach (Cell exploredCell in this.lastResult.ExploredNodes)
+                Console.WriteLine("Search time: {0} ms", this.lastHighLevelResult.ElapsedTime);
+                Console.WriteLine("Explored nodes: {0}", this.lastHighLevelResult.ExploredNodes.Count);
+
+                this.Invalidate();
+            }
+            else if (e.Button == MouseButtons.Middle)
+            {
+                if (this.currentRegionIndex == this.lastHighLevelResult.Path.Count) { return; }
+
+                /// Execute the low-level pathfinding for the current region index.
+                IGraph<MC.Cell> graph = null;
+                if (this.currentRegionIndex < this.lastHighLevelResult.Path.Count - 1)
                 {
-                    this.resultImage.SetPixel(exploredCell.Coords.X, exploredCell.Coords.Y, Color.FromArgb(255, Color.Red));
+                    graph = new TransitRegionGraph(this.lastHighLevelResult.Path[this.currentRegionIndex], this.lastHighLevelResult.Path[this.currentRegionIndex + 1]);
                 }
-
-                Cell previousCell = null;
-                foreach (Cell currentCell in this.lastResult.Path)
+                else
                 {
-                    if (previousCell == null)
-                    {
-                        previousCell = currentCell;
-                        continue;
-                    }
-
-                    this.resultImageGC.DrawLine(Pens.Yellow, previousCell.Coords, currentCell.Coords);
-                    previousCell = currentCell;
+                    graph = new TargetRegionGraph(this.lastHighLevelResult.Path[this.currentRegionIndex], this.targetCell);
                 }
+                PathfindingAlgorithm<MC.Cell> pathfinding =
+                    new PathfindingAlgorithm<MC.Cell>(this.currentStartCell, graph);
+                this.lastLowLevelResult = pathfinding.Run();
+                this.currentRegionIndex++;
+                this.currentStartCell = this.lastLowLevelResult.Path.Last();
+
+                /// Draw the result.
+                foreach (MC.Cell currentCell in this.lastLowLevelResult.ExploredNodes) { this.resultImage.SetPixel(currentCell.Coords.X, currentCell.Coords.Y, Color.Red); }
+                foreach (MC.Cell currentCell in this.lastLowLevelResult.Path) { this.resultImage.SetPixel(currentCell.Coords.X, currentCell.Coords.Y, Color.Yellow); }
+
+                Console.WriteLine("Search time: {0} ms", this.lastLowLevelResult.ElapsedTime);
+                Console.WriteLine("Explored nodes: {0}", this.lastLowLevelResult.ExploredNodes.Count);
 
                 this.Invalidate();
             }
@@ -129,11 +141,19 @@ namespace RC.Prototypes.NewPathfinding
         //    outputImg.Dispose();
         //}
 
+        private void DrawRegion(MC.Region region, Color color)
+        {
+            foreach (Cell cellOfRegion in region.AllCells)
+            {
+                this.resultImage.SetPixel(cellOfRegion.Coords.X, cellOfRegion.Coords.Y, color);
+            }
+        }
+
         private void DrawRegionsToOutput(int objectSize, Grid grid)
         {
             Random random = new Random();
-            //Dictionary<JPS.Region, Color> colorsPerRegion = new Dictionary<JPS.Region, Color>();
-            Dictionary<JPS.Region, Brush> colorsPerRegion = new Dictionary<JPS.Region, Brush>();
+            //Dictionary<MC.Region, Color> colorsPerRegion = new Dictionary<MC.Region, Color>();
+            Dictionary<MC.Region, Brush> colorsPerRegion = new Dictionary<MC.Region, Brush>();
             Bitmap outputImg = new Bitmap(grid.Width * OUTPUT_CELLSIZE, grid.Height * OUTPUT_CELLSIZE);
             Graphics outputGC = Graphics.FromImage(outputImg);
             for (int row = 0; row < grid.Height; row++)
@@ -142,7 +162,7 @@ namespace RC.Prototypes.NewPathfinding
                 {
                     Rectangle cellRect = new Rectangle(col * OUTPUT_CELLSIZE, row * OUTPUT_CELLSIZE, OUTPUT_CELLSIZE, OUTPUT_CELLSIZE);
                     Cell cell = grid[col, row];
-                    JPS.Region regionOfCell = cell.GetRegion(objectSize);
+                    MC.Region regionOfCell = cell.GetRegion(objectSize);
                     if (regionOfCell == null)
                     {
                         outputGC.FillRectangle(Brushes.Black, cellRect);
@@ -206,12 +226,19 @@ namespace RC.Prototypes.NewPathfinding
         private Cell targetCell;
 
         /// <summary>
-        /// Result of the last pathfinding.
+        /// Result of the last high-level pathfinding.
         /// </summary>
-        private PathfindingResult<Cell> lastResult;
+        private PathfindingResult<MC.Region> lastHighLevelResult;
 
-        private const int CELL_SIZE = 3;
-        private const int OBJECT_SIZE = 1;
+        /// <summary>
+        /// The result of the last low-level pathfinding.
+        /// </summary>
+        private PathfindingResult<MC.Cell> lastLowLevelResult;
+        private int currentRegionIndex;
+        private MC.Cell currentStartCell;
+
+        private const int CELL_SIZE = 1;
+        private const int OBJECT_SIZE = 3;
 
         const int OUTPUT_CELLSIZE = 20;
         private static readonly Point[] EXITVECTOR_BEGIN = new Point[]

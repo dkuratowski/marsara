@@ -25,6 +25,7 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
             {
                 this.exitCells[direction] = new HashSet<Cell>();
             }
+            this.allCells = new HashSet<Cell>();
         }
 
         /// <summary>
@@ -45,6 +46,7 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
                 {
                     rootOfOther.exitCells[direction].UnionWith(rootOfThis.exitCells[direction]);
                 }
+                rootOfOther.allCells.UnionWith(rootOfThis.allCells);
                 return rootOfOther;
             }
             else
@@ -54,6 +56,7 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
                 {
                     rootOfThis.exitCells[direction].UnionWith(rootOfOther.exitCells[direction]);
                 }
+                rootOfThis.allCells.UnionWith(rootOfOther.allCells);
                 if (rootOfThis.rank == rootOfOther.rank) { rootOfThis.rank++; }
                 return rootOfThis;
             }
@@ -66,7 +69,7 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
         {
             if (this.region != null) { return this.region; }
             Label rootOfThis = this.Root;
-            if (rootOfThis.region == null) { rootOfThis.region = new Region(this.objectSize, this.sector, rootOfThis.exitCells); }
+            if (rootOfThis.region == null) { rootOfThis.region = new Region(this.objectSize, this.sector, rootOfThis.exitCells, rootOfThis.allCells); }
             if (this.region == null) { this.region = rootOfThis.region; }
             return this.region;
         }
@@ -78,6 +81,7 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
         public void RegisterCellIfExit(Cell cell)
         {
             Label rootOfThis = this.Root;
+            rootOfThis.allCells.Add(cell);
             for (int direction = 0; direction < GridDirections.DIRECTION_COUNT; direction++)
             {
                 Cell neighbourCell = cell.GetNeighbour(direction);
@@ -113,6 +117,11 @@ namespace RC.Prototypes.NewPathfinding.MotionControl
         /// The exit cells found by this label for each directions.
         /// </summary>
         private HashSet<Cell>[] exitCells;
+
+        /// <summary>
+        /// All cells found by this label.
+        /// </summary>
+        private HashSet<Cell> allCells;
 
         /// <summary>
         /// The rank of this label if this is a root.
