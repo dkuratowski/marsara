@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RC.Engine.Simulator")]
+[assembly: AssemblyTitle("RC.Engine.Pathfinder")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Evosoft")]
-[assembly: AssemblyProduct("RC.Engine.Simulator")]
-[assembly: AssemblyCopyright("Copyright © Evosoft 2013")]
+[assembly: AssemblyCompany("evosoft")]
+[assembly: AssemblyProduct("RC.Engine.Pathfinder")]
+[assembly: AssemblyCopyright("Copyright © evosoft 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("98e3ee04-d3fe-4fb9-ab1d-c9fe2ae1e0de")]
+[assembly: Guid("1c3342e0-6ebe-44d7-8957-6eabe4021d26")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -34,5 +34,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-
-[assembly: InternalsVisibleTo("RC.Engine.Test")]
+[assembly: InternalsVisibleTo("RC.Engine.PathFinder.Test")]

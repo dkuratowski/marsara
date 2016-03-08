@@ -171,6 +171,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.Simulator.Terran"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.UnitTests", "RC.UnitTests\RC.UnitTests.csproj", "{57919EAE-83B8-4B20-AE1B-7AE71AA35A78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.Pathfinder", "RC.Engine.Pathfinder\RC.Engine.Pathfinder.csproj", "{2311F794-221C-49E5-AC8B-79FFFE6398DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -527,6 +529,18 @@ Global
 		{57919EAE-83B8-4B20-AE1B-7AE71AA35A78}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{57919EAE-83B8-4B20-AE1B-7AE71AA35A78}.Release|x64.ActiveCfg = Release|Any CPU
 		{57919EAE-83B8-4B20-AE1B-7AE71AA35A78}.Release|x86.ActiveCfg = Release|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Release|x64.ActiveCfg = Release|Any CPU
+		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

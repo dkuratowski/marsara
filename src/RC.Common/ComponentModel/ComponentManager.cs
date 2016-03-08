@@ -17,7 +17,7 @@ namespace RC.Common.ComponentModel
         /// </summary>
         /// <param name="assembly">The full name of the assembly.</param>
         /// <param name="names">The names of the components to register.</param>
-        public static void RegisterComponents(string assembly, string[] names)
+        public static void RegisterComponents(string assembly, params string[] names)
         {
             if (onlyInterfaceQueryIsAllowed) { throw new ComponentModelException("Only the ComponentManager.GetInterface method is allowed to be called at this time!"); }
             if (assembly == null) { throw new ArgumentNullException("assembly"); }

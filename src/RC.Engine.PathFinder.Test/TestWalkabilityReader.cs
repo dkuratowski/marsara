@@ -5,30 +5,25 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using RC.Common;
-using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Pathfinder.PublicInterfaces;
 
 namespace RC.Engine.PathFinder.Test
 {
     /// <summary>
-    /// This implementation of the IWalkabilityGrid interface can be used for navmesh generation.
+    /// This implementation of the IWalkabilityReader interface reads walkability informations from an image.
     /// </summary>
-    class TestWalkabilityGrid : IWalkabilityGrid
+    class TestWalkabilityReader : IWalkabilityReader
     {
         /// <summary>
-        /// Constructs a TestWalkabilityGrid instance from the given image.
+        /// Constructs a TestWalkabilityReader instance from the given image.
         /// </summary>
         /// <param name="walkabilityImg">The image that contains the walkability informations.</param>
         /// <remarks>
-        /// Each pixel of the given image represents a cell on the walkability grid. If the color of a pixel is
+        /// Each pixel of the given image represents a cell on the pathfinding-grid. If the color of a pixel is
         /// white (RGB=FFFFFF) then the corresponding cell will be walkable; otherwise non-walkable.
         /// </remarks>
-        public TestWalkabilityGrid(Bitmap walkabilityImg)
+        public TestWalkabilityReader(Bitmap walkabilityImg)
         {
-            if (walkabilityImg.PixelFormat != PixelFormat.Format24bppRgb)
-            {
-                throw new Exception("Pixel format of the test Bitmap must be PixelFormat.Format24bppRgb");
-            }
-
             /// Fill the grid
             this.grid = new bool[walkabilityImg.Width, walkabilityImg.Height];
             this.width = walkabilityImg.Width;
@@ -45,19 +40,16 @@ namespace RC.Engine.PathFinder.Test
             }
         }
 
-        /// <see cref="IWalkabilityGrid.this[]"/>
-        public bool this[RCIntVector position]
+        /// <see cref="IWalkabilityReader.this[]"/>
+        public bool this[int x, int y]
         {
-            get
-            {
-                return position.X >= 0 && position.X < this.width && position.Y >= 0 && position.Y < this.height ? this.grid[position.X, position.Y] : false;
-            }
+            get { return x >= 0 && x < this.width && y >= 0 && y < this.height ? this.grid[x, y] : false; }
         }
 
-        /// <see cref="IWalkabilityGrid.Width"/>
+        /// <see cref="IWalkabilityReader.Width"/>
         public int Width { get { return this.width; } }
 
-        /// <see cref="IWalkabilityGrid.Height"/>
+        /// <see cref="IWalkabilityReader.Height"/>
         public int Height { get { return this.height; } }
 
         /// <summary>
@@ -66,12 +58,12 @@ namespace RC.Engine.PathFinder.Test
         private bool[,] grid;
 
         /// <summary>
-        /// The width of the walkability grid.
+        /// The width of the grid.
         /// </summary>
         private int width;
 
         /// <summary>
-        /// The height of the walkability grid.
+        /// The height of the grid.
         /// </summary>
         private int height;
     }
