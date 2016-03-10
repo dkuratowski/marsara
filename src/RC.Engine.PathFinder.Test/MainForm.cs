@@ -14,7 +14,7 @@ using RC.Engine.Pathfinder.PublicInterfaces;
 
 namespace RC.Engine.PathFinder.Test
 {
-    public partial class MainForm : Form, IObstacleClient
+    public partial class MainForm : Form, IAgentClient
     {
         public MainForm()
         {
@@ -25,21 +25,21 @@ namespace RC.Engine.PathFinder.Test
             InitializeComponent();
         }
 
-        #region IObstacleClient members
+        #region IAgentClient members
 
-        /// <see cref="IObstacleClient.MaxSpeed"/>
+        /// <see cref="IAgentClient.MaxSpeed"/>
         public RCNumber MaxSpeed
         {
             get { return (RCNumber)4 / (RCNumber)4; }
         }
 
-        /// <see cref="IObstacleClient.IsOverlapEnabled"/>
-        public bool IsOverlapEnabled(IObstacleClient otherClient)
+        /// <see cref="IAgentClient.IsOverlapEnabled"/>
+        public bool IsOverlapEnabled(IAgentClient otherClient)
         {
             throw new NotImplementedException();
         }
 
-        #endregion IObstacleClient members
+        #endregion IAgentClient members
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -57,7 +57,7 @@ namespace RC.Engine.PathFinder.Test
             this.agentsImgGC.Clear(Color.FromArgb(0, Color.White));
             this.ClientSize = new Size(this.gridImg.Width, this.gridImg.Height);
 
-            this.testAgent = this.pathfinder.PlaceMovingObstacle(PathfindingLayerEnum.Ground, new RCIntVector(0, 0), 3, this);
+            this.testAgent = this.pathfinder.PlaceAgent(new RCIntRectangle(0, 0, 3, 3), this);
             this.DrawAgents();
 
             this.timer = new Timer();
@@ -162,7 +162,7 @@ namespace RC.Engine.PathFinder.Test
         /// <summary>
         /// Reference to the test agent.
         /// </summary>
-        private IMovingObstacle testAgent;
+        private IAgent testAgent;
 
         /// <summary>
         /// Reference to the timer instance.

@@ -65,7 +65,7 @@ namespace RC.App.BizLogic.Views.Core
                 }
             }
 
-            RCIntVector objectQuadSize = this.Scenario.Map.CellToQuadSize(this.objectType.Area.Read());
+            RCIntVector objectQuadSize = this.Scenario.Map.CellToQuadSize(this.objectType.Area.Read().Size);
             return new RCSet<Tuple<RCIntRectangle, SpriteRenderInfo[]>>
             {
                 Tuple.Create(new RCIntRectangle(-1 * objectQuadSize / 2, objectQuadSize), objectSprites)

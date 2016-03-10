@@ -9,7 +9,8 @@
     </costs>
     <generalData>
       <size>Small</size>
-      <area>1.0;1.0</area>
+      <area>-0.5;-0.5;1.0;1.0</area>
+	  <obstacleArea>0;0;1;1</obstacleArea>
       <maxHP>50</maxHP>
       <armor>1</armor>
       <sightRange>7</sightRange>
@@ -37,7 +38,8 @@
     </costs>
     <generalData>
       <size>Small</size>
-      <area>1.0;1.0</area>
+      <area>-0.5;-0.5;1.0;1.0</area>
+	  <obstacleArea>0;0;1;1</obstacleArea>
       <maxHP>45</maxHP>
       <armor>0</armor>
       <maxEnergy>200</maxEnergy>
@@ -73,7 +75,8 @@
     </costs>
     <generalData>
       <size>Medium</size>
-      <area>1.0;1.0</area>
+      <area>-0.5;-0.5;1.0;1.0</area>
+	  <obstacleArea>0;0;1;1</obstacleArea>
       <maxHP>80</maxHP>
       <armor>0</armor>
       <sightRange>8</sightRange>
@@ -99,7 +102,8 @@
     </costs>
     <generalData>
       <size>Large</size>
-      <area>1.0;1.0</area>
+      <area>-0.5;-0.5;1.0;1.0</area>
+	  <obstacleArea>0;0;1;1</obstacleArea>
       <maxHP>150</maxHP>
       <armor>1</armor>
       <sightRange>10</sightRange>
@@ -125,7 +129,8 @@
     </costs>
     <generalData>
       <size>Large</size>
-      <area>1.0;1.0</area>
+      <area>-0.5;-0.5;1.0;1.0</area>
+	  <obstacleArea>0;0;1;1</obstacleArea>
       <maxHP>120</maxHP>
       <armor>0</armor>
       <maxEnergy>200</maxEnergy>
@@ -159,7 +164,8 @@
     </costs>
     <generalData>
       <size>Large</size>
-      <area>1.0;1.0</area>
+      <area>-0.5;-0.5;1.0;1.0</area>
+	  <obstacleArea>0;0;1;1</obstacleArea>
       <maxHP>150</maxHP>
       <armor>1</armor>
       <sightRange>8</sightRange>
@@ -178,7 +184,8 @@
     </costs>
     <generalData>
       <size>Large</size>
-      <area>1.0;1.0</area>
+      <area>-0.5;-0.5;1.0;1.0</area>
+	  <obstacleArea>0;0;1;1</obstacleArea>
       <maxHP>200</maxHP>
       <armor>1</armor>
       <maxEnergy>200</maxEnergy>
@@ -199,7 +206,8 @@
     </costs>
     <generalData>
       <size>Large</size>
-      <area>1.0;1.0</area>
+      <area>-0.5;-0.5;1.0;1.0</area>
+	  <obstacleArea>0;0;1;1</obstacleArea>
       <maxHP>500</maxHP>
       <armor>3</armor>
       <maxEnergy>200</maxEnergy>

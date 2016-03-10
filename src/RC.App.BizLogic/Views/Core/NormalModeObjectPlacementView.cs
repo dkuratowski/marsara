@@ -104,7 +104,7 @@ namespace RC.App.BizLogic.Views.Core
             if (buildingType == null) { return retList; }
 
             /// Calculate the building rectangle and get sprites from the building preview animation if exists.
-            RCIntVector buildingQuadSize = this.Scenario.Map.CellToQuadSize(buildingType.Area.Read());
+            RCIntVector buildingQuadSize = this.Scenario.Map.CellToQuadSize(buildingType.Area.Read().Size);
             RCIntRectangle buildingRelativeRect = new RCIntRectangle((-1) * buildingQuadSize / 2, buildingQuadSize);
             SpriteRenderInfo[] buildingSprites = new SpriteRenderInfo[0];
             if (this.buildingPreviewAnimation != null)
@@ -126,7 +126,7 @@ namespace RC.App.BizLogic.Views.Core
             if (this.addonTypeToBePlaced != null)
             {
                 /// Calculate the addon rectangle and get sprites from the addon preview animation if exists.
-                RCIntVector addonQuadSize = this.Scenario.Map.CellToQuadSize(this.addonTypeToBePlaced.Area.Read());
+                RCIntVector addonQuadSize = this.Scenario.Map.CellToQuadSize(this.addonTypeToBePlaced.Area.Read().Size);
                 RCIntRectangle addonRelativeRect = new RCIntRectangle(
                     buildingRelativeRect.Location +
                     buildingType.GetRelativeAddonPosition(this.Scenario.Map, this.addonTypeToBePlaced),

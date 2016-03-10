@@ -176,7 +176,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 if (selectedBuilding == null) { throw new InvalidOperationException("The currently selected entity doesn't exist or is not a building!"); }
 
                 IQuadTile quadTileAtPos = this.scenarioManagerBC.ActiveScenario.Map.GetCell(targetPosition.Round()).ParentQuadTile;
-                RCIntVector objQuadSize = this.scenarioManagerBC.ActiveScenario.Map.CellToQuadSize(selectedBuilding.ElementType.Area.Read());
+                RCIntVector objQuadSize = this.scenarioManagerBC.ActiveScenario.Map.CellToQuadSize(selectedBuilding.ElementType.Area.Read().Size);
                 RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
                 this.CommandBuilder.TargetPosition = topLeftQuadCoords;
             }
@@ -187,7 +187,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                 if (buildingType == null) { throw new InvalidOperationException(string.Format("Building type '{0}' is not defined in the metadata!", this.buildingTypeName)); }
 
                 IQuadTile quadTileAtPos = this.scenarioManagerBC.ActiveScenario.Map.GetCell(targetPosition.Round()).ParentQuadTile;
-                RCIntVector objQuadSize = this.scenarioManagerBC.ActiveScenario.Map.CellToQuadSize(buildingType.Area.Read());
+                RCIntVector objQuadSize = this.scenarioManagerBC.ActiveScenario.Map.CellToQuadSize(buildingType.Area.Read().Size);
                 RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
                 this.CommandBuilder.TargetPosition = topLeftQuadCoords;
             }

@@ -89,7 +89,12 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// Gets the area of the corresponding element type in map coordinates or null if this element type has no area defined.
         /// </summary>
-        IValueRead<RCNumVector> Area { get; }
+        IValueRead<RCNumRectangle> Area { get; }
+
+        /// <summary>
+        /// Gets the obstacle area of the corresponding element type in cell coordinates or null if this element type has no obstacle area defined.
+        /// </summary>
+        IValueRead<RCIntRectangle> ObstacleArea { get; }
 
         /// <summary>
         /// Gets the armor of the corresponding element type or null if this element type has no armor defined.

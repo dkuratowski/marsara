@@ -16,7 +16,7 @@ namespace RC.Engine.Simulator.PlacementConstraints
         /// <see cref="EntityPlacementConstraint.CheckImpl"/>
         protected override RCSet<RCIntVector> CheckImpl(Scenario scenario, RCIntVector position, RCSet<Entity> entitiesToIgnore)
         {
-            RCIntRectangle objArea = new RCIntRectangle(position, scenario.Map.CellToQuadSize(this.EntityType.Area.Read()));
+            RCIntRectangle objArea = new RCIntRectangle(position, scenario.Map.CellToQuadSize(this.EntityType.Area.Read().Size));
             RCSet<RCIntVector> retList = new RCSet<RCIntVector>();
             for (int absY = objArea.Top; absY < objArea.Bottom; absY++)
             {

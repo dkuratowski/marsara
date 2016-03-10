@@ -9,22 +9,22 @@ using System.Threading.Tasks;
 namespace RC.Engine.Pathfinder.Core
 {
     /// <summary>
-    /// Represents a layer on the pathfinder grid.
+    /// Represents the pathfinding grid.
     /// </summary>
-    class GridLayer : IDisposable
+    class Grid : IDisposable
     {
         /// <summary>
-        /// Constructs a GridLayer instance from the given walkability informations.
+        /// Constructs a Grid instance from the given walkability informations.
         /// </summary>
         /// <param name="walkabilityReader">Reference to the object that provides the walkability informations.</param>
-        /// <param name="maxObjectSize">The maximum size of objects that can be placed onto this grid-layer.</param>
-        public GridLayer(IWalkabilityReader walkabilityReader, int maxObjectSize)
+        /// <param name="maxMovingSize">The maximum size of moving agents.</param>
+        public Grid(IWalkabilityReader walkabilityReader, int maxMovingSize)
         {
             this.agents = new RCSet<Agent>();
             this.cells = new Cell[walkabilityReader.Width, walkabilityReader.Height];
             this.width = walkabilityReader.Width;
             this.height = walkabilityReader.Height;
-            this.maxObjectSize = maxObjectSize;
+            this.maxMovingSize = maxMovingSize;
 
             /// Create the cells.
             for (int row = 0; row < this.height; row++)
@@ -37,39 +37,25 @@ namespace RC.Engine.Pathfinder.Core
         }
 
         /// <summary>
-        /// Gets the maximum size of objects that can be placed onto this grid-layer.
+        /// Gets the maximum size of moving agents.
         /// </summary>
-        public int MaxObjectSize { get { return this.maxObjectSize; } }
+        public int MaxMovingSize { get { return this.maxMovingSize; } }
 
         /// <summary>
-        /// Gets the cell of this grid-layer at the given coordinates.
+        /// Gets the cell of this grid at the given coordinates.
         /// </summary>
         /// <param name="x">The X-coordinate of the cell.</param>
         /// <param name="y">The Y-coordinate of the cell.</param>
-        /// <returns>The cell at the given coordinates or null if the given coordinates are outside of this grid-layer.</returns>
+        /// <returns>The cell at the given coordinates or null if the given coordinates are outside of this grid.</returns>
         public Cell this[int x, int y] { get { return x >= 0 && x < this.width && y >= 0 && y < this.height ? this.cells[x, y] : null; } }
 
         /// <summary>
-        /// Creates and places an agent of the given size to this grid-layer into the given position.
+        /// Creates and places an agent with the given area to this grid.
         /// </summary>
-        /// <param name="position">The position of the top-left corner of the agent.</param>
-        /// <param name="size">The size of the agent.</param>
-        /// <param name="client">The client of the agent that will provide additional informations for the pathfinder component.</param>
-        /// <returns>A reference to the agent or null if the placement failed.</returns>
-        public Agent CreateAgent(RCIntVector position, int size, IObstacleClient client)
-        {
-            Agent newAgent = new Agent(position, size, this, client);
-            this.agents.Add(newAgent);
-            return newAgent;
-        }
-
-        /// <summary>
-        /// Creates and places a static agent with the given area to this grid-layer.
-        /// </summary>
-        /// <param name="area">The rectangular area of the static agent.</param>
+        /// <param name="area">The rectangular area of the agent.</param>
         /// <param name="client">The client of the placed agent that will provide additional informations for the pathfinder component.</param>
         /// <returns>A reference to the agent or null if the placement failed.</returns>
-        public Agent CreateStaticAgent(RCIntRectangle area, IObstacleClient client)
+        public Agent CreateAgent(RCIntRectangle area, IAgentClient client)
         {
             Agent newStaticAgent = new Agent(area, this, client);
             this.agents.Add(newStaticAgent);
@@ -77,7 +63,7 @@ namespace RC.Engine.Pathfinder.Core
         }
 
         /// <summary>
-        /// Removes the given agent from this grid-layer.
+        /// Removes the given agent from this grid.
         /// </summary>
         /// <param name="agent">The agent to be removed.</param>
         public void RemoveAgent(Agent agent)
@@ -86,7 +72,7 @@ namespace RC.Engine.Pathfinder.Core
         }
 
         /// <summary>
-        /// Updates the agents on this grid-layer.
+        /// Updates the agents on this grid.
         /// </summary>
         public void UpdateAgents()
         {
@@ -107,28 +93,28 @@ namespace RC.Engine.Pathfinder.Core
         #endregion IDisposable members
 
         /// <summary>
-        /// The list of agents on this grid-layer.
+        /// The list of agents on this grid.
         /// </summary>
         private readonly RCSet<Agent> agents;
 
         /// <summary>
-        /// The 2D array that contains the cells of this grid-layer.
+        /// The 2D array that contains the cells of this grid.
         /// </summary>
         private readonly Cell[,] cells;
 
         /// <summary>
-        /// The width of this grid-layer.
+        /// The width of this grid.
         /// </summary>
         private readonly int width;
 
         /// <summary>
-        /// The height of this grid-layer.
+        /// The height of this grid.
         /// </summary>
         private readonly int height;
 
         /// <summary>
-        /// The maximum size of objects that can be placed onto this grid-layer.
+        /// The maximum size of moving agents.
         /// </summary>
-        private readonly int maxObjectSize;
+        private readonly int maxMovingSize;
     }
 }

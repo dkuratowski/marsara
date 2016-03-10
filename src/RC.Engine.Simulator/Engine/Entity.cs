@@ -64,7 +64,7 @@ namespace RC.Engine.Simulator.Engine
         public bool AttachToMap(IQuadTile topLeftTile, params ScenarioElement[] elementsToIgnore)
         {
             ICell topLeftCell = topLeftTile.GetCell(new RCIntVector(0, 0));
-            RCNumVector position = topLeftCell.MapCoords - new RCNumVector(1, 1) / 2 + this.ElementType.Area.Read() / 2;
+            RCNumVector position = topLeftCell.MapCoords - new RCNumVector(1, 1) / 2 - this.ElementType.Area.Read().Location;
 
             return this.AttachToMap(position, elementsToIgnore);
         }

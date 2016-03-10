@@ -9,79 +9,62 @@ using System.Threading.Tasks;
 namespace RC.Engine.Pathfinder.Core
 {
     /// <summary>
-    /// Represents an agent on a pathfinding grid-layer.
+    /// Represents an agent on the pathfinding grid.
     /// </summary>
-    class Agent : IMovingObstacle, IDisposable
+    class Agent : IAgent, IDisposable
     {
-        /// <summary>
-        /// Constructs an agent with the given position and size.
-        /// </summary>
-        /// <param name="position">The position of this agent.</param>
-        /// <param name="size">The size of this agent.</param>
-        /// <param name="gridLayer">Reference to the grid layer that this agent belongs to.</param>
-        /// <param name="client">Reference to the client of this agent.</param>
-        public Agent(RCIntVector position, int size, GridLayer gridLayer, IObstacleClient client)
-        {
-            this.isDisposed = false;
-            this.agentArea = new RCIntRectangle(position.X, position.Y, size, size);
-            this.size = size;
-            this.gridLayer = gridLayer;
-            this.client = client;
-            this.currentPath = null;
-        }
-
         /// <summary>
         /// Constructs a static agent with the given area.
         /// </summary>
         /// <param name="area">The area of this agent.</param>
         /// <param name="gridLayer">Reference to the grid layer that this agent is placed.</param>
         /// <param name="client">Reference to the client of this agent.</param>
-        public Agent(RCIntRectangle area, GridLayer gridLayer, IObstacleClient client)
+        public Agent(RCIntRectangle area, Grid gridLayer, IAgentClient client)
         {
             this.isDisposed = false;
             this.agentArea = area;
-            this.gridLayer = gridLayer;
-            this.size = -1;
+            this.grid = gridLayer;
+            this.size = area.Width == area.Height && area.Width <= this.grid.MaxMovingSize ? area.Width : -1;
             this.client = client;
             this.currentPath = null;
         }
 
-        #region IMovingObstacle members
+        #region IAgent members
 
-        /// <see cref="IMovingObstacle.MoveTo"/>
+        /// <see cref="IAgent.MoveTo"/>
         public void MoveTo(RCIntVector targetPosition)
         {
             if (this.isDisposed) { throw new InvalidOperationException("Agent already disposed!"); }
-            if (this.size == -1) { throw new InvalidOperationException("Static agent cannot move!"); }
             if (targetPosition == RCIntVector.Undefined) { throw new ArgumentNullException("targetPosition"); }
+            if (this.size == -1) { throw new NotSupportedException("Agent area is not square or exceeds the limit of the size of moving agents with which the pathfinder component was initialized!"); }
 
             this.stepBuffer = 0;
-            this.currentPath = new Path(this.gridLayer[this.agentArea.Location.X, this.agentArea.Location.Y], this.gridLayer[targetPosition.X, targetPosition.Y]);
+            this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.grid[targetPosition.X, targetPosition.Y]);
         }
 
-        /// <see cref="IMovingObstacle.StopMoving"/>
+        /// <see cref="IAgent.StopMoving"/>
         public void StopMoving()
         {
             if (this.isDisposed) { throw new InvalidOperationException("Agent already disposed!"); }
-            if (this.size == -1) { throw new InvalidOperationException("Static agent cannot move!"); }
+            if (this.size == -1) { return; }
 
             this.currentPath = null;
             this.stepBuffer = 0;
         }
 
-        /// <see cref="IMovingObstacle.IsMoving"/>
+        /// <see cref="IAgent.IsMoving"/>
         public bool IsMoving
         {
             get
             {
                 if (this.isDisposed) { throw new InvalidOperationException("Agent already disposed!"); }
-                if (this.size == -1) { throw new InvalidOperationException("Static agent cannot move!"); }
+                if (this.size == -1) { return false; }
 
                 return this.currentPath != null;
             }
         }
 
-        /// <see cref="IMovingObstacle.Area"/>
+        /// <see cref="IAgent.Area"/>
         public RCIntRectangle Area
         {
             get
@@ -90,8 +73,8 @@ namespace RC.Engine.Pathfinder.Core
                 return this.agentArea;
             }
         }
-        
-        #endregion IMovingObstacle members
+
+        #endregion IAgent members
 
         #region IDisposable members
 
@@ -146,7 +129,7 @@ namespace RC.Engine.Pathfinder.Core
         private bool isDisposed;
 
         /// <summary>
-        /// The area of this agent on the grid-layer it is placed.
+        /// The area of this agent on the pathfinding grid.
         /// </summary>
         private RCIntRectangle agentArea;
 
@@ -161,19 +144,19 @@ namespace RC.Engine.Pathfinder.Core
         private Path currentPath;
 
         /// <summary>
-        /// The size of this agent or -1 if this is a static agent.
+        /// The size of this agent or -1 if this agent is not supported to move.
         /// </summary>
         private readonly int size;
 
         /// <summary>
-        /// Reference to the grid layer that this agent belongs to.
+        /// Reference to the pathfinding grid that this agent is placed.
         /// </summary>
-        private readonly GridLayer gridLayer;
+        private readonly Grid grid;
 
         /// <summary>
         /// Reference to the client of this agent.
         /// </summary>
-        private readonly IObstacleClient client;
+        private readonly IAgentClient client;
 
         private static readonly RCNumber DIAGONAL_DISTANCE_PER_STEP = RCNumber.ROOT_OF_TWO;
         private static readonly RCNumber STRAIGHT_DISTANCE_PER_STEP = 1;

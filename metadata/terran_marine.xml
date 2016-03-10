@@ -8,7 +8,8 @@
     </costs>
     <generalData>
       <size>Small</size>
-      <area>1.75;1.5</area>
+      <area>-0.375;-0.25;1.75;1.5</area>
+	  <obstacleArea>0;0;2;2</obstacleArea>
       <maxHP>40</maxHP>
       <armor>0</armor>
       <sightRange>7</sightRange>

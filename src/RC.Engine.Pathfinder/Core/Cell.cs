@@ -17,7 +17,7 @@ namespace RC.Engine.Pathfinder.Core
         /// </summary>
         /// <param name="coords">The coordinates of this cell on the grid-layer.</param>
         /// <param name="gridLayer">The grid-layer that this cell belongs to.</param>
-        public Cell(RCIntVector coords, GridLayer gridLayer)
+        public Cell(RCIntVector coords, Grid gridLayer)
         {
             this.coords = coords;
             this.gridLayer = gridLayer;
@@ -68,6 +68,6 @@ namespace RC.Engine.Pathfinder.Core
         /// <summary>
         /// The grid-layer that this cell belongs to.
         /// </summary>
-        private GridLayer gridLayer;
+        private Grid gridLayer;
     }
 }

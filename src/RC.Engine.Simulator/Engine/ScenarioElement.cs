@@ -102,7 +102,7 @@ namespace RC.Engine.Simulator.Engine
         /// <returns>The area of this scenario element if it were placed to the given position.</returns>
         public RCNumRectangle CalculateArea(RCNumVector position)
         {
-            return new RCNumRectangle(position - this.ElementType.Area.Read() / 2, this.ElementType.Area.Read());
+            return this.ElementType.Area.Read() + position;
         }
 
         #endregion Public interface

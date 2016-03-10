@@ -252,7 +252,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
-            RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(elementType.Area.Read());
+            RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(elementType.Area.Read().Size);
             RCSet<RCIntVector> violatingQuadCoords = elementType.CheckPlacementConstraints(this.ActiveScenario, position, entitiesToIgnore);
             for (int x = 0; x < objectQuadraticSize.X; x++)
             {
@@ -276,7 +276,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
-            RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(buildingType.Area.Read());
+            RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(buildingType.Area.Read().Size);
             RCSet<RCIntVector> violatingQuadCoords = buildingType.CheckPlacementConstraints(this.ActiveScenario, position, addonType, entitiesToIgnore);
             for (int x = 0; x < objectQuadraticSize.X; x++)
             {
@@ -300,7 +300,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
-            RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(entity.ElementType.Area.Read());
+            RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(entity.ElementType.Area.Read().Size);
             RCSet<RCIntVector> violatingQuadCoords = entity.CheckPlacementConstraints(position, entitiesToIgnore);
             for (int x = 0; x < objectQuadraticSize.X; x++)
             {
@@ -324,7 +324,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         {
             if (this.ActiveScenario == null) { throw new InvalidOperationException("No active scenario!"); }
 
-            RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(building.ElementType.Area.Read());
+            RCIntVector objectQuadraticSize = this.ActiveScenario.Map.CellToQuadSize(building.ElementType.Area.Read().Size);
             RCSet<RCIntVector> violatingQuadCoords = building.CheckPlacementConstraints(position, addonType, entitiesToIgnore);
             for (int x = 0; x < objectQuadraticSize.X; x++)
             {
@@ -364,7 +364,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
                             quadCoordToCheck.Y >= 0 && quadCoordToCheck.Y < this.ActiveScenario.Map.Size.Y &&
                             this.GetFowState(quadCoordToCheck) == FOWTypeEnum.None)
                         {
-                            RCIntVector buildingQuadSize = this.ActiveScenario.Map.CellToQuadSize(buildingType.Area.Read());
+                            RCIntVector buildingQuadSize = this.ActiveScenario.Map.CellToQuadSize(buildingType.Area.Read().Size);
                             retList.Add(new RCIntRectangle(areaToCheck.Location + suggestionTranslation, buildingQuadSize));
                         }
                     }

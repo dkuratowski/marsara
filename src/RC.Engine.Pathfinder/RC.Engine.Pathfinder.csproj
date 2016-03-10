@@ -42,19 +42,16 @@
   <ItemGroup>
     <Compile Include="Core\Agent.cs" />
     <Compile Include="Core\Cell.cs" />
-    <Compile Include="Core\ConstantWalkabilityReader.cs" />
     <Compile Include="Core\GridDirections.cs" />
-    <Compile Include="Core\GridLayer.cs" />
+    <Compile Include="Core\Grid.cs" />
     <Compile Include="Core\Path.cs" />
     <Compile Include="Core\Pathfinder.cs" />
     <Compile Include="Core\PathStatusEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PublicInterfaces\IMovingObstacle.cs" />
-    <Compile Include="PublicInterfaces\IObstacle.cs" />
+    <Compile Include="PublicInterfaces\IAgent.cs" />
     <Compile Include="PublicInterfaces\IPathfinder.cs" />
-    <Compile Include="PublicInterfaces\IObstacleClient.cs" />
+    <Compile Include="PublicInterfaces\IAgentClient.cs" />
     <Compile Include="PublicInterfaces\IWalkabilityReader.cs" />
-    <Compile Include="PublicInterfaces\PathfindingLayerEnum.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj">
