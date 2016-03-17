@@ -10,6 +10,7 @@ using RC.Engine.Simulator.MotionControl;
 using RC.App.BizLogic.BusinessComponents.Core;
 using RC.App.BizLogic.BusinessComponents;
 using RC.Engine.Simulator.Metadata;
+using RC.Engine.Pathfinder.PublicInterfaces;
 
 namespace RC.App.BizLogic.Services.Core
 {
@@ -34,7 +35,7 @@ namespace RC.App.BizLogic.Services.Core
         {
             /// TODO: remove when no longer necessary!
             this.taskManager = ComponentManager.GetInterface<ITaskManagerBC>();
-            this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
+            this.pathfinder = ComponentManager.GetInterface<IPathfinder>();
             this.commandExecutor = ComponentManager.GetInterface<ICommandExecutor>();
 
             this.scenarioManager = ComponentManager.GetInterface<IScenarioManagerBC>();
@@ -74,7 +75,7 @@ namespace RC.App.BizLogic.Services.Core
 
             this.commandDispatcher = new CommandDispatcher();
             this.triggeredScheduler = new TriggeredScheduler(1000 / (int)gameSpeed);
-            this.triggeredScheduler.AddScheduledFunction(this.pathFinder.Flush);
+            this.triggeredScheduler.AddScheduledFunction(this.pathfinder.Update);
             this.triggeredScheduler.AddScheduledFunction(this.ExecuteCommands);
             this.triggeredScheduler.AddScheduledFunction(this.scenarioManager.ActiveScenario.Update);
             this.triggeredScheduler.AddScheduledFunction(this.commandManager.Update);
@@ -151,7 +152,7 @@ namespace RC.App.BizLogic.Services.Core
         private TriggeredScheduler triggeredScheduler;
         private CommandDispatcher commandDispatcher;
         private ManualResetEvent testDssTaskCanFinishEvt;
-        private IPathFinder pathFinder;
+        private IPathfinder pathfinder;
         private ITaskManagerBC taskManager;
         private ICommandExecutor commandExecutor;
 

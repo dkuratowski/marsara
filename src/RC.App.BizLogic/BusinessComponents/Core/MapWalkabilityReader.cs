@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 using RC.Engine.Maps.PublicInterfaces;
+using RC.Engine.Pathfinder.PublicInterfaces;
 
-namespace RC.Engine.Maps.PublicInterfaces
+namespace RC.App.BizLogic.BusinessComponents.Core
 {
     /// <summary>
     /// Helper class for reading walkability informations from an RC map.
     /// </summary>
-    /// TODO: do we need this class in the RC.Engine.Maps module!
-    public class MapWalkabilityReader : IWalkabilityGrid
+    class MapWalkabilityReader : IWalkabilityReader
     {
         /// <summary>
         /// Constructs a walkability reader instance for the given map.
@@ -23,26 +23,26 @@ namespace RC.Engine.Maps.PublicInterfaces
             this.map = map;
         }
 
-        #region IWalkabilityGrid methods
+        #region IWalkabilityReader methods
 
-        /// <see cref="IWalkabilityGrid.this[]"/>
-        public bool this[RCIntVector position]
+        /// <see cref="IWalkabilityReader.this[]"/>
+        public bool this[int x, int y]
         {
             get
             {
-                return position.X >= 0 && position.X < this.Width && position.Y >= 0 && position.Y < this.Height ?
-                       this.map.GetCell(position).IsWalkable :
-                       false;
+                return x >= 0 && x < this.Width && y >= 0 && y < this.Height ?
+                    this.map.GetCell(new RCIntVector(x, y)).IsWalkable :
+                    false;
             }
         }
 
-        /// <see cref="IWalkabilityGrid.Width"/>
+        /// <see cref="IWalkabilityReader.Width"/>
         public int Width { get { return this.map.CellSize.X; } }
 
-        /// <see cref="IWalkabilityGrid.Height"/>
+        /// <see cref="IWalkabilityReader.Height"/>
         public int Height { get { return this.map.CellSize.Y; } }
 
-        #endregion IWalkabilityGrid methods
+        #endregion IWalkabilityReader methods
 
         /// <summary>
         /// Reference to the map to be read.

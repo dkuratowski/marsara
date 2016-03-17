@@ -213,15 +213,13 @@ namespace RC.App.Starter
             ComponentManager.RegisterComponents("RC.Engine.Maps, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                                                 "RC.Engine.Maps.TileSetLoader",
                                                 "RC.Engine.Maps.MapLoader",
-                                                "RC.Engine.Maps.MapEditor",
-                                                "RC.Engine.Maps.NavMeshLoader");
+                                                "RC.Engine.Maps.MapEditor");
 
             ComponentManager.RegisterComponents("RC.Engine.Simulator, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                                                 "RC.Engine.Simulator.ElementFactory",
                                                 "RC.Engine.Simulator.CommandExecutor",
                                                 "RC.Engine.Simulator.ScenarioLoader",
-                                                "RC.Engine.Simulator.HeapManager",
-                                                "RC.Engine.Simulator.PathFinder");
+                                                "RC.Engine.Simulator.HeapManager");
 
             ComponentManager.RegisterComponents("RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                                                 "RC.App.BizLogic.TilesetManagerBC",

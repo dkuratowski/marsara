@@ -48,32 +48,10 @@ namespace RC.Engine.Simulator.Terran.Commands
             TerranBuilding building = this.recipientSCV.Read().ConstructionJob.ConstructedBuilding;
             this.recipientSCV.Read().ConstructionJob.DetachSCV();
 
-            /// Find a free place for the SCV.
-            EntityNeighbourhoodIterator cellIterator = new EntityNeighbourhoodIterator(building);
-            IEnumerator<ICell> cellEnumerator = cellIterator.GetEnumerator();
-
-            RCIntVector targetCell = RCIntVector.Undefined;
-            while (cellEnumerator.MoveNext())
-            {
-                if (this.recipientSCV.Read().MotionControl.ValidatePosition(cellEnumerator.Current.MapCoords))
-                {
-                    targetCell = cellEnumerator.Current.MapCoords;
-                    break;
-                }
-            }
-
-            if (targetCell != RCNumVector.Undefined)
-            {
-                /// Move the SCV to the target cell if found.
-                this.recipientSCV.Read().MotionControl.StartMoving(targetCell);
-            }
-            else
-            {
-                /// Otherwise move the SCV to the bottom-left corner of the building.
-                RCIntRectangle buildingQuadRect = building.MapObject.QuadraticPosition;
-                RCIntRectangle buildingCellRect = this.Scenario.Map.QuadToCellRect(buildingQuadRect);
-                this.recipientSCV.Read().MotionControl.StartMoving(new RCNumVector(buildingCellRect.Left, buildingCellRect.Bottom - 1));
-            }
+            /// Move the SCV to the bottom-left corner of the building.
+            RCIntRectangle buildingQuadRect = building.MapObject.QuadraticPosition;
+            RCIntRectangle buildingCellRect = this.Scenario.Map.QuadToCellRect(buildingQuadRect);
+            this.recipientSCV.Read().MotionControl.StartMoving(new RCNumVector(buildingCellRect.Left, buildingCellRect.Bottom - 1));
         }
 
         #endregion Overrides

@@ -102,6 +102,7 @@
     <Compile Include="BusinessComponents\Core\FowCacheMatrix.cs" />
     <Compile Include="BusinessComponents\Core\FowVisibilityInfo.cs" />
     <Compile Include="BusinessComponents\Core\ICommandBuilder.cs" />
+    <Compile Include="BusinessComponents\Core\MapWalkabilityReader.cs" />
     <Compile Include="BusinessComponents\Core\MapWindowImpl.cs" />
     <Compile Include="BusinessComponents\Core\MapWindowBC.cs" />
     <Compile Include="BusinessComponents\Core\Minimap.cs" />
@@ -196,6 +197,10 @@
     <ProjectReference Include="..\RC.Engine.Maps\RC.Engine.Maps.csproj">
       <Project>{2B1355DC-847B-4617-94AD-5423BC538B20}</Project>
       <Name>RC.Engine.Maps</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.Engine.Pathfinder\RC.Engine.Pathfinder.csproj">
+      <Project>{2311f794-221c-49e5-ac8b-79fffe6398dc}</Project>
+      <Name>RC.Engine.Pathfinder</Name>
     </ProjectReference>
     <ProjectReference Include="..\RC.Engine.Simulator\RC.Engine.Simulator.csproj">
       <Project>{2B041172-C0FC-42DB-A344-079F40491FE5}</Project>

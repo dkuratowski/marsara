@@ -39,7 +39,6 @@ namespace RC.Engine.Simulator.Engine
             this.nextProductionJobID = this.ConstructField<int>("nextProductionJobID");
 
             this.mapObject = null;
-            this.reservationObject = null;
             this.tmpElementsToIgnoreDuringAttach = new RCSet<ScenarioElement>();
             this.affectingCmdExecution.Write(null);
             this.locator.Write(new Locator(this));
@@ -96,11 +95,6 @@ namespace RC.Engine.Simulator.Engine
                 this.MotionControl.OnOwnerDetachedFromMap();
                 this.DestroyMapObject(this.mapObject);
                 this.mapObject = null;
-                if (this.reservationObject != null)
-                {
-                    this.DestroyMapObject(this.reservationObject);
-                    this.reservationObject = null;
-                }
             }
             return currentPosition;
         }
@@ -401,44 +395,6 @@ namespace RC.Engine.Simulator.Engine
         #endregion Overrides
 
         #region Internal members
-        
-        /// <summary>
-        /// Reserves a position on the ground for this entity.
-        /// </summary>
-        /// <param name="positionToReserve">The position to be reserved.</param>
-        /// <remarks>This method is used by the MotionControl of this entity.</remarks>
-        internal void ReservePositionOnGround(RCNumVector positionToReserve)
-        {
-            if (positionToReserve == RCNumVector.Undefined) { throw new ArgumentNullException("positionToReserve"); }
-            if (this.reservationObject != null) { throw new InvalidOperationException("A position has already been reserved for this entity!"); }
-
-            this.reservationObject = this.CreateMapObject(this.CalculateArea(positionToReserve), MapObjectLayerEnum.GroundReservations);
-        }
-
-        /// <summary>
-        /// Reserves a position in the air for this entity.
-        /// </summary>
-        /// <param name="positionToReserve">The position to be reserved.</param>
-        /// <remarks>This method is used by the MotionControl of this entity.</remarks>
-        internal void ReservePositionInAir(RCNumVector positionToReserve)
-        {
-            if (positionToReserve == RCNumVector.Undefined) { throw new ArgumentNullException("positionToReserve"); }
-            if (this.reservationObject != null) { throw new InvalidOperationException("A position has already been reserved for this entity!"); }
-
-            this.reservationObject = this.CreateMapObject(this.CalculateArea(positionToReserve), MapObjectLayerEnum.AirReservations);
-        }
-
-        /// <summary>
-        /// Removes the reservation of this entity.
-        /// </summary>
-        /// <remarks>This method is used by the MotionControl of this entity.</remarks>
-        internal void RemoveReservation()
-        {
-            if (this.reservationObject == null) { throw new InvalidOperationException("There is no position currently reserved for this entity!"); }
-
-            this.DestroyMapObject(this.reservationObject);
-            this.reservationObject = null;
-        }
 
         /// <summary>
         /// Fixes this entity in its current quadratic position.
@@ -581,10 +537,5 @@ namespace RC.Engine.Simulator.Engine
         /// attached to the map.
         /// </summary>
         private MapObject mapObject;
-
-        /// <summary>
-        /// Reference to the map object that reserves an area for this entity on the map during takeoff and landing operations.
-        /// </summary>
-        private MapObject reservationObject;
     }
 }

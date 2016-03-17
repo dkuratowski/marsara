@@ -16,28 +16,18 @@ namespace RC.Engine.Simulator.Engine
         GroundObjects = 0,
 
         /// <summary>
-        /// This layer is used by entities to reserve a position on the ground for landing.
-        /// </summary>
-        GroundReservations = 1,
-
-        /// <summary>
         /// This layer is used by missiles attacking entities on the ground.
         /// </summary>
-        GroundMissiles = 2,
+        GroundMissiles = 1,
 
         /// <summary>
         /// This layer is used by entities to indicate their actual position in the air.
         /// </summary>
-        AirObjects = 3,
-
-        /// <summary>
-        /// This layer is used by entities to reserve a position in the air for takeoff.
-        /// </summary>
-        AirReservations = 4,
+        AirObjects = 2,
 
         /// <summary>
         /// This layer is used by missiles attacking entities in the air.
         /// </summary>
-        AirMissiles = 5
+        AirMissiles = 3
     }
 }

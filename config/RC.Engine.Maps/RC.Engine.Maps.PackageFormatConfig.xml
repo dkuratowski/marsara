@@ -1,28 +1,6 @@
 <packageFormatConfig>
 
-  <!-- TODO: Package format ID 0 is free for use! -->
-  
-  <packageFormat namespace="RC.Engine.Maps" name="NavMesh" id="1">
-    <description>Contains the navigation mesh of the map.</description>
-    <field type="INT">The CRC-32 checksum of the walkability grid that this navmesh is based on.</field>
-    <field type="INT">The width of the walkability grid that this navmesh is based on.</field>
-    <field type="INT">The height of the walkability grid that this navmesh is based on.</field>
-    <field type="BYTE_ARRAY">Contains an RC.Engine.Maps.NavMeshVertexList package.</field>
-    <field type="BYTE_ARRAY">Contains an RC.Engine.Maps.NavMeshNodeList package.</field>
-  </packageFormat>
-
-  <packageFormat namespace="RC.Engine.Maps" name="NavMeshVertexList" id="2">
-    <description>Describes the coordinates of the vertices of a navmesh. These integers shall be interpreted as the bits of RCNumbers.</description>
-    <field type="INT_ARRAY">The list of integers that describes the bits of the X-coordinates of the vertices.</field>
-    <field type="INT_ARRAY">The list of integers that describes the bits of the Y-coordinates of the vertices.</field>
-  </packageFormat>
-
-  <packageFormat namespace="RC.Engine.Maps" name="NavMeshNodeList" id="3">
-    <description>Describes the nodes of a navmesh.</description>
-    <field type="INT_ARRAY">
-      The integers in this list address the vertices of the appropriate node from the vertex list. The nodes are delimited by -1 numbers.
-    </field>
-  </packageFormat>
+  <!-- TODO: Package formats with ID 0-3 are free for use! -->
 
   <packageFormat namespace="RC.Engine.Maps" name="TileSetFormat" id="4">
     <description>Format of packages containing tilesets.</description>

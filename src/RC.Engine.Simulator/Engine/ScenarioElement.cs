@@ -128,10 +128,8 @@ namespace RC.Engine.Simulator.Engine
             this.mapObjectsOfThisElementByLayer = new Dictionary<MapObjectLayerEnum, RCSet<MapObject>>
             {
                 { MapObjectLayerEnum.GroundObjects, new RCSet<MapObject>() },
-                { MapObjectLayerEnum.GroundReservations, new RCSet<MapObject>() },
                 { MapObjectLayerEnum.GroundMissiles, new RCSet<MapObject>() },
                 { MapObjectLayerEnum.AirObjects, new RCSet<MapObject>() },
-                { MapObjectLayerEnum.AirReservations, new RCSet<MapObject>() },
                 { MapObjectLayerEnum.AirMissiles, new RCSet<MapObject>() }
             };
             this.mapObjectsOfThisElement = new Dictionary<MapObject, MapObjectLayerEnum>();
