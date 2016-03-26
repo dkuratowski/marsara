@@ -31,12 +31,6 @@ namespace RC.Engine.Pathfinder.Core
             if (walkabilityReader == null) { throw new ArgumentNullException("walkabilityReader"); }
             if (maxMovingSize < 1) { throw new ArgumentOutOfRangeException("maxMovingSize", "The value of maxMovingSize shall be greater than 0!"); }
 
-            /// Destroy the existing grid if exist.
-            if (this.grid != null)
-            {
-                this.grid.Dispose();
-            }
-
             /// Create the new grid.
             this.grid = new Grid(walkabilityReader, maxMovingSize);
         }
@@ -65,10 +59,16 @@ namespace RC.Engine.Pathfinder.Core
         {
             if (this.grid == null) { throw new InvalidOperationException("The pathfinder component is not initialized!"); }
 
-            this.grid.UpdateAgents();
+            this.grid.Update();
         }
 
         #endregion IPathfinder methods
+
+        /// <summary>
+        /// Gets the pathfinding grid.
+        /// TODO: This is only for debugging!
+        /// </summary>
+        internal Grid Grid { get { return this.grid; } }
 
         /// <summary>
         /// Reference to the pathfinding grid or null if the pathfinder component has not yet been initialized.

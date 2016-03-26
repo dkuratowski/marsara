@@ -41,12 +41,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Agent.cs" />
+    <Compile Include="Core\AgentMovingStatusEnum.cs" />
     <Compile Include="Core\Cell.cs" />
     <Compile Include="Core\GridDirections.cs" />
     <Compile Include="Core\Grid.cs" />
+    <Compile Include="Core\RegionGraph.cs" />
+    <Compile Include="Core\IGraph.cs" />
+    <Compile Include="Core\IPathfindingAlgorithm.cs" />
+    <Compile Include="Core\ObstacleEnvironment.cs" />
     <Compile Include="Core\Path.cs" />
     <Compile Include="Core\Pathfinder.cs" />
+    <Compile Include="Core\PathfindingAlgorithm.cs" />
+    <Compile Include="Core\PathfindingResult.cs" />
+    <Compile Include="Core\PathNode.cs" />
     <Compile Include="Core\PathStatusEnum.cs" />
+    <Compile Include="Core\PriorityQueue.cs" />
+    <Compile Include="Core\Region.cs" />
+    <Compile Include="Core\Sector.cs" />
+    <Compile Include="Core\SectorSubdivision.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicInterfaces\IAgent.cs" />
     <Compile Include="PublicInterfaces\IPathfinder.cs" />

@@ -11,7 +11,7 @@ namespace RC.Engine.Pathfinder.Core
     /// <summary>
     /// Represents an agent on the pathfinding grid.
     /// </summary>
-    class Agent : IAgent, IDisposable
+    class Agent : IAgent
     {
         /// <summary>
         /// Constructs a static agent with the given area.
@@ -21,12 +21,14 @@ namespace RC.Engine.Pathfinder.Core
         /// <param name="client">Reference to the client of this agent.</param>
         public Agent(RCIntRectangle area, Grid gridLayer, IAgentClient client)
         {
-            this.isDisposed = false;
             this.agentArea = area;
             this.grid = gridLayer;
-            this.size = area.Width == area.Height && area.Width <= this.grid.MaxMovingSize ? area.Width : -1;
+            this.movingSize = area.Width == area.Height && area.Width <= this.grid.MaxMovingSize ? area.Width : -1;
             this.client = client;
             this.currentPath = null;
+            this.movingStatus = this.movingSize != -1 ? AgentMovingStatusEnum.Stopped : AgentMovingStatusEnum.Static;
+            this.stoppedStateTimer = this.movingStatus == AgentMovingStatusEnum.Stopped ? STOPPED_STATE_WAITING_TIME : -1;
+            this.deadlockTimer = -1;
         }
 
         #region IAgent members
@@ -34,22 +36,33 @@ namespace RC.Engine.Pathfinder.Core
         /// <see cref="IAgent.MoveTo"/>
         public void MoveTo(RCIntVector targetPosition)
         {
-            if (this.isDisposed) { throw new InvalidOperationException("Agent already disposed!"); }
             if (targetPosition == RCIntVector.Undefined) { throw new ArgumentNullException("targetPosition"); }
-            if (this.size == -1) { throw new NotSupportedException("Agent area is not square or exceeds the limit of the size of moving agents with which the pathfinder component was initialized!"); }
+            if (this.movingSize == -1) { throw new NotSupportedException("This agent is not supported to move!"); }
 
             this.stepBuffer = 0;
+            this.stoppedStateTimer = -1;
+            this.deadlockTimer = -1;
             this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.grid[targetPosition.X, targetPosition.Y]);
+            this.MovingStatus = AgentMovingStatusEnum.Moving;
         }
 
         /// <see cref="IAgent.StopMoving"/>
         public void StopMoving()
         {
-            if (this.isDisposed) { throw new InvalidOperationException("Agent already disposed!"); }
-            if (this.size == -1) { return; }
-
             this.currentPath = null;
             this.stepBuffer = 0;
+
+            if (this.movingStatus == AgentMovingStatusEnum.Static)
+            {
+                this.deadlockTimer = -1;
+                return;
+            }
+
+            if (this.movingStatus == AgentMovingStatusEnum.Moving)
+            {
+                this.MovingStatus = AgentMovingStatusEnum.Stopped;
+                this.stoppedStateTimer = STOPPED_STATE_WAITING_TIME;
+            }
         }
 
         /// <see cref="IAgent.IsMoving"/>
@@ -57,56 +70,119 @@ namespace RC.Engine.Pathfinder.Core
         {
             get
             {
-                if (this.isDisposed) { throw new InvalidOperationException("Agent already disposed!"); }
-                if (this.size == -1) { return false; }
-
+                if (this.movingSize == -1) { return false; }
                 return this.currentPath != null;
             }
         }
 
         /// <see cref="IAgent.Area"/>
-        public RCIntRectangle Area
-        {
-            get
-            {
-                if (this.isDisposed) { throw new InvalidOperationException("Agent already disposed!"); }
-                return this.agentArea;
-            }
-        }
+        public RCIntRectangle Area { get { return this.agentArea; } }
 
         #endregion IAgent members
-
-        #region IDisposable members
-
-        /// <see cref="IDisposable.Dispose"/>
-        public void Dispose()
-        {
-            if (this.isDisposed) { throw new InvalidOperationException("Agent already disposed!"); }
-            this.isDisposed = true;
-        }
-
-        #endregion IDisposable members
 
         /// <summary>
         /// Updates this agent.
         /// </summary>
         public void Update()
         {
-            if (this.isDisposed) { throw new InvalidOperationException("Agent already disposed!"); }
+            if (this.movingStatus == AgentMovingStatusEnum.Static)
+            {
+                if (this.deadlockTimer != -1)
+                {
+                    this.deadlockTimer--;
+                    if (this.deadlockTimer == 0)
+                    {
+                        this.stepBuffer = 0;
+                        this.stoppedStateTimer = -1;
+                        this.deadlockTimer = -1;
+                        this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.currentPath.TargetCell);
+                        this.MovingStatus = AgentMovingStatusEnum.Moving;
+                    }
+                }
+            }
+            else if (this.movingStatus == AgentMovingStatusEnum.Stopped)
+            {
+                this.stoppedStateTimer--;
+                if (this.stoppedStateTimer == 0)
+                {
+                    this.stoppedStateTimer = -1;
+                    this.MovingStatus = AgentMovingStatusEnum.Static;
+                }
+            }
+            else if (this.movingStatus == AgentMovingStatusEnum.Moving)
+            {
+                this.UpdateMoving();
+            }
+        }
 
-            /// If this agent is not following a path -> do nothing.
-            if (this.currentPath == null) { return; }
+        /// <summary>
+        /// Steps this agent one cell towards the given direction.
+        /// </summary>
+        /// <param name="stepDirection">The direction of the step.</param>
+        public void Step(int stepDirection)
+        {
+            this.agentArea += GridDirections.DIRECTION_TO_VECTOR[stepDirection];
+        }
 
-            if (this.currentPath.Status == PathStatusEnum.Ready)
+        /// <summary>
+        /// Gets the moving size of this agent or -1 if this agent is not supported to move.
+        /// </summary>
+        public int MovingSize { get { return this.movingSize; } }
+
+        /// <summary>
+        /// Gets the moving state of this agent.
+        /// </summary>
+        public AgentMovingStatusEnum MovingStatus
+        {
+            get { return this.movingStatus; }
+            private set
+            {
+                AgentMovingStatusEnum oldMovingStatus = this.movingStatus;
+                this.movingStatus = value;
+                if (this.movingStatus != oldMovingStatus && this.MovingStatusChanged != null)
+                {
+                    this.MovingStatusChanged(this, oldMovingStatus);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the client of this agent.
+        /// </summary>
+        public IAgentClient Client { get { return this.client; } }
+
+        /// <summary>
+        /// This event is raised when the moving status of this agent has been changed.
+        /// The first parameter of this event is the agent whose moving status has been changed.
+        /// The second parameter of this event is the old moving status of the agent.
+        /// </summary>
+        public event Action<Agent, AgentMovingStatusEnum> MovingStatusChanged;
+
+        /// <summary>
+        /// Updates this agent when it is in the Moving state.
+        /// </summary>
+        private void UpdateMoving()
+        {
+            if (this.currentPath.Status == PathStatusEnum.ReadyToFollow)
             {
                 /// The path is ready to follow -> follow it until we have buffer.
                 this.stepBuffer += this.client.MaxSpeed;
-                while (this.currentPath.Status == PathStatusEnum.Ready && this.stepBuffer >= this.currentPath.CurrentStepLength)
+                while (this.currentPath.Status == PathStatusEnum.ReadyToFollow && this.stepBuffer >= this.currentPath.CurrentStepLength)
                 {
                     /// Step towards this.currentPath.CurrentStepDirection!
-                    this.agentArea += GridDirections.DIRECTION_TO_VECTOR[this.currentPath.CurrentStepDirection];
-                    this.stepBuffer -= this.currentPath.CurrentStepLength;
-                    this.currentPath.CalculateNextStep();
+                    RCSet<Agent> collidingAgents = null;
+                    if (this.grid.StepAgent(this, this.currentPath.CurrentStepDirection, out collidingAgents))
+                    {
+                        /// Step was successful.
+                        this.stepBuffer -= this.currentPath.CurrentStepLength;
+                        this.currentPath.CalculateNextStep();
+                    }
+                    else
+                    {
+                        /// Handle the detected collision.
+                        this.HandleCollision(collidingAgents);
+                        this.stepBuffer = 0;
+                    }
                 }
 
                 if (this.currentPath.Status == PathStatusEnum.Finished)
@@ -114,19 +190,54 @@ namespace RC.Engine.Pathfinder.Core
                     /// Path following finished -> delete the path and stop this agent.
                     this.currentPath = null;
                     this.stepBuffer = 0;
+                    this.MovingStatus = AgentMovingStatusEnum.Stopped;
+                    this.stoppedStateTimer = STOPPED_STATE_WAITING_TIME;
                 }
-                //else if (this.currentPath.Status == PathStatusEnum.Broken)
-                //{
-                //    /// Path being followed has been broken -> recalculate the path.
-                //    this.currentPath = new Path(this.gridLayer[this.agentArea.Location.X, this.agentArea.Location.Y], this.currentPath.TargetCell);
-                //}
+                else if (this.currentPath.Status == PathStatusEnum.Broken)
+                {
+                    /// Path being followed has been broken -> recalculate the path.
+                    this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.currentPath.TargetCell);
+                }
             }
         }
 
         /// <summary>
-        /// This flag indicates whether this agent has already been disposed.
+        /// Handle the case when this agent is colliding with the given other agents during a step.
         /// </summary>
-        private bool isDisposed;
+        /// <param name="collidingAgents">The given other agents.</param>
+        private void HandleCollision(RCSet<Agent> collidingAgents)
+        {
+            /// Group the colliding agents whether they are in Moving state or not.
+            RCSet<Agent> staticCollidingAgents = new RCSet<Agent>();
+            RCSet<Agent> movingCollidingAgents = new RCSet<Agent>();
+            foreach (Agent collidingAgent in collidingAgents)
+            {
+                if (collidingAgent.movingStatus == AgentMovingStatusEnum.Stopped)
+                {
+                    collidingAgent.MovingStatus = AgentMovingStatusEnum.Static;
+                    collidingAgent.stoppedStateTimer = -1;
+                }
+                if (collidingAgent.movingStatus != AgentMovingStatusEnum.Moving)
+                {
+                    staticCollidingAgents.Add(collidingAgent);
+                }
+                else
+                {
+                    movingCollidingAgents.Add(collidingAgent);
+                }
+            }
+
+            if (staticCollidingAgents.Count != 0)
+            {
+                /// Collision with static agent -> brake the current path manually!
+                this.currentPath.Brake();
+            }
+            else if (movingCollidingAgents.Count != 0)
+            {
+                /// Collision with moving agent -> check for deadlock!
+                /// TODO: implement deadlock detection!
+            }
+        }
 
         /// <summary>
         /// The area of this agent on the pathfinding grid.
@@ -144,9 +255,24 @@ namespace RC.Engine.Pathfinder.Core
         private Path currentPath;
 
         /// <summary>
-        /// The size of this agent or -1 if this agent is not supported to move.
+        /// The moving state of this agent.
         /// </summary>
-        private readonly int size;
+        private AgentMovingStatusEnum movingStatus;
+
+        /// <summary>
+        /// The remaining time before this agent goes to Static state if it's in Stopped state; otherwise -1.
+        /// </summary>
+        private int stoppedStateTimer;
+
+        /// <summary>
+        /// The remaining waiting time before this agent recalculates its path if it's in deadlock; otherwise -1.
+        /// </summary>
+        private int deadlockTimer;
+
+        /// <summary>
+        /// The moving size of this agent or -1 if this agent is not supported to move.
+        /// </summary>
+        private readonly int movingSize;
 
         /// <summary>
         /// Reference to the pathfinding grid that this agent is placed.
@@ -158,7 +284,14 @@ namespace RC.Engine.Pathfinder.Core
         /// </summary>
         private readonly IAgentClient client;
 
-        private static readonly RCNumber DIAGONAL_DISTANCE_PER_STEP = RCNumber.ROOT_OF_TWO;
-        private static readonly RCNumber STRAIGHT_DISTANCE_PER_STEP = 1;
+        /// <summary>
+        /// The waiting time of an agent in Stopped state before it automatically goes to Static state.
+        /// </summary>
+        private const int STOPPED_STATE_WAITING_TIME = 10;
+
+        /// <summary>
+        /// The waiting time of an agent in deadlock state.
+        /// </summary>
+        private const int DEADLOCK_WAITING_TIME = 10;
     }
 }

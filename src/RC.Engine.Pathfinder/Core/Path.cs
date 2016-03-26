@@ -26,6 +26,10 @@ namespace RC.Engine.Pathfinder.Core
             this.sourceCell = sourceCell;
             this.targetCell = targetCell;
             this.currentCell = this.sourceCell;
+            this.isBroken = false;
+
+            // TODO: finish!
+            //this.highLevelPath = new PathfindingAlgorithm<Region>(this.sourceCell.GetRegion(
         }
 
         /// <summary>
@@ -48,7 +52,14 @@ namespace RC.Engine.Pathfinder.Core
         /// <summary>
         /// Gets the current status of this path.
         /// </summary>
-        public PathStatusEnum Status { get { return this.currentCell != this.targetCell ? PathStatusEnum.Ready : PathStatusEnum.Finished; } }
+        public PathStatusEnum Status
+        {
+            get
+            {
+                if (this.isBroken) { return PathStatusEnum.Broken; }
+                return this.currentCell != this.targetCell ? PathStatusEnum.ReadyToFollow : PathStatusEnum.Finished;
+            }
+        }
 
         /// <summary>
         /// Calculates the next step on this path.
@@ -56,8 +67,17 @@ namespace RC.Engine.Pathfinder.Core
         /// <exception cref="InvalidOperationException">If this path is not in state PathStatusEnum.Ready.</exception>
         public void CalculateNextStep()
         {
-            if (this.Status != PathStatusEnum.Ready) { throw new InvalidOperationException("The state of this path shall be PathStatusEnum.Ready!"); }
+            if (this.Status != PathStatusEnum.ReadyToFollow) { throw new InvalidOperationException("The state of this path shall be PathStatusEnum.ReadyToFollow!"); }
             this.currentCell = this.currentCell.GetNeighbour(this.CurrentStepDirection);
+        }
+
+        /// <summary>
+        /// Brakes this path manually.
+        /// </summary>
+        public void Brake()
+        {
+            if (this.Status != PathStatusEnum.ReadyToFollow) { throw new InvalidOperationException("The state of this path shall be PathStatusEnum.ReadyToFollow!"); }
+            this.isBroken = true;
         }
 
         /// <summary>
@@ -74,5 +94,20 @@ namespace RC.Engine.Pathfinder.Core
         /// The current cell of this path.
         /// </summary>
         private Cell currentCell;
+
+        /// <summary>
+        /// This flag indicates whether this path is currently broken.
+        /// </summary>
+        private bool isBroken;
+
+        /// <summary>
+        /// The current high-level path.
+        /// </summary>
+        private PathfindingAlgorithm<Region> highLevelPath;
+
+        /// <summary>
+        /// The current low-level path.
+        /// </summary>
+        private PathfindingAlgorithm<Cell> lowLevelPath;
     }
 }

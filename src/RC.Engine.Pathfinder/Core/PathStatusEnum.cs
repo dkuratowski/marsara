@@ -11,7 +11,7 @@ namespace RC.Engine.Pathfinder.Core
     /// </summary>
     enum PathStatusEnum
     {
-        Ready = 0,          /// The path is ready to be followed.
+        ReadyToFollow = 0,  /// The path is ready to be followed.
         Finished = 1,       /// Path following has been finished.
         Calculating = 2,    /// The path is being calculated.
         Broken = 3,         /// The path has been broken and no longer can be followed.

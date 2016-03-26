@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using RC.Common;
 using RC.Engine.Pathfinder.PublicInterfaces;
+using RC.Engine.Pathfinder.Core;
 
 namespace RC.Engine.PathFinder.Test
 {
@@ -51,14 +52,14 @@ namespace RC.Engine.PathFinder.Test
             this.pathfinder.Initialize(testMapGrid, MAX_OBJECT_SIZE);
 
             /// Draw the grid.
-            this.gridImg = this.DrawGrid(testMapGrid);
+            this.gridImg = this.DrawGrid(this.pathfinder.Grid);
             this.agentsImg = new Bitmap(testMapGrid.Width * CELL_SIZE, testMapGrid.Height * CELL_SIZE, PixelFormat.Format32bppArgb);
             this.agentsImgGC = Graphics.FromImage(this.agentsImg);
             this.agentsImgGC.Clear(Color.FromArgb(0, Color.White));
             this.ClientSize = new Size(this.gridImg.Width, this.gridImg.Height);
 
             this.testAgent = this.pathfinder.PlaceAgent(new RCIntRectangle(0, 0, 3, 3), this);
-            this.DrawAgents();
+            this.DrawAgent(this.testAgent, this.pathfinder.Grid);
 
             this.timer = new Timer();
             this.timer.Interval = 40;
@@ -77,7 +78,7 @@ namespace RC.Engine.PathFinder.Test
         private void OnTimerTick(object sender, EventArgs e)
         {
             this.pathfinder.Update();
-            this.DrawAgents();
+            this.DrawAgent(this.testAgent, this.pathfinder.Grid);
             this.Invalidate();
         }
 
@@ -96,22 +97,24 @@ namespace RC.Engine.PathFinder.Test
         }
 
         /// <summary>
-        /// Creates the image of the walkability grid.
+        /// Creates the image of the pathfinding grid.
         /// </summary>
-        /// <param name="walkabilityReader">The walkability grid.</param>
+        /// <param name="grid">The pathfinding grid.</param>
         /// <returns>The created image.</returns>
-        private Bitmap DrawGrid(IWalkabilityReader walkabilityReader)
+        private Bitmap DrawGrid(Grid grid)
         {
-            Bitmap result = new Bitmap(walkabilityReader.Width * CELL_SIZE, walkabilityReader.Height * CELL_SIZE, PixelFormat.Format24bppRgb);
+            Bitmap result = new Bitmap(grid.Width * CELL_SIZE, grid.Height * CELL_SIZE, PixelFormat.Format24bppRgb);
             Graphics outputGC = Graphics.FromImage(result);
             outputGC.Clear(Color.FromArgb(0, 0, 0));
 
-            for (int row = 0; row < walkabilityReader.Height; row++)
+            RCSet<Sector> sectorsToDraw = new RCSet<Sector>();
+            for (int row = 0; row < grid.Height; row++)
             {
-                for (int col = 0; col < walkabilityReader.Width; col++)
+                for (int col = 0; col < grid.Width; col++)
                 {
                     Rectangle cellRect = new Rectangle(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    if (walkabilityReader[col, row])
+                    Cell cellToDraw = grid[col, row];
+                    if (cellToDraw.WallCellDistance > 0)
                     {
                         outputGC.FillRectangle(Brushes.White, cellRect);
                         outputGC.DrawRectangle(Pens.Black, cellRect);
@@ -120,7 +123,16 @@ namespace RC.Engine.PathFinder.Test
                     {
                         outputGC.FillRectangle(Brushes.Black, cellRect);
                     }
+                    outputGC.DrawString(cellToDraw.WallCellDistance.ToString(), SystemFonts.CaptionFont, Brushes.Blue, cellRect.Left + 1, cellRect.Top + 1);
+
+                    sectorsToDraw.Add(cellToDraw.Sector);
                 }
+            }
+
+            foreach (Sector sectorToDraw in sectorsToDraw)
+            {
+                Rectangle sectorRect = new Rectangle(sectorToDraw.AreaOnGrid.X * CELL_SIZE, sectorToDraw.AreaOnGrid.Y * CELL_SIZE, sectorToDraw.AreaOnGrid.Width * CELL_SIZE, sectorToDraw.AreaOnGrid.Height * CELL_SIZE);
+                outputGC.DrawRectangle(Pens.Red, sectorRect);
             }
 
             outputGC.Dispose();
@@ -129,14 +141,35 @@ namespace RC.Engine.PathFinder.Test
         }
 
         /// <summary>
-        /// Draws the current state of the agents.
+        /// Draws the given agent.
         /// </summary>
-        private void DrawAgents()
+        private void DrawAgent(IAgent agent, Grid grid)
         {
-            Rectangle agentRect = new Rectangle(this.testAgent.Area.X * CELL_SIZE, this.testAgent.Area.Y * CELL_SIZE, this.testAgent.Area.Width * CELL_SIZE, this.testAgent.Area.Height * CELL_SIZE);
+            Rectangle agentRect = new Rectangle(agent.Area.X * CELL_SIZE, agent.Area.Y * CELL_SIZE, agent.Area.Width * CELL_SIZE, agent.Area.Height * CELL_SIZE);
             this.agentsImgGC.Clear(Color.FromArgb(0, Color.White));
-            this.agentsImgGC.FillRectangle(this.testAgent.IsMoving ? Brushes.LightGreen : Brushes.Green, agentRect);
-            this.agentsImg.Save("agents.png");
+            this.agentsImgGC.FillRectangle(agent.IsMoving ? Brushes.LightGreen : Brushes.Green, agentRect);
+
+            for (int row = agent.Area.Top - (grid.MaxMovingSize/* - 1*/); row < agent.Area.Bottom; row++)
+            {
+                for (int column = agent.Area.Left - (grid.MaxMovingSize/* - 1*/); column < agent.Area.Right; column++)
+                {
+                    Cell cell = grid[column, row];
+                    if (cell != null)
+                    {
+                        int size = 1;
+                        for (; size <= grid.MaxMovingSize && cell.GetAgents(size).Count == 0; size++) { }
+
+                        if (size <= grid.MaxMovingSize)
+                        {
+                            Rectangle cellRect = new Rectangle(column * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                            this.agentsImgGC.FillRectangle(Brushes.Green, cellRect);
+                            this.agentsImgGC.DrawString((size - 1).ToString(), SystemFonts.CaptionFont, Brushes.Red, cellRect.Left + 1, cellRect.Top + 1);
+                        }
+                    }
+                }
+            }
+
+            //this.agentsImg.Save("agents.png");
         }
 
         /// <summary>
@@ -177,6 +210,6 @@ namespace RC.Engine.PathFinder.Test
         /// <summary>
         /// The size of a cell on the result images.
         /// </summary>
-        private const int CELL_SIZE = 10;
+        private const int CELL_SIZE = 15;
     }
 }

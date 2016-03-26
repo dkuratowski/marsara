@@ -35,7 +35,8 @@ namespace RC.Engine.Simulator.MotionControl
         /// <see cref="IAgentClient.IsOverlapEnabled"/>
         public bool IsOverlapEnabled(IAgentClient otherClient)
         {
-            throw new NotImplementedException();
+            return false;
+            //throw new NotImplementedException();
         }
 
         #endregion IAgentClient members
