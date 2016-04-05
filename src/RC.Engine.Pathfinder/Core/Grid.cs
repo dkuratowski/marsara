@@ -21,7 +21,6 @@ namespace RC.Engine.Pathfinder.Core
         public Grid(IWalkabilityReader walkabilityReader, int maxMovingSize)
         {
             this.agents = new RCSet<Agent>();
-            this.pathfindingAlgorithms = new RCSet<IPathfindingAlgorithm>();
             this.cells = new Cell[walkabilityReader.Width, walkabilityReader.Height];
             this.width = walkabilityReader.Width;
             this.height = walkabilityReader.Height;
@@ -157,34 +156,7 @@ namespace RC.Engine.Pathfinder.Core
         /// </summary>
         public void Update()
         {
-            foreach (Agent agent in this.agents)
-            {
-                agent.Update();
-            }
-
-            foreach (IPathfindingAlgorithm pathfindingAlgorithm in this.pathfindingAlgorithms)
-            {
-                pathfindingAlgorithm.Execute();
-            }
-            this.pathfindingAlgorithms.Clear();
-        }
-
-        /// <summary>
-        /// Adds the given pathfinding algorithm for execution.
-        /// </summary>
-        /// <param name="pathfindingAlgorithm">The pathfinding algorithm to be added.</param>
-        public void AddPathfindingAlgorithm(IPathfindingAlgorithm pathfindingAlgorithm)
-        {
-            this.pathfindingAlgorithms.Add(pathfindingAlgorithm);
-        }
-
-        /// <summary>
-        /// Removes the given pathfinding algorithm.
-        /// </summary>
-        /// <param name="pathfindingAlgorithm">The pathfinding algorithm to be removed.</param>
-        public void RemovePathfindingAlgorithm(IPathfindingAlgorithm pathfindingAlgorithm)
-        {
-            this.pathfindingAlgorithms.Remove(pathfindingAlgorithm);
+            foreach (Agent agent in this.agents) { agent.Update(); }
         }
 
         /// <summary>
@@ -317,11 +289,6 @@ namespace RC.Engine.Pathfinder.Core
         /// The list of agents on this grid.
         /// </summary>
         private readonly RCSet<Agent> agents;
-
-        /// <summary>
-        /// The list of pathfinding algorithms to be executed.
-        /// </summary>
-        private readonly RCSet<IPathfindingAlgorithm> pathfindingAlgorithms;
 
         /// <summary>
         /// The 2D array that contains the cells of this grid.

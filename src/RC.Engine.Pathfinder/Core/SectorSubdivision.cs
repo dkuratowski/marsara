@@ -1,4 +1,5 @@
 ﻿using RC.Common;
+using RC.Common.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,7 +55,7 @@ namespace RC.Engine.Pathfinder.Core
 
                     /// Set the cell to the found region or create one if not found.
                     regionArray[currentCoords.X, currentCoords.Y] = regionToSet != null ? regionToSet : new Region(this);
-                    regionArray[currentCoords.X, currentCoords.Y].RegisterCellIfExit(currentCell);
+                    regionArray[currentCoords.X, currentCoords.Y].AddEdgeCell(currentCell);
                 }
             }
 
@@ -73,6 +74,8 @@ namespace RC.Engine.Pathfinder.Core
                     }
                 }
             }
+
+            TraceManager.WriteAllTrace(string.Format("Sector subdivision: sector = {0}; movingSize = {1}", this.sector, this.movingSize), TraceFilters.INFO);
         }
 
         /// <summary>
@@ -114,6 +117,11 @@ namespace RC.Engine.Pathfinder.Core
             }
             return true;
         }
+
+        /// <summary>
+        /// Gets the regions calculated for this subdivision.
+        /// </summary>
+        public IEnumerable<Region> Regions { get { return this.regions; } }
 
         /// <summary>
         /// Gets the size of moving agents for which this sector subdivision is calculated.

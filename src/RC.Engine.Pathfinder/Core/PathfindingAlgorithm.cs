@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RC.Common.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace RC.Engine.Pathfinder.Core
     /// Implements the A* pathfinding algorithm.
     /// </summary>
     /// <typeparam name="TNode">The type of the nodes of the graph on which to search.</typeparam>
-    class PathfindingAlgorithm<TNode> : IPathfindingAlgorithm
+    class PathfindingAlgorithm<TNode>
     {
         /// <summary>
         /// Constructs a pathfinding algorithm that will search a path from the given source node on the given pathfinding graph.
@@ -22,23 +23,18 @@ namespace RC.Engine.Pathfinder.Core
         {
             this.sourceNode = sourceNode;
             this.graph = graph;
-            this.result = null;
         }
-
-        /// <summary>
-        /// Gets the result of this pathfinding algorithm or null if this pathfinding algorithm has no result yet.
-        /// </summary>
-        public PathfindingResult<TNode> Result { get { return this.result; } }
 
         /// <summary>
         /// Executes this pathfinding algorithm.
         /// </summary>
-        public void Execute()
+        public PathfindingResult<TNode> Execute()
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
 
             /// Initialize the pathfinding algorithm.
+            bool isTargetFound = false;
             this.bestPathNode = null;
             this.openQueue = new PriorityQueue<TNode>();
             this.openSet = new Dictionary<TNode, PathNode<TNode>>();
@@ -63,16 +59,19 @@ namespace RC.Engine.Pathfinder.Core
                 }
                 this.closedSet.Add(currentPathNode.Node, currentPathNode);
 
+                /// Check if we reached the target.
+                if (this.graph.IsTargetNode(currentPathNode.Node)) { isTargetFound = true; }
+
                 /// Check if the current pathnode is better than the currently best pathnode.
                 if (this.bestPathNode == null ||
-                    this.graph.IsTargetNode(currentPathNode.Node) ||
+                    isTargetFound ||
                     this.graph.EstimationToTarget(currentPathNode.Node) < this.graph.EstimationToTarget(this.bestPathNode.Node))
                 {
                     this.bestPathNode = currentPathNode;
                 }
 
                 /// Finish the algorithm if we reached the target.
-                if (this.graph.IsTargetNode(currentPathNode.Node)) { break; }
+                if (isTargetFound) { break; }
 
                 /// Process the successors of the current node.
                 foreach (TNode successor in this.graph.GetNeighbours(currentPathNode.Node))
@@ -107,8 +106,9 @@ namespace RC.Engine.Pathfinder.Core
 
             watch.Stop();
 
-            this.result = new PathfindingResult<TNode>()
+            return new PathfindingResult<TNode>()
             {
+                TargetFound = isTargetFound,
                 Path = this.bestPathNode.CalculatePath(),
                 ExploredNodes = new List<TNode>(this.closedSet.Keys),
                 ElapsedTime = watch.ElapsedMilliseconds
@@ -144,10 +144,5 @@ namespace RC.Engine.Pathfinder.Core
         /// The pathfinding graph.
         /// </summary>
         private IGraph<TNode> graph;
-
-        /// <summary>
-        /// The result of this pathfinding algorithm or null if this pathfinding algorithm has no result yet.
-        /// </summary>
-        private PathfindingResult<TNode> result;
     }
 }

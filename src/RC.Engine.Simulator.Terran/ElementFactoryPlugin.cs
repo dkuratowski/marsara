@@ -228,6 +228,6 @@ namespace RC.Engine.Simulator.Terran
             return buildingPlacedSuccessfully;
         }
 
-        private const int NUM_OF_SCVS = 4;
+        private const int NUM_OF_SCVS = 24;
     }
 }

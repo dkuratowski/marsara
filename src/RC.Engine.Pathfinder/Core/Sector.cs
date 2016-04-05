@@ -26,6 +26,37 @@ namespace RC.Engine.Pathfinder.Core
             this.subdivisions = new RCSet<SectorSubdivision>();
             this.staticAgents = new RCSet<Agent>[this.grid.MaxMovingSize];
             for (int i = 0; i < this.grid.MaxMovingSize; i++) { this.staticAgents[i] = new RCSet<Agent>(); }
+
+            /// Set the neighbours of this sector.
+            RCIntVector northWestNeighbourCellCoords = this.areaOnGrid.Location + GridDirections.DIRECTION_TO_VECTOR[GridDirections.NORTH_WEST];
+            RCIntVector northNeighbourCellCoords = this.areaOnGrid.Location + GridDirections.DIRECTION_TO_VECTOR[GridDirections.NORTH];
+            RCIntVector northEastNeighbourCellCoords = new RCIntVector(this.areaOnGrid.Right - 1, this.areaOnGrid.Top) + GridDirections.DIRECTION_TO_VECTOR[GridDirections.NORTH_EAST];
+            RCIntVector westNeighbourCellCoords = this.areaOnGrid.Location + GridDirections.DIRECTION_TO_VECTOR[GridDirections.WEST];
+            Cell northWestNeighbourCell = this.grid[northWestNeighbourCellCoords.X, northWestNeighbourCellCoords.Y];
+            Cell northNeighbourCell = this.grid[northNeighbourCellCoords.X, northNeighbourCellCoords.Y];
+            Cell northEastNeighbourCell = this.grid[northEastNeighbourCellCoords.X, northEastNeighbourCellCoords.Y];
+            Cell westNeighbourCell = this.grid[westNeighbourCellCoords.X, westNeighbourCellCoords.Y];
+            this.neighbours = new Sector[GridDirections.DIRECTION_COUNT];
+            this.neighbours[GridDirections.NORTH_WEST] = northWestNeighbourCell != null ? northWestNeighbourCell.Sector : null;
+            this.neighbours[GridDirections.NORTH] = northNeighbourCell != null ? northNeighbourCell.Sector : null;
+            this.neighbours[GridDirections.NORTH_EAST] = northEastNeighbourCell != null ? northEastNeighbourCell.Sector : null;
+            this.neighbours[GridDirections.WEST] = westNeighbourCell != null ? westNeighbourCell.Sector : null;
+
+            /// Set this sector as the neighbour of its neighbours.
+            if (this.neighbours[GridDirections.NORTH_WEST] != null) { this.neighbours[GridDirections.NORTH_WEST].neighbours[GridDirections.SOUTH_EAST] = this; }
+            if (this.neighbours[GridDirections.NORTH] != null) { this.neighbours[GridDirections.NORTH].neighbours[GridDirections.SOUTH] = this; }
+            if (this.neighbours[GridDirections.NORTH_EAST] != null) { this.neighbours[GridDirections.NORTH_EAST].neighbours[GridDirections.SOUTH_WEST] = this; }
+            if (this.neighbours[GridDirections.WEST] != null) { this.neighbours[GridDirections.WEST].neighbours[GridDirections.EAST] = this; }
+        }
+
+        /// <summary>
+        /// Gets the neighbour of this sector at the given direction.
+        /// </summary>
+        /// <param name="direction">The direction of the neighbour to get (see GridDirections class for more information).</param>
+        /// <returns>The neighbour of this sector at the given direction or null if this sector has no neighbour at the given direction.</returns>
+        public Sector GetNeighbour(int direction)
+        {
+            return this.neighbours[direction];
         }
 
         /// <summary>
@@ -158,6 +189,11 @@ namespace RC.Engine.Pathfinder.Core
         /// The Nth element of this array is the set of static agents in this sector for moving agents of size (N+1).
         /// </summary>
         private readonly RCSet<Agent>[] staticAgents;
+
+        /// <summary>
+        /// References to the neighbours of this sector.
+        /// </summary>
+        private readonly Sector[] neighbours;
 
         /// <summary>
         /// The size of the sectors of a motion control grid.

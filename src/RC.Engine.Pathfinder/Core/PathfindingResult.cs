@@ -11,6 +11,7 @@ namespace RC.Engine.Pathfinder.Core
     /// </summary>
     class PathfindingResult<TNode>
     {
+        public bool TargetFound;
         public long ElapsedTime;
         public List<TNode> Path;
         public List<TNode> ExploredNodes;

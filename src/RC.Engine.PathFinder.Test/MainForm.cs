@@ -37,7 +37,7 @@ namespace RC.Engine.PathFinder.Test
         /// <see cref="IAgentClient.IsOverlapEnabled"/>
         public bool IsOverlapEnabled(IAgentClient otherClient)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         #endregion IAgentClient members
@@ -149,25 +149,25 @@ namespace RC.Engine.PathFinder.Test
             this.agentsImgGC.Clear(Color.FromArgb(0, Color.White));
             this.agentsImgGC.FillRectangle(agent.IsMoving ? Brushes.LightGreen : Brushes.Green, agentRect);
 
-            for (int row = agent.Area.Top - (grid.MaxMovingSize/* - 1*/); row < agent.Area.Bottom; row++)
-            {
-                for (int column = agent.Area.Left - (grid.MaxMovingSize/* - 1*/); column < agent.Area.Right; column++)
-                {
-                    Cell cell = grid[column, row];
-                    if (cell != null)
-                    {
-                        int size = 1;
-                        for (; size <= grid.MaxMovingSize && cell.GetAgents(size).Count == 0; size++) { }
+            //for (int row = agent.Area.Top - (grid.MaxMovingSize/* - 1*/); row < agent.Area.Bottom; row++)
+            //{
+            //    for (int column = agent.Area.Left - (grid.MaxMovingSize/* - 1*/); column < agent.Area.Right; column++)
+            //    {
+            //        Cell cell = grid[column, row];
+            //        if (cell != null)
+            //        {
+            //            int size = 1;
+            //            for (; size <= grid.MaxMovingSize && cell.GetAgents(size).Count == 0; size++) { }
 
-                        if (size <= grid.MaxMovingSize)
-                        {
-                            Rectangle cellRect = new Rectangle(column * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                            this.agentsImgGC.FillRectangle(Brushes.Green, cellRect);
-                            this.agentsImgGC.DrawString((size - 1).ToString(), SystemFonts.CaptionFont, Brushes.Red, cellRect.Left + 1, cellRect.Top + 1);
-                        }
-                    }
-                }
-            }
+            //            if (size <= grid.MaxMovingSize)
+            //            {
+            //                Rectangle cellRect = new Rectangle(column * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            //                this.agentsImgGC.FillRectangle(Brushes.Green, cellRect);
+            //                this.agentsImgGC.DrawString((size - 1).ToString(), SystemFonts.CaptionFont, Brushes.Red, cellRect.Left + 1, cellRect.Top + 1);
+            //            }
+            //        }
+            //    }
+            //}
 
             //this.agentsImg.Save("agents.png");
         }

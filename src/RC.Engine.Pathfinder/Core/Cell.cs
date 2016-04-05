@@ -140,6 +140,12 @@ namespace RC.Engine.Pathfinder.Core
         }
 
         /// <summary>
+        /// Gets the string representation of this cell.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString() { return this.coords.ToString(); }
+
+        /// <summary>
         /// Gets the coordinates of this cell on the grid-layer.
         /// </summary>
         public RCIntVector Coords { get { return this.coords; } }

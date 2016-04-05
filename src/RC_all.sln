@@ -173,6 +173,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.UnitTests", "RC.UnitTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.Engine.Pathfinder", "RC.Engine.Pathfinder\RC.Engine.Pathfinder.csproj", "{2311F794-221C-49E5-AC8B-79FFFE6398DC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.Engine.Pathfinder", "RC.Engine.Pathfinder", "{CEFC3670-87D4-4005-B6E1-E74820204758}"
+	ProjectSection(SolutionItems) = preProject
+		..\config\RC.Engine.Pathfinder\RC.Engine.Pathfinder.node = ..\config\RC.Engine.Pathfinder\RC.Engine.Pathfinder.node
+		..\config\RC.Engine.Pathfinder\RC.Engine.Pathfinder.TraceConfig.xml = ..\config\RC.Engine.Pathfinder\RC.Engine.Pathfinder.TraceConfig.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -562,5 +568,6 @@ Global
 		{0B4470F4-CC2A-4A36-906C-44218826BE83} = {55E93EA3-8642-4AA8-961D-1FD7458B04BB}
 		{74F9E3A0-7E98-41EE-BD37-252790F5052C} = {55E93EA3-8642-4AA8-961D-1FD7458B04BB}
 		{502CA8CF-06B7-4433-8C96-A42E0299825E} = {55E93EA3-8642-4AA8-961D-1FD7458B04BB}
+		{CEFC3670-87D4-4005-B6E1-E74820204758} = {55E93EA3-8642-4AA8-961D-1FD7458B04BB}
 	EndGlobalSection
 EndGlobal

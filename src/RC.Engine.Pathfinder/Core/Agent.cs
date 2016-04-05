@@ -1,4 +1,5 @@
 ﻿using RC.Common;
+using RC.Common.Diagnostics;
 using RC.Engine.Pathfinder.PublicInterfaces;
 using System;
 using System.Collections.Generic;
@@ -26,9 +27,11 @@ namespace RC.Engine.Pathfinder.Core
             this.movingSize = area.Width == area.Height && area.Width <= this.grid.MaxMovingSize ? area.Width : -1;
             this.client = client;
             this.currentPath = null;
+            this.currentStepIndex = -1;
             this.movingStatus = this.movingSize != -1 ? AgentMovingStatusEnum.Stopped : AgentMovingStatusEnum.Static;
             this.stoppedStateTimer = this.movingStatus == AgentMovingStatusEnum.Stopped ? STOPPED_STATE_WAITING_TIME : -1;
             this.deadlockTimer = -1;
+            this.agentsWaitingFor = new RCSet<Agent>();
         }
 
         #region IAgent members
@@ -42,15 +45,20 @@ namespace RC.Engine.Pathfinder.Core
             this.stepBuffer = 0;
             this.stoppedStateTimer = -1;
             this.deadlockTimer = -1;
-            this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.grid[targetPosition.X, targetPosition.Y]);
             this.MovingStatus = AgentMovingStatusEnum.Moving;
+            targetPosition = new RCIntVector(Math.Max(targetPosition.X, 0), Math.Max(targetPosition.Y, 0));
+            this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.grid[targetPosition.X, targetPosition.Y], this);
+            this.currentStepIndex = 0;
+            this.agentsWaitingFor.Clear();
         }
 
         /// <see cref="IAgent.StopMoving"/>
         public void StopMoving()
         {
             this.currentPath = null;
+            this.currentStepIndex = -1;
             this.stepBuffer = 0;
+            this.agentsWaitingFor.Clear();
 
             if (this.movingStatus == AgentMovingStatusEnum.Static)
             {
@@ -95,8 +103,11 @@ namespace RC.Engine.Pathfinder.Core
                         this.stepBuffer = 0;
                         this.stoppedStateTimer = -1;
                         this.deadlockTimer = -1;
-                        this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.currentPath.TargetCell);
                         this.MovingStatus = AgentMovingStatusEnum.Moving;
+                        this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.currentPath.TargetCell, this);
+                        this.currentStepIndex = 0;
+                        this.agentsWaitingFor.Clear();
+                        TraceManager.WriteAllTrace("Repath (back from deadlock wait)", TraceFilters.INFO);
                     }
                 }
             }
@@ -163,40 +174,67 @@ namespace RC.Engine.Pathfinder.Core
         /// </summary>
         private void UpdateMoving()
         {
-            if (this.currentPath.Status == PathStatusEnum.ReadyToFollow)
+            if (this.currentStepIndex < this.currentPath.CalculatedStepCount)
             {
-                /// The path is ready to follow -> follow it until we have buffer.
+                /// We still have calculated steps -> follow the next one.
                 this.stepBuffer += this.client.MaxSpeed;
-                while (this.currentPath.Status == PathStatusEnum.ReadyToFollow && this.stepBuffer >= this.currentPath.CurrentStepLength)
+                while (this.currentStepIndex < this.currentPath.CalculatedStepCount && this.stepBuffer >= this.currentPath.GetStepLength(this.currentStepIndex))
                 {
-                    /// Step towards this.currentPath.CurrentStepDirection!
+                    /// Execute the current step.
                     RCSet<Agent> collidingAgents = null;
-                    if (this.grid.StepAgent(this, this.currentPath.CurrentStepDirection, out collidingAgents))
+                    if (this.grid.StepAgent(this, this.currentPath.GetStepDirection(this.currentStepIndex), out collidingAgents))
                     {
                         /// Step was successful.
-                        this.stepBuffer -= this.currentPath.CurrentStepLength;
-                        this.currentPath.CalculateNextStep();
+                        this.stepBuffer -= this.currentPath.GetStepLength(this.currentStepIndex);
+                        this.currentStepIndex++;
+                        this.agentsWaitingFor.Clear();
                     }
                     else
                     {
-                        /// Handle the detected collision.
+                        /// Step was unsuccessful -> handle the detected collision.
                         this.HandleCollision(collidingAgents);
                         this.stepBuffer = 0;
+                        break;
                     }
                 }
+            }
+            else
+            {
+                this.stepBuffer = 0;
 
-                if (this.currentPath.Status == PathStatusEnum.Finished)
+                /// No more calculated steps -> check the status of the path.
+                if (this.currentPath.Status == PathStatusEnum.Complete)
                 {
-                    /// Path following finished -> delete the path and stop this agent.
-                    this.currentPath = null;
-                    this.stepBuffer = 0;
-                    this.MovingStatus = AgentMovingStatusEnum.Stopped;
-                    this.stoppedStateTimer = STOPPED_STATE_WAITING_TIME;
+                    if (this.currentPath.CalculatedStepCount > 0)
+                    {
+                        /// Try to go closer -> repath.
+                        /// TODO: Repath is needed only if the agent is not at the target cell!
+                        this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.currentPath.TargetCell, this);
+                        this.currentStepIndex = 0;
+                        this.agentsWaitingFor.Clear();
+                        TraceManager.WriteAllTrace("Repath (try to go closer)", TraceFilters.INFO);
+                    }
+                    else
+                    {
+                        /// Cannot go closer -> stop this agent.
+                        this.currentPath = null;
+                        this.currentStepIndex = -1;
+                        this.MovingStatus = AgentMovingStatusEnum.Stopped;
+                        this.stoppedStateTimer = STOPPED_STATE_WAITING_TIME;
+                        this.agentsWaitingFor.Clear();
+                    }
+                    return;
                 }
-                else if (this.currentPath.Status == PathStatusEnum.Broken)
+
+                /// The path is not complete -> continue the calculation.
+                this.currentPath.CalculateNextRegion();
+                if (this.currentPath.Status == PathStatusEnum.Broken)
                 {
-                    /// Path being followed has been broken -> recalculate the path.
-                    this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.currentPath.TargetCell);
+                    /// Path is broken -> repath.
+                    this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.currentPath.TargetCell, this);
+                    this.currentStepIndex = 0;
+                    this.agentsWaitingFor.Clear();
+                    TraceManager.WriteAllTrace("Repath (current path broken)", TraceFilters.INFO);
                 }
             }
         }
@@ -229,13 +267,36 @@ namespace RC.Engine.Pathfinder.Core
 
             if (staticCollidingAgents.Count != 0)
             {
-                /// Collision with static agent -> brake the current path manually!
-                this.currentPath.Brake();
+                /// Collision with static agent -> repath.
+                this.currentPath = new Path(this.grid[this.agentArea.Location.X, this.agentArea.Location.Y], this.currentPath.TargetCell, this);
+                this.currentStepIndex = 0;
+                this.agentsWaitingFor.Clear();
+                TraceManager.WriteAllTrace("Repath (static colliding agents)", TraceFilters.INFO);
             }
             else if (movingCollidingAgents.Count != 0)
             {
                 /// Collision with moving agent -> check for deadlock!
-                /// TODO: implement deadlock detection!
+                bool deadlockFound = false;
+                foreach (Agent movingCollidingAgent in movingCollidingAgents)
+                {
+                    if (movingCollidingAgent.agentsWaitingFor.Contains(this))
+                    {
+                        /// Deadlock situation!
+                        movingCollidingAgent.agentsWaitingFor.Remove(this);
+                        deadlockFound = true;
+                    }
+                    else
+                    {
+                        this.agentsWaitingFor.Add(movingCollidingAgent);
+                    }
+                }
+                if (deadlockFound)
+                {
+                    TraceManager.WriteAllTrace("Deadlock found", TraceFilters.INFO);
+                    this.agentsWaitingFor.Clear();
+                    this.MovingStatus = AgentMovingStatusEnum.Static;
+                    this.deadlockTimer = DEADLOCK_WAITING_TIME;
+                }
             }
         }
 
@@ -255,6 +316,11 @@ namespace RC.Engine.Pathfinder.Core
         private Path currentPath;
 
         /// <summary>
+        /// The index of the current step on the path being followed by this agent or -1 if this agent is not following a path currently.
+        /// </summary>
+        private int currentStepIndex;
+
+        /// <summary>
         /// The moving state of this agent.
         /// </summary>
         private AgentMovingStatusEnum movingStatus;
@@ -268,6 +334,11 @@ namespace RC.Engine.Pathfinder.Core
         /// The remaining waiting time before this agent recalculates its path if it's in deadlock; otherwise -1.
         /// </summary>
         private int deadlockTimer;
+
+        /// <summary>
+        /// Reference to the agents that this agent is waiting for.
+        /// </summary>
+        private RCSet<Agent> agentsWaitingFor;
 
         /// <summary>
         /// The moving size of this agent or -1 if this agent is not supported to move.
