@@ -35,8 +35,8 @@ namespace RC.Engine.Simulator.MotionControl
         /// <see cref="IAgentClient.IsOverlapEnabled"/>
         public bool IsOverlapEnabled(IAgentClient otherClient)
         {
-            return false;
-            //throw new NotImplementedException();
+            GroundPathTracker otherPathTracker = (GroundPathTracker)otherClient;
+            return this.ControlledEntity.IsOverlapEnabled(otherPathTracker.ControlledEntity);
         }
 
         #endregion IAgentClient members

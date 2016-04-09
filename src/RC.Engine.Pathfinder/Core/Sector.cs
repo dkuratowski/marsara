@@ -109,9 +109,12 @@ namespace RC.Engine.Pathfinder.Core
         {
             /// Collect the overlap enabled agents.
             RCSet<Agent> overlapEnabledAgents = new RCSet<Agent>();
+            RCSet<Agent> currentlyOverlappingAgents = this.grid[agent.Area.X, agent.Area.Y].GetAgents(agent.MovingSize);
             foreach (Agent staticAgent in this.staticAgents[agent.MovingSize])
-            {
-                if (staticAgent.Client.IsOverlapEnabled(agent.Client) || agent.Client.IsOverlapEnabled(staticAgent.Client))
+            {               
+                if (currentlyOverlappingAgents.Contains(staticAgent) ||
+                    staticAgent.Client.IsOverlapEnabled(agent.Client) ||
+                    agent.Client.IsOverlapEnabled(staticAgent.Client))
                 {
                     overlapEnabledAgents.Add(staticAgent);
                 }

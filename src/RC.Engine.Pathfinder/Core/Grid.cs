@@ -223,9 +223,14 @@ namespace RC.Engine.Pathfinder.Core
             {
                 /// This is a moving agent.
                 if (desiredPosition.WallCellDistance < agent.MovingSize) { return false; }
+                Cell currentPosition = this[agent.Area.X, agent.Area.Y];
+                RCSet<Agent> currentlyCollidingAgents = currentPosition != desiredPosition ? currentPosition.GetAgents(agent.MovingSize) : new RCSet<Agent>();
                 foreach (Agent overlappingAgent in desiredPosition.GetAgents(agent.MovingSize))
                 {
-                    if (agent != overlappingAgent && !agent.Client.IsOverlapEnabled(overlappingAgent.Client) && !overlappingAgent.Client.IsOverlapEnabled(agent.Client))
+                    if (agent != overlappingAgent &&
+                       !currentlyCollidingAgents.Contains(overlappingAgent) &&
+                       !agent.Client.IsOverlapEnabled(overlappingAgent.Client) &&
+                       !overlappingAgent.Client.IsOverlapEnabled(agent.Client))
                     {
                         collidingAgents.Add(overlappingAgent);
                     }
@@ -234,6 +239,7 @@ namespace RC.Engine.Pathfinder.Core
             else
             {
                 /// This is a static agent.
+                if (this[agent.Area.X, agent.Area.Y] != desiredPosition) { throw new InvalidOperationException("Static agents are not supported to move!"); }
                 for (int row = desiredPosition.Coords.Y; row < desiredPosition.Coords.Y + agent.Area.Height; row++)
                 {
                     for (int column = desiredPosition.Coords.X; column < desiredPosition.Coords.X + agent.Area.Width; column++)
