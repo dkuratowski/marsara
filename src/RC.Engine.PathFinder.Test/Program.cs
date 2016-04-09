@@ -23,7 +23,7 @@ namespace RC.Engine.PathFinder.Test
             //RCNumRectangle newRectB = rectangleB + velocityB * ttc;
 
             //ConfigurationManager.Initialize("../../../../config/RC.Engine.Test/RC.Engine.Test.root");
-            ConfigurationManager.Initialize("..\\..\\..\\RC.App.Starter\\bin\\Debug\\RC.App.root");
+            //ConfigurationManager.Initialize("..\\..\\..\\RC.App.Starter\\bin\\Debug\\RC.App.root");
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());

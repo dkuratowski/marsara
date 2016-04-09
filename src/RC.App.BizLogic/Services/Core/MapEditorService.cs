@@ -175,7 +175,7 @@ namespace RC.App.BizLogic.Services.Core
             IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
 
             IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(StartLocation.STARTLOCATION_TYPE_NAME);
-            RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read());
+            RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read().Size);
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
             if (objectType.CheckPlacementConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords, new RCSet<Entity>()).Count != 0) { return false; }
 
@@ -216,7 +216,7 @@ namespace RC.App.BizLogic.Services.Core
             IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
 
             IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(MineralField.MINERALFIELD_TYPE_NAME);
-            RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read());
+            RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read().Size);
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
             if (objectType.CheckPlacementConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords, new RCSet<Entity>()).Count != 0) { return false; }
 
@@ -236,7 +236,7 @@ namespace RC.App.BizLogic.Services.Core
             IQuadTile quadTileAtPos = this.scenarioManager.ActiveScenario.Map.GetCell(navCellCoords).ParentQuadTile;
 
             IScenarioElementType objectType = this.scenarioManager.Metadata.GetElementType(VespeneGeyser.VESPENEGEYSER_TYPE_NAME);
-            RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read());
+            RCIntVector objQuadSize = this.scenarioManager.ActiveScenario.Map.CellToQuadSize(objectType.Area.Read().Size);
             RCIntVector topLeftQuadCoords = quadTileAtPos.MapCoords - objQuadSize / 2;
             if (objectType.CheckPlacementConstraints(this.scenarioManager.ActiveScenario, topLeftQuadCoords, new RCSet<Entity>()).Count != 0) { return false; }
 

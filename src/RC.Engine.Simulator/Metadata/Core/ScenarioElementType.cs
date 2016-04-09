@@ -106,7 +106,10 @@ namespace RC.Engine.Simulator.Metadata.Core
         #region General data properties
 
         /// <see cref="IScenarioElementTypeInternal.Area"/>
-        public IValueRead<RCNumVector> Area { get { return this.area; } }
+        public IValueRead<RCNumRectangle> Area { get { return this.area; } }
+
+        /// <see cref="IScenarioElementTypeInternal.ObstacleArea"/>
+        public IValueRead<RCIntRectangle> ObstacleArea { get { return this.obstacleArea; } }
 
         /// <see cref="IScenarioElementTypeInternal.Armor"/>
         public IValueRead<int> Armor { get { return this.armor; } }
@@ -328,12 +331,23 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// Sets the area of the corresponding element type in map coordinates.
         /// </summary>
-        /// <param name="area">The area vector.</param>
-        public void SetArea(RCNumVector area)
+        /// <param name="area">The rectangle that defines the area.</param>
+        public void SetArea(RCNumRectangle area)
         {
             if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
-            if (area == RCNumVector.Undefined) { throw new ArgumentNullException("area"); }
-            this.area = new ConstValue<RCNumVector>(area);
+            if (area == RCNumRectangle.Undefined) { throw new ArgumentNullException("area"); }
+            this.area = new ConstValue<RCNumRectangle>(area);
+        }
+
+        /// <summary>
+        /// Sets the obstacle area of the corresponding element type in map coordinates.
+        /// </summary>
+        /// <param name="obstacleArea">The rectangle that defines the obstacle area.</param>
+        public void SetObstacleArea(RCIntRectangle obstacleArea)
+        {
+            if (this.metadata.IsFinalized) { throw new InvalidOperationException("Already finalized!"); }
+            if (obstacleArea == RCIntRectangle.Undefined) { throw new ArgumentNullException("obstacleArea"); }
+            this.obstacleArea = new ConstValue<RCIntRectangle>(obstacleArea);
         }
 
         /// <summary>
@@ -434,7 +448,6 @@ namespace RC.Engine.Simulator.Metadata.Core
                 if (this.mineralCost != null && this.mineralCost.Read() < 0) { throw new SimulatorException("MineralCost must be non-negative!"); }
                 if (this.gasCost != null && this.gasCost.Read() < 0) { throw new SimulatorException("GasCost must be non-negative!"); }
 
-                if (this.area != null && (this.area.Read().X <= 0 || this.area.Read().Y <= 0)) { throw new SimulatorException("Area cannot be 0 or less in any directions!"); }
                 if (this.armor != null && this.armor.Read() < 0) { throw new SimulatorException("Armor must be non-negative!"); }
                 if (this.maxEnergy != null && this.maxEnergy.Read() < 0) { throw new SimulatorException("MaxEnergy must be non-negative!"); }
                 if (this.maxHP != null && this.maxHP.Read() <= 0) { throw new SimulatorException("MaxHP cannot be 0 or less!"); }
@@ -487,7 +500,7 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <param name="violatingQuadCoords">The target list in which to collect the violating quadratic coordinates.</param>
         private void CheckMapBorderIntersections(Scenario scenario, RCIntVector position, ref RCSet<RCIntVector> violatingQuadCoords)
         {
-            RCIntVector quadSize = scenario.Map.CellToQuadSize(this.Area.Read());
+            RCIntVector quadSize = scenario.Map.CellToQuadSize(this.Area.Read().Size);
             for (int quadX = 0; quadX < quadSize.X; quadX++)
             {
                 for (int quadY = 0; quadY < quadSize.Y; quadY++)
@@ -556,7 +569,8 @@ namespace RC.Engine.Simulator.Metadata.Core
         /// <summary>
         /// The general data of this element type.
         /// </summary>
-        private ConstValue<RCNumVector> area;
+        private ConstValue<RCNumRectangle> area;
+        private ConstValue<RCIntRectangle> obstacleArea;
         private ConstValue<int> armor;
         private ConstValue<int> maxEnergy;
         private ConstValue<int> maxHP;

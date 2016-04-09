@@ -36,5 +36,3 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: InternalsVisibleTo("RC.Engine.Test")]
-[assembly: InternalsVisibleTo("RC.Engine.PathFinder.Test")]
-[assembly: InternalsVisibleTo("RC.Engine.MotionControl.Test")]

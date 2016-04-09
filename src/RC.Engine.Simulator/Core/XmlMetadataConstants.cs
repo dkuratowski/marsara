@@ -58,6 +58,7 @@ namespace RC.Engine.Simulator.Core
         public const string WAIT_DURATION_ATTR = "duration";
         public const string REPEAT_ELEM = "repeat";
         public const string GENDATA_AREA_ELEM = "area";
+        public const string GENDATA_OBSTACLEAREA_ELEM = "obstacleArea";
         public const string GENDATA_ARMOR_ELEM = "armor";
         public const string GENDATA_MAXENERGY_ELEM = "maxEnergy";
         public const string GENDATA_MAXHP_ELEM = "maxHP";

@@ -7,6 +7,7 @@ using RC.Engine.Maps.PublicInterfaces;
 using RC.Engine.Simulator.Core;
 using RC.Engine.Simulator.MotionControl;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Common.Diagnostics;
 
 namespace RC.Engine.Simulator.Engine
 {
@@ -53,19 +54,17 @@ namespace RC.Engine.Simulator.Engine
             this.vtolOperationProgress.Write(0);
             this.vtolInitialPosition.Write(RCNumVector.Undefined);
             this.vtolFinalPosition.Write(RCNumVector.Undefined);
-            this.groundPathTracker.Write(new GroundPathTracker(owner, TARGET_DISTANCE_THRESHOLD));
-            this.airPathTracker.Write(new AirPathTracker(owner, TARGET_DISTANCE_THRESHOLD));
+            this.groundPathTracker.Write(new GroundPathTracker(owner));
+            this.airPathTracker.Write(new AirPathTracker(owner));
             if (isFlying)
             {
                 this.SetStatus(MotionControlStatusEnum.InAir);
                 this.currentPathTracker.Write(this.airPathTracker.Read());
-                this.velocityGraph = new HexadecagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0);
             }
             else
             {
                 this.SetStatus(MotionControlStatusEnum.OnGround);
                 this.currentPathTracker.Write(this.groundPathTracker.Read());
-                this.velocityGraph = new OctagonalVelocityGraph(owner.ElementType.Speed != null ? owner.ElementType.Speed.Read() : 0);
             }
         }
 
@@ -83,7 +82,7 @@ namespace RC.Engine.Simulator.Engine
             {
                 if (this.position.Read() == RCNumVector.Undefined) { throw new InvalidOperationException("The owner is currently detached from the map!"); }
                 return (this.Status == MotionControlStatusEnum.OnGround || this.Status == MotionControlStatusEnum.InAir) &&
-                        this.currentPathTracker.Read().TargetPosition != RCNumVector.Undefined;
+                        this.currentPathTracker.Read().NextPosition != RCNumVector.Undefined;
             }
         }
 
@@ -162,20 +161,7 @@ namespace RC.Engine.Simulator.Engine
             if (this.position.Read() == RCNumVector.Undefined) { throw new InvalidOperationException("The owner is currently detached from the map!"); }
             if (this.Status != MotionControlStatusEnum.OnGround && this.Status != MotionControlStatusEnum.InAir) { throw new InvalidOperationException("The owner is currently fixed on the ground, landing or taking off!"); }
 
-            this.currentPathTracker.Read().TargetPosition = toCoords;
-        }
-
-        /// <summary>
-        /// Validates the given target position.
-        /// </summary>
-        /// <param name="position">The target position to be checked.</param>
-        /// <returns>True if the owner entity could be placed at the given position; otherwise false.</returns>
-        public bool ValidatePosition(RCNumVector position)
-        {
-            if (this.Status != MotionControlStatusEnum.OnGround && this.Status != MotionControlStatusEnum.InAir) { throw new InvalidOperationException("Invalid MotionControl state!"); }
-            if (position == RCNumVector.Undefined) { throw new ArgumentNullException("position"); }
-
-            return this.currentPathTracker.Read().ValidateMove(RCNumVector.Undefined, position);
+            this.currentPathTracker.Read().Activate(toCoords);
         }
 
         /// <summary>
@@ -191,7 +177,7 @@ namespace RC.Engine.Simulator.Engine
             {
                 return;
             }
-            this.currentPathTracker.Read().TargetPosition = RCNumVector.Undefined;
+            this.currentPathTracker.Read().Deactivate();
             this.velocity.Write(new RCNumVector(0, 0));
         }
 
@@ -205,10 +191,15 @@ namespace RC.Engine.Simulator.Engine
             if (this.position.Read() == RCNumVector.Undefined) { throw new InvalidOperationException("The owner is currently detached from the map!"); }
             if (this.Status != MotionControlStatusEnum.Fixed) { throw new InvalidOperationException("The owner is currently not fixed!"); }
 
-            /// Reserve the position on the map.
-            RCNumVector positionAfterTakeOff = this.airPathTracker.Read().CalculateTargetPositionForVTOL(false);
-            if (positionAfterTakeOff == RCNumVector.Undefined) { return false; }
-            this.owner.Read().ReservePositionInAir(positionAfterTakeOff);
+            /// Calculate position after take-off.
+            RCNumber topToMapEdgeDistance = this.owner.Read().Area.Top + (RCNumber)1 / (RCNumber)2;
+            if (topToMapEdgeDistance < 0) { return false; }
+            RCNumber transitionValue = topToMapEdgeDistance <= Constants.MAX_VTOL_TRANSITION ? topToMapEdgeDistance : Constants.MAX_VTOL_TRANSITION;
+            RCNumVector positionAfterTakeOff = this.owner.Read().MotionControl.PositionVector.Read() - new RCNumVector(0, transitionValue);
+
+            /// Try to reserve the position in the air and remove the reservation from the ground.
+            if (!this.airPathTracker.Read().OnAttaching(positionAfterTakeOff)) { return false; }
+            this.groundPathTracker.Read().OnDetached();
 
             /// Initialize the VTOL operation for take-off.
             this.Unfix();
@@ -217,8 +208,6 @@ namespace RC.Engine.Simulator.Engine
             this.vtolInitialPosition.Write(this.position.Read());
             this.vtolFinalPosition.Write(positionAfterTakeOff);
             this.currentPathTracker.Write(null);
-            this.velocityGraph = null;
-
             return true;
         }
 
@@ -235,10 +224,27 @@ namespace RC.Engine.Simulator.Engine
 
             this.StopMoving();
 
-            /// Reserve the position on the map.
-            RCNumVector positionAfterLand = this.groundPathTracker.Read().CalculateTargetPositionForVTOL(landOnTheSpot);
-            if (positionAfterLand == RCNumVector.Undefined) { return false; }
-            this.owner.Read().ReservePositionOnGround(positionAfterLand);
+            /// Calculate position after land.
+            RCNumVector positionAfterLand = RCNumVector.Undefined;
+            if (landOnTheSpot)
+            {
+                /// Landing on the spot.
+                positionAfterLand = this.position.Read();
+            }
+            else
+            {
+                /// Normal landing.
+                RCNumber bottomToMapEdgeDistance = this.owner.Read().Scenario.Map.CellSize.Y + (RCNumber)1 / (RCNumber)2
+                                                 - this.owner.Read().Area.Bottom;
+                if (bottomToMapEdgeDistance < 0) { return false; }
+
+                RCNumber transitionValue = bottomToMapEdgeDistance <= Constants.MAX_VTOL_TRANSITION ? bottomToMapEdgeDistance : Constants.MAX_VTOL_TRANSITION;
+                positionAfterLand = this.position.Read() + new RCNumVector(0, transitionValue);
+            }
+
+            /// Try to reserve the position on the ground and remove the reservation from the air.
+            if (!this.groundPathTracker.Read().OnAttaching(positionAfterLand)) { return false; }
+            this.airPathTracker.Read().OnDetached();
 
             /// Initialize the VTOL operation for landing.
             this.SetStatus(MotionControlStatusEnum.Landing);
@@ -246,7 +252,6 @@ namespace RC.Engine.Simulator.Engine
             this.vtolInitialPosition.Write(this.position.Read());
             this.vtolFinalPosition.Write(positionAfterLand);
             this.currentPathTracker.Write(null);
-            this.velocityGraph = null;
 
             return true;
         }
@@ -265,30 +270,16 @@ namespace RC.Engine.Simulator.Engine
                 this.owner.Read().MapObject.SetShadowTransition(this.Status == MotionControlStatusEnum.InAir ? MAX_VTOL_TRANSITION_VECTOR : new RCNumVector(0, 0));
 
                 /// Continue the current path-tracking if active.
-                if (this.currentPathTracker.Read().IsActive)
+                if (this.currentPathTracker.Read().NextPosition != RCNumVector.Undefined)
                 {
-                    /// Get the current target position of the path-tracker.
-                    RCNumVector targetPosition = this.currentPathTracker.Read().TargetPosition;
-
-                    /// Update the state of the path-tracker.
+                    /// Update the position and velocity vectors and the state of the path-tracker.
+                    this.UpdateVectors(this.currentPathTracker.Read().NextPosition);
                     this.currentPathTracker.Read().Update();
-
-                    /// Update the velocity vector.
-                    this.UpdateVelocity();
-
-                    /// Update the position based on the new velocity.
-                    this.UpdatePosition();
-
-                    /// If the path-tracker finished working, check if we reached the threshold to the target position.
-                    if (!this.currentPathTracker.Read().IsActive &&
-                        MapUtils.ComputeDistance(this.position.Read(), targetPosition) < TARGET_DISTANCE_THRESHOLD)
-                    {
-                        /// If yes, move the entity exactly to the target position.
-                        if (this.currentPathTracker.Read().ValidateMove(this.position.Read(), targetPosition))
-                        {
-                            this.SetPosition(targetPosition);
-                        }
-                    }
+                }
+                else
+                {
+                    /// Otherwise set the current velocity vector to (0;0).
+                    this.velocity.Write(new RCNumVector(0, 0));
                 }
             }
             else if (this.Status == MotionControlStatusEnum.TakingOff || this.Status == MotionControlStatusEnum.Landing)
@@ -337,7 +328,7 @@ namespace RC.Engine.Simulator.Engine
             if (this.Status != MotionControlStatusEnum.OnGround && this.Status != MotionControlStatusEnum.InAir) { throw new InvalidOperationException("Invalid MotionControl state!"); }
             if (toPosition == RCNumVector.Undefined) { throw new ArgumentNullException("toPosition"); }
 
-            if (this.currentPathTracker.Read().ValidateMove(RCNumVector.Undefined, toPosition))
+            if (this.currentPathTracker.Read().OnAttaching(toPosition))
             {
                 this.SetPosition(toPosition);
                 return true;
@@ -359,6 +350,7 @@ namespace RC.Engine.Simulator.Engine
             if (this.Status == MotionControlStatusEnum.TakingOff || this.Status == MotionControlStatusEnum.Landing) { this.FinishVTOLOperation(); }
 
             this.StopMoving();
+            this.currentPathTracker.Read().OnDetached();
             this.position.Write(RCNumVector.Undefined);
         }
 
@@ -371,89 +363,12 @@ namespace RC.Engine.Simulator.Engine
         }
 
         /// <summary>
-        /// Updates the velocity vector.
+        /// Updates the position and the velocity vectors.
         /// </summary>
-        private void UpdateVelocity()
+        private void UpdateVectors(RCNumVector newPosition)
         {
-            if (this.currentPathTracker.Read().IsActive)
-            {
-                /// Recreate the velocity graph of this motion control if the maximum speed has been upgraded in the meantime.
-                RCNumber currentMaxSpeed = this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0;
-                if (currentMaxSpeed != this.velocityGraph.MaxSpeed)
-                {
-                    if (this.Status == MotionControlStatusEnum.OnGround)
-                    {
-                        this.velocityGraph = new OctagonalVelocityGraph(this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0);
-                    }
-                    else if (this.Status == MotionControlStatusEnum.InAir)
-                    {
-                        this.velocityGraph = new HexadecagonalVelocityGraph(this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0);
-                    }
-                }
-
-                /// Update the velocity of this entity if the path-tracker is still active.
-                int currVelocityIndex = 0;
-                int bestVelocityIndex = -1;
-                RCNumber minPenalty = 0;
-                List<RCNumVector> admissibleVelocities = this.velocityGraph.GetAdmissibleVelocities(this.velocity.Read());
-
-                foreach (RCNumVector admissibleVelocity in admissibleVelocities)
-                {
-                    if (this.currentPathTracker.Read().ValidateVelocity(admissibleVelocity))
-                    {
-                        RCNumVector checkedVelocity = admissibleVelocity * 2 - this.velocity.Read(); /// We calculate with RVOs instead of VOs.
-                        bool collisionDetected = false;
-                        foreach (Tuple<RCNumRectangle, RCNumVector> obstacle in this.currentPathTracker.Read().DynamicObstacles)
-                        {
-                            RCNumRectangle obstacleArea = obstacle.Item1;
-                            RCNumVector obstacleVelocity = obstacle.Item2;
-                            if (this.DetectCollision(this.owner.Read().Area, checkedVelocity, obstacleArea, obstacleVelocity))
-                            {
-                                collisionDetected = true;
-                                break;
-                            }
-                        }
-
-                        if (!collisionDetected)
-                        {
-                            RCNumber penalty = MapUtils.ComputeDistance(this.currentPathTracker.Read().PreferredVelocity, admissibleVelocity);
-                            if (bestVelocityIndex == -1 || penalty < minPenalty)
-                            {
-                                minPenalty = penalty;
-                                bestVelocityIndex = currVelocityIndex;
-                            }
-                        }
-                    }
-                    currVelocityIndex++;
-                }
-
-                /// Update the velocity based on the index of the best velocity.
-                this.velocity.Write(bestVelocityIndex != -1 ? admissibleVelocities[bestVelocityIndex] : new RCNumVector(0, 0));
-            }
-            else
-            {
-                /// Stop the entity if the path-tracker became inactive.
-                this.velocity.Write(new RCNumVector(0, 0));
-            }
-        }
-
-        /// <summary>
-        /// Updates the position vector.
-        /// </summary>
-        private void UpdatePosition()
-        {
-            if (this.velocity.Read() != new RCNumVector(0, 0))
-            {
-                RCNumVector newPosition = this.position.Read() + this.velocity.Read();
-                if (this.currentPathTracker.Read().ValidateMove(this.position.Read(), newPosition))
-                {
-                    this.SetPosition(newPosition);
-                }
-                else
-                {
-                    this.velocity.Write(new RCNumVector(0, 0));
-                }
-            }
+            this.velocity.Write(newPosition - this.position.Read());
+            this.SetPosition(newPosition);
         }
 
         /// <summary>
@@ -461,8 +376,6 @@ namespace RC.Engine.Simulator.Engine
         /// </summary>
         private void FinishVTOLOperation()
         {
-            this.owner.Read().RemoveReservation();
-
             this.vtolOperationProgress.Write(0);
             this.vtolInitialPosition.Write(RCNumVector.Undefined);
             this.vtolFinalPosition.Write(RCNumVector.Undefined);
@@ -471,14 +384,12 @@ namespace RC.Engine.Simulator.Engine
                 this.owner.Read().MapObject.SetShadowTransition(MAX_VTOL_TRANSITION_VECTOR);
                 this.SetStatus(MotionControlStatusEnum.InAir);
                 this.currentPathTracker.Write(this.airPathTracker.Read());
-                this.velocityGraph = new HexadecagonalVelocityGraph(this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0);
             }
             else
             {
                 this.owner.Read().MapObject.SetShadowTransition(new RCNumVector(0, 0));
                 this.SetStatus(MotionControlStatusEnum.OnGround);
                 this.currentPathTracker.Write(this.groundPathTracker.Read());
-                this.velocityGraph = new OctagonalVelocityGraph(this.owner.Read().ElementType.Speed != null ? this.owner.Read().ElementType.Speed.Read() : 0);
             }
         }
 
@@ -511,25 +422,6 @@ namespace RC.Engine.Simulator.Engine
                     this.owner.Read().ChangeMapObjectLayer(this.owner.Read().MapObject, this.IsFlying ? MapObjectLayerEnum.AirObjects : MapObjectLayerEnum.GroundObjects);
                 }
             }
-        }
-
-        /// <summary>
-        /// Discrete collision detection between two moving rectangular objects.
-        /// </summary>
-        /// <param name="rectangleA">The rectangular area of the first object.</param>
-        /// <param name="velocityA">The velocity of the first object.</param>
-        /// <param name="rectangleB">The rectangular area of the second object.</param>
-        /// <param name="velocityB">The velocity of the second object.</param>
-        /// <returns>True if the two objects will collide in the next frame but they are not colliding in the current frame; otherwise false.</returns>
-        private bool DetectCollision(RCNumRectangle rectangleA, RCNumVector velocityA, RCNumRectangle rectangleB, RCNumVector velocityB)
-        {
-            /// No need to detect collision if the two objects are colliding currently.
-            if (rectangleA.IntersectsWith(rectangleB)) { return false; }
-
-            /// Otherwise detect collision normally.
-            RCNumRectangle newRectanglePosA = rectangleA + velocityA;
-            RCNumRectangle newRectanglePosB = rectangleB + velocityB;
-            return newRectanglePosA.IntersectsWith(newRectanglePosB);
         }
 
         /// <summary>
@@ -584,11 +476,6 @@ namespace RC.Engine.Simulator.Engine
         private readonly HeapedValue<PathTrackerBase> airPathTracker;
 
         /// <summary>
-        /// Reference to the velocity graph used by this motion control or null if a VTOL operation is currently in progress.
-        /// </summary>
-        private VelocityGraph velocityGraph;
-
-        /// <summary>
         /// The increment of VTOL operation progress per frames.
         /// </summary>
         private static readonly RCNumber VTOL_INCREMENT_PER_FRAME = (RCNumber)1/(RCNumber)72;
@@ -597,10 +484,5 @@ namespace RC.Engine.Simulator.Engine
         /// The shadow transition vector belonging to the maximum value of transition during a VTOL operation.
         /// </summary>
         private static readonly RCNumVector MAX_VTOL_TRANSITION_VECTOR = new RCNumVector(0, Constants.MAX_VTOL_TRANSITION);
-
-        /// <summary>
-        /// If the controlled entity is closer to the target position than this threshold, it is considered to arrive.
-        /// </summary>
-        private static readonly RCNumber TARGET_DISTANCE_THRESHOLD = (RCNumber)1 / (RCNumber)2;
     }
 }

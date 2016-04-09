@@ -452,6 +452,7 @@ namespace RC.Engine.Simulator.Core
         private static void LoadGeneralData(XElement genDataElem, ScenarioElementType elementType)
         {
             XElement areaElem = genDataElem.Element(XmlMetadataConstants.GENDATA_AREA_ELEM);
+            XElement obstacleAreaElem = genDataElem.Element(XmlMetadataConstants.GENDATA_OBSTACLEAREA_ELEM);
             XElement armorElem = genDataElem.Element(XmlMetadataConstants.GENDATA_ARMOR_ELEM);
             XElement maxEnergyElem = genDataElem.Element(XmlMetadataConstants.GENDATA_MAXENERGY_ELEM);
             XElement maxHPElem = genDataElem.Element(XmlMetadataConstants.GENDATA_MAXHP_ELEM);
@@ -459,7 +460,8 @@ namespace RC.Engine.Simulator.Core
             XElement sizeElem = genDataElem.Element(XmlMetadataConstants.GENDATA_SIZE_ELEM);
             XElement speedElem = genDataElem.Element(XmlMetadataConstants.GENDATA_SPEED_ELEM);
 
-            if (areaElem != null) { elementType.SetArea(XmlHelper.LoadNumVector(areaElem.Value)); }
+            if (areaElem != null) { elementType.SetArea(XmlHelper.LoadNumRectangle(areaElem.Value)); }
+            if (obstacleAreaElem != null) { elementType.SetObstacleArea(XmlHelper.LoadIntRectangle(obstacleAreaElem.Value)); }
             if (armorElem != null) { elementType.SetArmor(XmlHelper.LoadInt(armorElem.Value)); }
             if (maxEnergyElem != null) { elementType.SetMaxEnergy(XmlHelper.LoadInt(maxEnergyElem.Value)); }
             if (maxHPElem != null) { elementType.SetMaxHP(XmlHelper.LoadInt(maxHPElem.Value)); }

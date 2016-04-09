@@ -2,7 +2,8 @@
 <metadata>
   <customType name="MineralField" displayedName="Mineral Field">
     <generalData>
-      <area>8.0;4.0</area>
+      <area>-3.5;-1.5;8.0;4.0</area>
+	  <obstacleArea>-3;-1;8;4</obstacleArea>
     </generalData>
 	<hpIconPalette image="mineral_field_icons.png" transparentColor="255;0;255">
       <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
@@ -34,7 +35,8 @@
   </customType>
   <customType name="VespeneGeyser" displayedName="Vespene Geyser">
     <generalData>
-      <area>16.0;8.0</area>
+      <area>-7.5;-3.5;16.0;8.0</area>
+	  <obstacleArea>-7;-3;16;8</obstacleArea>
     </generalData>
 	<hpIconPalette image="vespene_geyser_icons.png" transparentColor="255;0;255">
       <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
@@ -77,7 +79,8 @@
   </customType>
   <customType name="StartLocation" hasOwner="true">
     <generalData>
-      <area>16.0;12.0</area>
+      <area>-7.5;-5.5;16.0;12.0</area>
+	  <obstacleArea>-7;-5;16;12</obstacleArea>
     </generalData>
     <spritePalette image="start_location.png" transparentColor="255;0;255">
       <sprite name="StartLocation" sourceRegion="0;0;64;48" offset="0;0" />

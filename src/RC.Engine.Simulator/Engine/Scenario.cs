@@ -46,10 +46,8 @@ namespace RC.Engine.Simulator.Engine
             this.mapObjects = new Dictionary<MapObjectLayerEnum, ISearchTree<MapObject>>
             {
                 { MapObjectLayerEnum.GroundObjects, this.CreateSearchTree() },
-                { MapObjectLayerEnum.GroundReservations, this.CreateSearchTree() },
                 { MapObjectLayerEnum.GroundMissiles, this.CreateSearchTree() },
                 { MapObjectLayerEnum.AirObjects, this.CreateSearchTree() },
-                { MapObjectLayerEnum.AirReservations, this.CreateSearchTree() },
                 { MapObjectLayerEnum.AirMissiles, this.CreateSearchTree() }
             };
             this.idToScenarioElementMap = new Dictionary<int, ScenarioElement>();

@@ -42,10 +42,10 @@ namespace RC.Engine.Simulator.Terran.Commands
         protected override void InitializeImpl()
         {
             IBuildingType buildingType = this.RecipientSCV.Owner.Metadata.GetBuildingType(this.buildingTypeName);
-            RCIntVector entityQuadSize = this.Scenario.Map.CellToQuadSize(buildingType.Area.Read());
+            RCIntVector entityQuadSize = this.Scenario.Map.CellToQuadSize(buildingType.Area.Read().Size);
             RCIntRectangle targetPositionQuadRect = new RCIntRectangle(this.topLeftQuadTile.Read(), entityQuadSize);
             this.targetArea.Write((RCNumRectangle)this.Scenario.Map.QuadToCellRect(targetPositionQuadRect) - new RCNumVector(1, 1) / 2);
-            this.TargetPosition = this.targetArea.Read().Location + (this.targetArea.Read().Size / 2);
+            this.TargetPosition = this.targetArea.Read().Location - buildingType.Area.Read().Location;
             this.RecipientSCV.MotionControl.StartMoving(this.TargetPosition);
             this.Status = SCVBuildExecutionStatusEnum.MovingToTarget;
         }

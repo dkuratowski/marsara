@@ -97,7 +97,10 @@ namespace RC.Engine.Simulator.Metadata.Core
         IValueRead<int> IScenarioElementTypeInternal.GasCost { get { return this.originalElementType.GasCost; } }
 
         /// <see cref="IScenarioElementTypeInternal.Area"/>
-        IValueRead<RCNumVector> IScenarioElementTypeInternal.Area { get { return this.originalElementType.Area; } }
+        IValueRead<RCNumRectangle> IScenarioElementTypeInternal.Area { get { return this.originalElementType.Area; } }
+
+        /// <see cref="IScenarioElementTypeInternal.ObstacleArea"/>
+        IValueRead<RCIntRectangle> IScenarioElementTypeInternal.ObstacleArea { get { return this.originalElementType.ObstacleArea; } }
 
         /// <see cref="IScenarioElementTypeInternal.Armor"/>
         IValueRead<int> IScenarioElementTypeInternal.Armor { get { return this.armorModifier.HasAttachedModifiedValue() ? this.armorModifier : null; } }

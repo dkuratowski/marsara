@@ -121,8 +121,8 @@ namespace RC.Engine.Simulator.Metadata.Core
             if (addonType == null) { throw new ArgumentNullException("addonType"); }
             if (!this.HasAddonType(addonType.Name)) { throw new ArgumentException(string.Format("Building type '{0}' is not defined as the main building for addon type '{1}'!", this.Name, addonType.Name)); }
 
-            RCIntVector buildingQuadSize = map.CellToQuadSize(this.Area.Read());
-            int addonQuadHeight = map.CellToQuadSize(addonType.Area.Read()).Y;
+            RCIntVector buildingQuadSize = map.CellToQuadSize(this.Area.Read().Size);
+            int addonQuadHeight = map.CellToQuadSize(addonType.Area.Read().Size).Y;
             return new RCIntVector(buildingQuadSize.X, buildingQuadSize.Y - addonQuadHeight);
         }
 

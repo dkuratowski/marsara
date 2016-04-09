@@ -6,6 +6,7 @@ using RC.Common;
 using RC.Engine.Simulator.Core;
 using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.PublicInterfaces;
+using RC.Engine.Maps.PublicInterfaces;
 
 namespace RC.Engine.Simulator.Commands
 {
@@ -73,10 +74,10 @@ namespace RC.Engine.Simulator.Commands
         /// <see cref="PostponedCmdExecution.ContinueImpl_i"/>
         protected override void InitializeImpl_i()
         {
-            RCIntVector entityQuadSize = this.Scenario.Map.CellToQuadSize(this.recipientEntity.Read().ElementType.Area.Read());
-            RCIntRectangle landPositionQuadRect = new RCIntRectangle(this.topLeftQuadTile.Read(), entityQuadSize);
-            RCNumRectangle landPositionRect = (RCNumRectangle)this.Scenario.Map.QuadToCellRect(landPositionQuadRect) - new RCNumVector(1, 1) / 2;
-            RCNumVector landPosition = landPositionRect.Location + (landPositionRect.Size / 2);
+            IQuadTile topLeftTile = this.Scenario.Map.GetQuadTile(this.topLeftQuadTile.Read());
+            ICell topLeftCell = topLeftTile.GetCell(new RCIntVector(0, 0));
+            RCNumVector landPosition = topLeftCell.MapCoords - new RCNumVector(1, 1) / 2 - this.recipientEntity.Read().ElementType.Area.Read().Location;
+
             if (landPosition.Y - Constants.MAX_VTOL_TRANSITION >= 0)
             {
                 this.targetPosition.Write(landPosition - new RCNumVector(0, Constants.MAX_VTOL_TRANSITION));

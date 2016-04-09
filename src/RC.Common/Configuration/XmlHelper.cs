@@ -154,6 +154,25 @@ namespace RC.Common.Configuration
         }
 
         /// <summary>
+        /// Loads an RCNumRectangle defined in the given string in format: "X;Y;Width;Height".
+        /// </summary>
+        /// <param name="fromStr">The string to load from.</param>
+        /// <returns>The loaded RCNumRectangle.</returns>
+        public static RCNumRectangle LoadNumRectangle(string fromStr)
+        {
+            if (fromStr == null) { throw new ArgumentNullException("fromStr"); }
+
+            string[] componentStrings = fromStr.Split(';');
+            if (componentStrings.Length != 4) { throw new ConfigurationException("Rectangle format error!"); }
+
+            RCNumber rectX = LoadNum(componentStrings[0]);
+            RCNumber rectY = LoadNum(componentStrings[1]);
+            RCNumber rectWidth = LoadNum(componentStrings[2]);
+            RCNumber rectHeight = LoadNum(componentStrings[3]);
+            return new RCNumRectangle(rectX, rectY, rectWidth, rectHeight);
+        }
+
+        /// <summary>
         /// Loads a RCColor from the given string.
         /// </summary>
         /// <param name="fromStr">The string to load from.</param>

@@ -2,7 +2,7 @@
 <metadata>
 	<missileType name="Rocket">
     <generalData>
-      <area>0.75;0.75</area>
+      <area>-0.375;-0.375;0.75;0.75</area>
       <speed>2.0</speed>
     </generalData>
     <launchAnimation launchDelay="2">Launch</launchAnimation>
@@ -59,7 +59,7 @@
 	
 	<missileType name="Bullets">
       <generalData>
-        <area>0.25;0.25</area>
+        <area>-0.125;-0.125;0.25;0.25</area>
       </generalData>
       <launchAnimation launchDelay="0">Launch</launchAnimation>
       <impactAnimation>Impact</impactAnimation>
@@ -96,7 +96,7 @@
 	
 	<missileType name="TorchSparkle">
       <generalData>
-        <area>0.75;0.75</area>
+        <area>-0.375;-0.375;0.75;0.75</area>
       </generalData>
       <launchAnimation launchDelay="0">Sparkle</launchAnimation>
       <spritePalette image="torch_sparkle.png" transparentColor="255;0;255">

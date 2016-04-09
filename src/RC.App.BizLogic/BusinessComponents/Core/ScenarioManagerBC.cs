@@ -11,6 +11,7 @@ using RC.Engine.Simulator.ComponentInterfaces;
 using RC.Engine.Simulator.Engine;
 using RC.Engine.Simulator.Metadata;
 using RC.Engine.Simulator.MotionControl;
+using RC.Engine.Pathfinder.PublicInterfaces;
 
 namespace RC.App.BizLogic.BusinessComponents.Core
 {
@@ -29,8 +30,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.tilesetManager = ComponentManager.GetInterface<ITilesetManagerBC>();
             this.mapLoader = ComponentManager.GetInterface<IMapLoader>();
             this.scenarioLoader = ComponentManager.GetInterface<IScenarioLoader>();
-            this.navmeshLoader = ComponentManager.GetInterface<INavMeshLoader>();
-            this.pathFinder = ComponentManager.GetInterface<IPathFinder>();
+            this.pathfinder = ComponentManager.GetInterface<IPathfinder>();
         }
 
         /// <see cref="IComponent.Stop"/>
@@ -43,8 +43,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             this.tilesetManager = null;
             this.mapLoader = null;
             this.scenarioLoader = null;
-            this.navmeshLoader = null;
-            this.pathFinder = null;
+            this.pathfinder = null;
         }
 
         #endregion IComponent methods
@@ -73,7 +72,7 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             byte[] mapBytes = File.ReadAllBytes(filename);
             MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
             IMapAccess map = this.mapLoader.LoadMap(this.tilesetManager.GetTileSet(mapHeader.TilesetName), mapBytes);
-            this.pathFinder.Initialize(this.navmeshLoader.LoadNavMesh(mapBytes), MAX_PATHFINDING_ITERATIONS_PER_FRAMES);
+            this.pathfinder.Initialize(new MapWalkabilityReader(map), MAX_MOVING_ENTITY_SIZE);
             this.activeScenario = this.scenarioLoader.LoadScenario(map, mapBytes);
 
             this.RegisterFactoryMethods();
@@ -87,22 +86,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (this.activeScenario == null) { throw new InvalidOperationException("There is no active scenario!"); }
             if (filename == null) { throw new ArgumentNullException("fileName"); }
 
-            /// Try to create a navmesh from the map but do not crash.
-            INavMesh navmesh = null;
-            try { navmesh = this.navmeshLoader.NewNavMesh(new MapWalkabilityReader(this.activeScenario.Map)); }
-            catch (Exception ex) { TraceManager.WriteExceptionAllTrace(ex, false); }
-
-            /// Serialize the map, the scenario and the navmesh if it has been successfully created.
+            /// Serialize the map and the scenario.
             byte[] mapBytes = this.mapLoader.SaveMap(this.activeScenario.Map);
             byte[] scenarioBytes = this.scenarioLoader.SaveScenario(this.activeScenario);
-            byte[] navmeshBytes = navmesh != null ? this.navmeshLoader.SaveNavMesh(navmesh) : new byte[0];
 
             /// Write the serialized data into the output file.
             int outIdx = 0;
-            byte[] outputBytes = new byte[mapBytes.Length + scenarioBytes.Length + navmeshBytes.Length];
+            byte[] outputBytes = new byte[mapBytes.Length + scenarioBytes.Length];
             for (int i = 0; i < mapBytes.Length; i++, outIdx++) { outputBytes[outIdx] = mapBytes[i]; }
             for (int i = 0; i < scenarioBytes.Length; i++, outIdx++) { outputBytes[outIdx] = scenarioBytes[i]; }
-            for (int i = 0; i < navmeshBytes.Length; i++, outIdx++) { outputBytes[outIdx] = navmeshBytes[i]; }
             File.WriteAllBytes(filename, outputBytes);
         }
 
@@ -351,14 +343,9 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private ITilesetManagerBC tilesetManager;
 
         /// <summary>
-        /// Reference to the RC.Engine.Maps.NavMeshLoader component.
+        /// Reference to the RC.Engine.Pathfinder component.
         /// </summary>
-        private INavMeshLoader navmeshLoader;
-
-        /// <summary>
-        /// Reference to the RC.Engine.Simulator.PathFinder component.
-        /// </summary>
-        private IPathFinder pathFinder;
+        private IPathfinder pathfinder;
 
         /// <summary>
         /// Reference to the registry interface of the RC.App.BizLogic.ViewFactory component.
@@ -366,8 +353,8 @@ namespace RC.App.BizLogic.BusinessComponents.Core
         private IViewFactoryRegistry viewFactoryRegistry;
 
         /// <summary>
-        /// The maximum number of pathfinding iterations per frames.
+        /// The maximum size of moving entities can be handled by the RC.Engine.Pathfinder component.
         /// </summary>
-        private const int MAX_PATHFINDING_ITERATIONS_PER_FRAMES = 2500;
+        private const int MAX_MOVING_ENTITY_SIZE = 4;
     }
 }

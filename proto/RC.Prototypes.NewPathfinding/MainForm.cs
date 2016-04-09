@@ -36,15 +36,15 @@ namespace RC.Prototypes.NewPathfinding
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.mapImage = (Bitmap)Image.FromFile("pathfinder_testmap2.png");
+            this.mapImage = (Bitmap)Image.FromFile("maze_test.png");
             this.grid = new Grid(this.mapImage);
 
             //this.DrawLabelsOutput(this.grid);
 
-            //this.DrawRegionsToOutput(1, this.grid);
-            //this.DrawRegionsToOutput(2, this.grid);
-            //this.DrawRegionsToOutput(3, this.grid);
-            //this.DrawRegionsToOutput(4, this.grid);
+            this.DrawRegionsToOutput(1, this.grid);
+            this.DrawRegionsToOutput(2, this.grid);
+            this.DrawRegionsToOutput(3, this.grid);
+            this.DrawRegionsToOutput(4, this.grid);
 
             this.ClientSize = new Size(this.mapImage.Width * CELL_SIZE, this.mapImage.Height * CELL_SIZE);
 
@@ -237,8 +237,8 @@ namespace RC.Prototypes.NewPathfinding
         private int currentRegionIndex;
         private MC.Cell currentStartCell;
 
-        private const int CELL_SIZE = 1;
-        private const int OBJECT_SIZE = 3;
+        private const int CELL_SIZE = 2;
+        private const int OBJECT_SIZE = 1;
 
         const int OUTPUT_CELLSIZE = 20;
         private static readonly Point[] EXITVECTOR_BEGIN = new Point[]

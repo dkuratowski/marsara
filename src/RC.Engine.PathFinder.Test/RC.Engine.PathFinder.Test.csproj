@@ -72,7 +72,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestWalkabilityGrid.cs" />
+    <Compile Include="TestWalkabilityReader.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -104,28 +104,16 @@
       <Project>{96EF40A8-8614-468B-ABC3-7315A1B5B7CA}</Project>
       <Name>RC.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RC.Engine.Maps\RC.Engine.Maps.csproj">
-      <Project>{2B1355DC-847B-4617-94AD-5423BC538B20}</Project>
-      <Name>RC.Engine.Maps</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RC.Engine.Simulator\RC.Engine.Simulator.csproj">
-      <Project>{2B041172-C0FC-42DB-A344-079F40491FE5}</Project>
-      <Name>RC.Engine.Simulator</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RC.UI\RC.UI.csproj">
-      <Project>{e3b50bcb-7eaf-4fd5-a5f4-c78e5c0eebc3}</Project>
-      <Name>RC.UI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RC.UnitTests\RC.UnitTests.csproj">
-      <Project>{57919eae-83b8-4b20-ae1b-7ae71aa35a78}</Project>
-      <Name>RC.UnitTests</Name>
+    <ProjectReference Include="..\RC.Engine.Pathfinder\RC.Engine.Pathfinder.csproj">
+      <Project>{2311f794-221c-49e5-ac8b-79fffe6398dc}</Project>
+      <Name>RC.Engine.Pathfinder</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="pathfinder_testmap.png">
+    <Content Include="testmap.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="pathfinder_testmap2.png">
+    <Content Include="testmap2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

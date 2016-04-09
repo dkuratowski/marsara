@@ -207,47 +207,39 @@ namespace RC.App.Starter
         /// </summary>
         private static void StartComponents()
         {
+            ComponentManager.RegisterComponents("RC.Engine.Pathfinder, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
+                                                "RC.Engine.Pathfinder");
+
             ComponentManager.RegisterComponents("RC.Engine.Maps, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[]
-                                                {
-                                                    "RC.Engine.Maps.TileSetLoader",
-                                                    "RC.Engine.Maps.MapLoader",
-                                                    "RC.Engine.Maps.MapEditor",
-                                                    "RC.Engine.Maps.NavMeshLoader"
-                                                });
+                                                "RC.Engine.Maps.TileSetLoader",
+                                                "RC.Engine.Maps.MapLoader",
+                                                "RC.Engine.Maps.MapEditor");
 
             ComponentManager.RegisterComponents("RC.Engine.Simulator, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[]
-                                                {
-                                                    "RC.Engine.Simulator.ElementFactory",
-                                                    "RC.Engine.Simulator.CommandExecutor",
-                                                    "RC.Engine.Simulator.ScenarioLoader",
-                                                    "RC.Engine.Simulator.HeapManager",
-                                                    "RC.Engine.Simulator.PathFinder"
-                                                });
+                                                "RC.Engine.Simulator.ElementFactory",
+                                                "RC.Engine.Simulator.CommandExecutor",
+                                                "RC.Engine.Simulator.ScenarioLoader",
+                                                "RC.Engine.Simulator.HeapManager");
 
             ComponentManager.RegisterComponents("RC.App.BizLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[]
-                                                {
-                                                    "RC.App.BizLogic.TilesetManagerBC",
-                                                    "RC.App.BizLogic.ScenarioManagerBC",
-                                                    "RC.App.BizLogic.SelectionManagerBC",
-                                                    "RC.App.BizLogic.CommandManagerBC",
-                                                    "RC.App.BizLogic.FogOfWarBC",
-                                                    "RC.App.BizLogic.MapWindowBC",
-                                                    "RC.App.BizLogic.MultiplayerService",
-                                                    "RC.App.BizLogic.CommandService",
-                                                    "RC.App.BizLogic.SelectionService",
-                                                    "RC.App.BizLogic.ScrollService",
-                                                    "RC.App.BizLogic.MapEditorService",
-                                                    "RC.App.BizLogic.ViewService"
-                                                });
+                                                "RC.App.BizLogic.TilesetManagerBC",
+                                                "RC.App.BizLogic.ScenarioManagerBC",
+                                                "RC.App.BizLogic.SelectionManagerBC",
+                                                "RC.App.BizLogic.CommandManagerBC",
+                                                "RC.App.BizLogic.FogOfWarBC",
+                                                "RC.App.BizLogic.MapWindowBC",
+                                                "RC.App.BizLogic.MultiplayerService",
+                                                "RC.App.BizLogic.CommandService",
+                                                "RC.App.BizLogic.SelectionService",
+                                                "RC.App.BizLogic.ScrollService",
+                                                "RC.App.BizLogic.MapEditorService",
+                                                "RC.App.BizLogic.ViewService");
+
             ComponentManager.RegisterComponents("RC.App.PresLogic, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
-                                                new string[]
-                                                {
-                                                    "RC.App.PresLogic.TaskManagerBC"
-                                                });
+                                                "RC.App.PresLogic.TaskManagerBC");
+
             ComponentManager.RegisterPluginAssembly("RC.Engine.Simulator.Terran, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+
             ComponentManager.StartComponents();
         }
     }
