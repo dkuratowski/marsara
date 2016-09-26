@@ -130,4 +130,37 @@
         </animation>
       </animationPalette>
 	</missileType>
+	
+	<missileType name="LaserBeam">
+		<generalData>
+			<area>-0.125;-0.125;0.25;0.25</area>
+		</generalData>
+		<launchAnimation launchDelay="2">Launch</launchAnimation>
+		<impactAnimation>Impact</impactAnimation>
+		<spritePalette image="laser_beam.png" transparentColor="255;0;255">
+			<sprite name="Launch" variant="North" sourceRegion="1;1;1;9" offset="0;0" />
+			<sprite name="Launch" variant="NorthEast" sourceRegion="3;1;8;8" offset="-7;0" />
+			<sprite name="Launch" variant="East" sourceRegion="12;1;9;1" offset="-8;0" />
+			<sprite name="Launch" variant="SouthEast" sourceRegion="22;1;8;8" offset="-7;-7" />
+			<sprite name="Launch" variant="South" sourceRegion="1;1;1;9" offset="0;-8" />
+			<sprite name="Launch" variant="SouthWest" sourceRegion="3;1;8;8" offset="0;-7" />
+			<sprite name="Launch" variant="West" sourceRegion="12;1;9;1" offset="0;0" />
+			<sprite name="Launch" variant="NorthWest" sourceRegion="22;1;8;8" offset="0;0" />
+			<sprite name="Impact0" sourceRegion="1;11;3;3" offset="-1;-1" />
+			<sprite name="Impact1" sourceRegion="5;10;6;6" offset="-2;-2" />
+			<sprite name="Impact2" sourceRegion="12;3;9;9" offset="-4;-4" />
+			<sprite name="Impact3" sourceRegion="22;10;5;4" offset="-2;-1" />
+		</spritePalette>
+		<animationPalette>
+			<animation name="Launch">
+				<frame sprites="Launch" duration="2" />
+			</animation>
+			<animation name="Impact">
+				<frame sprites="Impact0" duration="2" />
+				<frame sprites="Impact1" duration="2" />
+				<frame sprites="Impact2" duration="2" />
+				<frame sprites="Impact3" duration="2" />
+			</animation>
+		</animationPalette>
+	</missileType>
 </metadata>

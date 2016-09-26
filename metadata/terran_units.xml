@@ -120,41 +120,6 @@
     <!--spritePalette image="terran_scv.png" /-->
   </unitType>
   
-  <unitType name="Wraith" hasOwner="true" displayedName="Terran Wraith">
-    <costs>
-      <supplyUsed>2</supplyUsed>
-      <mineral>150</mineral>
-      <gas>100</gas>
-      <buildTime>900</buildTime>
-    </costs>
-    <generalData>
-      <size>Large</size>
-      <area>-0.5;-0.5;1.0;1.0</area>
-	  <obstacleArea>0;0;1;1</obstacleArea>
-      <maxHP>120</maxHP>
-      <armor>0</armor>
-      <maxEnergy>200</maxEnergy>
-      <sightRange>7</sightRange>
-      <speed>0.834</speed>
-    </generalData>
-    <groundWeapon name="WraithWeaponGround" displayedName="Wraith Ground Weapon">
-      <damage>8</damage>
-      <increment>1</increment>
-      <rangeMax>5</rangeMax>
-      <damageType>Normal</damageType>
-      <cooldown>30</cooldown>
-    </groundWeapon>
-    <airWeapon name="WraithWeaponAir" displayedName="Wraith Air Weapon">
-      <damage>20</damage>
-      <increment>2</increment>
-      <rangeMax>5</rangeMax>
-      <damageType>Explosive</damageType>
-      <cooldown>22</cooldown>
-    </airWeapon>
-    <createdIn>Starport</createdIn>
-    <!--spritePalette image="terran_scv.png" /-->
-  </unitType>
-  
   <unitType name="Dropship" hasOwner="true" displayedName="Terran Dropship">
     <costs>
       <supplyUsed>2</supplyUsed>

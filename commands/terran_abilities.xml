@@ -2,7 +2,9 @@
 <commands>
   <spritePalette image="terran_abilities.png" transparentColor="255;0;255" maskColor="0;255;255">
     <sprite name="StimPacksBtn" sourceRegion="1;1;20;20" />
+    <sprite name="SiegeTechBtn" sourceRegion="22;1;20;20" />
   </spritePalette>
   <productionButton product="StimPacks" sprite="StimPacksBtn" panelPosition="0;1" />
   <commandButton command="StimPacks" sprite="StimPacksBtn" panelPosition="2;0" />
+  <productionButton product="SiegeTech" sprite="SiegeTechBtn" panelPosition="0;2" />
 </commands>

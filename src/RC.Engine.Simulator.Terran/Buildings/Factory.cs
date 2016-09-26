@@ -5,6 +5,7 @@ using System.Text;
 using RC.Common;
 using RC.Engine.Simulator.Behaviors;
 using RC.Engine.Simulator.Engine;
+using RC.Engine.Simulator.Terran.Units;
 
 namespace RC.Engine.Simulator.Terran.Buildings
 {
@@ -21,7 +22,7 @@ namespace RC.Engine.Simulator.Terran.Buildings
                    new BurndownBehavior("SmallBurn", "HeavyBurn", (RCNumber)78 / (RCNumber)1000),
                    new ConstructionBehavior("Construction0", "Construction1", "Construction2"),
                    new LiftoffBehavior("Normal", "TakingOff", "Flying", "Landing"),
-                   new ProductionAnimationBehavior("Producing", "Normal"))
+                   new ProductionAnimationBehavior("Producing", "Normal", Goliath.GOLIATH_TYPE_NAME))
         {
         }
 

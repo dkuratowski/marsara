@@ -74,7 +74,6 @@ namespace RC.Engine.Simulator.MotionControl
         public override bool OnAttaching(RCNumVector position)
         {
             if (this.pathfinderAgent != null) { throw new InvalidOperationException("The controlled entity has already been attached to the map!"); }
-            RCIntVector agentCellCoords = position.Round() + this.ControlledEntity.ElementType.ObstacleArea.Read().Location;
             this.pathfinderAgent = this.pathfinder.PlaceAgent(this.ControlledEntity.ElementType.ObstacleArea.Read() + position.Round(), this);
             return this.pathfinderAgent != null;
         }

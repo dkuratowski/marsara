@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="Addons\ComsatStation.cs" />
     <Compile Include="Addons\ControlTower.cs" />
+    <Compile Include="Addons\MachineShop.cs" />
     <Compile Include="Behaviors\StimPacksBehavior.cs" />
     <Compile Include="Buildings\Academy.cs" />
     <Compile Include="Buildings\Armory.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Units\Goliath.cs" />
     <Compile Include="Units\Marine.cs" />
     <Compile Include="Units\SCV.cs" />
+    <Compile Include="Units\Wraith.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj">

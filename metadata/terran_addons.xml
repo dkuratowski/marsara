@@ -18,23 +18,6 @@
     <requires>ScienceFacility-CovertOps</requires>
     <!--spritePalette image="terran_scv.png" /-->
   </addonType>
-  <addonType name="MachineShop" hasOwner="true" displayedName="Terran Machine Shop">
-    <costs>
-      <mineral>50</mineral>
-      <gas>50</gas>
-      <buildTime>600</buildTime>
-    </costs>
-    <generalData>
-      <size>Large</size>
-      <area>-3.5;-3.5;8.0;8.0</area>
-	  <obstacleArea>-3;-3;8;8</obstacleArea>
-      <maxHP>750</maxHP>
-      <armor>1</armor>
-      <sightRange>11</sightRange>
-    </generalData>
-    <mainBuilding>Factory</mainBuilding>
-    <!--spritePalette image="terran_scv.png" /-->
-  </addonType>
   <addonType name="CovertOps" hasOwner="true" displayedName="Terran Covert Ops">
     <costs>
       <mineral>50</mineral>

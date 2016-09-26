@@ -38,12 +38,13 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterElementFactory<Building>(SCV.SCV_TYPE_NAME, this.CreateUnit<SCV>);
             extendedComponent.RegisterElementFactory<Building>(Marine.MARINE_TYPE_NAME, this.CreateUnit<Marine>);
             extendedComponent.RegisterElementFactory<Building>(Goliath.GOLIATH_TYPE_NAME, this.CreateUnit<Goliath>);
-            extendedComponent.RegisterElementFactory<Building>("Wraith", building => true);
+            extendedComponent.RegisterElementFactory<Building>(Wraith.WRAITH_TYPE_NAME, this.CreateUnit<Wraith>);
             extendedComponent.RegisterElementFactory<Building>("Dropship", building => true);
 
             /// Element factory methods for Terran addons.
             extendedComponent.RegisterElementFactory<Building>(ComsatStation.COMSATSTATION_TYPE_NAME, this.CreateAddon<ComsatStation>);
             extendedComponent.RegisterElementFactory<Building>(ControlTower.CONTROLTOWER_TYPE_NAME, this.CreateAddon<ControlTower>);
+            extendedComponent.RegisterElementFactory<Building>(MachineShop.MACHINESHOP_TYPE_NAME, this.CreateAddon<MachineShop>);
 
             /// Element factory methods for Terran buildings.
             extendedComponent.RegisterElementFactory<Player, RCIntVector, SCV>(Academy.ACADEMY_TYPE_NAME, this.CreateBuilding<Academy>);
@@ -94,7 +95,7 @@ namespace RC.Engine.Simulator.Terran
             for (int scvCount = 0; scvCount < NUM_OF_SCVS; scvCount++)
             {
                 /// Create the next SCV
-                //Goliath scv = new Goliath();
+                //Wraith scv = new Wraith();
                 SCV scv = new SCV();
                 //Unit scv = scvCount % 2 == 0 ? (Unit)new SCV() : (Unit)new Marine();
                 scenario.AddElementToScenario(scv);
@@ -228,6 +229,6 @@ namespace RC.Engine.Simulator.Terran
             return buildingPlacedSuccessfully;
         }
 
-        private const int NUM_OF_SCVS = 24;
+        private const int NUM_OF_SCVS = 4;
     }
 }

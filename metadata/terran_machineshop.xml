@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+  <addonType name="MachineShop" hasOwner="true" displayedName="Terran Machine Shop">
+    <costs>
+      <mineral>50</mineral>
+      <gas>50</gas>
+      <buildTime>600</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area>-3.5;-3.5;8.0;8.0</area>
+	  <obstacleArea>-3;-3;8;8</obstacleArea>
+      <maxHP>750</maxHP>
+      <armor>1</armor>
+      <sightRange>11</sightRange>
+    </generalData>
+    <mainBuilding>Factory</mainBuilding>
+	<hpIconPalette image="terran_machineshop_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
+      <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
+	</hpIconPalette>
+    <spritePalette image="terran_machineshop.png" transparentColor="255;0;255" maskColor="0;255;255">
+      <sprite name="Construction0" sourceRegion="1;54;32;32" offset="0;0" />
+      <sprite name="Construction1" sourceRegion="34;54;32;32" offset="0;0" />
+      <sprite name="Construction2" sourceRegion="34;87;32;32" offset="0;0" />
+      <sprite name="MainPartTop" sourceRegion="1;1;32;21" offset="0;0" />
+      <sprite name="MainPartBottom" sourceRegion="1;23;32;22" offset="0;10" />	  
+      <sprite name="CogWheel0" sourceRegion="64;17;23;16" offset="6;8" />
+      <sprite name="CogWheel1" sourceRegion="64;34;23;16" offset="6;8" />	  
+      <sprite name="Corridor0" sourceRegion="1;46;6;5" offset="-1;14" />
+      <sprite name="Corridor1" sourceRegion="8;46;7;6" offset="-2;13" />
+      <sprite name="Corridor2" sourceRegion="16;46;9;7" offset="-4;12" />
+      <sprite name="Corridor3" sourceRegion="26;46;11;7" offset="-6;12" />	  
+      <sprite name="FlameL0" sourceRegion="64;1;5;14" offset="7;4" />
+      <sprite name="FlameL1" sourceRegion="81;1;6;15" offset="6;3" />
+      <sprite name="FlameM0" sourceRegion="70;1;4;14" offset="14;4" />
+      <sprite name="FlameM1" sourceRegion="88;1;4;15" offset="14;3" />
+      <sprite name="FlameR0" sourceRegion="75;1;5;14" offset="22;4" />
+      <sprite name="FlameR1" sourceRegion="93;1;4;15" offset="21;3" />	  
+      <sprite name="DestructionBurn0" sourceRegion="34;1;29;16" offset="2;10" />
+      <sprite name="DestructionBurn1" sourceRegion="34;18;29;25" offset="2;3" />
+      <sprite name="DestructionBurn2" sourceRegion="67;54;32;32" offset="0;0" />
+      <sprite name="DestructionBurn3" sourceRegion="67;87;32;32" offset="0;0" />
+      <sprite name="DestructionBurn4" sourceRegion="1;87;32;32" offset="0;0" />
+	</spritePalette>
+    <animationPalette>
+	  <animation name="Normal" isPreview="true">
+		<frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor3" />
+		<repeat/>
+	  </animation>
+      <animation name="Construction0">
+        <frame sprites="Construction0"/>
+		<repeat/>
+      </animation>
+      <animation name="Construction1">
+        <frame sprites="Construction1"/>
+		<repeat/>
+      </animation>
+      <animation name="Construction2">
+        <frame sprites="Construction2"/>
+		<repeat/>
+      </animation>
+	  <animation name="Offline">
+		<frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor3" duration="5" />
+		<frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor2" duration="5" />
+		<frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor1" duration="5" />
+		<frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor0" duration="5" />
+		<label name="Disconnected" />
+		<frame sprites="MainPartBottom,CogWheel0,MainPartTop" />
+		<goto label="Disconnected" />
+	  </animation>
+	  <animation name="Online">
+		<frame sprites="MainPartBottom,CogWheel0,MainPartTop" duration="5" />
+		<frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor0" duration="5" />
+		<frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor1" duration="5" />
+		<frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor2" duration="5" />
+		<label name="Connected" />
+		<frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor3"/>
+		<goto label="Connected" />
+	  </animation>
+      <animation name="Producing">
+        <frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor3" duration="10" />
+        <frame sprites="MainPartBottom,CogWheel1,MainPartTop,Corridor3" duration="10" />
+		<repeat/>
+      </animation>
+      <animation name="DestructionOffline">
+        <frame sprites="MainPartBottom,CogWheel0,MainPartTop,DestructionBurn0" duration="5" />
+        <frame sprites="MainPartBottom,CogWheel0,MainPartTop,DestructionBurn1" duration="5" />
+        <frame sprites="DestructionBurn2" duration="5" />
+        <frame sprites="DestructionBurn3" duration="5" />
+        <frame sprites="DestructionBurn4" duration="4" />
+      </animation>
+      <animation name="DestructionOnline">
+        <frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor2,DestructionBurn0" duration="5" />
+        <frame sprites="MainPartBottom,CogWheel0,MainPartTop,Corridor1,DestructionBurn1" duration="5" />
+        <frame sprites="DestructionBurn2" duration="5" />
+        <frame sprites="DestructionBurn3" duration="5" />
+        <frame sprites="DestructionBurn4" duration="4" />
+      </animation>
+	  <animation name="SmallBurn">
+		<frame sprites="FlameL0,FlameR0" duration="10" />
+		<frame sprites="FlameL1,FlameR1" duration="10" />
+		<repeat/>
+	  </animation>
+	  <animation name="HeavyBurn">
+		<frame sprites="FlameL0,FlameM0,FlameR0" duration="10" />
+		<frame sprites="FlameL1,FlameM1,FlameR1" duration="10" />
+		<repeat/>
+	  </animation>
+    </animationPalette>
+  </addonType>
+</metadata>

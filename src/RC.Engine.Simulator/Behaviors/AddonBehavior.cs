@@ -16,14 +16,19 @@ namespace RC.Engine.Simulator.Behaviors
         /// <summary>
         /// Constructs an AddonBehavior instance.
         /// </summary>
-        public AddonBehavior(string onlineAnimation, string offlineAnimation)
+        public AddonBehavior(string goingOnlineAnimation, string startingProductionAnimation, string stoppingProductionAnimation, string goingOfflineAnimation)
         {
-            if (onlineAnimation == null) { throw new ArgumentNullException("onlineAnimation"); }
-            if (offlineAnimation == null) { throw new ArgumentNullException("offlineAnimation"); }
+            if (goingOnlineAnimation == null) { throw new ArgumentNullException("goingOnlineAnimation"); }
+            if (startingProductionAnimation == null) { throw new ArgumentNullException("startingProductionAnimation"); }
+            if (stoppingProductionAnimation == null) { throw new ArgumentNullException("stoppingProductionAnimation"); }
+            if (goingOfflineAnimation == null) { throw new ArgumentNullException("goingOfflineAnimation"); }
 
-            this.dummyField = this.ConstructField<byte>("dummyField");
-            this.onlineAnimation = onlineAnimation;
-            this.offlineAnimation = offlineAnimation;
+            this.hasProducedSinceOnline = this.ConstructField<byte>("hasProducedSinceOnline");
+            this.hasProducedSinceOnline.Write(0x00);
+            this.goingOnlineAnimation = goingOnlineAnimation;
+            this.startingProductionAnimation = startingProductionAnimation;
+            this.stoppingProductionAnimation = stoppingProductionAnimation;
+            this.goingOfflineAnimation = goingOfflineAnimation;
         }
 
         #region Overrides
@@ -56,11 +61,14 @@ namespace RC.Engine.Simulator.Behaviors
                     addon.Owner.RemoveAddon(addon);
                     mainBuilding.Owner.AddAddon(addon);
                 }
+
+                if (addon.ActiveProductionLine != null) { this.hasProducedSinceOnline.Write(0x01); }
             }
             else
             {
                 /// If the addon has no main building, then it has to be neutral.
                 if (addon.Owner != null) { addon.Owner.RemoveAddon(addon); }
+                this.hasProducedSinceOnline.Write(0x00);
             }
         }
 
@@ -72,35 +80,65 @@ namespace RC.Engine.Simulator.Behaviors
             /// Do nothing while under construction.
             if (addon.Biometrics.IsUnderConstruction) { return; }
 
-            /// Play online or offline animation depending on the current state.
+            /// Play the appropriate animation depending on the current state of the addon.
             if (addon.CurrentMainBuilding != null)
             {
-                addon.MapObject.StopAnimation(this.offlineAnimation);
-                addon.MapObject.StartAnimation(this.onlineAnimation);
+                if (addon.ActiveProductionLine != null)
+                {
+                    /// Starting production.
+                    this.StopStartAnimations(addon,
+                        new RCSet<string> { this.goingOfflineAnimation, this.goingOnlineAnimation, this.stoppingProductionAnimation },
+                        new RCSet<string> { this.startingProductionAnimation });
+                }
+                else if (this.hasProducedSinceOnline.Read() == 0x01)
+                {
+                    /// Stopping production.
+                    this.StopStartAnimations(addon,
+                        new RCSet<string> { this.goingOfflineAnimation, this.goingOnlineAnimation, this.startingProductionAnimation },
+                        new RCSet<string> { this.stoppingProductionAnimation });
+                }
+                else
+                {
+                    /// Going online.
+                    this.StopStartAnimations(addon,
+                        new RCSet<string> { this.goingOfflineAnimation, this.stoppingProductionAnimation, this.startingProductionAnimation },
+                        new RCSet<string> { this.goingOnlineAnimation });
+                }
             }
             else
             {
-                addon.MapObject.StopAnimation(this.onlineAnimation);
-                addon.MapObject.StartAnimation(this.offlineAnimation);
+                /// Going offline.
+                this.StopStartAnimations(addon,
+                    new RCSet<string> { this.goingOnlineAnimation, this.stoppingProductionAnimation, this.startingProductionAnimation },
+                    new RCSet<string> { this.goingOfflineAnimation });
             }
         }
 
         #endregion Overrides
 
         /// <summary>
-        /// The name of the animation to be played when online.
+        /// The name of the animation to be played when going online.
         /// </summary>
-        private readonly string onlineAnimation;
+        private readonly string goingOnlineAnimation;
+        
+        /// <summary>
+        /// The name of the animation to be played when going offline.
+        /// </summary>
+        private readonly string goingOfflineAnimation;
 
         /// <summary>
-        /// The name of the animation to be played when offline.
+        /// The name of the animation to be played when starting production.
         /// </summary>
-        private readonly string offlineAnimation;
+        private readonly string startingProductionAnimation;
 
         /// <summary>
-        /// Dummy heaped value because we are deriving from HeapedObject.
-        /// TODO: change HeapedObject to be possible to derive from it without heaped values.
+        /// The name of the animation to be played when stopping production.
         /// </summary>
-        private HeapedValue<byte> dummyField;
+        private readonly string stoppingProductionAnimation;
+
+        /// <summary>
+        /// This flag indicates whether the addon has already produced since it is online (0x01) or not (0x00).
+        /// </summary>
+        private HeapedValue<byte> hasProducedSinceOnline;
     }
 }

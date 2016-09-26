@@ -35,5 +35,10 @@ namespace RC.Engine.Simulator.Terran
         public const int STIMPACKS_TIME = 300;
         public static readonly RCNumber STIMPACKS_SPEED_UPGRADE = (RCNumber)1 / (RCNumber)4;
         public const int STIMPACKS_COOLDOWN_UPGRADE = -7;
+
+        /// <summary>
+        /// Constants for the SiegeTech ability.
+        /// </summary>
+        public const string SIEGETECH = "SiegeTech";
     }
 }

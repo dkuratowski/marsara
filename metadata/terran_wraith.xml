@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+  <unitType name="Wraith" hasOwner="true" displayedName="Terran Wraith">
+    <costs>
+      <supplyUsed>2</supplyUsed>
+      <mineral>150</mineral>
+      <gas>100</gas>
+      <buildTime>900</buildTime>
+    </costs>
+    <generalData>
+      <size>Large</size>
+      <area>-1.5;-1.5;4.0;4.0</area>
+      <maxHP>120</maxHP>
+      <armor>0</armor>
+      <maxEnergy>200</maxEnergy>
+      <sightRange>7</sightRange>
+      <speed>0.834</speed>
+    </generalData>
+	<shadowData>
+	  <spriteName>Shadow_1</spriteName>
+	  <centerOffset>2.0;2.0</centerOffset>
+	</shadowData>
+    <groundWeapon name="BurstLasers" displayedName="Burst Lasers">
+      <damage>8</damage>
+      <increment>1</increment>
+      <rangeMax>5</rangeMax>
+      <damageType>Normal</damageType>
+      <cooldown>30</cooldown>
+	  <missile type="LaserBeam">
+        <launch direction="North" relativePosition="0.25;-4.75" />
+        <launch direction="NorthEast" relativePosition="4.75;-4.25" />
+        <launch direction="East" relativePosition="5.5;0.25" />		
+        <launch direction="SouthEast" relativePosition="5.0;5.0" />		
+        <launch direction="South" relativePosition="0.5;5.75" />		
+        <launch direction="SouthWest" relativePosition="-4.25;5.0" />		
+        <launch direction="West" relativePosition="-5.0;0.5" />		
+        <launch direction="NorthWest" relativePosition="-4.5;-4.5" />
+	  </missile>
+    </groundWeapon>
+    <airWeapon name="GeminiMissiles" displayedName="Gemini Missiles">
+      <damage>20</damage>
+      <increment>2</increment>
+      <rangeMax>5</rangeMax>
+      <damageType>Explosive</damageType>
+      <cooldown>22</cooldown>
+      <missile type="Rocket">
+        <launch direction="North" relativePosition="-1.25;-1.25" />
+        <launch direction="NorthEast" relativePosition="0.5;-1.75" />
+        <launch direction="East" relativePosition="2.0;-1.25" />		
+        <launch direction="SouthEast" relativePosition="2.5;0.5" />		
+        <launch direction="South" relativePosition="2.0;2.0" />		
+        <launch direction="SouthWest" relativePosition="0.25;2.5" />		
+        <launch direction="West" relativePosition="-1.25;2.0" />		
+        <launch direction="NorthWest" relativePosition="-1.75;0.25" />
+      </missile>
+      <missile type="Rocket">
+        <launch direction="North" relativePosition="2.0;-1.25" />
+        <launch direction="NorthEast" relativePosition="2.75;0.5" />
+        <launch direction="East" relativePosition="2.0;2.0" />		
+        <launch direction="SouthEast" relativePosition="0.5;2.5" />		
+        <launch direction="South" relativePosition="-1.25;2.0" />		
+        <launch direction="SouthWest" relativePosition="-1.75;0.5" />		
+        <launch direction="West" relativePosition="-1.25;-1.25" />		
+        <launch direction="NorthWest" relativePosition="0.25;-1.75" />
+      </missile>
+    </airWeapon>
+    <createdIn>Starport</createdIn>
+	<hpIconPalette image="terran_wraith_icons.png" transparentColor="255;0;255" maskColor="0;255;255">
+      <sprite name="BigIcon" sourceRegion="1;1;32;32" offset="0;0" />
+      <sprite name="SmallIcon" sourceRegion="34;1;20;20" offset="0;0" />
+	</hpIconPalette>
+    <spritePalette image="terran_wraith.png" transparentColor="255;0;255" maskColor="0;255;255">
+      <sprite name="Body0" variant="North" sourceRegion="1;1;22;16" offset="-3;0" />
+      <sprite name="Body0" variant="NorthEast" sourceRegion="24;1;21;21" offset="0;-5" />
+      <sprite name="Body0" variant="East" sourceRegion="46;1;16;22" offset="0;-3" />
+      <sprite name="Body0" variant="SouthEast" sourceRegion="63;1;21;21" offset="0;0" />
+      <sprite name="Body0" variant="South" sourceRegion="85;1;22;16" offset="-3;0" />
+      <sprite name="Body0" variant="SouthWest" sourceRegion="108;1;21;21" offset="-5;0" />
+      <sprite name="Body0" variant="West" sourceRegion="130;1;16;22" offset="0;-3" />
+      <sprite name="Body0" variant="NorthWest" sourceRegion="147;1;21;21" offset="-5;-5" />
+
+      <sprite name="Body1" variant="North" sourceRegion="1;1;22;16" offset="-3;1" />
+      <sprite name="Body1" variant="NorthEast" sourceRegion="24;1;21;21" offset="0;-4" />
+      <sprite name="Body1" variant="East" sourceRegion="46;1;16;22" offset="0;-2" />
+      <sprite name="Body1" variant="SouthEast" sourceRegion="63;1;21;21" offset="0;1" />
+      <sprite name="Body1" variant="South" sourceRegion="85;1;22;16" offset="-3;1" />
+      <sprite name="Body1" variant="SouthWest" sourceRegion="108;1;21;21" offset="-5;1" />
+      <sprite name="Body1" variant="West" sourceRegion="130;1;16;22" offset="0;-2" />
+      <sprite name="Body1" variant="NorthWest" sourceRegion="147;1;21;21" offset="-5;-4" />
+
+	  <sprite name="Engine" variant="North" sourceRegion="144;24;8;2" offset="4;16" />
+	  <sprite name="Engine" variant="NorthEast" sourceRegion="153;24;5;5" offset="-1;12" />
+	  <sprite name="Engine" variant="East" sourceRegion="144;30;2;8" offset="-2;4" />
+	  <sprite name="Engine" variant="SouthEast" sourceRegion="159;24;5;5" offset="-1;-1" />
+	  <sprite name="Engine" variant="South" sourceRegion="144;27;8;2" offset="4;-2" />
+	  <sprite name="Engine" variant="SouthWest" sourceRegion="150;30;5;5" offset="12;-1" />
+	  <sprite name="Engine" variant="West" sourceRegion="147;30;2;8" offset="16;4" />
+	  <sprite name="Engine" variant="NorthWest" sourceRegion="156;30;5;5" offset="12;12" />
+      <sprite name="Dying0" sourceRegion="1;24;22;16" offset="-3;0" />
+      <sprite name="Dying1" sourceRegion="24;24;22;16" offset="-3;0" />
+      <sprite name="Dying2" sourceRegion="47;24;22;16" offset="-3;0" />
+      <sprite name="Dying3" sourceRegion="70;24;22;20" offset="-3;-1" />
+      <sprite name="Dying4" sourceRegion="93;24;25;19" offset="-4;-2" />
+      <sprite name="Dying5" sourceRegion="119;24;24;21" offset="-2;-3" />
+	</spritePalette>
+	<animationPalette>
+		<animation name="Stopped" isPreview="true">
+			<frame sprites="Body0" duration="20"/>
+			<frame sprites="Body1" duration="20"/>
+			<repeat/>
+		</animation>
+		<animation name="Attacking">
+			<frame sprites="Body0"/>
+			<repeat/>
+		</animation>
+		<animation name="Moving">
+			<frame sprites="Body0,Engine" />
+			<repeat/>
+		</animation>
+		<animation name="Dying">
+			<frame sprites="Dying0" duration="4"/>
+			<frame sprites="Dying1" duration="4"/>
+			<frame sprites="Dying2" duration="4"/>
+			<frame sprites="Dying3" duration="4"/>
+			<frame sprites="Dying4" duration="4"/>
+			<frame sprites="Dying5" duration="4"/>
+		</animation>
+	</animationPalette>
+  </unitType>
+</metadata>

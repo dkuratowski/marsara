@@ -62,6 +62,14 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Hold, Goliath.GOLIATH_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, Goliath.GOLIATH_TYPE_NAME));
 
+            /// Terran Wraith
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, Wraith.WRAITH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, Wraith.WRAITH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Attack, Wraith.WRAITH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Patrol, Wraith.WRAITH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Hold, Wraith.WRAITH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, Wraith.WRAITH_TYPE_NAME));
+
             /// Terran Command Center
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, CommandCenter.COMMANDCENTER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, CommandCenter.COMMANDCENTER_TYPE_NAME));
@@ -84,6 +92,11 @@ namespace RC.Engine.Simulator.Terran
             /// Terran Control Tower
             extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(ControlTower.CONTROLTOWER_TYPE_NAME));
 
+            /// Terran Machine Shop
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(MachineShop.MACHINESHOP_TYPE_NAME, TerranAbilities.SIEGETECH));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(MachineShop.MACHINESHOP_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ConstructionCancelExecutionFactory(MachineShop.MACHINESHOP_TYPE_NAME));
+
             /// Terran Barracks
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, Barracks.BARRACKS_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, Barracks.BARRACKS_TYPE_NAME));
@@ -98,7 +111,7 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Move, Factory.FACTORY_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, Factory.FACTORY_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, Factory.FACTORY_TYPE_NAME));
-            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Factory.FACTORY_TYPE_NAME, Goliath.GOLIATH_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Factory.FACTORY_TYPE_NAME, Goliath.GOLIATH_TYPE_NAME, MachineShop.MACHINESHOP_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(Factory.FACTORY_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(Factory.FACTORY_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(Factory.FACTORY_TYPE_NAME));
@@ -109,7 +122,7 @@ namespace RC.Engine.Simulator.Terran
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Stop, Starport.STARPORT_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new BasicCmdExecutionFactory(BasicCommandEnum.Undefined, Starport.STARPORT_TYPE_NAME));
             // TODO
-            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Starport.STARPORT_TYPE_NAME, "Wraith", "Dropship", ControlTower.CONTROLTOWER_TYPE_NAME));
+            extendedComponent.RegisterCommandExecutionFactory(new ProductionExecutionFactory(Starport.STARPORT_TYPE_NAME, Wraith.WRAITH_TYPE_NAME, "Dropship", ControlTower.CONTROLTOWER_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new ProductionCancelExecutionFactory(Starport.STARPORT_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LiftOffExecutionFactory(Starport.STARPORT_TYPE_NAME));
             extendedComponent.RegisterCommandExecutionFactory(new LandExecutionFactory(Starport.STARPORT_TYPE_NAME));
