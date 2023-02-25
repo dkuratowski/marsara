@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E3B50BCB-7EAF-4FD5-A5F4-C78E5C0EEBC3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RC.UI</RootNamespace>
+    <AssemblyName>RC.UI</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\RC.UI.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\RC.UI.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DefaultControls\UIButton.cs" />
+    <Compile Include="DefaultControls\UICheckbox.cs" />
+    <Compile Include="DefaultControls\UIControl.cs" />
+    <Compile Include="DefaultControls\UIDropdownSelector.cs" />
+    <Compile Include="DefaultControls\UIListBox.cs" />
+    <Compile Include="DefaultControls\UIScrollBar.cs" />
+    <Compile Include="DefaultControls\UISlider.cs" />
+    <Compile Include="DefaultRenderManager.cs" />
+    <Compile Include="InputManagement\IUIKeyboardAccess.cs" />
+    <Compile Include="InputManagement\IUIMouseAccess.cs" />
+    <Compile Include="InputManagement\IUIMouseSensor.cs" />
+    <Compile Include="InputManagement\UIMouseEventArgs.cs" />
+    <Compile Include="ResourceManagement\UIPointerLoader.cs" />
+    <Compile Include="TaskManagement\IUIBackgroundTask.cs" />
+    <Compile Include="IUIRenderContext.cs" />
+    <Compile Include="IUIRenderLoop.cs" />
+    <Compile Include="IUIRenderManager.cs" />
+    <Compile Include="IUIPlugin.cs" />
+    <Compile Include="IUISpriteManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DefaultRenderContext.cs" />
+    <Compile Include="InputManagement\UIMouseManager.cs" />
+    <Compile Include="ResourceManagement\UIAnimationLoader.cs" />
+    <Compile Include="ResourceManagement\UIFontLoader.cs" />
+    <Compile Include="ResourceManagement\UIResourceFileLoader.cs" />
+    <Compile Include="ResourceManagement\UIResourceLoader.cs" />
+    <Compile Include="ResourceManagement\UISpriteLoader.cs" />
+    <Compile Include="TaskManagement\UIParallelTask.cs" />
+    <Compile Include="TaskManagement\UITaskManager.cs" />
+    <Compile Include="TaskManagement\UITimeSharingTask.cs" />
+    <Compile Include="UIAnimation.cs" />
+    <Compile Include="UIPointer.cs" />
+    <Compile Include="UIRenderManagerBase.cs" />
+    <Compile Include="UIConstants.cs" />
+    <Compile Include="UIException.cs" />
+    <Compile Include="UIFont.cs" />
+    <Compile Include="IUIGraphicsPlatform.cs" />
+    <Compile Include="UIObject.cs" />
+    <Compile Include="ResourceManagement\UIResourceManager.cs" />
+    <Compile Include="UIRoot.cs" />
+    <Compile Include="UISensitiveObject.cs" />
+    <Compile Include="UISprite.cs" />
+    <Compile Include="UIString.cs" />
+    <Compile Include="UIStringFragment.cs" />
+    <Compile Include="WorkspaceManagement\UIContainer.cs" />
+    <Compile Include="WorkspaceManagement\UIDialog.cs" />
+    <Compile Include="WorkspaceManagement\UIPage.cs" />
+    <Compile Include="WorkspaceManagement\UIPanel.cs" />
+    <Compile Include="WorkspaceManagement\UIWorkspace.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RC.Common\RC.Common.csproj">
+      <Project>{96EF40A8-8614-468B-ABC3-7315A1B5B7CA}</Project>
+      <Name>RC.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
