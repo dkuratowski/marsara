@@ -179,6 +179,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.Engine.Pathfinder", "RC.
 		..\config\RC.Engine.Pathfinder\RC.Engine.Pathfinder.TraceConfig.xml = ..\config\RC.Engine.Pathfinder\RC.Engine.Pathfinder.TraceConfig.xml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.UI.MonoGamePlugin", "RC.UI.MonoGamePlugin\RC.UI.MonoGamePlugin.csproj", "{F6538989-D42C-4917-BD8B-32A61F28117D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -547,6 +549,22 @@ Global
 		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Release|x64.ActiveCfg = Release|Any CPU
 		{2311F794-221C-49E5-AC8B-79FFFE6398DC}.Release|x86.ActiveCfg = Release|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Debug|x64.Build.0 = Debug|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Debug|x86.Build.0 = Debug|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Release|x64.ActiveCfg = Release|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Release|x64.Build.0 = Release|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Release|x86.ActiveCfg = Release|Any CPU
+		{F6538989-D42C-4917-BD8B-32A61F28117D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
