@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{896DF5F0-76B8-4172-AE83-798F62558B1E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RC.App.BizLogic</RootNamespace>
+    <AssemblyName>RC.App.BizLogic</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\RC.App.BizLogic.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\RC.App.BizLogic.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BusinessComponents\Core\BuildingButtonListener.cs" />
+    <Compile Include="BusinessComponents\Core\ButtonListener.cs" />
+    <Compile Include="BusinessComponents\Core\CancelButtonListener.cs" />
+    <Compile Include="BusinessComponents\Core\CancelConstructionButtonListener.cs" />
+    <Compile Include="BusinessComponents\Core\CancelProductionButtonListener.cs" />
+    <Compile Include="BusinessComponents\Core\CommandBuilder.cs" />
+    <Compile Include="BusinessComponents\Core\CommandButtonListener.cs" />
+    <Compile Include="BusinessComponents\Core\CommandInputListener.cs" />
+    <Compile Include="BusinessComponents\Core\CommandManagerBC.cs" />
+    <Compile Include="BusinessComponents\Core\CommandInputSlots.cs" />
+    <Compile Include="BusinessComponents\Core\FogOfWar.cs" />
+    <Compile Include="BusinessComponents\Core\FogOfWarBC.cs" />
+    <Compile Include="BusinessComponents\Core\FowCacheMatrix.cs" />
+    <Compile Include="BusinessComponents\Core\FowVisibilityInfo.cs" />
+    <Compile Include="BusinessComponents\Core\ICommandBuilder.cs" />
+    <Compile Include="BusinessComponents\Core\MapWalkabilityReader.cs" />
+    <Compile Include="BusinessComponents\Core\MapWindowImpl.cs" />
+    <Compile Include="BusinessComponents\Core\MapWindowBC.cs" />
+    <Compile Include="BusinessComponents\Core\Minimap.cs" />
+    <Compile Include="BusinessComponents\Core\MinimapPixel.cs" />
+    <Compile Include="BusinessComponents\Core\ScenarioDependentComponent.cs" />
+    <Compile Include="BusinessComponents\Core\TargetPositionListener.cs" />
+    <Compile Include="BusinessComponents\Core\ProductionButtonListener.cs" />
+    <Compile Include="BusinessComponents\EntitySnapshot.cs" />
+    <Compile Include="BusinessComponents\ICommandManagerBC.cs" />
+    <Compile Include="BusinessComponents\IFogOfWarBC.cs" />
+    <Compile Include="BusinessComponents\IMapWindow.cs" />
+    <Compile Include="BusinessComponents\IMapWindowBC.cs" />
+    <Compile Include="BusinessComponents\IMinimap.cs" />
+    <Compile Include="BusinessComponents\IMinimapPixel.cs" />
+    <Compile Include="BusinessComponents\ISelectionManagerBC.cs" />
+    <Compile Include="BusinessComponents\Core\ScenarioManagerBC.cs" />
+    <Compile Include="BusinessComponents\IScenarioManagerBC.cs" />
+    <Compile Include="Services\Core\CommandService.cs" />
+    <Compile Include="Services\Core\ScrollService.cs" />
+    <Compile Include="Services\Core\SelectionService.cs" />
+    <Compile Include="Services\ICommandService.cs" />
+    <Compile Include="Services\IMultiplayerService.cs" />
+    <Compile Include="Services\IScrollService.cs" />
+    <Compile Include="Services\ISelectionService.cs" />
+    <Compile Include="Services\IViewService.cs" />
+    <Compile Include="Services\Core\IViewFactoryRegistry.cs" />
+    <Compile Include="BusinessComponents\Core\SelectionManagerBC.cs" />
+    <Compile Include="BusinessComponents\Core\IPlayerManager.cs" />
+    <Compile Include="BusinessComponents\Core\IPlayerSlot.cs" />
+    <Compile Include="BusinessComponents\Core\PlayerManager.cs" />
+    <Compile Include="BusinessComponents\Core\PlayerSlot.cs" />
+    <Compile Include="Views\Core\CommandView.cs" />
+    <Compile Include="Views\Core\NormalModeObjectPlacementView.cs" />
+    <Compile Include="Views\Core\PlayerView.cs" />
+    <Compile Include="Views\Core\ProductionDetailsView.cs" />
+    <Compile Include="Views\Core\SelectionDetailsView.cs" />
+    <Compile Include="Views\Core\FogOfWarView.cs" />
+    <Compile Include="Views\Core\MinimapView.cs" />
+    <Compile Include="Views\Core\SelectionIndicatorView.cs" />
+    <Compile Include="Services\Core\ViewService.cs" />
+    <Compile Include="Views\CommandButtonStateEnum.cs" />
+    <Compile Include="Views\FogOfWarEnums.cs" />
+    <Compile Include="Views\ICommandView.cs" />
+    <Compile Include="BusinessComponents\Core\BizLogicConstants.cs" />
+    <Compile Include="BusinessComponents\Core\CommandDispatcher.cs" />
+    <Compile Include="Services\Core\MapEditorService.cs" />
+    <Compile Include="Views\Core\MapObjectDetailsView.cs" />
+    <Compile Include="Views\Core\MapEditorModeObjectPlacementView.cs" />
+    <Compile Include="Views\Core\MapObjectView.cs" />
+    <Compile Include="Views\Core\MapTerrainView.cs" />
+    <Compile Include="Views\Core\MapViewBase.cs" />
+    <Compile Include="Views\Core\MetadataView.cs" />
+    <Compile Include="Services\Core\MultiplayerService.cs" />
+    <Compile Include="Views\Core\ObjectPlacementView.cs" />
+    <Compile Include="BusinessComponents\Core\Scheduler.cs" />
+    <Compile Include="Views\Core\TerrainObjectPlacementView.cs" />
+    <Compile Include="BusinessComponents\Core\TilesetManagerBC.cs" />
+    <Compile Include="Views\Core\TileSetView.cs" />
+    <Compile Include="BusinessComponents\ITilesetManagerBC.cs" />
+    <Compile Include="BusinessComponents\Core\TriggeredScheduler.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IMapEditorService.cs" />
+    <Compile Include="Views\IPlayerView.cs" />
+    <Compile Include="Views\IProductionDetailsView.cs" />
+    <Compile Include="Views\ISelectionDetailsView.cs" />
+    <Compile Include="Views\IFogOfWarView.cs" />
+    <Compile Include="Views\IMapObjectDetailsView.cs" />
+    <Compile Include="Views\IMapObjectView.cs" />
+    <Compile Include="Views\IMapTerrainView.cs" />
+    <Compile Include="Views\IMetadataView.cs" />
+    <Compile Include="Views\IMinimapView.cs" />
+    <Compile Include="Views\IObjectPlacementView.cs" />
+    <Compile Include="BusinessComponents\ITaskManagerBC.cs" />
+    <Compile Include="Views\ISelectionIndicatorView.cs" />
+    <Compile Include="Views\MinimapPixelInfo.cs" />
+    <Compile Include="Views\MapObjectConditionEnum.cs" />
+    <Compile Include="Views\SelIndicatorRenderInfo.cs" />
+    <Compile Include="Views\SpriteGroupEnum.cs" />
+    <Compile Include="Views\SpriteRenderInfo.cs" />
+    <Compile Include="Views\SpriteData.cs" />
+    <Compile Include="Views\ITileSetView.cs" />
+    <Compile Include="Views\ObjectPlacementBox.cs" />
+    <Compile Include="Views\PlayerEnum.cs" />
+    <Compile Include="Views\SelIndicatorTypeEnum.cs" />
+    <Compile Include="Views\TargetSelectionModeEnum.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RC.Common\RC.Common.csproj">
+      <Project>{96EF40A8-8614-468B-ABC3-7315A1B5B7CA}</Project>
+      <Name>RC.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.Engine.Maps\RC.Engine.Maps.csproj">
+      <Project>{2B1355DC-847B-4617-94AD-5423BC538B20}</Project>
+      <Name>RC.Engine.Maps</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.Engine.Pathfinder\RC.Engine.Pathfinder.csproj">
+      <Project>{2311f794-221c-49e5-ac8b-79fffe6398dc}</Project>
+      <Name>RC.Engine.Pathfinder</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.Engine.Simulator\RC.Engine.Simulator.csproj">
+      <Project>{2B041172-C0FC-42DB-A344-079F40491FE5}</Project>
+      <Name>RC.Engine.Simulator</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,139 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\RC.Common\RC.Common.csproj" />
+    <ProjectReference Include="..\RC.Engine.Maps\RC.Engine.Maps.csproj" />
+    <ProjectReference Include="..\RC.Engine.Simulator\RC.Engine.Simulator.csproj" />
+  </ItemGroup>
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5160E423-3740-4882-A26A-66B3F9B48632}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RC.Engine.Simulator.Terran</RootNamespace>
-    <AssemblyName>RC.Engine.Simulator.Terran</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Addons\ComsatStation.cs" />
-    <Compile Include="Addons\ControlTower.cs" />
-    <Compile Include="Addons\MachineShop.cs" />
-    <Compile Include="Behaviors\StimPacksBehavior.cs" />
-    <Compile Include="Buildings\Academy.cs" />
-    <Compile Include="Buildings\Armory.cs" />
-    <Compile Include="Buildings\Barracks.cs" />
-    <Compile Include="Buildings\CommandCenter.cs" />
-    <Compile Include="Buildings\EngineeringBay.cs" />
-    <Compile Include="Buildings\Factory.cs" />
-    <Compile Include="Buildings\MissileTurret.cs" />
-    <Compile Include="Buildings\Refinery.cs" />
-    <Compile Include="Buildings\ScienceFacility.cs" />
-    <Compile Include="Buildings\Starport.cs" />
-    <Compile Include="Buildings\SupplyDepot.cs" />
-    <Compile Include="Buildings\TerranBuilding.cs" />
-    <Compile Include="CommandExecutorPlugin.cs" />
-    <Compile Include="Commands\SCVBuildExecutionBase.cs" />
-    <Compile Include="Commands\SCVContinueBuildExecution.cs" />
-    <Compile Include="Commands\SCVRepairExecution.cs" />
-    <Compile Include="Commands\SCVStartBuildExecution.cs" />
-    <Compile Include="Commands\SCVCmdExecutionFactory.cs" />
-    <Compile Include="Commands\SCVStopBuildExecution.cs" />
-    <Compile Include="Commands\TerranBuildingConstructionJob.cs" />
-    <Compile Include="CustomWeapons\SCVBuildTool.cs" />
-    <Compile Include="CustomWeapons\SCVRepairTool.cs" />
-    <Compile Include="ElementFactoryPlugin.cs" />
-    <Compile Include="TerranAbilities.cs" />
-    <Compile Include="TerranHeapManagerPlugin.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TerranScenarioLoaderPlugin.cs" />
-    <Compile Include="TerranUpgrades.cs" />
-    <Compile Include="Units\Goliath.cs" />
-    <Compile Include="Units\Marine.cs" />
-    <Compile Include="Units\SCV.cs" />
-    <Compile Include="Units\Wraith.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RC.Common\RC.Common.csproj">
-      <Project>{96ef40a8-8614-468b-abc3-7315a1b5b7ca}</Project>
-      <Name>RC.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RC.Engine.Maps\RC.Engine.Maps.csproj">
-      <Project>{2b1355dc-847b-4617-94ad-5423bc538b20}</Project>
-      <Name>RC.Engine.Maps</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RC.Engine.Simulator\RC.Engine.Simulator.csproj">
-      <Project>{2b041172-c0fc-42db-a344-079f40491fe5}</Project>
-      <Name>RC.Engine.Simulator</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

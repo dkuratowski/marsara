@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2B1355DC-847B-4617-94AD-5423BC538B20}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RC.Engine.Maps</RootNamespace>
+    <AssemblyName>RC.Engine.Maps</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\RC.Engine.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\RC.Engine.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ComponentInterfaces\IMapEditor.cs" />
+    <Compile Include="ComponentInterfaces\IMapLoader.cs" />
+    <Compile Include="ComponentInterfaces\ITileSetLoader.cs" />
+    <Compile Include="Core\CellChangeSet.cs" />
+    <Compile Include="Core\ColumnChangeSet.cs" />
+    <Compile Include="PublicInterfaces\CellIteratorBase.cs" />
+    <Compile Include="Core\MapAccess.cs" />
+    <Compile Include="Core\MapEditor.cs" />
+    <Compile Include="Core\Constants.cs" />
+    <Compile Include="Core\FloodArea.cs" />
+    <Compile Include="Core\IsoQuarterChangeSet.cs" />
+    <Compile Include="Core\MapFileFormat.cs" />
+    <Compile Include="Core\RectangleChangeSet.cs" />
+    <Compile Include="Core\RowChangeSet.cs" />
+    <Compile Include="Core\MapStructure.cs" />
+    <Compile Include="PublicInterfaces\MapDirection.cs" />
+    <Compile Include="Core\QuadTile.cs" />
+    <Compile Include="Core\IsoTile.cs" />
+    <Compile Include="PublicInterfaces\MapException.cs" />
+    <Compile Include="Core\MapLoader.cs" />
+    <Compile Include="Core\Cell.cs" />
+    <Compile Include="Core\TerrainObject.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PublicInterfaces\ICell.cs" />
+    <Compile Include="PublicInterfaces\ICellDataChangeSet.cs" />
+    <Compile Include="PublicInterfaces\ICellDataChangeSetTarget.cs" />
+    <Compile Include="PublicInterfaces\IIsoTile.cs" />
+    <Compile Include="PublicInterfaces\IIsoTileCondition.cs" />
+    <Compile Include="PublicInterfaces\IIsoTileType.cs" />
+    <Compile Include="PublicInterfaces\IIsoTileVariant.cs" />
+    <Compile Include="PublicInterfaces\IMapAccess.cs" />
+    <Compile Include="PublicInterfaces\IQuadTile.cs" />
+    <Compile Include="PublicInterfaces\ITerrainObject.cs" />
+    <Compile Include="PublicInterfaces\ITerrainObjectConstraint.cs" />
+    <Compile Include="PublicInterfaces\ITerrainObjectType.cs" />
+    <Compile Include="PublicInterfaces\ITerrainType.cs" />
+    <Compile Include="PublicInterfaces\ITileSet.cs" />
+    <Compile Include="Core\MapHelper.cs" />
+    <Compile Include="Core\ComplexCondition.cs" />
+    <Compile Include="Core\IsoTileConstraint.cs" />
+    <Compile Include="Core\NeighbourCondition.cs" />
+    <Compile Include="Core\CellDataChangeSetBase.cs" />
+    <Compile Include="Core\TerrainObjectType.cs" />
+    <Compile Include="Core\TerrainType.cs" />
+    <Compile Include="Core\TileSet.cs" />
+    <Compile Include="PublicInterfaces\MapHeader.cs" />
+    <Compile Include="PublicInterfaces\MapUtils.cs" />
+    <Compile Include="PublicInterfaces\PackageFormats.cs" />
+    <Compile Include="PublicInterfaces\TerrainCombination.cs" />
+    <Compile Include="PublicInterfaces\TileSetException.cs" />
+    <Compile Include="Core\TileSetLoader.cs" />
+    <Compile Include="Core\IsoTileType.cs" />
+    <Compile Include="Core\IsoTileVariant.cs" />
+    <Compile Include="Core\XmlTileSetConstants.cs" />
+    <Compile Include="Core\XmlTileSetReader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RC.Common\RC.Common.csproj">
+      <Project>{96EF40A8-8614-468B-ABC3-7315A1B5B7CA}</Project>
+      <Name>RC.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
