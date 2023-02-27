@@ -20,8 +20,8 @@ namespace RC.UI.MonoGamePlugin
 
         public void Install()
         {
-            //this.graphicsPlatform = new MonoGameGraphicsPlatform();
-            this.graphicsPlatform = new MonoGameMockGraphicsPlatform();
+            this.graphicsPlatform = new MonoGameGraphicsPlatform();
+            //this.graphicsPlatform = new MonoGameMockGraphicsPlatform();
             UIRoot.Instance.RegisterGraphicsPlatform(this.graphicsPlatform);
         }
 
@@ -33,7 +33,7 @@ namespace RC.UI.MonoGamePlugin
 
         #endregion
 
-        //private MonoGameGraphicsPlatform graphicsPlatform;
-        private MonoGameMockGraphicsPlatform graphicsPlatform;
+        private MonoGameGraphicsPlatform graphicsPlatform;
+        //private MonoGameMockGraphicsPlatform graphicsPlatform;
     }
 }
