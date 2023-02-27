@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
 using RC.Common;
-// using System.Windows.Forms;
 using RC.Common.Diagnostics;
 
 namespace RC.UI.MonoGamePlugin
@@ -20,7 +19,6 @@ namespace RC.UI.MonoGamePlugin
         public MonoGameMouseInputDevice(MonoGameGraphicsPlatform platform)
         {
             this.firstUpdateHappened = false;
-            this.isFormActive = true;
             this.platform = platform;
             this.pressedButtons = new RCSet<UIMouseButton>();
             this.scrollWheelPos = 0;
@@ -33,13 +31,11 @@ namespace RC.UI.MonoGamePlugin
         {
             if (!this.firstUpdateHappened)
             {
-                // TODO: implement similar without using Windows Forms
-                // this.platform.Window.GotFocus += this.OnFormActivated;
-                // this.platform.Window.LostFocus += this.OnFormDeactivated;
+                this.platform.Window.Activated += this.OnWindowActivated;
                 this.firstUpdateHappened = true;
             }
 
-            if (this.isFormActive)
+            if (this.platform.Window.IsActive)
             {
                 MouseState mouseState = Mouse.GetState();
                 this.delta = new RCIntVector(mouseState.X, mouseState.Y) - this.systemMousePos;
@@ -86,9 +82,7 @@ namespace RC.UI.MonoGamePlugin
         /// <see cref="IDisposable.Dispose"/>
         public void Dispose()
         {
-            // TODO: implement similar without using Windows Forms
-            // platform.Window.GotFocus -= this.OnFormActivated;
-            // platform.Window.LostFocus -= this.OnFormDeactivated;
+            this.platform.Window.Activated -= this.OnWindowActivated;
         }
 
         #endregion IDisposable methods
@@ -106,24 +100,10 @@ namespace RC.UI.MonoGamePlugin
         /// <summary>
         /// Called when the application form has been activated.
         /// </summary>
-        private void OnFormActivated(object sender, EventArgs evt)
+        private void OnWindowActivated(object sender, EventArgs evt)
         {
-            this.isFormActive = true;
             Mouse.SetPosition(this.systemMousePos.X, this.systemMousePos.Y);
         }
-
-        /// <summary>
-        /// Called when the application form has been deactivated.
-        /// </summary>
-        private void OnFormDeactivated(object sender, EventArgs evt)
-        {
-            this.isFormActive = false;
-        }
-
-        /// <summary>
-        /// This flag indicates whether the application form is active or not.
-        /// </summary>
-        private bool isFormActive;
 
         /// <summary>
         /// Position of the system mouse cursor in screen coordinates.

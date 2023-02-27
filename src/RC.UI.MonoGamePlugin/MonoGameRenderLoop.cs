@@ -9,7 +9,6 @@ using System.IO;
 // using System.Drawing;
 // using System.Drawing.Imaging;
 using RC.Common;
-using System.Windows.Forms;
 
 namespace RC.UI.MonoGamePlugin
 {
@@ -55,14 +54,14 @@ namespace RC.UI.MonoGamePlugin
         }
 
         /// <summary>
-        /// Gets the window of the application.
+        /// Gets the wrapper object of the main window of the RC application.
         /// </summary>
-        public Form Window
+        public MonoGameWindow Window
         {
             get
             {
                 if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameRenderLoop"); }
-                return this.implementation.MainForm;
+                return this.implementation.Window;
             }
         }
 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using RC.Common.Diagnostics;
-// using System.Windows.Forms;
 
 namespace RC.UI.MonoGamePlugin
 {
@@ -48,17 +47,17 @@ namespace RC.UI.MonoGamePlugin
             get { return this.spriteManager; }
         }
 
-        // /// <summary>
-        // /// Gets the window of the application.
-        // /// </summary>
-        // public Form Window
-        // {
-        //     get
-        //     {
-        //         if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameGraphicsPlatform"); }
-        //         return this.renderLoop.Window;
-        //     }
-        // }
+        /// <summary>
+        /// Gets the wrapper object of the main window of the RC application.
+        /// </summary>
+        public MonoGameWindow Window
+        {
+            get
+            {
+                if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameGraphicsPlatform"); }
+                return this.renderLoop.Window;
+            }
+        }
 
         #region UIGraphicsPlatformBase members
 

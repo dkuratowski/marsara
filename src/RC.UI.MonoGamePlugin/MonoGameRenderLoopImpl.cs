@@ -5,9 +5,42 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using RC.Common;
-using System.Windows.Forms;
 using Microsoft.Xna.Framework.Input;
 using RC.Common.Diagnostics;
+
+/// TODO: Get rid of this dummy System.Drawing namespace!
+namespace System.Drawing
+{
+    class Rectangle
+    {
+        public int Top { get { return 0; } }
+        
+        public int Left { get { return 0; } }
+    }
+}
+
+/// TODO: Get rid of this dummy System.Windows.Forms namespace!
+namespace System.Windows.Forms
+{
+    class Screen
+    {
+        public static Screen[] AllScreens
+        {
+            get
+            {
+                return new Screen[] { new Screen() };
+            }
+        }
+
+        public System.Drawing.Rectangle WorkingArea
+        {
+            get
+            {
+                return new System.Drawing.Rectangle();
+            }
+        }
+    }
+}
 
 namespace RC.UI.MonoGamePlugin
 {
@@ -48,9 +81,9 @@ namespace RC.UI.MonoGamePlugin
             this.renderFunctions = renderFunctions;
             this.graphicsMgr = new GraphicsDeviceManager(this);
 
-            /// Create a System.Windows.Forms reference to the main form of the application.
-            this.mainForm = (Form)Form.FromHandle(this.Window.Handle);
-            this.mainForm.FormBorderStyle = FormBorderStyle.None;
+            /// Create a wrapper of the main window of the RC application.
+            this.window = new MonoGameWindow(this);
+            this.window.HasBorder = false;
         }
 
         /// <summary>
@@ -68,11 +101,11 @@ namespace RC.UI.MonoGamePlugin
         }
 
         /// <summary>
-        /// Gets the window of the application.
+        /// Gets the wrapper object of the main window of the RC application.
         /// </summary>
-        public Form MainForm
+        public MonoGameWindow Window
         {
-            get { return this.mainForm; }
+            get { return this.window; }
         }
 
         /// <summary>
@@ -83,10 +116,10 @@ namespace RC.UI.MonoGamePlugin
         /// </summary>
         protected override void Initialize()
         {
-            Screen[] screens = Screen.AllScreens;
+            System.Windows.Forms.Screen[] screens = System.Windows.Forms.Screen.AllScreens;
             int screenIndexToUse = Math.Max(0, Math.Min(UIRoot.Instance.ScreenIndex, screens.Length - 1));
-            this.mainForm.Left = screens[screenIndexToUse].WorkingArea.Left + this.mainForm.Left;
-            this.mainForm.Top = screens[screenIndexToUse].WorkingArea.Top + this.mainForm.Top;
+            this.window.Left = screens[screenIndexToUse].WorkingArea.Left + this.window.Left;
+            this.window.Top = screens[screenIndexToUse].WorkingArea.Top + this.window.Top;
 
             foreach (InitializeDlgt initFunc in this.initFunctions)
             {
@@ -98,31 +131,8 @@ namespace RC.UI.MonoGamePlugin
             this.graphicsMgr.PreferredBackBufferHeight = this.screenSize.Y;
             this.graphicsMgr.ApplyChanges();
 
-            /// TODO: just for debugging
-            //this.realMousePos = new RCIntVector(this.screenSize.X / 2, this.screenSize.Y / 2);
-            //this.mainForm.MouseMove += OnMouseMove;
-
             base.Initialize();
         }
-
-        /// <summary>
-        /// TODO: just for debugging
-        /// </summary>
-        //private void OnMouseMove(object sender, MouseEventArgs e)
-        //{
-        //    RCIntVector delta = new RCIntVector(e.X, e.Y) - this.realMousePos;
-        //    if (delta.X != 0 || delta.Y != 0)
-        //    {
-        //        UIMouseManager.Instance.Pointer.Position += delta;
-        //        TraceManager.WriteAllTrace(UIMouseManager.Instance.Pointer.Position, MonoGameTraceFilters.DETAILS);
-        //        Mouse.SetPosition(this.realMousePos.X, this.realMousePos.Y);
-        //    }
-        //}
-
-        /// <summary>
-        /// TODO: just for debugging
-        /// </summary>
-        //private RCIntVector realMousePos;
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load all of your content.
@@ -205,8 +215,8 @@ namespace RC.UI.MonoGamePlugin
         private RCIntVector screenSize;
 
         /// <summary>
-        /// Reference to the underlying System.Windows.Forms.Form.
+        /// Reference to the wrapper object of the main window of the RC application.
         /// </summary>
-        private Form mainForm;
+        private MonoGameWindow window;
     }
 }
