@@ -30,14 +30,14 @@ namespace RC.UI.MonoGamePlugin
             // UIRoot.Instance.RegisterMouseInputDevice(this.mouseInputDevice);
             // UIRoot.Instance.RegisterKeyboardInputDevice(this.keyboardInputDevice);
 
-            List<MonoGameRenderLoopImpl.UpdateDlgt> updateFunctions = new List<MonoGameRenderLoopImpl.UpdateDlgt>();
-            List<MonoGameRenderLoopImpl.RenderDlgt> renderFunctions = new List<MonoGameRenderLoopImpl.RenderDlgt>();
-            List<MonoGameRenderLoopImpl.InitializeDlgt> initFunctions = new List<MonoGameRenderLoopImpl.InitializeDlgt>();
+            // List<MonoGameRenderLoopImpl.UpdateDlgt> updateFunctions = new List<MonoGameRenderLoopImpl.UpdateDlgt>();
+            // List<MonoGameRenderLoopImpl.RenderDlgt> renderFunctions = new List<MonoGameRenderLoopImpl.RenderDlgt>();
+            // List<MonoGameRenderLoopImpl.InitializeDlgt> initFunctions = new List<MonoGameRenderLoopImpl.InitializeDlgt>();
             // updateFunctions.Add(this.mouseInputDevice.Update);
             // updateFunctions.Add(this.keyboardInputDevice.Update);
-            updateFunctions.Add(this.Update);
-            renderFunctions.Add(this.Render);
-            initFunctions.Add(this.Initialize);
+            // updateFunctions.Add(this.Update);
+            // renderFunctions.Add(this.Render);
+            // initFunctions.Add(this.Initialize);
             
             // TODO: instantiate render loop implementation!
             // this.implementation = new MonoGameRenderLoopImpl(updateFunctions, renderFunctions, initFunctions);
