@@ -29,17 +29,16 @@ namespace RC.UI.MonoGamePlugin
             UIRoot.Instance.RegisterMouseInputDevice(this.mouseInputDevice);
             UIRoot.Instance.RegisterKeyboardInputDevice(this.keyboardInputDevice);
 
-            // List<MonoGameRenderLoopImpl.UpdateDlgt> updateFunctions = new List<MonoGameRenderLoopImpl.UpdateDlgt>();
-            // List<MonoGameRenderLoopImpl.RenderDlgt> renderFunctions = new List<MonoGameRenderLoopImpl.RenderDlgt>();
-            // List<MonoGameRenderLoopImpl.InitializeDlgt> initFunctions = new List<MonoGameRenderLoopImpl.InitializeDlgt>();
-            // updateFunctions.Add(this.mouseInputDevice.Update);
-            // updateFunctions.Add(this.keyboardInputDevice.Update);
-            // updateFunctions.Add(this.Update);
-            // renderFunctions.Add(this.Render);
-            // initFunctions.Add(this.Initialize);
+            List<MonoGameRenderLoopImpl.UpdateDlgt> updateFunctions = new List<MonoGameRenderLoopImpl.UpdateDlgt>();
+            List<MonoGameRenderLoopImpl.RenderDlgt> renderFunctions = new List<MonoGameRenderLoopImpl.RenderDlgt>();
+            List<MonoGameRenderLoopImpl.InitializeDlgt> initFunctions = new List<MonoGameRenderLoopImpl.InitializeDlgt>();
+            updateFunctions.Add(this.mouseInputDevice.Update);
+            updateFunctions.Add(this.keyboardInputDevice.Update);
+            updateFunctions.Add(this.Update);
+            renderFunctions.Add(this.Render);
+            initFunctions.Add(this.Initialize);
             
-            // TODO: instantiate render loop implementation!
-            // this.implementation = new MonoGameRenderLoopImpl(updateFunctions, renderFunctions, initFunctions);
+            this.implementation = new MonoGameRenderLoopImpl(updateFunctions, renderFunctions, initFunctions);
             this.platform = platform;
         }
 
@@ -51,8 +50,7 @@ namespace RC.UI.MonoGamePlugin
             get
             {
                 if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameRenderLoop"); }
-                throw new NotImplementedException();
-                //return this.implementation.GraphicsDevice;
+                return this.implementation.GraphicsDevice;
             }
         }
 
@@ -73,29 +71,23 @@ namespace RC.UI.MonoGamePlugin
         /// <see cref="UIRenderLoopBase.Start_i"/>
         protected override void Start_i(RCIntVector screenSize)
         {
-            // TODO: implement!
-            throw new NotImplementedException();
-            // this.mouseInputDevice.Reset(screenSize / 2);
-            // this.implementation.ScreenSize = screenSize;
-            // this.implementation.Run();
+            this.mouseInputDevice.Reset(screenSize / 2);
+            this.implementation.ScreenSize = screenSize;
+            this.implementation.Run();
         }
 
         /// <see cref="UIRenderLoopBase.Stop_i"/>
         protected override void Stop_i()
         {
-            // TODO: implement!
-            throw new NotImplementedException();
-            // this.implementation.Exit();
+            this.implementation.Exit();
         }
 
         /// <see cref="UIRenderLoopBase.Dispose_i"/>
         protected override void Dispose_i()
         {
-            // TODO: implement!
-            throw new NotImplementedException();
-            // UIRoot.Instance.UnregisterMouseInputDevice();
-            // UIRoot.Instance.UnregisterKeyboardInputDevice();
-            // this.implementation.Dispose();
+            UIRoot.Instance.UnregisterMouseInputDevice();
+            UIRoot.Instance.UnregisterKeyboardInputDevice();
+            this.implementation.Dispose();
         }
 
         #endregion UIRenderLoopBase overrides
@@ -223,10 +215,10 @@ namespace RC.UI.MonoGamePlugin
             this.platform.SpriteManagerImpl.SecondChanceUploadSprites();
         }
 
-        // /// <summary>
-        // /// Reference to the implementation.
-        // /// </summary>
-        // private MonoGameRenderLoopImpl implementation;
+        /// <summary>
+        /// Reference to the implementation.
+        /// </summary>
+        private MonoGameRenderLoopImpl implementation;
 
         /// <summary>
         /// Reference to the platform.
