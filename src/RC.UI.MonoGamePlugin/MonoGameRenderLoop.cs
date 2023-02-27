@@ -98,7 +98,8 @@ namespace RC.UI.MonoGamePlugin
         protected override void RenderSprite_i(UISprite sprite, RCIntVector position)
         {
             MonoGameSprite srcSprite = (MonoGameSprite)sprite;
-            if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
+            // TODO: Uncomment this check once upload really creates the corresponding Texture2D.
+            //if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
 
             if (this.Clip == RCIntRectangle.Undefined)
             {
@@ -122,7 +123,8 @@ namespace RC.UI.MonoGamePlugin
         protected override void RenderSprite_i(UISprite sprite, RCIntVector position, RCIntRectangle section)
         {
             MonoGameSprite srcSprite = (MonoGameSprite)sprite;
-            if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
+            // TODO: Uncomment this check once upload really creates the corresponding Texture2D.
+            // if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
 
             if (this.Clip == RCIntRectangle.Undefined)
             {

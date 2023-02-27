@@ -111,12 +111,12 @@ namespace RC.UI.MonoGamePlugin
             if (device != null)
             {
                 // Bitmap bmpToUpload = this.transparentBitmap == null ? this.rawBitmap : this.transparentBitmap;
-                MemoryStream stream = new MemoryStream();
+                // MemoryStream stream = new MemoryStream();
                 // bmpToUpload.Save(stream, ImageFormat.Png);
 
                 lock (device)
                 {
-                    this.xnaTexture = Texture2D.FromStream(device, stream);
+                    // this.xnaTexture = Texture2D.FromStream(device, stream);
                 }
 
                 // stream.Close();
@@ -241,7 +241,8 @@ namespace RC.UI.MonoGamePlugin
             if (this.xnaTexture != null) { throw new InvalidOperationException("This sprite has already been uploaded to the device!"); }
 
             this.Upload_i();
-            if (this.xnaTexture == null) { throw new UIException("MonoGameSprite: Second chance upload failed!"); }
+            // TODO: Uncomment this check once upload really creates the corresponding Texture2D.
+            // if (this.xnaTexture == null) { throw new UIException("MonoGameSprite: Second chance upload failed!"); }
         }
 
         /// <summary>
