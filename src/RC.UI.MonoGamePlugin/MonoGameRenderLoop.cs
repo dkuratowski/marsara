@@ -24,11 +24,10 @@ namespace RC.UI.MonoGamePlugin
         /// <param name="platform">Reference to the platform.</param>
         public MonoGameRenderLoop(MonoGameGraphicsPlatform platform)
         {
-            // TODO: register input devices!
-            // this.mouseInputDevice = new MonoGameMouseInputDevice(platform);
-            // this.keyboardInputDevice = new MonoGameKeyboardInputDevice();
-            // UIRoot.Instance.RegisterMouseInputDevice(this.mouseInputDevice);
-            // UIRoot.Instance.RegisterKeyboardInputDevice(this.keyboardInputDevice);
+            this.mouseInputDevice = new MonoGameMouseInputDevice(platform);
+            this.keyboardInputDevice = new MonoGameKeyboardInputDevice();
+            UIRoot.Instance.RegisterMouseInputDevice(this.mouseInputDevice);
+            UIRoot.Instance.RegisterKeyboardInputDevice(this.keyboardInputDevice);
 
             // List<MonoGameRenderLoopImpl.UpdateDlgt> updateFunctions = new List<MonoGameRenderLoopImpl.UpdateDlgt>();
             // List<MonoGameRenderLoopImpl.RenderDlgt> renderFunctions = new List<MonoGameRenderLoopImpl.RenderDlgt>();
@@ -234,14 +233,14 @@ namespace RC.UI.MonoGamePlugin
         /// </summary>
         private MonoGameGraphicsPlatform platform;
 
-        // /// <summary>
-        // /// Reference to the mouse input device.
-        // /// </summary>
-        // private MonoGameMouseInputDevice mouseInputDevice;
+        /// <summary>
+        /// Reference to the mouse input device.
+        /// </summary>
+        private MonoGameMouseInputDevice mouseInputDevice;
 
-        // /// <summary>
-        // /// Reference to the keyboard input device.
-        // /// </summary>
-        // private MonoGameKeyboardInputDevice keyboardInputDevice;
+        /// <summary>
+        /// Reference to the keyboard input device.
+        /// </summary>
+        private MonoGameKeyboardInputDevice keyboardInputDevice;
     }
 }

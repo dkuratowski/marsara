@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
 using RC.Common;
-using System.Windows.Forms;
+// using System.Windows.Forms;
 using RC.Common.Diagnostics;
 
 namespace RC.UI.MonoGamePlugin
@@ -33,8 +33,9 @@ namespace RC.UI.MonoGamePlugin
         {
             if (!this.firstUpdateHappened)
             {
-                this.platform.Window.GotFocus += this.OnFormActivated;
-                this.platform.Window.LostFocus += this.OnFormDeactivated;
+                // TODO: implement similar without using Windows Forms
+                // this.platform.Window.GotFocus += this.OnFormActivated;
+                // this.platform.Window.LostFocus += this.OnFormDeactivated;
                 this.firstUpdateHappened = true;
             }
 
@@ -85,8 +86,9 @@ namespace RC.UI.MonoGamePlugin
         /// <see cref="IDisposable.Dispose"/>
         public void Dispose()
         {
-            platform.Window.GotFocus -= this.OnFormActivated;
-            platform.Window.LostFocus -= this.OnFormDeactivated;
+            // TODO: implement similar without using Windows Forms
+            // platform.Window.GotFocus -= this.OnFormActivated;
+            // platform.Window.LostFocus -= this.OnFormDeactivated;
         }
 
         #endregion IDisposable methods
