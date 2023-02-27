@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RC.Starter")]
+[assembly: AssemblyTitle("RC.App.Starter")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Evosoft")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("RC.Starter")]
-[assembly: AssemblyCopyright("Copyright © Evosoft 2012")]
+[assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

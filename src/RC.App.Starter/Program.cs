@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Windows.Forms;
+// using System.Windows.Forms;
 using RC.Common.Configuration;
 using RC.UI;
 using System.Reflection;
@@ -121,7 +121,8 @@ namespace RC.App.Starter
                     Console.WriteLine(currException.ToString());
                 }
 
-                MessageBox.Show("An internal error happened and the application will be closed.\nSee the contents of installed traces for more information!", "Sorry");
+                // TODO: Removed this Windows Forms specific call.
+                //MessageBox.Show("An internal error happened and the application will be closed.\nSee the contents of installed traces for more information!", "Sorry");
             }
         }
 

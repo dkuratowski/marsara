@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F93941DF-ED6E-43EA-8761-CE6092374AB4}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RC.App.Starter</RootNamespace>
+    <AssemblyName>RC</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile></TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\RC.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\RC.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;c:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CmdLineSwitch.cs" />
+    <Compile Include="ConsoleHelper.cs" />
+    <Compile Include="RCAppSetup.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="RC.App.ConstantsConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="RC.MapEditor.ConstantsConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="RC.MapEditor.TraceConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="app.config" />
+    <Content Include="RC.App.root">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="RC.MapEditor.root">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RC.App.BizLogic\RC.App.BizLogic.csproj">
+      <Project>{896DF5F0-76B8-4172-AE83-798F62558B1E}</Project>
+      <Name>RC.App.BizLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.App.PresLogic\RC.App.PresLogic.csproj">
+      <Project>{2893161C-952D-4AD0-8A64-5A04871A6882}</Project>
+      <Name>RC.App.PresLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.Common\RC.Common.csproj">
+      <Project>{96EF40A8-8614-468B-ABC3-7315A1B5B7CA}</Project>
+      <Name>RC.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.Engine.Maps\RC.Engine.Maps.csproj">
+      <Project>{2B1355DC-847B-4617-94AD-5423BC538B20}</Project>
+      <Name>RC.Engine.Maps</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.Engine.Pathfinder\RC.Engine.Pathfinder.csproj">
+      <Project>{2311f794-221c-49e5-ac8b-79fffe6398dc}</Project>
+      <Name>RC.Engine.Pathfinder</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.Engine.Simulator.Terran\RC.Engine.Simulator.Terran.csproj">
+      <Project>{5160e423-3740-4882-a26a-66b3f9b48632}</Project>
+      <Name>RC.Engine.Simulator.Terran</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.Engine.Simulator\RC.Engine.Simulator.csproj">
+      <Project>{2B041172-C0FC-42DB-A344-079F40491FE5}</Project>
+      <Name>RC.Engine.Simulator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.UI.XnaPlugin\RC.UI.XnaPlugin.csproj">
+      <Project>{6D0C55AC-B070-408D-BF61-5B87FC86EF1F}</Project>
+      <Name>RC.UI.XnaPlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RC.UI\RC.UI.csproj">
+      <Project>{E3B50BCB-7EAF-4FD5-A5F4-C78E5C0EEBC3}</Project>
+      <Name>RC.UI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="RC.App.TraceConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(SolutionDir)..\config" "$(TargetDir)config" /e /y /i /r
+xcopy "$(SolutionDir)..\fonts" "$(TargetDir)fonts" /e /y /i /r
+xcopy "$(SolutionDir)..\sprites" "$(TargetDir)sprites" /e /y /i /r
+xcopy "$(SolutionDir)..\animations" "$(TargetDir)animations" /e /y /i /r
+xcopy "$(SolutionDir)..\tilesets" "$(TargetDir)tilesets" /e /y /i /r
+xcopy "$(SolutionDir)..\maps" "$(TargetDir)maps" /e /y /i /r
+xcopy "$(SolutionDir)..\metadata" "$(TargetDir)metadata" /e /y /i /r
+xcopy "$(SolutionDir)..\commands" "$(TargetDir)commands" /e /y /i /r</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
