@@ -146,25 +146,25 @@ namespace RC.App.Starter
         public override void Execute() { ConfigurationManager.Initialize(this.Arguments[0]); }
     }
 
-    /// <summary>
-    /// Command line switch for running RC.exe with a console window (hidden by default).
-    /// </summary>
-    class ConsoleSwitch : CmdLineSwitch
-    {
-        /// <summary>
-        /// The signature of the command line switch.
-        /// </summary>
-        public static readonly string SIGNATURE = "/c";
+    // /// <summary>
+    // /// Command line switch for running RC.exe with a console window (hidden by default).
+    // /// </summary>
+    // class ConsoleSwitch : CmdLineSwitch
+    // {
+    //     /// <summary>
+    //     /// The signature of the command line switch.
+    //     /// </summary>
+    //     public static readonly string SIGNATURE = "/c";
 
-        /// <summary>
-        /// Constructs a ConsoleSwitch object.
-        /// </summary>
-        /// <param name="args">The arguments of the switch.</param>
-        public ConsoleSwitch(string[] args) : base(args) { }
+    //     /// <summary>
+    //     /// Constructs a ConsoleSwitch object.
+    //     /// </summary>
+    //     /// <param name="args">The arguments of the switch.</param>
+    //     public ConsoleSwitch(string[] args) : base(args) { }
 
-        /// <see cref="CmdLineSwitch.Execute"/>
-        public override void Execute() { ConsoleHelper.ShowConsole(); }
-    }
+    //     /// <see cref="CmdLineSwitch.Execute"/>
+    //     public override void Execute() { ConsoleHelper.ShowConsole(); }
+    // }
 
     /// <summary>
     /// Command line switch for start the map editor with a new map.

@@ -24,7 +24,7 @@ namespace RC.App.Starter
             try
             {
                 /// Read and execute the command line switches
-                ConsoleHelper.HideConsole();
+                //ConsoleHelper.HideConsole();
                 CmdLineSwitch.ParseCommandLine(args);
                 CmdLineSwitch.ExecuteSwitches();
 
