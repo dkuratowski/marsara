@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-// using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using RC.Common;
-// using System.Drawing;
-// using System.Drawing.Imaging;
 using Microsoft.Xna.Framework.Graphics;
 using RC.Common.Diagnostics;
 using System.IO;
@@ -24,8 +21,8 @@ namespace RC.UI.MonoGamePlugin
         public MonoGameSpriteManager(MonoGameGraphicsPlatform platform)
         {
             this.platform = platform;
-            //this.sprites = new RCSet<MonoGameSprite>();
-            //this.renderContexts = new Dictionary<MonoGameSprite, MonoGameSpriteRenderContext>();
+            this.sprites = new RCSet<MonoGameSprite>();
+            this.renderContexts = new Dictionary<MonoGameSprite, MonoGameSpriteRenderContext>();
         }
 
         #region UISpriteManagerBase overrides
@@ -37,9 +34,18 @@ namespace RC.UI.MonoGamePlugin
             if (color == RCColor.Undefined) { throw new ArgumentNullException("color"); }
             if (spriteSize == RCIntVector.Undefined) { throw new ArgumentNullException("spriteSize"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
+            // TODO: this is a mock implementation!
+            lock (this.lockObj)
+            {
+                /// Create the MonoGameSprite object and register it to this sprite manager.
+                MonoGameSprite newSprite = new MonoGameSprite(new RCIntVector(1, 1), this.platform);
+                this.sprites.Add(newSprite);
 
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.CreateSprite: Sprite created", MonoGameTraceFilters.INFO);
+                return newSprite;
+            }
+
+            // TODO: this is the original implementation!
             // /// Create the empty bitmap and fill with the given color
             // Bitmap emptyBitmap = new Bitmap(spriteSize.X, spriteSize.Y, PixelFormat.Format24bppRgb);
             // Graphics gc = Graphics.FromImage(emptyBitmap);
@@ -65,9 +71,18 @@ namespace RC.UI.MonoGamePlugin
             if (spriteSize == RCIntVector.Undefined) { throw new ArgumentNullException("spriteSize"); }
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
+            // TODO: this is a mock implementation!
+            lock (this.lockObj)
+            {
+                /// Create the MonoGameSprite object and register it to this sprite manager.
+                MonoGameSprite newSprite = new MonoGameSprite(pixelSize, this.platform);
+                this.sprites.Add(newSprite);
 
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.CreateSprite: Sprite created", MonoGameTraceFilters.INFO);
+                return newSprite;
+            }
+
+            // TODO: this is the original implementation!
             // /// Create the empty bitmap and fill with the given color
             // Bitmap emptyBitmap = new Bitmap(spriteSize.X * pixelSize.X, spriteSize.Y * pixelSize.Y, PixelFormat.Format24bppRgb);
             // Graphics gc = Graphics.FromImage(emptyBitmap);
@@ -91,9 +106,18 @@ namespace RC.UI.MonoGamePlugin
             if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameSpriteManager"); }
             if (null == fileName) { throw new ArgumentNullException("fileName"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
+            // TODO: this is a mock implementation!
+            lock (this.lockObj)
+            {
+                /// Create the MonoGameSprite object and register it to this sprite manager.
+                MonoGameSprite newSprite = new MonoGameSprite(new RCIntVector(1, 1), this.platform);
+                this.sprites.Add(newSprite);
 
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
+                return newSprite;
+            }
+
+            // TODO: this is the original implementation!
             // /// Load the bitmap from the given file.
             // Bitmap loadedBitmap = (Bitmap)Image.FromFile(fileName);
             // if (loadedBitmap.PixelFormat != PixelFormat.Format24bppRgb)
@@ -121,9 +145,18 @@ namespace RC.UI.MonoGamePlugin
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
             if (pixelSize.X <= 0 || pixelSize.Y <= 0) { throw new ArgumentOutOfRangeException("pixelSize"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
+            // TODO: this is a mock implementation!
+            lock (this.lockObj)
+            {
+                /// Create the MonoGameSprite object and register it to this sprite manager.
+                MonoGameSprite newSprite = new MonoGameSprite(pixelSize, this.platform);
+                this.sprites.Add(newSprite);
 
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
+                return newSprite;
+            }
+
+            // TODO: this is the original implementation!
             // /// Load the sprite from the given file.
             // Bitmap loadedBitmap = (Bitmap)Image.FromFile(fileName);
             // if (loadedBitmap.PixelFormat != PixelFormat.Format24bppRgb)
@@ -156,9 +189,18 @@ namespace RC.UI.MonoGamePlugin
             if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameSpriteManager"); }
             if (null == imageData) { throw new ArgumentNullException("imageData"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
+            // TODO: this is a mock implementation!
+            lock (this.lockObj)
+            {
+                /// Create the MonoGameSprite object and register it to this sprite manager.
+                MonoGameSprite newSprite = new MonoGameSprite(new RCIntVector(1, 1), this.platform);
+                this.sprites.Add(newSprite);
 
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
+                return newSprite;
+            }
+
+            // TODO: this is the original implementation!
             // /// Load the bitmap from the given byte array.
             // Stream byteStream = new MemoryStream(imageData);
             // Bitmap loadedBitmap = (Bitmap)Image.FromStream(byteStream);
@@ -188,9 +230,18 @@ namespace RC.UI.MonoGamePlugin
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
             if (pixelSize.X <= 0 || pixelSize.Y <= 0) { throw new ArgumentOutOfRangeException("pixelSize"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
+            // TODO: this is a mock implementation!
+            lock (this.lockObj)
+            {
+                /// Create the MonoGameSprite object and register it to this sprite manager.
+                MonoGameSprite newSprite = new MonoGameSprite(pixelSize, this.platform);
+                this.sprites.Add(newSprite);
 
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
+                return newSprite;
+            }
+
+            // TODO: this is the original implementation!
             // /// Load the bitmap from the given byte array.
             // Stream byteStream = new MemoryStream(imageData);
             // Bitmap loadedBitmap = (Bitmap)Image.FromStream(byteStream);
@@ -226,9 +277,19 @@ namespace RC.UI.MonoGamePlugin
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
             if (pixelSize.X <= 0 || pixelSize.Y <= 0) { throw new ArgumentOutOfRangeException("pixelSize"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
+            // TODO: this is a mock implementation!
+            lock (this.lockObj)
+            {
+                /// Create the MonoGameSprite object and register it to this sprite manager.
+                MonoGameSprite newSprite = new MonoGameSprite(pixelSize, this.platform);
+                newSprite.TransparentColor = sprite.TransparentColor;
+                this.sprites.Add(newSprite);
 
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.ScaleSprite: Sprite created", MonoGameTraceFilters.INFO);
+                return newSprite;
+            }
+
+            // TODO: this is the original implementation!
             // lock (this.lockObj)
             // {
             //     /// Search the sprite in the list.
@@ -263,9 +324,19 @@ namespace RC.UI.MonoGamePlugin
             if (spriteSize == RCIntVector.Undefined) { throw new ArgumentNullException("spriteSize"); }
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
+            // TODO: this is a mock implementation!
+            lock (this.lockObj)
+            {
+                /// Create the MonoGameSprite object and register it to this sprite manager.
+                MonoGameSprite shrinkedSprite = new MonoGameSprite(pixelSize, this.platform);
+                shrinkedSprite.TransparentColor = sprite.TransparentColor;
+                this.sprites.Add(shrinkedSprite);
 
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.ShrinkedSprite: Sprite shrinked", MonoGameTraceFilters.INFO);
+                return shrinkedSprite;
+            }
+
+            // TODO: this is the original implementation!
             // lock (this.lockObj)
             // {
             //     /// Search the sprite in the list.
@@ -323,22 +394,18 @@ namespace RC.UI.MonoGamePlugin
         {
             if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameSpriteManager"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
-
-
-            // lock (this.lockObj)
-            // {
-            //     MonoGameSprite target = (MonoGameSprite)sprite;
-            //     if (this.renderContexts.ContainsKey(target))
-            //     {
-            //         throw new UIException("The given sprite has already an active render context!");
-            //     }
-            //     MonoGameSpriteRenderContext targetContext = new MonoGameSpriteRenderContext(target, this);
-            //     this.renderContexts.Add(target, targetContext);
-            //     TraceManager.WriteAllTrace("MonoGameSpriteManager.CreateRenderContext: Render context for sprite created", MonoGameTraceFilters.INFO);
-            //     return targetContext;
-            // }
+            lock (this.lockObj)
+            {
+                MonoGameSprite target = (MonoGameSprite)sprite;
+                if (this.renderContexts.ContainsKey(target))
+                {
+                    throw new UIException("The given sprite has already an active render context!");
+                }
+                MonoGameSpriteRenderContext targetContext = new MonoGameSpriteRenderContext(target, this);
+                this.renderContexts.Add(target, targetContext);
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.CreateRenderContext: Render context for sprite created", MonoGameTraceFilters.INFO);
+                return targetContext;
+            }
         }
 
         /// <see cref="UISpriteManagerBase.CloseRenderContext"/>
@@ -346,21 +413,18 @@ namespace RC.UI.MonoGamePlugin
         {
             if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameSpriteManager"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
-
-            // lock (this.lockObj)
-            // {
-            //     MonoGameSprite target = (MonoGameSprite)sprite;
-            //     if (!this.renderContexts.ContainsKey(target))
-            //     {
-            //         throw new UIException("The given sprite doesn't have active render context!");
-            //     }
-            //     MonoGameSpriteRenderContext targetContext = this.renderContexts[target];
-            //     this.renderContexts.Remove(target);
-            //     targetContext.Close();
-            //     TraceManager.WriteAllTrace("MonoGameSpriteManager.CloseRenderContext: Render context for sprite closed", MonoGameTraceFilters.INFO);
-            // }
+            lock (this.lockObj)
+            {
+                MonoGameSprite target = (MonoGameSprite)sprite;
+                if (!this.renderContexts.ContainsKey(target))
+                {
+                    throw new UIException("The given sprite doesn't have active render context!");
+                }
+                MonoGameSpriteRenderContext targetContext = this.renderContexts[target];
+                this.renderContexts.Remove(target);
+                targetContext.Close();
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.CloseRenderContext: Render context for sprite closed", MonoGameTraceFilters.INFO);
+            }
         }
 
         /// <see cref="UISpriteManagerBase.DestroySprite"/>
@@ -368,22 +432,19 @@ namespace RC.UI.MonoGamePlugin
         {
             if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameSpriteManager"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
+            lock (this.lockObj)
+            {
+                MonoGameSprite spriteToDestroy = (MonoGameSprite)sprite;
+                if (this.renderContexts.ContainsKey(spriteToDestroy))
+                {
+                    throw new UIException("The given sprite still has active render context!");
+                }
 
-            // lock (this.lockObj)
-            // {
-            //     MonoGameSprite spriteToDestroy = (MonoGameSprite)sprite;
-            //     if (this.renderContexts.ContainsKey(spriteToDestroy))
-            //     {
-            //         throw new UIException("The given sprite still has active render context!");
-            //     }
-
-            //     /// Remove the sprite from the list and destroy it.
-            //     if (!this.sprites.Remove(spriteToDestroy)) { throw new UIException("The given sprite has already been disposed or has not been created by this sprite manager!"); }
-            //     spriteToDestroy.Dispose();
-            //     TraceManager.WriteAllTrace("MonoGameSpriteManager.DestroySprite: Sprite destroyed", MonoGameTraceFilters.INFO);
-            // }
+                /// Remove the sprite from the list and destroy it.
+                if (!this.sprites.Remove(spriteToDestroy)) { throw new UIException("The given sprite has already been disposed or has not been created by this sprite manager!"); }
+                spriteToDestroy.Dispose();
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.DestroySprite: Sprite destroyed", MonoGameTraceFilters.INFO);
+            }
         }
 
         /// <see cref="UISpriteManagerBase.Dispose_i"/>
@@ -391,27 +452,24 @@ namespace RC.UI.MonoGamePlugin
         {
             if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameSpriteManager"); }
 
-            // TODO: implement!
-            throw new NotImplementedException();
+            lock (this.lockObj)
+            {
+                /// Close every opened sprite render contexts
+                TraceManager.WriteAllTrace("Closing sprite render contexts", MonoGameTraceFilters.INFO);
+                foreach (KeyValuePair<MonoGameSprite, MonoGameSpriteRenderContext> item in this.renderContexts)
+                {
+                    item.Value.Close();
+                }
+                this.renderContexts.Clear();
 
-            // lock (this.lockObj)
-            // {
-            //     /// Close every opened sprite render contexts
-            //     TraceManager.WriteAllTrace("Closing sprite render contexts", MonoGameTraceFilters.INFO);
-            //     foreach (KeyValuePair<MonoGameSprite, MonoGameSpriteRenderContext> item in this.renderContexts)
-            //     {
-            //         item.Value.Close();
-            //     }
-            //     this.renderContexts.Clear();
-
-            //     /// Destroy every created sprites
-            //     TraceManager.WriteAllTrace("Destroying sprites", MonoGameTraceFilters.INFO);
-            //     foreach (MonoGameSprite sprite in this.sprites)
-            //     {
-            //         if (sprite != null) { sprite.Dispose(); }
-            //     }
-            //     this.sprites.Clear();
-            // }
+                /// Destroy every created sprites
+                TraceManager.WriteAllTrace("Destroying sprites", MonoGameTraceFilters.INFO);
+                foreach (MonoGameSprite sprite in this.sprites)
+                {
+                    if (sprite != null) { sprite.Dispose(); }
+                }
+                this.sprites.Clear();
+            }
         }
 
         #endregion UISpriteManagerBase overrides
@@ -421,28 +479,25 @@ namespace RC.UI.MonoGamePlugin
         /// </summary>
         public void SecondChanceUploadSprites()
         {
-            // TODO: implement!
-            throw new NotImplementedException();
-
-            // TraceManager.WriteAllTrace("Uploading sprites to the graphics device", MonoGameTraceFilters.INFO);
-            // lock (this.lockObj)
-            // {
-            //     foreach (MonoGameSprite sprite in this.sprites)
-            //     {
-            //         if (sprite.IsUploaded && sprite.XnaTexture == null) { sprite.SecondChanceUpload(); }
-            //     }
-            // }
+            TraceManager.WriteAllTrace("Uploading sprites to the graphics device", MonoGameTraceFilters.INFO);
+            lock (this.lockObj)
+            {
+                foreach (MonoGameSprite sprite in this.sprites)
+                {
+                    if (sprite.IsUploaded && sprite.XnaTexture == null) { sprite.SecondChanceUpload(); }
+                }
+            }
         }
 
-        // /// <summary>
-        // /// List of the sprites created by this sprite manager.
-        // /// </summary>
-        // private RCSet<MonoGameSprite> sprites;
+        /// <summary>
+        /// List of the sprites created by this sprite manager.
+        /// </summary>
+        private RCSet<MonoGameSprite> sprites;
 
-        // /// <summary>
-        // /// List of the sprite render contexts created by this sprite manager.
-        // /// </summary>
-        // private Dictionary<MonoGameSprite, MonoGameSpriteRenderContext> renderContexts;
+        /// <summary>
+        /// List of the sprite render contexts created by this sprite manager.
+        /// </summary>
+        private Dictionary<MonoGameSprite, MonoGameSpriteRenderContext> renderContexts;
 
         /// <summary>
         /// Object used as a mutex.

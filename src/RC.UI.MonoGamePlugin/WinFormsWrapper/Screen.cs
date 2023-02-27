@@ -12,7 +12,7 @@ namespace System.Windows.Forms
         {
             get
             {
-                throw new NotImplementedException();
+                return new Screen[] { new Screen() };
             }
         }
 
@@ -20,7 +20,7 @@ namespace System.Windows.Forms
         {
             get
             {
-                throw new NotImplementedException();
+                return new Rectangle();
             }
         }
     }

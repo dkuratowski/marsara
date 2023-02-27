@@ -7,8 +7,8 @@ namespace System.Drawing
 {
     class Rectangle
     {
-        public int Top { get { throw new NotImplementedException(); } }
+        public int Top { get { return 0; } }
         
-        public int Left { get { throw new NotImplementedException(); } }
+        public int Left { get { return 0; } }
     }
 }

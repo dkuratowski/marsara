@@ -22,8 +22,8 @@ namespace RC.UI.MonoGamePlugin
             this.isClosed = false;
             this.targetSprite = targetSprite;
             this.spriteManager = spriteManager;
-            this.targetBmp = this.targetSprite.RawBitmap;
-            this.targetGC = Graphics.FromImage(this.targetBmp);
+            // this.targetBmp = this.targetSprite.RawBitmap;
+            // this.targetGC = Graphics.FromImage(this.targetBmp);
             this.targetTraspColor = this.targetSprite.TransparentColor;
             this.targetSprite.Lock();
         }
@@ -35,8 +35,8 @@ namespace RC.UI.MonoGamePlugin
         {
             if (!this.isClosed)
             {
-                this.targetGC.Dispose(); this.targetGC = null;
-                this.targetBmp = null;
+                // this.targetGC.Dispose(); this.targetGC = null;
+                // this.targetBmp = null;
                 this.targetSprite.Unlock();
                 this.targetSprite.TransparentColor = RCColor.Undefined;
                 this.targetSprite.TransparentColor = this.targetTraspColor;
@@ -61,10 +61,10 @@ namespace RC.UI.MonoGamePlugin
                             : this.spriteManager.ScaleSprite(sprite, this.targetSprite.PixelSize);
 
             MonoGameSprite srcSprite = (MonoGameSprite)source;
-            Bitmap srcBitmap = srcSprite.TransparentBitmap ?? srcSprite.RawBitmap;
-            this.targetGC.DrawImageUnscaled(srcBitmap,
-                                            position.X * this.targetSprite.PixelSize.X,
-                                            position.Y * this.targetSprite.PixelSize.Y);
+            // Bitmap srcBitmap = srcSprite.TransparentBitmap ?? srcSprite.RawBitmap;
+            // this.targetGC.DrawImageUnscaled(srcBitmap,
+            //                                 position.X * this.targetSprite.PixelSize.X,
+            //                                 position.Y * this.targetSprite.PixelSize.Y);
             if (source != sprite) { this.spriteManager.DestroySprite(source); }
         }
 
@@ -82,22 +82,22 @@ namespace RC.UI.MonoGamePlugin
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             MonoGameSprite srcSprite = (MonoGameSprite)sprite;
-            Bitmap sectionBmp = new Bitmap(section.Width * this.targetSprite.PixelSize.X,
-                                           section.Height * this.targetSprite.PixelSize.Y,
-                                           PixelFormat.Format24bppRgb);
-            MonoGameBitmapUtils.CopyBitmapScaled(srcSprite.RawBitmap, sectionBmp,
-                                            sprite.PixelSize, this.targetSprite.PixelSize,
-                                            section, new RCIntVector(0, 0));
-            if (srcSprite.TransparentColor != RCColor.Undefined)
-            {
-                sectionBmp.MakeTransparent(Color.FromArgb(srcSprite.TransparentColor.R,
-                                                          srcSprite.TransparentColor.G,
-                                                          srcSprite.TransparentColor.B));
-            }
-            this.targetGC.DrawImageUnscaled(sectionBmp,
-                                            position.X * this.targetSprite.PixelSize.X,
-                                            position.Y * this.targetSprite.PixelSize.Y);
-            sectionBmp.Dispose();
+            // Bitmap sectionBmp = new Bitmap(section.Width * this.targetSprite.PixelSize.X,
+            //                                section.Height * this.targetSprite.PixelSize.Y,
+            //                                PixelFormat.Format24bppRgb);
+            // MonoGameBitmapUtils.CopyBitmapScaled(srcSprite.RawBitmap, sectionBmp,
+            //                                 sprite.PixelSize, this.targetSprite.PixelSize,
+            //                                 section, new RCIntVector(0, 0));
+            // if (srcSprite.TransparentColor != RCColor.Undefined)
+            // {
+            //     sectionBmp.MakeTransparent(Color.FromArgb(srcSprite.TransparentColor.R,
+            //                                               srcSprite.TransparentColor.G,
+            //                                               srcSprite.TransparentColor.B));
+            // }
+            // this.targetGC.DrawImageUnscaled(sectionBmp,
+            //                                 position.X * this.targetSprite.PixelSize.X,
+            //                                 position.Y * this.targetSprite.PixelSize.Y);
+            // sectionBmp.Dispose();
         }
 
         /// <see cref="IUIRenderContext.RenderString"/>
@@ -155,15 +155,15 @@ namespace RC.UI.MonoGamePlugin
         /// </summary>
         private MonoGameSprite targetSprite;
 
-        /// <summary>
-        /// The target bitmap to draw.
-        /// </summary>
-        private Bitmap targetBmp;
+        // /// <summary>
+        // /// The target bitmap to draw.
+        // /// </summary>
+        // private Bitmap targetBmp;
 
-        /// <summary>
-        /// Reference to the target GDI context.
-        /// </summary>
-        private Graphics targetGC;
+        // /// <summary>
+        // /// Reference to the target GDI context.
+        // /// </summary>
+        // private Graphics targetGC;
 
         /// <summary>
         /// The transparent color of the target sprite.

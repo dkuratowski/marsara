@@ -9,7 +9,12 @@ namespace System.Windows.Forms
     {
         public static Control? FromHandle(IntPtr handle)
         {
-            throw new NotImplementedException();
+            return new Form(handle);
+        }
+
+        public Form(IntPtr handle)
+        {
+            this.handle = handle;
         }
 
 
@@ -21,16 +26,19 @@ namespace System.Windows.Forms
 
         public int Top
         {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
+            get { return this.top; }
+            set { this.top = value; }
         }
 
         public int Left
         {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
+            get { return this.left; }
+            set { this.left = value; }
         }
 
         private FormBorderStyle formBorderStyle;
+        private int top;
+        private int left;
+        private IntPtr handle;
     }
 }
