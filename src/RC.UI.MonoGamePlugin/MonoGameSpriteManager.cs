@@ -6,6 +6,9 @@ using RC.Common;
 using Microsoft.Xna.Framework.Graphics;
 using RC.Common.Diagnostics;
 using System.IO;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace RC.UI.MonoGamePlugin
 {
@@ -34,33 +37,18 @@ namespace RC.UI.MonoGamePlugin
             if (color == RCColor.Undefined) { throw new ArgumentNullException("color"); }
             if (spriteSize == RCIntVector.Undefined) { throw new ArgumentNullException("spriteSize"); }
 
-            // TODO: this is a mock implementation!
+            /// Create the empty image and fill with the given color
+            Image<Rgb24> emptyImage = new Image<Rgb24>(spriteSize.X, spriteSize.Y, new Rgb24(color.R, color.G, color.B));
+
             lock (this.lockObj)
             {
                 /// Create the MonoGameSprite object and register it to this sprite manager.
-                MonoGameSprite newSprite = new MonoGameSprite(new RCIntVector(1, 1), this.platform);
+                MonoGameSprite newSprite = new MonoGameSprite(emptyImage, new RCIntVector(1, 1), this.platform);
                 this.sprites.Add(newSprite);
 
                 TraceManager.WriteAllTrace("MonoGameSpriteManager.CreateSprite: Sprite created", MonoGameTraceFilters.INFO);
                 return newSprite;
             }
-
-            // TODO: this is the original implementation!
-            // /// Create the empty bitmap and fill with the given color
-            // Bitmap emptyBitmap = new Bitmap(spriteSize.X, spriteSize.Y, PixelFormat.Format24bppRgb);
-            // Graphics gc = Graphics.FromImage(emptyBitmap);
-            // gc.Clear(Color.FromArgb(color.R, color.G, color.B));
-            // gc.Dispose();
-
-            // lock (this.lockObj)
-            // {
-            //     /// Create the MonoGameSprite object and register it to this sprite manager.
-            //     MonoGameSprite newSprite = new MonoGameSprite(emptyBitmap, new RCIntVector(1, 1), this.platform);
-            //     this.sprites.Add(newSprite);
-
-            //     TraceManager.WriteAllTrace("MonoGameSpriteManager.CreateSprite: Sprite created", MonoGameTraceFilters.INFO);
-            //     return newSprite;
-            // }
         }
 
         /// <see cref="IUISpriteManager.CreateSprite"/>
@@ -71,33 +59,22 @@ namespace RC.UI.MonoGamePlugin
             if (spriteSize == RCIntVector.Undefined) { throw new ArgumentNullException("spriteSize"); }
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
 
-            // TODO: this is a mock implementation!
+            /// Create the empty image and fill with the given color
+            Image<Rgb24> emptyImage = new Image<Rgb24>(
+                spriteSize.X * pixelSize.X,
+                spriteSize.Y * pixelSize.Y,
+                new Rgb24(color.R, color.G, color.B)
+            );
+
             lock (this.lockObj)
             {
                 /// Create the MonoGameSprite object and register it to this sprite manager.
-                MonoGameSprite newSprite = new MonoGameSprite(pixelSize, this.platform);
+                MonoGameSprite newSprite = new MonoGameSprite(emptyImage, pixelSize, this.platform);
                 this.sprites.Add(newSprite);
 
                 TraceManager.WriteAllTrace("MonoGameSpriteManager.CreateSprite: Sprite created", MonoGameTraceFilters.INFO);
                 return newSprite;
             }
-
-            // TODO: this is the original implementation!
-            // /// Create the empty bitmap and fill with the given color
-            // Bitmap emptyBitmap = new Bitmap(spriteSize.X * pixelSize.X, spriteSize.Y * pixelSize.Y, PixelFormat.Format24bppRgb);
-            // Graphics gc = Graphics.FromImage(emptyBitmap);
-            // gc.Clear(Color.FromArgb(color.R, color.G, color.B));
-            // gc.Dispose();
-
-            // lock (this.lockObj)
-            // {
-            //     /// Create the MonoGameSprite object and register it to this sprite manager.
-            //     MonoGameSprite newSprite = new MonoGameSprite(emptyBitmap, pixelSize, this.platform);
-            //     this.sprites.Add(newSprite);
-
-            //     TraceManager.WriteAllTrace("MonoGameSpriteManager.CreateSprite: Sprite created", MonoGameTraceFilters.INFO);
-            //     return newSprite;
-            // }
         }
 
         /// <see cref="UISpriteManagerBase.LoadSprite"/>
@@ -106,35 +83,18 @@ namespace RC.UI.MonoGamePlugin
             if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameSpriteManager"); }
             if (null == fileName) { throw new ArgumentNullException("fileName"); }
 
-            // TODO: this is a mock implementation!
+            /// Load the image from the given file.
+            Image<Rgb24> loadedImage = Image.Load<Rgb24>(fileName);
+
             lock (this.lockObj)
             {
                 /// Create the MonoGameSprite object and register it to this sprite manager.
-                MonoGameSprite newSprite = new MonoGameSprite(new RCIntVector(1, 1), this.platform);
+                MonoGameSprite newSprite = new MonoGameSprite(loadedImage, new RCIntVector(1, 1), this.platform);
                 this.sprites.Add(newSprite);
 
                 TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
                 return newSprite;
             }
-
-            // TODO: this is the original implementation!
-            // /// Load the bitmap from the given file.
-            // Bitmap loadedBitmap = (Bitmap)Image.FromFile(fileName);
-            // if (loadedBitmap.PixelFormat != PixelFormat.Format24bppRgb)
-            // {
-            //     throw new ArgumentException("Pixel format of the given Bitmap must be PixelFormat.Format24bppRgb",
-            //                                 "originalBmp");
-            // }
-
-            // lock (this.lockObj)
-            // {
-            //     /// Create the MonoGameSprite object and register it to this sprite manager.
-            //     MonoGameSprite newSprite = new MonoGameSprite(loadedBitmap, new RCIntVector(1, 1), this.platform);
-            //     this.sprites.Add(newSprite);
-
-            //     TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
-            //     return newSprite;
-            // }
         }
 
         /// <see cref="UISpriteManagerBase.LoadSprite"/>
@@ -145,42 +105,27 @@ namespace RC.UI.MonoGamePlugin
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
             if (pixelSize.X <= 0 || pixelSize.Y <= 0) { throw new ArgumentOutOfRangeException("pixelSize"); }
 
-            // TODO: this is a mock implementation!
+            /// Load the image from the given file.
+            Image<Rgb24> loadedImage = Image.Load<Rgb24>(fileName);
+
+            /// Create a new image and copy the original to this new with the given pixel size.
+            Image<Rgb24> scaledImage = new Image<Rgb24>(
+                loadedImage.Size().Width * pixelSize.X,
+                loadedImage.Size().Height * pixelSize.Y,
+                new Rgb24(0, 0, 0)
+            );
+            MonoGameImageUtils.CopyImageScaled(loadedImage, scaledImage, new RCIntVector(1, 1), pixelSize);
+            loadedImage.Dispose();
+
             lock (this.lockObj)
             {
                 /// Create the MonoGameSprite object and register it to this sprite manager.
-                MonoGameSprite newSprite = new MonoGameSprite(pixelSize, this.platform);
+                MonoGameSprite newSprite = new MonoGameSprite(scaledImage, pixelSize, this.platform);
                 this.sprites.Add(newSprite);
 
                 TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
                 return newSprite;
             }
-
-            // TODO: this is the original implementation!
-            // /// Load the sprite from the given file.
-            // Bitmap loadedBitmap = (Bitmap)Image.FromFile(fileName);
-            // if (loadedBitmap.PixelFormat != PixelFormat.Format24bppRgb)
-            // {
-            //     throw new ArgumentException("Pixel format of the given Bitmap must be PixelFormat.Format24bppRgb",
-            //                                 "originalBmp");
-            // }
-
-            // /// Create a new bitmap and copy the original to this new with the given pixel size.
-            // Bitmap scaledBitmap = new Bitmap(loadedBitmap.Width * pixelSize.X,
-            //                                  loadedBitmap.Height * pixelSize.Y,
-            //                                  PixelFormat.Format24bppRgb);
-            // MonoGameBitmapUtils.CopyBitmapScaled(loadedBitmap, scaledBitmap, new RCIntVector(1, 1), pixelSize);
-            // loadedBitmap.Dispose();
-
-            // lock (this.lockObj)
-            // {
-            //     /// Create the MonoGameSprite object and register it to this sprite manager.
-            //     MonoGameSprite newSprite = new MonoGameSprite(scaledBitmap, pixelSize, this.platform);
-            //     this.sprites.Add(newSprite);
-
-            //     TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
-            //     return newSprite;
-            // }
         }
 
         /// <see cref="UISpriteManagerBase.LoadSprite"/>
@@ -189,37 +134,18 @@ namespace RC.UI.MonoGamePlugin
             if (this.ObjectDisposed) { throw new ObjectDisposedException("MonoGameSpriteManager"); }
             if (null == imageData) { throw new ArgumentNullException("imageData"); }
 
-            // TODO: this is a mock implementation!
+            /// Load the image from the given byte array.
+            Image<Rgb24> loadedImage = Image.Load<Rgb24>(imageData);
+
             lock (this.lockObj)
             {
                 /// Create the MonoGameSprite object and register it to this sprite manager.
-                MonoGameSprite newSprite = new MonoGameSprite(new RCIntVector(1, 1), this.platform);
+                MonoGameSprite newSprite = new MonoGameSprite(loadedImage, new RCIntVector(1, 1), this.platform);
                 this.sprites.Add(newSprite);
 
                 TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
                 return newSprite;
             }
-
-            // TODO: this is the original implementation!
-            // /// Load the bitmap from the given byte array.
-            // Stream byteStream = new MemoryStream(imageData);
-            // Bitmap loadedBitmap = (Bitmap)Image.FromStream(byteStream);
-            // byteStream.Close();
-            // if (loadedBitmap.PixelFormat != PixelFormat.Format24bppRgb)
-            // {
-            //     throw new ArgumentException("Pixel format of the given Bitmap must be PixelFormat.Format24bppRgb",
-            //                                 "originalBmp");
-            // }
-
-            // lock (this.lockObj)
-            // {
-            //     /// Create the MonoGameSprite object and register it to this sprite manager.
-            //     MonoGameSprite newSprite = new MonoGameSprite(loadedBitmap, new RCIntVector(1, 1), this.platform);
-            //     this.sprites.Add(newSprite);
-
-            //     TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
-            //     return newSprite;
-            // }
         }
 
         /// <see cref="UISpriteManagerBase.LoadSprite"/>
@@ -230,44 +156,27 @@ namespace RC.UI.MonoGamePlugin
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
             if (pixelSize.X <= 0 || pixelSize.Y <= 0) { throw new ArgumentOutOfRangeException("pixelSize"); }
 
-            // TODO: this is a mock implementation!
+            /// Load the image from the given byte array.
+            Image<Rgb24> loadedImage = Image.Load<Rgb24>(imageData);
+
+            /// Create a new image and copy the original to this new with the given pixel size.
+            Image<Rgb24> scaledImage = new Image<Rgb24>(
+                loadedImage.Size().Width * pixelSize.X,
+                loadedImage.Size().Height * pixelSize.Y,
+                new Rgb24(0, 0, 0)
+            );
+            MonoGameImageUtils.CopyImageScaled(loadedImage, scaledImage, new RCIntVector(1, 1), pixelSize);
+            loadedImage.Dispose();
+
             lock (this.lockObj)
             {
                 /// Create the MonoGameSprite object and register it to this sprite manager.
-                MonoGameSprite newSprite = new MonoGameSprite(pixelSize, this.platform);
+                MonoGameSprite newSprite = new MonoGameSprite(scaledImage, pixelSize, this.platform);
                 this.sprites.Add(newSprite);
 
                 TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
                 return newSprite;
             }
-
-            // TODO: this is the original implementation!
-            // /// Load the bitmap from the given byte array.
-            // Stream byteStream = new MemoryStream(imageData);
-            // Bitmap loadedBitmap = (Bitmap)Image.FromStream(byteStream);
-            // byteStream.Close();
-            // if (loadedBitmap.PixelFormat != PixelFormat.Format24bppRgb)
-            // {
-            //     throw new ArgumentException("Pixel format of the given Bitmap must be PixelFormat.Format24bppRgb",
-            //                                 "originalBmp");
-            // }
-
-            // /// Create a new bitmap and copy the original to this new with the given pixel size.
-            // Bitmap scaledBitmap = new Bitmap(loadedBitmap.Width * pixelSize.X,
-            //                                  loadedBitmap.Height * pixelSize.Y,
-            //                                  PixelFormat.Format24bppRgb);
-            // MonoGameBitmapUtils.CopyBitmapScaled(loadedBitmap, scaledBitmap, new RCIntVector(1, 1), pixelSize);
-            // loadedBitmap.Dispose();
-
-            // lock (this.lockObj)
-            // {
-            //     /// Create the MonoGameSprite object and register it to this sprite manager.
-            //     MonoGameSprite newSprite = new MonoGameSprite(scaledBitmap, pixelSize, this.platform);
-            //     this.sprites.Add(newSprite);
-
-            //     TraceManager.WriteAllTrace("MonoGameSpriteManager.LoadSprite: Sprite created", MonoGameTraceFilters.INFO);
-            //     return newSprite;
-            // }
         }
 
         /// <see cref="UISpriteManagerBase.ScaleSprite"/>
@@ -277,38 +186,27 @@ namespace RC.UI.MonoGamePlugin
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
             if (pixelSize.X <= 0 || pixelSize.Y <= 0) { throw new ArgumentOutOfRangeException("pixelSize"); }
 
-            // TODO: this is a mock implementation!
             lock (this.lockObj)
             {
+                /// Search the sprite in the list.
+                MonoGameSprite spriteToScale = (MonoGameSprite)sprite;
+
+                /// Create a new image and copy the original to this new with the given pixel size.
+                Image<Rgb24> scaledImage = new Image<Rgb24>(
+                    spriteToScale.Size.X * pixelSize.X,
+                    spriteToScale.Size.Y * pixelSize.Y,
+                    new Rgb24(0, 0, 0)
+                );
+                MonoGameImageUtils.CopyImageScaled(spriteToScale.RawImage, scaledImage, spriteToScale.PixelSize, pixelSize);
+
                 /// Create the MonoGameSprite object and register it to this sprite manager.
-                MonoGameSprite newSprite = new MonoGameSprite(pixelSize, this.platform);
+                MonoGameSprite newSprite = new MonoGameSprite(scaledImage, pixelSize, this.platform);
                 newSprite.TransparentColor = sprite.TransparentColor;
                 this.sprites.Add(newSprite);
 
                 TraceManager.WriteAllTrace("MonoGameSpriteManager.ScaleSprite: Sprite created", MonoGameTraceFilters.INFO);
                 return newSprite;
             }
-
-            // TODO: this is the original implementation!
-            // lock (this.lockObj)
-            // {
-            //     /// Search the sprite in the list.
-            //     MonoGameSprite spriteToScale = (MonoGameSprite)sprite;
-
-            //     /// Create a new bitmap and copy the original to this new with the given pixel size.
-            //     Bitmap scaledBitmap = new Bitmap(spriteToScale.Size.X * pixelSize.X,
-            //                                      spriteToScale.Size.Y * pixelSize.Y,
-            //                                      PixelFormat.Format24bppRgb);
-            //     MonoGameBitmapUtils.CopyBitmapScaled(spriteToScale.RawBitmap, scaledBitmap, spriteToScale.PixelSize, pixelSize);
-
-            //     /// Create the MonoGameSprite object and register it to this sprite manager.
-            //     MonoGameSprite newSprite = new MonoGameSprite(scaledBitmap, pixelSize, this.platform);
-            //     newSprite.TransparentColor = sprite.TransparentColor;
-            //     this.sprites.Add(newSprite);
-
-            //     TraceManager.WriteAllTrace("MonoGameSpriteManager.ScaleSprite: Sprite created", MonoGameTraceFilters.INFO);
-            //     return newSprite;
-            // }
         }
 
         /// <see cref="UISpriteManagerBase.ShrinkSprite"/>
@@ -324,69 +222,52 @@ namespace RC.UI.MonoGamePlugin
             if (spriteSize == RCIntVector.Undefined) { throw new ArgumentNullException("spriteSize"); }
             if (pixelSize == RCIntVector.Undefined) { throw new ArgumentNullException("pixelSize"); }
 
-            // TODO: this is a mock implementation!
             lock (this.lockObj)
             {
+                /// Search the sprite in the list.
+                MonoGameSprite spriteToShrink = (MonoGameSprite)sprite;
+
+                /// Create a copy of the original image with pixelsize (1, 1) and shrink it.
+                Image<Rgb24> shrinkedImage = new Image<Rgb24>(
+                    spriteToShrink.Size.X,
+                    spriteToShrink.Size.Y,
+                    new Rgb24(0, 0, 0)
+                );
+                MonoGameImageUtils.CopyImageScaled(
+                    spriteToShrink.RawImage,
+                    shrinkedImage,
+                    spriteToShrink.PixelSize,
+                    new RCIntVector(1, 1)
+                );
+                shrinkedImage.Mutate(x => x.Resize(spriteSize.X, spriteSize.Y, KnownResamplers.NearestNeighbor));
+
+                /// Scale the shrinked image to the target pixel size if necessary.
+                Image<Rgb24> scaledShrinkedImage;
+                if (pixelSize != new RCIntVector(1, 1))
+                {
+                    scaledShrinkedImage = new Image<Rgb24>(
+                        shrinkedImage.Size().Width * pixelSize.X,
+                        shrinkedImage.Size().Height * pixelSize.Y,
+                        new Rgb24(0, 0, 0)
+                    );
+                    MonoGameImageUtils.CopyImageScaled(shrinkedImage, scaledShrinkedImage, new RCIntVector(1, 1), pixelSize);
+                }
+                else
+                {
+                    scaledShrinkedImage = shrinkedImage;
+                }
+
                 /// Create the MonoGameSprite object and register it to this sprite manager.
-                MonoGameSprite shrinkedSprite = new MonoGameSprite(pixelSize, this.platform);
+                MonoGameSprite shrinkedSprite = new MonoGameSprite(scaledShrinkedImage, pixelSize, this.platform);
                 shrinkedSprite.TransparentColor = sprite.TransparentColor;
                 this.sprites.Add(shrinkedSprite);
 
-                TraceManager.WriteAllTrace("MonoGameSpriteManager.ShrinkedSprite: Sprite shrinked", MonoGameTraceFilters.INFO);
+                /// Cleanup if necessary.
+                if (shrinkedImage != scaledShrinkedImage) { shrinkedImage.Dispose(); }
+
+                TraceManager.WriteAllTrace("MonoGameSpriteManager.ShrinkSprite: Sprite shrinked", MonoGameTraceFilters.INFO);
                 return shrinkedSprite;
             }
-
-            // TODO: this is the original implementation!
-            // lock (this.lockObj)
-            // {
-            //     /// Search the sprite in the list.
-            //     MonoGameSprite spriteToShrink = (MonoGameSprite)sprite;
-
-            //     /// Create a copy of the original bitmap with pixelsize (1, 1) if necessary.
-            //     Bitmap bitmapToShrink;
-            //     if (spriteToShrink.PixelSize != new RCIntVector(1, 1))
-            //     {
-            //         bitmapToShrink = new Bitmap(spriteToShrink.Size.X, spriteToShrink.Size.Y, PixelFormat.Format24bppRgb);
-            //         MonoGameBitmapUtils.CopyBitmapScaled(spriteToShrink.RawBitmap, bitmapToShrink, spriteToShrink.PixelSize, new RCIntVector(1, 1));
-            //     }
-            //     else
-            //     {
-            //         bitmapToShrink = spriteToShrink.RawBitmap;
-            //     }
-
-            //     /// Create the shrinked bitmap with pixelsize (1, 1).
-            //     Bitmap shrinkedBitmap = new Bitmap(spriteSize.X, spriteSize.Y, PixelFormat.Format24bppRgb);
-            //     Graphics gc = Graphics.FromImage(shrinkedBitmap);
-            //     gc.InterpolationMode = InterpolationMode.NearestNeighbor;
-            //     gc.DrawImage(bitmapToShrink, new Rectangle(0, 0, spriteSize.X, spriteSize.Y), new Rectangle(0, 0, bitmapToShrink.Width, bitmapToShrink.Height), GraphicsUnit.Pixel);
-            //     gc.Dispose();
-
-            //     /// Scale the shrinked bitmap to the target pixel size if necessary.
-            //     Bitmap scaledShrinkedBitmap;
-            //     if (pixelSize != new RCIntVector(1, 1))
-            //     {
-            //         scaledShrinkedBitmap = new Bitmap(shrinkedBitmap.Width*pixelSize.X,
-            //                                           shrinkedBitmap.Height*pixelSize.Y,
-            //                                           PixelFormat.Format24bppRgb);
-            //         MonoGameBitmapUtils.CopyBitmapScaled(shrinkedBitmap, scaledShrinkedBitmap, new RCIntVector(1, 1), pixelSize);
-            //     }
-            //     else
-            //     {
-            //         scaledShrinkedBitmap = shrinkedBitmap;
-            //     }
-
-            //     /// Create the MonoGameSprite object and register it to this sprite manager.
-            //     MonoGameSprite shrinkedSprite = new MonoGameSprite(scaledShrinkedBitmap, pixelSize, this.platform);
-            //     shrinkedSprite.TransparentColor = sprite.TransparentColor;
-            //     this.sprites.Add(shrinkedSprite);
-
-            //     /// Cleanup if necessary.
-            //     if (bitmapToShrink != spriteToShrink.RawBitmap) { bitmapToShrink.Dispose(); }
-            //     if (shrinkedBitmap != scaledShrinkedBitmap) { shrinkedBitmap.Dispose(); }
-
-            //     TraceManager.WriteAllTrace("MonoGameSpriteManager.ShrinkedSprite: Sprite shrinked", MonoGameTraceFilters.INFO);
-            //     return shrinkedSprite;
-            // }
         }
 
         /// <see cref="UISpriteManagerBase.CreateRenderContext_i"/>
@@ -401,7 +282,7 @@ namespace RC.UI.MonoGamePlugin
                 {
                     throw new UIException("The given sprite has already an active render context!");
                 }
-                MonoGameSpriteRenderContext targetContext = new MonoGameSpriteRenderContext(target, this);
+                MonoGameSpriteRenderContext targetContext = new MonoGameSpriteRenderContext(target);
                 this.renderContexts.Add(target, targetContext);
                 TraceManager.WriteAllTrace("MonoGameSpriteManager.CreateRenderContext: Render context for sprite created", MonoGameTraceFilters.INFO);
                 return targetContext;

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RC.Common;
-using System.Drawing;
-using System.Drawing.Imaging;
+using SixLabors.ImageSharp;
 
 namespace RC.UI.MonoGamePlugin
 {
@@ -17,14 +16,10 @@ namespace RC.UI.MonoGamePlugin
         /// Constructs an MonoGameSpriteRenderContext object for the given MonoGameSprite.
         /// </summary>
         /// <param name="targetSprite">The target MonoGameSprite.</param>
-        public MonoGameSpriteRenderContext(MonoGameSprite targetSprite, MonoGameSpriteManager spriteManager)
+        public MonoGameSpriteRenderContext(MonoGameSprite targetSprite)
         {
             this.isClosed = false;
             this.targetSprite = targetSprite;
-            this.spriteManager = spriteManager;
-            // this.targetBmp = this.targetSprite.RawBitmap;
-            // this.targetGC = Graphics.FromImage(this.targetBmp);
-            this.targetTraspColor = this.targetSprite.TransparentColor;
             this.targetSprite.Lock();
         }
 
@@ -35,14 +30,14 @@ namespace RC.UI.MonoGamePlugin
         {
             if (!this.isClosed)
             {
-                // this.targetGC.Dispose(); this.targetGC = null;
-                // this.targetBmp = null;
                 this.targetSprite.Unlock();
+
+                // Enforce recreating the underlying transparent image of the target sprite.
+                RCColor targetTransparentColor = this.targetSprite.TransparentColor;
                 this.targetSprite.TransparentColor = RCColor.Undefined;
-                this.targetSprite.TransparentColor = this.targetTraspColor;
+                this.targetSprite.TransparentColor = targetTransparentColor;
+
                 this.targetSprite = null;
-                this.targetTraspColor = RCColor.Undefined;
-                this.spriteManager = null;
                 this.isClosed = true;
             }
         }
@@ -52,20 +47,7 @@ namespace RC.UI.MonoGamePlugin
         /// <see cref="IUIRenderContext.RenderSprite"/>
         public void RenderSprite(UISprite sprite, RCIntVector position)
         {
-            if (this.isClosed) { throw new UIException("Render context unavailable!"); }
-            if (sprite == null) { throw new ArgumentNullException("sprite"); }
-            if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
-
-            UISprite source = sprite.PixelSize == this.targetSprite.PixelSize
-                            ? sprite
-                            : this.spriteManager.ScaleSprite(sprite, this.targetSprite.PixelSize);
-
-            MonoGameSprite srcSprite = (MonoGameSprite)source;
-            // Bitmap srcBitmap = srcSprite.TransparentBitmap ?? srcSprite.RawBitmap;
-            // this.targetGC.DrawImageUnscaled(srcBitmap,
-            //                                 position.X * this.targetSprite.PixelSize.X,
-            //                                 position.Y * this.targetSprite.PixelSize.Y);
-            if (source != sprite) { this.spriteManager.DestroySprite(source); }
+            this.RenderSprite(sprite, position, new RCIntRectangle(0, 0, sprite.Size.X, sprite.Size.Y));
         }
 
         /// <see cref="IUIRenderContext.RenderSprite"/>
@@ -73,7 +55,7 @@ namespace RC.UI.MonoGamePlugin
         {
             if (section == RCIntRectangle.Undefined)
             {
-                this.RenderSprite(sprite, position);
+                this.RenderSprite(sprite, position, new RCIntRectangle(0, 0, sprite.Size.X, sprite.Size.Y));
                 return;
             }
 
@@ -82,22 +64,11 @@ namespace RC.UI.MonoGamePlugin
             if (position == RCIntVector.Undefined) { throw new ArgumentNullException("position"); }
 
             MonoGameSprite srcSprite = (MonoGameSprite)sprite;
-            // Bitmap sectionBmp = new Bitmap(section.Width * this.targetSprite.PixelSize.X,
-            //                                section.Height * this.targetSprite.PixelSize.Y,
-            //                                PixelFormat.Format24bppRgb);
-            // MonoGameBitmapUtils.CopyBitmapScaled(srcSprite.RawBitmap, sectionBmp,
-            //                                 sprite.PixelSize, this.targetSprite.PixelSize,
-            //                                 section, new RCIntVector(0, 0));
-            // if (srcSprite.TransparentColor != RCColor.Undefined)
-            // {
-            //     sectionBmp.MakeTransparent(Color.FromArgb(srcSprite.TransparentColor.R,
-            //                                               srcSprite.TransparentColor.G,
-            //                                               srcSprite.TransparentColor.B));
-            // }
-            // this.targetGC.DrawImageUnscaled(sectionBmp,
-            //                                 position.X * this.targetSprite.PixelSize.X,
-            //                                 position.Y * this.targetSprite.PixelSize.Y);
-            // sectionBmp.Dispose();
+            MonoGameImageUtils.CopyImageScaled(
+                srcSprite.RawImage, targetSprite.RawImage,
+                srcSprite.PixelSize, this.targetSprite.PixelSize,
+                section, position,
+                srcSprite.TransparentColor);
         }
 
         /// <see cref="IUIRenderContext.RenderString"/>
@@ -154,26 +125,6 @@ namespace RC.UI.MonoGamePlugin
         /// Reference to the target sprite of this render context.
         /// </summary>
         private MonoGameSprite targetSprite;
-
-        // /// <summary>
-        // /// The target bitmap to draw.
-        // /// </summary>
-        // private Bitmap targetBmp;
-
-        // /// <summary>
-        // /// Reference to the target GDI context.
-        // /// </summary>
-        // private Graphics targetGC;
-
-        /// <summary>
-        /// The transparent color of the target sprite.
-        /// </summary>
-        private RCColor targetTraspColor;
-
-        /// <summary>
-        /// Reference to the sprite manager that created this render context.
-        /// </summary>
-        private MonoGameSpriteManager spriteManager;
 
         /// <summary>
         /// This flag indicates whether this render context is closed or not.

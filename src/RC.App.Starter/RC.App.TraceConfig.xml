@@ -10,6 +10,10 @@
   <activateTraceFilters pattern="RC.UI.XnaPlugin.Warning" />
   <activateTraceFilters pattern="RC.UI.XnaPlugin.Info" />
   <activateTraceFilters pattern="RC.UI.XnaPlugin.Details" /-->
+  <!-- <activateTraceFilters pattern="RC.UI.MonoGamePlugin.Error" />
+  <activateTraceFilters pattern="RC.UI.MonoGamePlugin.Warning" />
+  <activateTraceFilters pattern="RC.UI.MonoGamePlugin.Info" />
+  <activateTraceFilters pattern="RC.UI.MonoGamePlugin.Details" /> -->
   <activateTraceFilters pattern="RC.Engine.Maps.Error" />
   <activateTraceFilters pattern="RC.Engine.Maps.Warning" />
   <activateTraceFilters pattern="RC.Engine.Maps.Info" />

@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Drawing;
-using System.Drawing.Imaging;
 using RC.Common;
 using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using RC.Common.Diagnostics;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace RC.UI.MonoGamePlugin
 {
     /// <summary>
-    /// This implementation of the UISprite uses XNA-textures and System.Drawing.Bitmaps for representing
+    /// This implementation of the UISprite uses MonoGame textures and SixLabors.ImageSharp.Images for representing
     /// the image data.
     /// </summary>
     class MonoGameSprite : UISprite, IDisposable
@@ -21,46 +21,46 @@ namespace RC.UI.MonoGamePlugin
         /// <summary>
         /// Constructs an MonoGameSprite object.
         /// </summary>
-        /// <param name="rawBitmap">The underlying System.Drawing.Bitmap of this MonoGameSprite.</param>
+        /// <param name="rawImage">The underlying SixLabors.ImageSharp.Image of this MonoGameSprite.</param>
         /// <param name="pixelSize">The pixel size of this MonoGameSprite.</param>
-        public MonoGameSprite(/*Bitmap rawBitmap, */RCIntVector pixelSize, MonoGameGraphicsPlatform platform)
-            : base(/*rawBitmap.Width / pixelSize.X, rawBitmap.Height / pixelSize.Y*/10, 10, pixelSize)
+        public MonoGameSprite(Image<Rgb24> rawImage, RCIntVector pixelSize, MonoGameGraphicsPlatform platform)
+            : base(rawImage.Width / pixelSize.X, rawImage.Height / pixelSize.Y, pixelSize)
         {
             this.isLocked = false;
-            // this.rawBitmap = rawBitmap;
-            // this.transparentBitmap = null;
+            this.rawImage = rawImage;
+            this.transparentImage = null;
             this.isUploaded = false;
             this.xnaTexture = null;
             this.platform = platform;
         }
 
-        // /// <summary>
-        // /// Gets the underlying System.Drawing.Bitmap of this MonoGameSprite.
-        // /// </summary>
-        // public Bitmap RawBitmap
-        // {
-        //     get
-        //     {
-        //         if (this.isLocked) { throw new UIException("Sprite is locked"); }
-        //         return this.rawBitmap;
-        //     }
-        // }
-
-        // /// <summary>
-        // /// Gets the transparent version of the underlying System.Drawing.Bitmap or null if there is no
-        // /// transparent color has been set.
-        // /// </summary>
-        // public Bitmap TransparentBitmap
-        // {
-        //     get
-        //     {
-        //         if (this.isLocked) { throw new UIException("Sprite is locked"); }
-        //         return this.transparentBitmap;
-        //     }
-        // }
+        /// <summary>
+        /// Gets the underlying SixLabors.ImageSharp.Image of this MonoGameSprite.
+        /// </summary>
+        public Image<Rgb24> RawImage
+        {
+            get
+            {
+                if (this.isLocked) { throw new UIException("Sprite is locked"); }
+                return this.rawImage;
+            }
+        }
 
         /// <summary>
-        /// Gets the 2D texture of the underlying System.Drawing.Bitmap uploaded to the video card.
+        /// Gets the transparent version of the underlying SixLabors.ImageSharp.Image or null if there is no
+        /// transparent color has been set.
+        /// </summary>
+        public Image<Rgba32> TransparentImage
+        {
+            get
+            {
+                if (this.isLocked) { throw new UIException("Sprite is locked"); }
+                return this.transparentImage;
+            }
+        }
+
+        /// <summary>
+        /// Gets the 2D texture of the underlying SixLabors.ImageSharp.Image uploaded to the video card.
         /// </summary>
         public Texture2D XnaTexture
         {
@@ -86,18 +86,21 @@ namespace RC.UI.MonoGamePlugin
 
             if (newColor == RCColor.Undefined)
             {
-                // /// The transparent bitmap should be deleted and the original bitmap has to be loaded.
-                // this.transparentBitmap.Dispose();
-                // this.transparentBitmap = null;
+                /// The transparent image should be deleted and the original image has to be loaded.
+                this.transparentImage.Dispose();
+                this.transparentImage = null;
                 TraceManager.WriteAllTrace("MonoGameSprite: transparent bitmap destroyed", MonoGameTraceFilters.DETAILS);
             }
             else
             {
-                /// The transparent bitmap should be replaced and has to be loaded.
-                // if (this.transparentBitmap != null) { this.transparentBitmap.Dispose(); }
-                // this.transparentBitmap = new Bitmap(this.rawBitmap.Width, this.rawBitmap.Height, PixelFormat.Format24bppRgb);
-                // MonoGameBitmapUtils.CopyBitmapScaled(this.rawBitmap, this.transparentBitmap, this.PixelSize, this.PixelSize);
-                // this.transparentBitmap.MakeTransparent(Color.FromArgb(newColor.R, newColor.G, newColor.B));
+                /// The transparent image should be replaced and has to be loaded.
+                if (this.transparentImage != null) { this.transparentImage.Dispose(); }
+                this.transparentImage = new Image<Rgba32>(
+                    this.rawImage.Size().Width,
+                    this.rawImage.Size().Height,
+                    new Rgba32(0, 0, 0, 0)
+                );
+                MonoGameImageUtils.MakeImageTransparent(this.rawImage, this.transparentImage, newColor);
                 TraceManager.WriteAllTrace("MonoGameSprite: transparent bitmap replaced", MonoGameTraceFilters.DETAILS);
             }
         }
@@ -110,24 +113,24 @@ namespace RC.UI.MonoGamePlugin
             GraphicsDevice device = this.platform.Device;
             if (device != null)
             {
-                // Bitmap bmpToUpload = this.transparentBitmap == null ? this.rawBitmap : this.transparentBitmap;
-                // MemoryStream stream = new MemoryStream();
-                // bmpToUpload.Save(stream, ImageFormat.Png);
+                Image imageToUpload = this.transparentImage == null ? this.rawImage : this.transparentImage;
+                MemoryStream stream = new MemoryStream();
+                imageToUpload.SaveAsPng(stream);
 
                 lock (device)
                 {
-                    // this.xnaTexture = Texture2D.FromStream(device, stream);
+                    this.xnaTexture = Texture2D.FromStream(device, stream);
                 }
 
-                // stream.Close();
-                // if (bmpToUpload == this.transparentBitmap)
-                // {
-                //     TraceManager.WriteAllTrace("MonoGameSprite: transparent bitmap uploaded", MonoGameTraceFilters.DETAILS);
-                // }
-                // else
-                // {
+                stream.Close();
+                if (imageToUpload == this.transparentImage)
+                {
+                    TraceManager.WriteAllTrace("MonoGameSprite: transparent bitmap uploaded", MonoGameTraceFilters.DETAILS);
+                }
+                else
+                {
                     TraceManager.WriteAllTrace("MonoGameSprite: raw bitmap uploaded", MonoGameTraceFilters.DETAILS);
-                // }
+                }
             }
             else
             {
@@ -144,7 +147,7 @@ namespace RC.UI.MonoGamePlugin
             {
                 lock (this.platform.Device)
                 {
-                    // this.xnaTexture.Dispose();
+                    this.xnaTexture.Dispose();
                 }
 
                 this.xnaTexture = null;
@@ -160,8 +163,8 @@ namespace RC.UI.MonoGamePlugin
             if (this.isLocked) { throw new UIException("Sprite is locked"); }
             if (fileName == null || fileName.Length == 0) { throw new ArgumentNullException("fileName"); }
 
-            // Bitmap bmpToSave = this.transparentBitmap == null ? this.rawBitmap : this.transparentBitmap;
-            // bmpToSave.Save(fileName, ImageFormat.Png);
+            Image imageToSave = this.transparentImage == null ? this.rawImage : this.transparentImage;
+            imageToSave.SaveAsPng(fileName);
         }
 
         /// <see cref="UISprite.Save"/>
@@ -169,13 +172,12 @@ namespace RC.UI.MonoGamePlugin
         {
             if (this.isLocked) { throw new UIException("Sprite is locked"); }
 
-            // Bitmap bmpToSave = this.transparentBitmap == null ? this.rawBitmap : this.transparentBitmap;
-            // using (MemoryStream outputStream = new MemoryStream())
-            // {
-            //     bmpToSave.Save(outputStream, ImageFormat.Png);
-            //     return outputStream.ToArray();
-            // }
-            return new byte[0];
+            Image imageToSave = this.transparentImage == null ? this.rawImage : this.transparentImage;
+            using (MemoryStream outputStream = new MemoryStream())
+            {
+                imageToSave.SaveAsPng(outputStream);
+                return outputStream.ToArray();
+            }
         }
 
         #endregion UISprite overrides
@@ -187,22 +189,22 @@ namespace RC.UI.MonoGamePlugin
         {
             if (this.isLocked) { throw new UIException("Sprite is locked"); }
 
-            // this.rawBitmap.Dispose();
-            // this.rawBitmap = null;
+            this.rawImage.Dispose();
+            this.rawImage = null;
             TraceManager.WriteAllTrace("MonoGameSprite: raw bitmap destroyed", MonoGameTraceFilters.DETAILS);
 
-            // if (this.transparentBitmap != null)
-            // {
-                // this.transparentBitmap.Dispose();
-                // this.transparentBitmap = null;
+            if (this.transparentImage != null)
+            {
+                this.transparentImage.Dispose();
+                this.transparentImage = null;
                 TraceManager.WriteAllTrace("MonoGameSprite: transparent bitmap destroyed", MonoGameTraceFilters.DETAILS);
-            // }
+            }
 
             if (this.xnaTexture != null)
             {
                 lock (this.platform.Device)
                 {
-                    // this.xnaTexture.Dispose();
+                    this.xnaTexture.Dispose();
                 }
 
                 this.xnaTexture = null;
@@ -241,8 +243,7 @@ namespace RC.UI.MonoGamePlugin
             if (this.xnaTexture != null) { throw new InvalidOperationException("This sprite has already been uploaded to the device!"); }
 
             this.Upload_i();
-            // TODO: Uncomment this check once upload really creates the corresponding Texture2D.
-            // if (this.xnaTexture == null) { throw new UIException("MonoGameSprite: Second chance upload failed!"); }
+            if (this.xnaTexture == null) { throw new UIException("MonoGameSprite: Second chance upload failed!"); }
         }
 
         /// <summary>
@@ -250,19 +251,19 @@ namespace RC.UI.MonoGamePlugin
         /// </summary>
         private bool isLocked;
 
-        // /// <summary>
-        // /// The underlying System.Drawing.Bitmap of this MonoGameSprite.
-        // /// </summary>
-        // private Bitmap rawBitmap;
-
-        // /// <summary>
-        // /// The transparent version of the underlying System.Drawing.Bitmap or null if there is no
-        // /// transparent color has been set.
-        // /// </summary>
-        // private Bitmap transparentBitmap;
+        /// <summary>
+        /// The underlying SixLabors.ImageSharp.Image of this MonoGameSprite.
+        /// </summary>
+        private Image<Rgb24> rawImage;
 
         /// <summary>
-        /// The 2D texture of the underlying System.Drawing.Bitmap uploaded to the video card.
+        /// The transparent version of the underlying SixLabors.ImageSharp.Image or null if there is no
+        /// transparent color has been set.
+        /// </summary>
+        private Image<Rgba32> transparentImage;
+
+        /// <summary>
+        /// The 2D texture of the underlying SixLabors.ImageSharp.Image uploaded to the video card.
         /// </summary>
         private Texture2D xnaTexture;
 

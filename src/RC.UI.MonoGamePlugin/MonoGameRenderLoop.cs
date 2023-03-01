@@ -6,8 +6,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Threading;
 using System.IO;
-// using System.Drawing;
-// using System.Drawing.Imaging;
 using RC.Common;
 
 namespace RC.UI.MonoGamePlugin
@@ -97,24 +95,30 @@ namespace RC.UI.MonoGamePlugin
         protected override void RenderSprite_i(UISprite sprite, RCIntVector position)
         {
             MonoGameSprite srcSprite = (MonoGameSprite)sprite;
-            // TODO: Uncomment this check once upload really creates the corresponding Texture2D.
-            //if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
+            if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
 
             if (this.Clip == RCIntRectangle.Undefined)
             {
                 /// No clipping rectangle --> normal render
-                // TODO: Uncomment when srcSprite.XnaTexture could be loaded successfully!
-                // this.implementation.SpriteBatch.Draw(srcSprite.XnaTexture,
-                //                                      new Vector2((float)position.X, (float)position.Y),
-                //                                      Microsoft.Xna.Framework.Color.White);
+                this.implementation.SpriteBatch.Draw(
+                    srcSprite.XnaTexture,
+                    new Vector2((float)position.X, (float)position.Y),
+                    Color.White
+                );
             }
             else
             {
                 /// Clipping rectangle exists --> render with clip
-                RenderSpriteWithClip(srcSprite, position, new RCIntRectangle(0,
-                                                                          0,
-                                                                          srcSprite.Size.X * sprite.PixelSize.X,
-                                                                          srcSprite.Size.Y * sprite.PixelSize.Y));
+                RenderSpriteWithClip(
+                    srcSprite,
+                    position,
+                    new RCIntRectangle(
+                        0,
+                        0,
+                        srcSprite.Size.X * sprite.PixelSize.X,
+                        srcSprite.Size.Y * sprite.PixelSize.Y
+                    )
+                );
             }
         }
 
@@ -122,31 +126,38 @@ namespace RC.UI.MonoGamePlugin
         protected override void RenderSprite_i(UISprite sprite, RCIntVector position, RCIntRectangle section)
         {
             MonoGameSprite srcSprite = (MonoGameSprite)sprite;
-            // TODO: Uncomment this check once upload really creates the corresponding Texture2D.
-            // if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
+            if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
 
             if (this.Clip == RCIntRectangle.Undefined)
             {
                 /// No clipping rectangle --> normal render
-                Microsoft.Xna.Framework.Rectangle srcRect =
-                    new Microsoft.Xna.Framework.Rectangle(section.X * sprite.PixelSize.X,
-                                                          section.Y * sprite.PixelSize.Y,
-                                                          section.Width * sprite.PixelSize.X,
-                                                          section.Height * sprite.PixelSize.Y);
+                Rectangle srcRect = new Rectangle(
+                    section.X * sprite.PixelSize.X,
+                    section.Y * sprite.PixelSize.Y,
+                    section.Width * sprite.PixelSize.X,
+                    section.Height * sprite.PixelSize.Y
+                );
 
-                // TODO: Uncomment when srcSprite.XnaTexture could be loaded successfully!
-                // this.implementation.SpriteBatch.Draw(srcSprite.XnaTexture,
-                //                                      new Vector2((float)position.X, (float)position.Y),
-                //                                      srcRect,
-                //                                      Microsoft.Xna.Framework.Color.White);
+                this.implementation.SpriteBatch.Draw(
+                    srcSprite.XnaTexture,
+                    new Vector2((float)position.X, (float)position.Y),
+                    srcRect,
+                    Color.White
+                );
             }
             else
             {
                 /// Clipping rectangle exists --> render with clip
-                RenderSpriteWithClip(srcSprite, position, new RCIntRectangle(section.X * sprite.PixelSize.X,
-                                                                          section.Y * sprite.PixelSize.Y,
-                                                                          section.Width * sprite.PixelSize.X,
-                                                                          section.Height * sprite.PixelSize.Y));
+                RenderSpriteWithClip(
+                    srcSprite,
+                    position,
+                    new RCIntRectangle(
+                        section.X * sprite.PixelSize.X,
+                        section.Y * sprite.PixelSize.Y,
+                        section.Width * sprite.PixelSize.X,
+                        section.Height * sprite.PixelSize.Y
+                    )
+                );
             }
         }
 
@@ -185,24 +196,30 @@ namespace RC.UI.MonoGamePlugin
         private void RenderSpriteWithClip(MonoGameSprite sprite, RCIntVector position, RCIntRectangle absSection)
         {
             /// Compute the clipped section in the coordinate-system of the XNA-texture.
-            RCIntRectangle clippedSection = new RCIntRectangle(this.Clip.Location - position + absSection.Location,
-                                                               this.Clip.Size);
+            RCIntRectangle clippedSection = new RCIntRectangle(
+                this.Clip.Location - position + absSection.Location,
+                this.Clip.Size
+            );
             clippedSection.Intersect(absSection);
 
             if (clippedSection != RCIntRectangle.Undefined)
             {
-                Microsoft.Xna.Framework.Rectangle srcRect =
-                    new Microsoft.Xna.Framework.Rectangle(clippedSection.X,
-                                                          clippedSection.Y,
-                                                          clippedSection.Width,
-                                                          clippedSection.Height);
+                Rectangle srcRect = new Rectangle(
+                    clippedSection.X,
+                    clippedSection.Y,
+                    clippedSection.Width,
+                    clippedSection.Height
+                );
 
-                // TODO: Uncomment when srcSprite.XnaTexture could be loaded successfully!
-                // this.implementation.SpriteBatch.Draw(sprite.XnaTexture,
-                //                                      new Vector2((float)position.X + (float)clippedSection.X - (float)absSection.X,
-                //                                                  (float)position.Y + (float)clippedSection.Y - (float)absSection.Y),
-                //                                      srcRect,
-                //                                      Microsoft.Xna.Framework.Color.White);
+                this.implementation.SpriteBatch.Draw(
+                    sprite.XnaTexture,
+                    new Vector2(
+                        (float)position.X + (float)clippedSection.X - (float)absSection.X,
+                        (float)position.Y + (float)clippedSection.Y - (float)absSection.Y
+                    ),
+                    srcRect,
+                    Color.White
+                );
             }
         }
 

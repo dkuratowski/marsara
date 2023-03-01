@@ -275,7 +275,7 @@ namespace RC.Common
         /// </summary>
         /// <param name="other">The other RCIntRectangle to intersect with.</param>
         /// <remarks>
-        /// If this and other RCRectangles don't intersect each other, then this RCIntRectangle becomes RCIntRectangle.Undefined.
+        /// If this and other RCIntRectangles don't intersect each other, then this RCIntRectangle becomes RCIntRectangle.Undefined.
         /// </remarks>
         public void Intersect(RCIntRectangle other)
         {
@@ -286,7 +286,7 @@ namespace RC.Common
         }
 
         /// <summary>
-        /// Returns a third RCIntRectangle that represents the intersection of two other RCRectangles.
+        /// Returns a third RCIntRectangle that represents the intersection of two other RCIntRectangles.
         /// If there is no intersection, RCIntRectangle.Undefined is returned.
         /// </summary>
         /// <param name="lRect">An RCIntRectangle to intersect.</param>
