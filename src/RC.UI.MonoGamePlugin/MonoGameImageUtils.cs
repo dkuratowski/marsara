@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using RC.Common;
+using RC.Common.Diagnostics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -121,17 +122,25 @@ namespace RC.UI.MonoGamePlugin
                         ).Span;
                         for (int subPixelRow = 0; subPixelRow < tgtPixelSize.Y; subPixelRow++)
                         {
-                            Span<Rgb24> tgtPixelRow = tgtAccessor.GetRowSpan((tgtPosition.Y + row) * tgtPixelSize.Y + subPixelRow);
-                            for (int col = 0; col < srcSection.Width; col++)
+                            int tgtPixelRowIndex = (tgtPosition.Y + row) * tgtPixelSize.Y + subPixelRow;
+                            if (tgtPixelRowIndex >= 0 && tgtPixelRowIndex < target.Size().Height)
                             {
-                                // Copy the source pixel if its not transparent.
-                                Rgb24 srcPixel = srcPixelRow[(srcSection.Left + col) * srcPixelSize.X];
-                                if (!PixelColorEquals(srcPixel, transparentColor))
+                                Span<Rgb24> tgtPixelRow = tgtAccessor.GetRowSpan(tgtPixelRowIndex);
+                                for (int col = 0; col < srcSection.Width; col++)
                                 {
-                                    for (int subPixelCol = 0; subPixelCol < tgtPixelSize.X; subPixelCol++)
+                                    // Copy the source pixel if its not transparent.
+                                    Rgb24 srcPixel = srcPixelRow[(srcSection.Left + col) * srcPixelSize.X];
+                                    if (!PixelColorEquals(srcPixel, transparentColor))
                                     {
-                                        ref Rgb24 tgtPixel = ref tgtPixelRow[(tgtPosition.X + col) * tgtPixelSize.X + subPixelCol];
-                                        tgtPixel = srcPixel;
+                                        for (int subPixelCol = 0; subPixelCol < tgtPixelSize.X; subPixelCol++)
+                                        {
+                                            int tgtPixelColIndex = (tgtPosition.X + col) * tgtPixelSize.X + subPixelCol;
+                                            if (tgtPixelColIndex >= 0 && tgtPixelColIndex < target.Size().Width)
+                                            {
+                                                ref Rgb24 tgtPixel = ref tgtPixelRow[tgtPixelColIndex];
+                                                tgtPixel = srcPixel;
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -167,22 +176,28 @@ namespace RC.UI.MonoGamePlugin
                 {
                     for (int row = 0; row < srcSection.Height; row++)
                     {
-                        ReadOnlySpan<Rgb24> srcPixelRow = srcPixelMemory.Slice(
-                            row * source.Size().Width,
-                            source.Size().Width
-                        ).Span;
-                        Span<Rgba32> tgtPixelRow = tgtAccessor.GetRowSpan(row);
-                        for (int col = 0; col < srcSection.Width; col++)
+                        if (row < target.Size().Height)
                         {
-                            // Copy the source pixel to the target pixel.
-                            Rgb24 srcPixel = srcPixelRow[col];
-                            ref Rgba32 tgtPixel = ref tgtPixelRow[col];
-                            tgtPixel.R = srcPixel.R;
-                            tgtPixel.G = srcPixel.G;
-                            tgtPixel.B = srcPixel.B;
+                            ReadOnlySpan<Rgb24> srcPixelRow = srcPixelMemory.Slice(
+                                row * source.Size().Width,
+                                source.Size().Width
+                            ).Span;
+                            Span<Rgba32> tgtPixelRow = tgtAccessor.GetRowSpan(row);
+                            for (int col = 0; col < srcSection.Width; col++)
+                            {
+                                if (col < target.Size().Width)
+                                {
+                                    // Copy the source pixel to the target pixel.
+                                    Rgb24 srcPixel = srcPixelRow[col];
+                                    ref Rgba32 tgtPixel = ref tgtPixelRow[col];
+                                    tgtPixel.R = srcPixel.R;
+                                    tgtPixel.G = srcPixel.G;
+                                    tgtPixel.B = srcPixel.B;
 
-                            // Set the Alpha component of the target pixel based on its color.
-                            tgtPixel.A = PixelColorEquals(srcPixel, transparentColor) ? (byte)0 : (byte)255;
+                                    // Set the Alpha component of the target pixel based on its color.
+                                    tgtPixel.A = PixelColorEquals(srcPixel, transparentColor) ? (byte)0 : (byte)255;
+                                }
+                            }
                         }
                     }
                 });

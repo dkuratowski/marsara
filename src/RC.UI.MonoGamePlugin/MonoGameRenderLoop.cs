@@ -95,13 +95,13 @@ namespace RC.UI.MonoGamePlugin
         protected override void RenderSprite_i(UISprite sprite, RCIntVector position)
         {
             MonoGameSprite srcSprite = (MonoGameSprite)sprite;
-            if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
+            if (srcSprite.MonoGameTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
 
             if (this.Clip == RCIntRectangle.Undefined)
             {
                 /// No clipping rectangle --> normal render
                 this.implementation.SpriteBatch.Draw(
-                    srcSprite.XnaTexture,
+                    srcSprite.MonoGameTexture,
                     new Vector2((float)position.X, (float)position.Y),
                     Color.White
                 );
@@ -126,7 +126,7 @@ namespace RC.UI.MonoGamePlugin
         protected override void RenderSprite_i(UISprite sprite, RCIntVector position, RCIntRectangle section)
         {
             MonoGameSprite srcSprite = (MonoGameSprite)sprite;
-            if (srcSprite.XnaTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
+            if (srcSprite.MonoGameTexture == null) { throw new InvalidOperationException("Sprite not uploaded to the graphics device!"); }
 
             if (this.Clip == RCIntRectangle.Undefined)
             {
@@ -139,7 +139,7 @@ namespace RC.UI.MonoGamePlugin
                 );
 
                 this.implementation.SpriteBatch.Draw(
-                    srcSprite.XnaTexture,
+                    srcSprite.MonoGameTexture,
                     new Vector2((float)position.X, (float)position.Y),
                     srcRect,
                     Color.White
@@ -191,11 +191,11 @@ namespace RC.UI.MonoGamePlugin
         /// <param name="sprite">The sprite to render.</param>
         /// <param name="position">The position where to render in screen coordinates.</param>
         /// <param name="absSection">
-        /// The section of the sprite to render in the coordinate-system of the XNA-texture.
+        /// The section of the sprite to render in the coordinate-system of the MonoGame texture.
         /// </param>
         private void RenderSpriteWithClip(MonoGameSprite sprite, RCIntVector position, RCIntRectangle absSection)
         {
-            /// Compute the clipped section in the coordinate-system of the XNA-texture.
+            /// Compute the clipped section in the coordinate-system of the MonoGame texture.
             RCIntRectangle clippedSection = new RCIntRectangle(
                 this.Clip.Location - position + absSection.Location,
                 this.Clip.Size
@@ -212,7 +212,7 @@ namespace RC.UI.MonoGamePlugin
                 );
 
                 this.implementation.SpriteBatch.Draw(
-                    sprite.XnaTexture,
+                    sprite.MonoGameTexture,
                     new Vector2(
                         (float)position.X + (float)clippedSection.X - (float)absSection.X,
                         (float)position.Y + (float)clippedSection.Y - (float)absSection.Y

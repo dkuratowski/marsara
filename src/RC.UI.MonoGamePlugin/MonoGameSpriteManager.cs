@@ -365,7 +365,7 @@ namespace RC.UI.MonoGamePlugin
             {
                 foreach (MonoGameSprite sprite in this.sprites)
                 {
-                    if (sprite.IsUploaded && sprite.XnaTexture == null) { sprite.SecondChanceUpload(); }
+                    if (sprite.IsUploaded && sprite.MonoGameTexture == null) { sprite.SecondChanceUpload(); }
                 }
             }
         }

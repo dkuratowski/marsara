@@ -30,7 +30,7 @@ namespace RC.UI.MonoGamePlugin
             this.rawImage = rawImage;
             this.transparentImage = null;
             this.isUploaded = false;
-            this.xnaTexture = null;
+            this.monoGameTexture = null;
             this.platform = platform;
         }
 
@@ -62,12 +62,12 @@ namespace RC.UI.MonoGamePlugin
         /// <summary>
         /// Gets the 2D texture of the underlying SixLabors.ImageSharp.Image uploaded to the video card.
         /// </summary>
-        public Texture2D XnaTexture
+        public Texture2D MonoGameTexture
         {
             get
             {
                 if (this.isLocked) { throw new UIException("Sprite is locked"); }
-                return this.xnaTexture;
+                return this.monoGameTexture;
             }
         }
 
@@ -119,7 +119,7 @@ namespace RC.UI.MonoGamePlugin
 
                 lock (device)
                 {
-                    this.xnaTexture = Texture2D.FromStream(device, stream);
+                    this.monoGameTexture = Texture2D.FromStream(device, stream);
                 }
 
                 stream.Close();
@@ -143,15 +143,15 @@ namespace RC.UI.MonoGamePlugin
         /// <see cref="UISprite.Download_i"/>
         protected override void Download_i()
         {
-            if (this.xnaTexture != null)
+            if (this.monoGameTexture != null)
             {
                 lock (this.platform.Device)
                 {
-                    this.xnaTexture.Dispose();
+                    this.monoGameTexture.Dispose();
                 }
 
-                this.xnaTexture = null;
-                TraceManager.WriteAllTrace("MonoGameSprite: XNA-texture destroyed", MonoGameTraceFilters.DETAILS);
+                this.monoGameTexture = null;
+                TraceManager.WriteAllTrace("MonoGameSprite: MonoGame texture destroyed", MonoGameTraceFilters.DETAILS);
             }
 
             this.isUploaded = false;
@@ -200,15 +200,15 @@ namespace RC.UI.MonoGamePlugin
                 TraceManager.WriteAllTrace("MonoGameSprite: transparent bitmap destroyed", MonoGameTraceFilters.DETAILS);
             }
 
-            if (this.xnaTexture != null)
+            if (this.monoGameTexture != null)
             {
                 lock (this.platform.Device)
                 {
-                    this.xnaTexture.Dispose();
+                    this.monoGameTexture.Dispose();
                 }
 
-                this.xnaTexture = null;
-                TraceManager.WriteAllTrace("MonoGameSprite: XNA-texture destroyed", MonoGameTraceFilters.DETAILS);
+                this.monoGameTexture = null;
+                TraceManager.WriteAllTrace("MonoGameSprite: MonoGame texture destroyed", MonoGameTraceFilters.DETAILS);
             }
         }
 
@@ -240,10 +240,10 @@ namespace RC.UI.MonoGamePlugin
         public void SecondChanceUpload()
         {
             if (!this.isUploaded) { throw new InvalidOperationException("This sprite was not uploaded to the device!"); }
-            if (this.xnaTexture != null) { throw new InvalidOperationException("This sprite has already been uploaded to the device!"); }
+            if (this.monoGameTexture != null) { throw new InvalidOperationException("This sprite has already been uploaded to the device!"); }
 
             this.Upload_i();
-            if (this.xnaTexture == null) { throw new UIException("MonoGameSprite: Second chance upload failed!"); }
+            if (this.monoGameTexture == null) { throw new UIException("MonoGameSprite: Second chance upload failed!"); }
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace RC.UI.MonoGamePlugin
         /// <summary>
         /// The 2D texture of the underlying SixLabors.ImageSharp.Image uploaded to the video card.
         /// </summary>
-        private Texture2D xnaTexture;
+        private Texture2D monoGameTexture;
 
         /// <summary>
         /// This flag indicates whether this MonoGameSprite has been uploaded to the graphics device or not.
