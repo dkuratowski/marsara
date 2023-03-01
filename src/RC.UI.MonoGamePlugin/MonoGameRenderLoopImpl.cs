@@ -8,40 +8,6 @@ using RC.Common;
 using Microsoft.Xna.Framework.Input;
 using RC.Common.Diagnostics;
 
-/// TODO: Get rid of this dummy System.Drawing namespace!
-namespace System.Drawing
-{
-    class Rectangle
-    {
-        public int Top { get { return 0; } }
-        
-        public int Left { get { return 0; } }
-    }
-}
-
-/// TODO: Get rid of this dummy System.Windows.Forms namespace!
-namespace System.Windows.Forms
-{
-    class Screen
-    {
-        public static Screen[] AllScreens
-        {
-            get
-            {
-                return new Screen[] { new Screen() };
-            }
-        }
-
-        public System.Drawing.Rectangle WorkingArea
-        {
-            get
-            {
-                return new System.Drawing.Rectangle();
-            }
-        }
-    }
-}
-
 namespace RC.UI.MonoGamePlugin
 {
     /// <summary>
@@ -116,10 +82,11 @@ namespace RC.UI.MonoGamePlugin
         /// </summary>
         protected override void Initialize()
         {
-            System.Windows.Forms.Screen[] screens = System.Windows.Forms.Screen.AllScreens;
-            int screenIndexToUse = Math.Max(0, Math.Min(UIRoot.Instance.ScreenIndex, screens.Length - 1));
-            this.window.Left = screens[screenIndexToUse].WorkingArea.Left + this.window.Left;
-            this.window.Top = screens[screenIndexToUse].WorkingArea.Top + this.window.Top;
+            // TODO: reimplement screen selection functionality without using System.Windows.Forms.Screen!
+            // System.Windows.Forms.Screen[] screens = System.Windows.Forms.Screen.AllScreens;
+            // int screenIndexToUse = Math.Max(0, Math.Min(UIRoot.Instance.ScreenIndex, screens.Length - 1));
+            // this.window.Left = screens[screenIndexToUse].WorkingArea.Left + this.window.Left;
+            // this.window.Top = screens[screenIndexToUse].WorkingArea.Top + this.window.Top;
 
             foreach (InitializeDlgt initFunc in this.initFunctions)
             {

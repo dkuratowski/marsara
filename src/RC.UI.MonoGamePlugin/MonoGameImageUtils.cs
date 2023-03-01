@@ -106,21 +106,26 @@ namespace RC.UI.MonoGamePlugin
             tgtSection.Intersect(new RCIntRectangle(0, 0, target.Size().Width / tgtPixelSize.X, target.Size().Height / tgtPixelSize.Y));
             if (tgtSection == RCIntRectangle.Undefined) { return; }
 
-            source.ProcessPixelRows(srcAccessor =>
+            // Process the pixel memory of the source image.
+            source.ProcessPixelMemory(srcPixelMemory =>
             {
+                // Process the pixel rows of the target image.
                 target.ProcessPixelRows(tgtAccessor =>
                 {
                     // Iterate through the logical pixel rows of the source section.
                     for (int row = 0; row < srcSection.Height; row++)
                     {
-                        Span<Rgb24> srcPixelRow = srcAccessor.GetRowSpan((srcSection.Top + row) * srcPixelSize.Y);
+                        ReadOnlySpan<Rgb24> srcPixelRow = srcPixelMemory.Slice(
+                            (srcSection.Top + row) * srcPixelSize.Y * source.Size().Width,
+                            source.Size().Width
+                        ).Span;
                         for (int subPixelRow = 0; subPixelRow < tgtPixelSize.Y; subPixelRow++)
                         {
                             Span<Rgb24> tgtPixelRow = tgtAccessor.GetRowSpan((tgtPosition.Y + row) * tgtPixelSize.Y + subPixelRow);
                             for (int col = 0; col < srcSection.Width; col++)
                             {
                                 // Copy the source pixel if its not transparent.
-                                ref Rgb24 srcPixel = ref srcPixelRow[(srcSection.Left + col) * srcPixelSize.X];
+                                Rgb24 srcPixel = srcPixelRow[(srcSection.Left + col) * srcPixelSize.X];
                                 if (!PixelColorEquals(srcPixel, transparentColor))
                                 {
                                     for (int subPixelCol = 0; subPixelCol < tgtPixelSize.X; subPixelCol++)
@@ -156,18 +161,21 @@ namespace RC.UI.MonoGamePlugin
             srcSection.Intersect(new RCIntRectangle(0, 0, target.Size().Width, target.Size().Height));
             if (srcSection == RCIntRectangle.Undefined) { return; }
 
-            source.ProcessPixelRows(srcAccessor =>
+            source.ProcessPixelMemory(srcPixelMemory =>
             {
                 target.ProcessPixelRows(tgtAccessor =>
                 {
                     for (int row = 0; row < srcSection.Height; row++)
                     {
-                        Span<Rgb24> srcPixelRow = srcAccessor.GetRowSpan(row);
+                        ReadOnlySpan<Rgb24> srcPixelRow = srcPixelMemory.Slice(
+                            row * source.Size().Width,
+                            source.Size().Width
+                        ).Span;
                         Span<Rgba32> tgtPixelRow = tgtAccessor.GetRowSpan(row);
                         for (int col = 0; col < srcSection.Width; col++)
                         {
                             // Copy the source pixel to the target pixel.
-                            ref Rgb24 srcPixel = ref srcPixelRow[col];
+                            Rgb24 srcPixel = srcPixelRow[col];
                             ref Rgba32 tgtPixel = ref tgtPixelRow[col];
                             tgtPixel.R = srcPixel.R;
                             tgtPixel.G = srcPixel.G;
@@ -190,6 +198,37 @@ namespace RC.UI.MonoGamePlugin
         private static bool PixelColorEquals(Rgb24 pixel, RCColor color)
         {
             return color != RCColor.Undefined && pixel.R == color.R && pixel.G == color.G && pixel.B == color.B;
+        }
+
+        /// <summary>
+        /// Processes the pixel memory of the image.
+        /// </summary>
+        /// <param name="thisImage">The image that this method extends.</param>
+        /// <param name="processPixelMemory">An action that can access the pixel memory of the image.</param>
+        private static void ProcessPixelMemory(this Image<Rgb24> thisImage, Action<ReadOnlyMemory<Rgb24>> processPixelMemory)
+        {
+            // Get access to the contiguous pixel memory of the image.
+            if (!thisImage.DangerousTryGetSinglePixelMemory(out Memory<Rgb24> pixelMemory))
+            {
+                // In case of failure clone the image by enforcing the usage of contiguous image buffer and give it a second try.
+                Configuration customConfig = Configuration.Default.Clone();
+                customConfig.PreferContiguousImageBuffers = true;
+                using (Image<Rgb24> imageClone = thisImage.Clone(customConfig))
+                {
+                    if (!imageClone.DangerousTryGetSinglePixelMemory(out Memory<Rgb24> clonedPixelMemory))
+                    {
+                        // In case of second failure throw an exception.
+                        throw new InvalidOperationException("Unable to access pixel memory of the image!");
+                    }
+
+                    // Call the incoming action.
+                    processPixelMemory(clonedPixelMemory);
+                }
+            }
+            else
+            {
+                processPixelMemory(pixelMemory);
+            }
         }
     }
 }

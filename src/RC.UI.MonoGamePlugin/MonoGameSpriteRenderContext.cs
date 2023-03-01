@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using RC.Common;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace RC.UI.MonoGamePlugin
 {
@@ -20,6 +21,7 @@ namespace RC.UI.MonoGamePlugin
         {
             this.isClosed = false;
             this.targetSprite = targetSprite;
+            this.targetImage = targetSprite.RawImage;
             this.targetSprite.Lock();
         }
 
@@ -38,6 +40,7 @@ namespace RC.UI.MonoGamePlugin
                 this.targetSprite.TransparentColor = targetTransparentColor;
 
                 this.targetSprite = null;
+                this.targetImage = null;
                 this.isClosed = true;
             }
         }
@@ -65,7 +68,7 @@ namespace RC.UI.MonoGamePlugin
 
             MonoGameSprite srcSprite = (MonoGameSprite)sprite;
             MonoGameImageUtils.CopyImageScaled(
-                srcSprite.RawImage, targetSprite.RawImage,
+                srcSprite.RawImage, this.targetImage,
                 srcSprite.PixelSize, this.targetSprite.PixelSize,
                 section, position,
                 srcSprite.TransparentColor);
@@ -125,6 +128,11 @@ namespace RC.UI.MonoGamePlugin
         /// Reference to the target sprite of this render context.
         /// </summary>
         private MonoGameSprite targetSprite;
+
+        /// <summary>
+        /// Reference to the target image that this render context is manipulating.
+        /// </summary>
+        private Image<Rgb24> targetImage;
 
         /// <summary>
         /// This flag indicates whether this render context is closed or not.
