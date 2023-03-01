@@ -19,7 +19,7 @@ namespace RC.UI.Test
             root.LoadPlugins(xnaPlugin);
             root.InstallPlugins();
 
-            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("..\\..\\..\\..\\sprites\\pointers\\normal_pointer.png", new RCIntVector(2, 2));
+            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("../../../../sprites/pointers/normal_pointer.png", new RCIntVector(2, 2));
             mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             mouseIcon.Upload();
             UIPointer pointer = new UIPointer(mouseIcon, new RCIntVector(0, 0));

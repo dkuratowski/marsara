@@ -24,7 +24,7 @@ namespace RC.Engine.MotionControl.Test
             /// Create the UIWorkspace and set the mouse pointer
             UIWorkspace workspace = new UIWorkspace(new RCIntVector(1024, 768), new RCIntVector(1024, 768));
 
-            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("..\\..\\..\\..\\sprites\\pointers\\normal_pointer.png");
+            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("../../../../sprites/pointers/normal_pointer.png");
             mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             mouseIcon.Upload();
             UIPointer pointer = new UIPointer(mouseIcon, new RCIntVector(0, 0));

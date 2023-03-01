@@ -20,8 +20,8 @@ namespace RC.UnitTests
         /// <summary>
         /// The input and output directories.
         /// </summary>
-        public const string INPUT_DIR = ".\\InfoPanelTextWidthTest_in";
-        public const string OUTPUT_DIR = ".\\InfoPanelTextWidthTest_out";
+        public const string INPUT_DIR = "./InfoPanelTextWidthTest_in";
+        public const string OUTPUT_DIR = "./InfoPanelTextWidthTest_out";
         public const string ENTITY_TYPE_NAMES_FILE = "entity_type_names.txt";
         public const string ENTITY_TYPE_NAME_WIDTHS_OUT_FILE = "entity_type_name_widths.txt";
 
@@ -31,7 +31,7 @@ namespace RC.UnitTests
         [ClassInitialize]
         public static void ClassInitialize(TestContext context)
         {
-            ConfigurationManager.Initialize("..\\..\\..\\..\\config\\RC.UI.Test\\RC.UI.Test.root");
+            ConfigurationManager.Initialize("../../../../config/RC.UI.Test/RC.UI.Test.root");
             //ConstantsTable.Add("RC.App.Version", "1.0.0.0", "STRING");
 
             UIRoot root = new UIRoot();

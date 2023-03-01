@@ -158,11 +158,11 @@ namespace RC.UI.Test
             root.LoadPlugins(xnaPlugin);
             root.InstallPlugins();
 
-            UISprite source = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\sprite_tests\\orig_source.png");
+            UISprite source = root.GraphicsPlatform.SpriteManager.LoadSprite("./sprite_tests/orig_source.png");
             source.TransparentColor = new RCColor(255, 0, 0);
-            UISprite med = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\sprite_tests\\orig_med.png", new RCIntVector(1, 2));
+            UISprite med = root.GraphicsPlatform.SpriteManager.LoadSprite("./sprite_tests/orig_med.png", new RCIntVector(1, 2));
             med.TransparentColor = new RCColor(0, 255, 255);
-            UISprite final = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\sprite_tests\\orig_final.png", new RCIntVector(2, 1));
+            UISprite final = root.GraphicsPlatform.SpriteManager.LoadSprite("./sprite_tests/orig_final.png", new RCIntVector(2, 1));
 
             IUIRenderContext ctx = root.GraphicsPlatform.SpriteManager.CreateRenderContext(med);
             ctx.RenderSprite(source, new RCIntVector(0, 0), new RCIntRectangle(3, 2, 5, 6));
@@ -173,8 +173,8 @@ namespace RC.UI.Test
             root.GraphicsPlatform.SpriteManager.CloseRenderContext(final);
 
             med.TransparentColor = RCColor.Undefined;
-            med.Save(".\\sprite_tests\\med.png");
-            final.Save(".\\sprite_tests\\final.png");
+            med.Save("./sprite_tests/med.png");
+            final.Save("./sprite_tests/final.png");
 
             root.GraphicsPlatform.RenderLoop.Start(new RCIntVector(320, 200));
 
