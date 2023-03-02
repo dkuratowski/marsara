@@ -13,8 +13,8 @@ namespace RC.UI.Test
         public static void Test()
         {
             UIRoot root = new UIRoot();
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            root.LoadPlugins(xnaPlugin);
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            root.LoadPlugins(monoGamePlugin);
             root.InstallPlugins();
 
             obj0 = new TestUIObject(new RCIntVector(10, 10), new RCIntVector(0, 0), new RCIntRectangle(0, 0, 70, 70));

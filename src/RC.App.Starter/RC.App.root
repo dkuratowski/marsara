@@ -1,6 +1,6 @@
 <configNode>
   <configNodeReferences>
-    <!--configNodeReference>./config/RC.UI.XnaPlugin/RC.UI.XnaPlugin.node</configNodeReference-->
+    <!--configNodeReference>./config/RC.UI.MonoGamePlugin/RC.UI.MonoGamePlugin.node</configNodeReference-->
     <configNodeReference>./config/RC.UI.MonoGamePlugin/RC.UI.MonoGamePlugin.node</configNodeReference>
     <configNodeReference>./config/RC.UI/RC.UI.node</configNodeReference>
     <configNodeReference>./config/RC.Engine.Maps/RC.Engine.Maps.node</configNodeReference>

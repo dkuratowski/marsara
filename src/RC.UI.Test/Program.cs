@@ -8,7 +8,7 @@ using System.Diagnostics;
 using System.Reflection;
 using RC.Common.Configuration;
 using System.Drawing.Imaging;
-using RC.UI.XnaPlugin;
+using RC.UI.MonoGamePlugin;
 
 namespace RC.UI.Test
 {
@@ -18,9 +18,9 @@ namespace RC.UI.Test
         {
             /*
             ConfigurationManager.Initialize("../../../../config/RC.UI.Test/RC.UI.Test.root");
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
             new UIRoot();
-            UIRoot.Instance.LoadPlugins(xnaPlugin);
+            UIRoot.Instance.LoadPlugins(monoGamePlugin);
             UIRoot.Instance.InstallPlugins();
             UIFont testFont = UIFont.TestFont;
 
@@ -135,15 +135,15 @@ namespace RC.UI.Test
         static void Test2()
         {
             UIRoot root = new UIRoot();
-            Assembly fromAsm = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            Assembly fromAsm = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
             root.LoadPlugins(fromAsm);
         }
 
         static void Test4()
         {
             UIRoot root = new UIRoot();
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            root.LoadPlugins(xnaPlugin);
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            root.LoadPlugins(monoGamePlugin);
             root.InstallPlugins();
             MyUIObject2 obj = new MyUIObject2();
             root.GraphicsPlatform.RenderManager.Attach(obj);
@@ -154,8 +154,8 @@ namespace RC.UI.Test
         static void Test5()
         {
             UIRoot root = new UIRoot();
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            root.LoadPlugins(xnaPlugin);
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            root.LoadPlugins(monoGamePlugin);
             root.InstallPlugins();
 
             UISprite source = root.GraphicsPlatform.SpriteManager.LoadSprite("./sprite_tests/orig_source.png");
@@ -183,9 +183,9 @@ namespace RC.UI.Test
 
         static void Test6()
         {
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
             new UIRoot();
-            UIRoot.Instance.LoadPlugins(xnaPlugin);
+            UIRoot.Instance.LoadPlugins(monoGamePlugin);
             UIRoot.Instance.InstallPlugins();
             UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6").GetFontSprite(new RCIntVector(6, 3), new RCColor(255, 0, 0)).Save("c255_0_0_ps6_3.png");
             UIResourceManager.GetResource<UIFont>("RC.App.Fonts.Font6").GetFontSprite(new RCIntVector(2, 3), new RCColor(0, 255, 0)).Save("c0_255_0_ps2_3.png");

@@ -15,10 +15,10 @@ namespace RC.Engine.MotionControl.Test
     {
         static void Main(string[] args)
         {
-            /// Initialize the UI-core and install the XNA-plugin (TODO: make it configurable)
+            /// Initialize the UI-core and install the MonoGame plugin (TODO: make it configurable)
             UIRoot root = new UIRoot();
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            root.LoadPlugins(xnaPlugin);
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            root.LoadPlugins(monoGamePlugin);
             root.InstallPlugins();
 
             /// Create the UIWorkspace and set the mouse pointer

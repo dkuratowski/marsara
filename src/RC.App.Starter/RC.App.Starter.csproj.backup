@@ -128,9 +128,9 @@
       <Project>{2B041172-C0FC-42DB-A344-079F40491FE5}</Project>
       <Name>RC.Engine.Simulator</Name>
     </ProjectReference>
-    <ProjectReference Include="..\RC.UI.XnaPlugin\RC.UI.XnaPlugin.csproj">
+    <ProjectReference Include="..\RC.UI.MonoGamePlugin\RC.UI.MonoGamePlugin.csproj">
       <Project>{6D0C55AC-B070-408D-BF61-5B87FC86EF1F}</Project>
-      <Name>RC.UI.XnaPlugin</Name>
+      <Name>RC.UI.MonoGamePlugin</Name>
     </ProjectReference>
     <ProjectReference Include="..\RC.UI\RC.UI.csproj">
       <Project>{E3B50BCB-7EAF-4FD5-A5F4-C78E5C0EEBC3}</Project>

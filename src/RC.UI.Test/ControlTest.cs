@@ -16,8 +16,8 @@ namespace RC.UI.Test
         {
             ConfigurationManager.Initialize("../../../../config/RC.UI.Test/RC.UI.Test.root");
             UIRoot root = new UIRoot();
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            root.LoadPlugins(xnaPlugin);
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            root.LoadPlugins(monoGamePlugin);
             root.InstallPlugins();
 
             DynamicString.RegisterResolver("RC.UI.UIWorkspace.PixelScaling",

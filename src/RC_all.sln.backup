@@ -85,8 +85,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.UI", "RC.UI\RC.UI.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.UI.Test", "RC.UI.Test\RC.UI.Test.csproj", "{5B4AB3EB-520C-4D36-ADA4-F4D6F5E93A31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.UI.XnaPlugin", "RC.UI.XnaPlugin\RC.UI.XnaPlugin.csproj", "{6D0C55AC-B070-408D-BF61-5B87FC86EF1F}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.UI", "RC.UI", "{CA019A15-C3B1-4033-8494-81B37AD23E96}"
 	ProjectSection(SolutionItems) = preProject
 		..\config\RC.UI\RC.UI.ConstantsConfig.xml = ..\config\RC.UI\RC.UI.ConstantsConfig.xml
@@ -99,13 +97,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.UI.Test", "RC.UI.Test", 
 		..\config\RC.UI.Test\RC.UI.Test.ConstantsConfig.xml = ..\config\RC.UI.Test\RC.UI.Test.ConstantsConfig.xml
 		..\config\RC.UI.Test\RC.UI.Test.root = ..\config\RC.UI.Test\RC.UI.Test.root
 		..\config\RC.UI.Test\RC.UI.Test.TraceConfig.xml = ..\config\RC.UI.Test\RC.UI.Test.TraceConfig.xml
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RC.UI.XnaPlugin", "RC.UI.XnaPlugin", "{5D6F2E8D-F712-4284-8267-0C24A78A5642}"
-	ProjectSection(SolutionItems) = preProject
-		..\config\RC.UI.XnaPlugin\RC.UI.XnaPlugin.ConstantsConfig.xml = ..\config\RC.UI.XnaPlugin\RC.UI.XnaPlugin.ConstantsConfig.xml
-		..\config\RC.UI.XnaPlugin\RC.UI.XnaPlugin.node = ..\config\RC.UI.XnaPlugin\RC.UI.XnaPlugin.node
-		..\config\RC.UI.XnaPlugin\RC.UI.XnaPlugin.TraceConfig.xml = ..\config\RC.UI.XnaPlugin\RC.UI.XnaPlugin.TraceConfig.xml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RC.RenderSystem", "RC.RenderSystem\RC.RenderSystem.csproj", "{325480F9-A02A-481B-BFF2-75F115CCA5D1}"
