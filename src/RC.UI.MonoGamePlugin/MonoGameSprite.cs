@@ -117,10 +117,17 @@ namespace RC.UI.MonoGamePlugin
                 MemoryStream stream = new MemoryStream();
                 imageToUpload.SaveAsPng(stream);
 
-                lock (device)
-                {
-                    this.monoGameTexture = Texture2D.FromStream(device, stream);
-                }
+                // Lock removed as it caused possible deadlocks because of this PR in MonoGame.Framework.DesktopGL:
+                // https://github.com/MonoGame/MonoGame/pull/7384
+                //
+                // The mentioned PR introduces the Microsoft.Xna.Framework.Threading.BlockOnUIThread method.
+                // This method runs a given action on the UI thread and blocks the calling thread while the action is running.
+                // This method is used internally in Texture2D.FromStream in case of the DesktopGL target platform, so we don't need
+                // the lock because it is ensured that the actual uploading is executed on the UI thread.
+                // If we lock the UI thread here while a background thread is executing Texture2D.FromStream, then a deadlock happens:
+                //      - The background thread is waiting in the BlockOnUIThread method for the UI thread to execute the action.
+                //      - The UI thread is waiting for the lock that is held by the background thread.
+                this.monoGameTexture = Texture2D.FromStream(device, stream);
 
                 stream.Close();
                 if (imageToUpload == this.transparentImage)
@@ -145,10 +152,8 @@ namespace RC.UI.MonoGamePlugin
         {
             if (this.monoGameTexture != null)
             {
-                lock (this.platform.Device)
-                {
-                    this.monoGameTexture.Dispose();
-                }
+                // Lock removed. See the comment in the Upload_i method for more information.
+                this.monoGameTexture.Dispose();
 
                 this.monoGameTexture = null;
                 TraceManager.WriteAllTrace("MonoGameSprite: MonoGame texture destroyed", MonoGameTraceFilters.DETAILS);
@@ -202,10 +207,8 @@ namespace RC.UI.MonoGamePlugin
 
             if (this.monoGameTexture != null)
             {
-                lock (this.platform.Device)
-                {
-                    this.monoGameTexture.Dispose();
-                }
+                // Lock removed. See the comment in the Upload_i method for more information.
+                this.monoGameTexture.Dispose();
 
                 this.monoGameTexture = null;
                 TraceManager.WriteAllTrace("MonoGameSprite: MonoGame texture destroyed", MonoGameTraceFilters.DETAILS);
