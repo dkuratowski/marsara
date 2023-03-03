@@ -15,16 +15,16 @@ namespace RC.Engine.MotionControl.Test
     {
         static void Main(string[] args)
         {
-            /// Initialize the UI-core and install the XNA-plugin (TODO: make it configurable)
+            /// Initialize the UI-core and install the MonoGame plugin (TODO: make it configurable)
             UIRoot root = new UIRoot();
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            root.LoadPlugins(xnaPlugin);
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            root.LoadPlugins(monoGamePlugin);
             root.InstallPlugins();
 
             /// Create the UIWorkspace and set the mouse pointer
             UIWorkspace workspace = new UIWorkspace(new RCIntVector(1024, 768), new RCIntVector(1024, 768));
 
-            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("..\\..\\..\\..\\sprites\\pointers\\normal_pointer.png");
+            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("../../../../sprites/pointers/normal_pointer.png");
             mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             mouseIcon.Upload();
             UIPointer pointer = new UIPointer(mouseIcon, new RCIntVector(0, 0));

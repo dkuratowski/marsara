@@ -6,10 +6,10 @@
   <activateTraceFilters pattern="RC.UI.Warning" />
   <activateTraceFilters pattern="RC.UI.Info" />
   <activateTraceFilters pattern="RC.UI.Details" />
-  <activateTraceFilters pattern="RC.UI.XnaPlugin.Error" />
-  <activateTraceFilters pattern="RC.UI.XnaPlugin.Warning" />
-  <activateTraceFilters pattern="RC.UI.XnaPlugin.Info" />
-  <activateTraceFilters pattern="RC.UI.XnaPlugin.Details" />
+  <activateTraceFilters pattern="RC.UI.MonoGamePlugin.Error" />
+  <activateTraceFilters pattern="RC.UI.MonoGamePlugin.Warning" />
+  <activateTraceFilters pattern="RC.UI.MonoGamePlugin.Info" />
+  <activateTraceFilters pattern="RC.UI.MonoGamePlugin.Details" />
 
   <registerTrace>
     <assembly>RC.Common, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</assembly>

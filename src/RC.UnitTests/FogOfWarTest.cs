@@ -23,8 +23,8 @@ namespace RC.UnitTests
         /// <summary>
         /// The input and output directories.
         /// </summary>
-        public const string OUTPUT_DIR = ".\\FogOfWarTest_out";
-        public const string FOW_SPRITEPALETTE_DIR = "..\\..\\..\\..\\..\\sprites\\fow";
+        public const string OUTPUT_DIR = "./FogOfWarTest_out";
+        public const string FOW_SPRITEPALETTE_DIR = "../../../../../sprites/fow";
         public const string FOW_SPRITEPALETTE_FILE = "fow.xml";
 
         /// <summary>
@@ -34,8 +34,8 @@ namespace RC.UnitTests
         public static void ClassInitialize(TestContext context)
         {
             UIRoot root = new UIRoot();
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            root.LoadPlugins(xnaPlugin);
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            root.LoadPlugins(monoGamePlugin);
             root.InstallPlugins();
             UIWorkspace workspace = new UIWorkspace(new RCIntVector(1024, 768), new RCIntVector(1024, 768));
             Directory.CreateDirectory(OUTPUT_DIR);

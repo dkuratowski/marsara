@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Windows.Forms;
+// using System.Windows.Forms;
 using RC.Common.Configuration;
 using RC.UI;
 using System.Reflection;
@@ -24,7 +24,7 @@ namespace RC.App.Starter
             try
             {
                 /// Read and execute the command line switches
-                ConsoleHelper.HideConsole();
+                //ConsoleHelper.HideConsole();
                 CmdLineSwitch.ParseCommandLine(args);
                 CmdLineSwitch.ExecuteSwitches();
 
@@ -34,10 +34,10 @@ namespace RC.App.Starter
                 /// Start the components of the system
                 StartComponents();
 
-                /// Initialize the UI-core and install the XNA-plugin (TODO: make it configurable)
+                /// Initialize the UI-core and install the MonoGame plugin (TODO: make it configurable)
                 UIRoot root = new UIRoot(RCAppSetup.ScreenIndex);
-                Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-                root.LoadPlugins(xnaPlugin);
+                Assembly monogamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                root.LoadPlugins(monogamePlugin);
                 root.InstallPlugins();
 
                 /// Create the UIWorkspace (TODO: make it configurable)
@@ -58,7 +58,7 @@ namespace RC.App.Starter
                 }
                 else
                 {
-                    ConsoleHelper.ShowConsole();
+                    //ConsoleHelper.ShowConsole();
                     TraceManager.WriteAllTrace("STARTING MAP EDITOR...", TraceManager.GetTraceFilterID("RC.MapEditor.Info"));
 
                     /// Read the parameters from the command line
@@ -104,11 +104,11 @@ namespace RC.App.Starter
                 ComponentManager.UnregisterComponentsAndPlugins();
 
                 /// End of RC application
-                if (ConsoleHelper.IsConsoleHidden)
-                {
-                    Console.Clear();
-                    ConsoleHelper.ShowConsole();
-                }
+                // if (ConsoleHelper.IsConsoleHidden)
+                // {
+                //     Console.Clear();
+                //     ConsoleHelper.ShowConsole();
+                // }
             }
             catch (Exception ex)
             {
@@ -121,7 +121,8 @@ namespace RC.App.Starter
                     Console.WriteLine(currException.ToString());
                 }
 
-                MessageBox.Show("An internal error happened and the application will be closed.\nSee the contents of installed traces for more information!", "Sorry");
+                // TODO: Removed this Windows Forms specific call.
+                //MessageBox.Show("An internal error happened and the application will be closed.\nSee the contents of installed traces for more information!", "Sorry");
             }
         }
 

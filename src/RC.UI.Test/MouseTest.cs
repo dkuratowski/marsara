@@ -15,11 +15,11 @@ namespace RC.UI.Test
         {
             ConfigurationManager.Initialize("../../../../config/RC.UI.Test/RC.UI.Test.root");
             UIRoot root = new UIRoot();
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            root.LoadPlugins(xnaPlugin);
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            root.LoadPlugins(monoGamePlugin);
             root.InstallPlugins();
 
-            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("..\\..\\..\\..\\sprites\\pointers\\normal_pointer.png", new RCIntVector(2, 2));
+            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("../../../../sprites/pointers/normal_pointer.png", new RCIntVector(2, 2));
             mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             mouseIcon.Upload();
             UIPointer pointer = new UIPointer(mouseIcon, new RCIntVector(0, 0));

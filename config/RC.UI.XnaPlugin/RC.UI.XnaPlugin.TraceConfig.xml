@@ -1,6 +1,0 @@
-<traceConfig>
-  <registerTraceFilter namespace="RC.UI.XnaPlugin" name="Error" />
-  <registerTraceFilter namespace="RC.UI.XnaPlugin" name="Warning" />
-  <registerTraceFilter namespace="RC.UI.XnaPlugin" name="Info" />
-  <registerTraceFilter namespace="RC.UI.XnaPlugin" name="Details" />
-</traceConfig>

@@ -14,21 +14,21 @@ namespace RC.UI.Test
         {
             ConfigurationManager.Initialize("../../../../config/RC.UI.Test/RC.UI.Test.root");
             UIRoot root = new UIRoot();
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            root.LoadPlugins(xnaPlugin);
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            root.LoadPlugins(monoGamePlugin);
             root.InstallPlugins();
 
             display = new TestUIObject(new RCIntVector(1, 1), new RCIntVector(0, 0), new RCIntRectangle(0, 0, 800, 600));
             workspace = new TestUIObject(new RCIntVector(2, 2), new RCIntVector(80, 100), new RCIntRectangle(0, 0, 320, 200));
             display.Attach(workspace);
-            workspace.LoadSprite(".\\testui_sprites\\workspace.png");
+            workspace.LoadSprite("./testui_sprites/workspace.png");
             workspace.Sprite.TransparentColor = new RCColor(255, 0, 255);
             workspace.ActivateStringRender();
 
             //root.SystemEventQueue.Subscribe<UIKeyboardEventArgs>(OnKeyboardEvent);
             //root.SystemEventQueue.Subscribe<UIMouseEventArgs>(OnMouseEvent);
 
-            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\testui_sprites\\pointer.png");
+            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("./testui_sprites/pointer.png");
             mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             mouseIcon.Upload();
             //UIMouseManager mouseMgr = new UIMouseManager(workspace);

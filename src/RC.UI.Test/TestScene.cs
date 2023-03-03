@@ -13,8 +13,8 @@ namespace RC.UI.Test
         public static void Test()
         {
             UIRoot root = new UIRoot();
-            Assembly xnaPlugin = Assembly.Load("RC.UI.XnaPlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
-            root.LoadPlugins(xnaPlugin);
+            Assembly monoGamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null");
+            root.LoadPlugins(monoGamePlugin);
             root.InstallPlugins();
 
             obj0 = new TestUIObject(new RCIntVector(10, 10), new RCIntVector(0, 0), new RCIntRectangle(0, 0, 70, 70));
@@ -24,14 +24,14 @@ namespace RC.UI.Test
             obj0.Attach(obj1);
             //obj1.Attach(obj2);
 
-            obj0.LoadSprite(".\\test_scene_sprites\\obj0.png");
-            obj1.LoadSprite(".\\test_scene_sprites\\background.png");
-            //obj2.LoadSprite(".\\test_scene_sprites\\obj2.png");
+            obj0.LoadSprite("./test_scene_sprites/obj0.png");
+            obj1.LoadSprite("./test_scene_sprites/background.png");
+            //obj2.LoadSprite("./test_scene_sprites/obj2.png");
 
             root.KeyboardAccess.StateChanged += OnKeyboardEvent;
             root.MouseAccess.StateChanged += OnMouseEvent;
 
-            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite(".\\test_scene_sprites\\pointer.png");
+            UISprite mouseIcon = root.GraphicsPlatform.SpriteManager.LoadSprite("./test_scene_sprites/pointer.png");
             mouseIcon.TransparentColor = new RCColor(255, 0, 255);
             //UIMouseManager mouseMgr = new UIMouseManager(obj1);
             //mouseMgr.Pointer = new UIBasicPointer(mouseIcon, new RCIntVector(4, 4));

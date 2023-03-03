@@ -1,0 +1,6 @@
+<traceConfig>
+  <registerTraceFilter namespace="RC.UI.MonoGamePlugin" name="Error" />
+  <registerTraceFilter namespace="RC.UI.MonoGamePlugin" name="Warning" />
+  <registerTraceFilter namespace="RC.UI.MonoGamePlugin" name="Info" />
+  <registerTraceFilter namespace="RC.UI.MonoGamePlugin" name="Details" />
+</traceConfig>
