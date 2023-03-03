@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\RC.Common\RC.Common.csproj" />
+    <ProjectReference Include="..\RC.Engine.Maps\RC.Engine.Maps.csproj" />
+    <ProjectReference Include="..\RC.Engine.Simulator\RC.Engine.Simulator.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="testgrid.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+</Project>
