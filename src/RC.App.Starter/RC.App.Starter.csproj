@@ -10,6 +10,8 @@
     <ProjectReference Include="..\RC.Engine.Simulator.Terran\RC.Engine.Simulator.Terran.csproj" />
     <ProjectReference Include="..\RC.UI\RC.UI.csproj" />
     <ProjectReference Include="..\RC.UI.MonoGamePlugin\RC.UI.MonoGamePlugin.csproj" />
+    <ProjectReference Include="..\RC.NetworkingSystem\RC.NetworkingSystem.csproj" />
+    <ProjectReference Include="..\RC.DssServices\RC.DssServices.csproj" />
   </ItemGroup>
 
   <ItemGroup>
