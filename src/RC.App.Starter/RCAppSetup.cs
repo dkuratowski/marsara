@@ -76,13 +76,22 @@ namespace RC.App.Starter
             set { mapSize = value; }
         }
 
+        // /// <summary>
+        // /// The index of the screen on which to startup the application.
+        // /// </summary>
+        // public static int ScreenIndex
+        // {
+        //     get { return screenIndex; }
+        //     set { screenIndex = value; }
+        // }
+
         /// <summary>
-        /// The index of the screen on which to startup the application.
+        /// The position of the top-left corner of the application workspace.
         /// </summary>
-        public static int ScreenIndex
+        public static RCIntVector WorkspacePosition
         {
-            get { return screenIndex; }
-            set { screenIndex = value; }
+            get { return workspacePosition; }
+            set { workspacePosition = value; }
         }
 
         /// <summary>
@@ -92,15 +101,15 @@ namespace RC.App.Starter
         {
             if (mode == RCAppMode.NewMap)
             {
-                return string.Format("NEW MAP: screen-index={0} map-file={1} tileset-file={2} default-terrain={3} size={4}", screenIndex, mapFile, tilesetName, defaultTerrain, mapSize);
+                return string.Format("NEW MAP: position={0} map-file={1} tileset-file={2} default-terrain={3} size={4}", workspacePosition, mapFile, tilesetName, defaultTerrain, mapSize);
             }
             else if (mode == RCAppMode.LoadMap)
             {
-                return string.Format("LOAD MAP: screen-index={0} map-file={1} tileset-file={2}", screenIndex, mapFile, tilesetName);
+                return string.Format("LOAD MAP: position={0} map-file={1} tileset-file={2}", workspacePosition, mapFile, tilesetName);
             }
             else
             {
-                return string.Format("NORMAL MODE: screen-index={0}", screenIndex);
+                return string.Format("NORMAL MODE: position={0}", workspacePosition);
             }
         }
 
@@ -135,9 +144,14 @@ namespace RC.App.Starter
         /// </summary>
         private static RCIntVector mapSize;
 
+        // /// <summary>
+        // /// The index of the screen on which to startup the application.
+        // /// </summary>
+        // private static int screenIndex;
+
         /// <summary>
-        /// The index of the screen on which to startup the application.
+        /// The position of the top-left corner of the application workspace.
         /// </summary>
-        private static int screenIndex;
+        private static RCIntVector workspacePosition = RCIntVector.Undefined;
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using RC.Common;
 using RC.Common.Configuration;
 using System.Reflection;
 
@@ -130,7 +131,7 @@ namespace RC.App.Starter
         /// <summary>
         /// The signature of the command line switch.
         /// </summary>
-        public static readonly string SIGNATURE = "/cfg";
+        public static readonly string SIGNATURE = "/config";
 
         /// <summary>
         /// Constructs a ConfigFileSwitch object.
@@ -138,8 +139,8 @@ namespace RC.App.Starter
         /// <param name="args">The arguments of the switch.</param>
         public ConfigFileSwitch(string[] args) : base(args)
         {
-            if (args == null || args.Length != 1) { throw new Exception("/cfg switch usage: '/cfg filename'"); }
-            if (args[0] == null || args[0].Length == 0) { throw new Exception("/cfg switch usage: '/cfg filename'"); }
+            if (args == null || args.Length != 1) { throw new Exception("/config switch usage: '/config filename'"); }
+            if (args[0] == null || args[0].Length == 0) { throw new Exception("/config switch usage: '/config filename'"); }
         }
 
         /// <see cref="CmdLineSwitch.Execute"/>
@@ -154,7 +155,7 @@ namespace RC.App.Starter
     //     /// <summary>
     //     /// The signature of the command line switch.
     //     /// </summary>
-    //     public static readonly string SIGNATURE = "/c";
+    //     public static readonly string SIGNATURE = "/console";
 
     //     /// <summary>
     //     /// Constructs a ConsoleSwitch object.
@@ -206,34 +207,68 @@ namespace RC.App.Starter
         public override void Execute() { RCAppSetup.Mode = RCAppMode.LoadMap; }
     }
 
+    // /// <summary>
+    // /// Command line switch for start the RC application on the screen with the given index. If there is no screen with the given
+    // /// index then the application will be started on the last available screen before the given index.
+    // /// </summary>
+    // class ScreenIndexSwitch : CmdLineSwitch
+    // {
+    //     /// <summary>
+    //     /// The signature of the command line switch.
+    //     /// </summary>
+    //     public static readonly string SIGNATURE = "/screen";
+
+    //     /// <summary>
+    //     /// Constructs a ScreenIndexSwitch object.
+    //     /// </summary>
+    //     /// <param name="args">The arguments of the switch.</param>
+    //     public ScreenIndexSwitch(string[] args) : base(args)
+    //     {
+    //         if (args == null || args.Length != 1) { throw new Exception("/screen switch usage: '/screen index'"); }
+    //         if (args[0] == null || args[0].Length == 0) { throw new Exception("/screen switch usage: '/screen index'"); }
+
+    //         int screenIndex = 0;
+    //         if (!int.TryParse(args[0], out screenIndex)) { throw new Exception("/screen switch usage: '/screen index'"); }
+    //     }
+
+    //     /// <see cref="CmdLineSwitch.Execute"/>
+    //     public override void Execute()
+    //     {
+    //         RCAppSetup.ScreenIndex = int.Parse(this.Arguments[0]);
+    //     }
+    // }
+
     /// <summary>
-    /// Command line switch for start the RC application on the screen with the given index. If there is no screen with the given
-    /// index then the application will be started on the last available screen before the given index.
+    /// Command line switch for start the RC application at the given position.
     /// </summary>
-    class ScreenIndexSwitch : CmdLineSwitch
+    class WorkspacePositionSwitch : CmdLineSwitch
     {
         /// <summary>
         /// The signature of the command line switch.
         /// </summary>
-        public static readonly string SIGNATURE = "/s";
+        public static readonly string SIGNATURE = "/position";
 
         /// <summary>
-        /// Constructs a ScreenIndexSwitch object.
+        /// Constructs a WorkspacePositionSwitch object.
         /// </summary>
         /// <param name="args">The arguments of the switch.</param>
-        public ScreenIndexSwitch(string[] args) : base(args)
+        public WorkspacePositionSwitch(string[] args) : base(args)
         {
-            if (args == null || args.Length != 1) { throw new Exception("/s switch usage: '/s index'"); }
-            if (args[0] == null || args[0].Length == 0) { throw new Exception("/s switch usage: '/s index'"); }
+            if (args == null || args.Length != 2) { throw new Exception("/position switch usage: '/position center-x center-y'"); }
+            if (args[0] == null || args[0].Length == 0) { throw new Exception("/position switch usage: '/position center-x center-y'"); }
+            if (args[1] == null || args[1].Length == 0) { throw new Exception("/position switch usage: '/position center-x center-y'"); }
 
-            int screenIndex = 0;
-            if (!int.TryParse(args[0], out screenIndex)) { throw new Exception("/s switch usage: '/s index'"); }
+            int centerX = 0;
+            if (!int.TryParse(args[0], out centerX)) { throw new Exception("/position switch usage: '/position center-x center-y'"); }
+
+            int centerY = 0;
+            if (!int.TryParse(args[1], out centerY)) { throw new Exception("/position switch usage: '/position center-x center-y'"); }
         }
 
         /// <see cref="CmdLineSwitch.Execute"/>
         public override void Execute()
         {
-            RCAppSetup.ScreenIndex = int.Parse(this.Arguments[0]);
+            RCAppSetup.WorkspacePosition = new RCIntVector(int.Parse(this.Arguments[0]), int.Parse(this.Arguments[1]));
         }
     }
 }

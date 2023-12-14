@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Collections.Generic;
+using RC.Common;
 using RC.Common.Diagnostics;
 
 namespace RC.UI
@@ -43,6 +44,26 @@ namespace RC.UI
             this.keyboardAccess = null;
             this.objectDisposed = false;
             this.screenIndex = screenIndex;
+            this.workspacePosition = RCIntVector.Undefined;
+
+            theInstance = this;
+            TraceManager.WriteAllTrace("UIRoot.Instance created", UITraceFilters.INFO);
+        }
+
+        /// <summary>
+        /// Constructs the singleton instance of the UIRoot class.
+        /// </summary>
+        /// <param name="workspacePosition">The position of the top-left corner of the application workspace.</param>
+        public UIRoot(RCIntVector workspacePosition)
+        {
+            if (theInstance != null) { throw new UIException("An instance of UIRoot already exists!"); }
+            this.loadedPlugins = new Dictionary<string, IUIPlugin>();
+            this.graphicsPlatform = null;
+            this.mouseAccess = null;
+            this.keyboardAccess = null;
+            this.objectDisposed = false;
+            this.screenIndex = -1;
+            this.workspacePosition = workspacePosition;
 
             theInstance = this;
             TraceManager.WriteAllTrace("UIRoot.Instance created", UITraceFilters.INFO);
@@ -203,6 +224,12 @@ namespace RC.UI
         public int ScreenIndex { get { return this.screenIndex; } }
 
         /// <summary>
+        /// Gets the position of the top-left corner of the application workspace.
+        /// </summary>
+        /// TODO: eliminate this property when UIRoot has been changed to use the RC.Common.ComponentModel for its plugin mechanism!
+        public RCIntVector WorkspacePosition { get { return this.workspacePosition; } }
+
+        /// <summary>
         /// Registers a graphics platform to the UIRoot object.
         /// </summary>
         /// <param name="platform">The graphics platform to register.</param>
@@ -340,6 +367,11 @@ namespace RC.UI
         /// The index of the screen on which to render.
         /// </summary>
         private int screenIndex;
+
+        /// <summary>
+        /// The position of the top-left corner of the application workspace.
+        /// </summary>
+        private RCIntVector workspacePosition;
 
         /// <summary>
         /// Reference to the singleton instance of the UIRoot class.

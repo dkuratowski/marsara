@@ -88,6 +88,12 @@ namespace RC.UI.MonoGamePlugin
             // this.window.Left = screens[screenIndexToUse].WorkingArea.Left + this.window.Left;
             // this.window.Top = screens[screenIndexToUse].WorkingArea.Top + this.window.Top;
 
+            if (UIRoot.Instance.WorkspacePosition != RCIntVector.Undefined)
+            {
+                this.window.Left = UIRoot.Instance.WorkspacePosition.X;
+                this.window.Top = UIRoot.Instance.WorkspacePosition.Y;
+            }
+
             foreach (InitializeDlgt initFunc in this.initFunctions)
             {
                 initFunc();

@@ -35,7 +35,7 @@ namespace RC.App.Starter
                 StartComponents();
 
                 /// Initialize the UI-core and install the MonoGame plugin (TODO: make it configurable)
-                UIRoot root = new UIRoot(RCAppSetup.ScreenIndex);
+                UIRoot root = new UIRoot(RCAppSetup.WorkspacePosition);
                 Assembly monogamePlugin = Assembly.Load("RC.UI.MonoGamePlugin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
                 root.LoadPlugins(monogamePlugin);
                 root.InstallPlugins();
