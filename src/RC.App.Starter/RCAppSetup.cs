@@ -11,9 +11,11 @@ namespace RC.App.Starter
     /// </summary>
     enum RCAppMode
     {
-        Normal = 0,     /// Start the RC application in normal mode.
-        NewMap = 1,     /// Start the map editor and create a new map file.
-        LoadMap = 2,    /// Start the map editor and load an existing map file.
+        Normal = 0,             /// Start the RC application in normal mode.
+        NewMap = 1,             /// Start the map editor and create a new map file.
+        LoadMap = 2,            /// Start the map editor and load an existing map file.
+        MultiplayerHost = 3,    /// Start the RC application in multiplayer host mode.
+        MultiplayerGuest = 4,   /// Start the RC application in multiplayer guest mode.
     }
 
     /// <summary>
@@ -95,21 +97,41 @@ namespace RC.App.Starter
         }
 
         /// <summary>
+        /// Gets or sets the name of the host of the current multiplayer game being hosted.
+        /// </summary>
+        public static string HostName
+        {
+            get { return hostName; }
+            set { hostName = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the guest of the current multiplayer game being connected to.
+        /// </summary>
+        public static string GuestName
+        {
+            get { return guestName; }
+            set { guestName = value; }
+        }
+
+        /// <summary>
         /// Gets the string representation of the contents of the RCAppSetup.
         /// </summary>
         public static new string ToString()
         {
+            string positionStr = workspacePosition != RCIntVector.Undefined ? workspacePosition.ToString() : "default";
+
             if (mode == RCAppMode.NewMap)
             {
-                return string.Format("NEW MAP: position={0} map-file={1} tileset-file={2} default-terrain={3} size={4}", workspacePosition, mapFile, tilesetName, defaultTerrain, mapSize);
+                return string.Format("NEW MAP: position={0} map-file={1} tileset-file={2} default-terrain={3} size={4}", positionStr, mapFile, tilesetName, defaultTerrain, mapSize);
             }
             else if (mode == RCAppMode.LoadMap)
             {
-                return string.Format("LOAD MAP: position={0} map-file={1} tileset-file={2}", workspacePosition, mapFile, tilesetName);
+                return string.Format("LOAD MAP: position={0} map-file={1} tileset-file={2}", positionStr, mapFile, tilesetName);
             }
             else
             {
-                return string.Format("NORMAL MODE: position={0}", workspacePosition);
+                return string.Format("NORMAL MODE: position={0}", positionStr);
             }
         }
 
@@ -153,5 +175,15 @@ namespace RC.App.Starter
         /// The position of the top-left corner of the application workspace.
         /// </summary>
         private static RCIntVector workspacePosition = RCIntVector.Undefined;
+
+        /// <summary>
+        /// The name of the host of the current multiplayer game being hosted.
+        /// </summary>
+        private static string hostName;
+
+        /// <summary>
+        /// The name of the guest of the current multiplayer game being connected to.
+        /// </summary>
+        private static string guestName;
     }
 }

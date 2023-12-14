@@ -29,7 +29,17 @@ namespace RC.App.Starter
                 CmdLineSwitch.ExecuteSwitches();
 
                 /// Initialize the configuration sub-system
-                if (!ConfigurationManager.IsInitialized) { ConfigurationManager.Initialize(RCAppSetup.Mode == RCAppMode.Normal ? "RC.App.root" : "RC.MapEditor.root"); }
+                if (!ConfigurationManager.IsInitialized)
+                {
+                    if (RCAppSetup.Mode == RCAppMode.Normal || RCAppSetup.Mode == RCAppMode.MultiplayerHost || RCAppSetup.Mode == RCAppMode.MultiplayerGuest)
+                    {
+                        ConfigurationManager.Initialize("RC.App.root");
+                    }
+                    else if (RCAppSetup.Mode == RCAppMode.NewMap || RCAppSetup.Mode == RCAppMode.LoadMap)
+                    {
+                        ConfigurationManager.Initialize("RC.MapEditor.root");
+                    }
+                }
 
                 /// Start the components of the system
                 StartComponents();
@@ -41,17 +51,41 @@ namespace RC.App.Starter
                 root.InstallPlugins();
 
                 /// Create the UIWorkspace (TODO: make it configurable)
-                UIWorkspace workspace = new UIWorkspace(new RCIntVector(1024, 768), RCAppSetup.Mode == RCAppMode.Normal ? new RCIntVector(320, 200) : new RCIntVector(1024, 768));
+                UIWorkspace workspace = null;
+                if (RCAppSetup.Mode == RCAppMode.Normal || RCAppSetup.Mode == RCAppMode.MultiplayerHost || RCAppSetup.Mode == RCAppMode.MultiplayerGuest)
+                {
+                    workspace = new UIWorkspace(new RCIntVector(1024, 768), new RCIntVector(320, 200));
+                }
+                else if (RCAppSetup.Mode == RCAppMode.NewMap || RCAppSetup.Mode == RCAppMode.LoadMap)
+                {
+                    workspace = new UIWorkspace(new RCIntVector(1024, 768), new RCIntVector(1024, 768));
+                }
 
                 if (RCAppSetup.Mode == RCAppMode.Normal)
                 {
                     TraceManager.WriteAllTrace("NORMAL STARTUP...", TraceManager.GetTraceFilterID("RC.App.Info"));
 
-                    /// Load the common resource group (TODO: make it configurable?)
+                    /// Load the resource group for displaying the splash screen (TODO: make it configurable?)
                     UIResourceManager.LoadResourceGroup("RC.App.SplashScreen");
 
-                    /// Initialize the pages of the RC application.
+                    /// Initialize the pages of the RC application for normal mode.
                     root.GraphicsPlatform.RenderLoop.FrameUpdate += InitPages;
+
+                    /// Start and run the render loop
+                    root.GraphicsPlatform.RenderLoop.Start(workspace.DisplaySize);
+                }
+                else if (RCAppSetup.Mode == RCAppMode.MultiplayerHost || RCAppSetup.Mode == RCAppMode.MultiplayerGuest)
+                {
+                    TraceManager.WriteAllTrace("MULTIPLAYER STARTUP...", TraceManager.GetTraceFilterID("RC.App.Info"));
+
+                    /// Load the common resource group (TODO: make it configurable?)
+                    UIResourceManager.LoadResourceGroup("RC.App.CommonResources");
+
+                    /// Set the default mouse pointer.
+                    workspace.SetDefaultMousePointer(UIResourceManager.GetResource<UIPointer>("RC.App.Pointers.NormalPointer"));
+
+                    /// Initialize the pages of the RC application for multiplayer mode.
+                    root.GraphicsPlatform.RenderLoop.FrameUpdate += InitMultiplayerPages;
 
                     /// Start and run the render loop
                     root.GraphicsPlatform.RenderLoop.Start(workspace.DisplaySize);
@@ -127,7 +161,7 @@ namespace RC.App.Starter
         }
 
         /// <summary>
-        /// Initializes the pages of the RC application.
+        /// Initializes the pages of the RC application in normal mode.
         /// </summary>
         private static void InitPages()
         {
@@ -159,7 +193,8 @@ namespace RC.App.Starter
 
                 /// Set the page references
                 mainMenuPage.AddReference("Credits", creditsPage);
-                mainMenuPage.AddReference("Registry", gameplayPage/*registryPage*/); // TODO: restore
+                mainMenuPage.AddReference("Registry", gameplayPage); // TODO: restore the line below!
+                //mainMenuPage.AddReference("Registry", registryPage);
                 creditsPage.AddReference("MainMenu", mainMenuPage);
                 registryPage.AddReference("MainMenu", mainMenuPage);
                 registryPage.AddReference("SelectGame", selectGamePage);
@@ -176,6 +211,28 @@ namespace RC.App.Starter
 
             /// Activate the main menu page
             mainMenuPage.Activate();
+        }
+
+        /// <summary>
+        /// Initializes the pages of the RC application in multiplayer mode.
+        /// </summary>
+        private static void InitMultiplayerPages()
+        {
+            UIRoot.Instance.GraphicsPlatform.RenderLoop.FrameUpdate -= InitMultiplayerPages;
+
+            /// Create the pages.
+            RCMultiSetupPage multiSetupPage = new RCMultiSetupPage();
+            RCGameplayPage gameplayPage = new RCGameplayPage();
+
+            /// Register the pages.
+            UIWorkspace.Instance.RegisterPage(multiSetupPage);
+            UIWorkspace.Instance.RegisterPage(gameplayPage);
+
+            /// Set the page references
+            multiSetupPage.AddReference("Gameplay", gameplayPage);
+
+            /// Activate the multiplayer setup page.
+            multiSetupPage.Activate();
         }
 
         /// <summary>

@@ -20,8 +20,8 @@
   <activateTraceFilters pattern="RC.Engine.Simulator.Details" />
   <activateTraceFilters pattern="RC.Engine.Pathfinder.Error" />
   <activateTraceFilters pattern="RC.Engine.Pathfinder.Warning" />
-  <activateTraceFilters pattern="RC.Engine.Pathfinder.Info" />
-  <activateTraceFilters pattern="RC.Engine.Pathfinder.Details" />
+  <!-- <activateTraceFilters pattern="RC.Engine.Pathfinder.Info" />
+  <activateTraceFilters pattern="RC.Engine.Pathfinder.Details" /> -->
   <activateTraceFilters pattern="RC.Common.ComponentMgr.Info" />
   <activateTraceFilters pattern="RC.App.PresLogic.Info" />
   <activateTraceFilters pattern="RC.App.BizLogic.Info" />

@@ -271,4 +271,62 @@ namespace RC.App.Starter
             RCAppSetup.WorkspacePosition = new RCIntVector(int.Parse(this.Arguments[0]), int.Parse(this.Arguments[1]));
         }
     }
+
+    /// <summary>
+    /// Command line switch for start the RC application by hosting a multiplayer game.
+    /// </summary>
+    class MultiplayerHostSwitch : CmdLineSwitch
+    {
+        /// <summary>
+        /// The signature of the command line switch.
+        /// </summary>
+        public static readonly string SIGNATURE = "/host";
+
+        /// <summary>
+        /// Constructs a MultiplayerHostSwitch object.
+        /// </summary>
+        /// <param name="args">The arguments of the switch.</param>
+        public MultiplayerHostSwitch(string[] args) : base(args)
+        {
+            if (args == null || args.Length != 1) { throw new Exception("/host switch usage: '/host name'"); }
+            if (args[0] == null || args[0].Length == 0) { throw new Exception("/host switch usage: '/host name'"); }
+        }
+
+        /// <see cref="CmdLineSwitch.Execute"/>
+        public override void Execute()
+        {
+            RCAppSetup.Mode = RCAppMode.MultiplayerHost;
+            RCAppSetup.HostName = this.Arguments[0];
+        }
+    }
+
+    /// <summary>
+    /// Command line switch for start the RC application by connecting to a multiplayer game.
+    /// </summary>
+    class MultiplayerConnectSwitch : CmdLineSwitch
+    {
+        /// <summary>
+        /// The signature of the command line switch.
+        /// </summary>
+        public static readonly string SIGNATURE = "/connect";
+
+        /// <summary>
+        /// Constructs a MultiplayerConnectSwitch object.
+        /// </summary>
+        /// <param name="args">The arguments of the switch.</param>
+        public MultiplayerConnectSwitch(string[] args) : base(args)
+        {
+            if (args == null || args.Length != 2) { throw new Exception("/connect switch usage: '/connect host-name guest-name'"); }
+            if (args[0] == null || args[0].Length == 0) { throw new Exception("/connect switch usage: '/connect host-name guest-name'"); }
+            if (args[1] == null || args[1].Length == 0) { throw new Exception("/connect switch usage: '/connect host-name guest-name'"); }
+        }
+
+        /// <see cref="CmdLineSwitch.Execute"/>
+        public override void Execute()
+        {
+            RCAppSetup.Mode = RCAppMode.MultiplayerGuest;
+            RCAppSetup.HostName = this.Arguments[0];
+            RCAppSetup.GuestName = this.Arguments[1];
+        }
+    }
 }
