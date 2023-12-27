@@ -188,23 +188,31 @@ namespace RC.App.Starter
     }
 
     /// <summary>
-    /// Command line switch for start the map editor an load an existing map.
+    /// Command line switch for start the map editor for an existing map.
     /// </summary>
-    class LoadMapSwitch : CmdLineSwitch
+    class EditMapSwitch : CmdLineSwitch
     {
         /// <summary>
         /// The signature of the command line switch.
         /// </summary>
-        public static readonly string SIGNATURE = "/loadmap";
+        public static readonly string SIGNATURE = "/editmap";
 
         /// <summary>
-        /// Constructs a LoadMapSwitch object.
+        /// Constructs a EditMapSwitch object.
         /// </summary>
         /// <param name="args">The arguments of the switch.</param>
-        public LoadMapSwitch(string[] args) : base(args) { }
+        public EditMapSwitch(string[] args) : base(args)
+        {
+            if (args == null || args.Length != 1) { throw new Exception("/editmap switch usage: '/editmap mapfile'"); }
+            if (args[0] == null || args[0].Length == 0) { throw new Exception("/editmap switch usage: '/editmap mapfile'"); }
+        }
 
         /// <see cref="CmdLineSwitch.Execute"/>
-        public override void Execute() { RCAppSetup.Mode = RCAppMode.LoadMap; }
+        public override void Execute()
+        {
+            RCAppSetup.Mode = RCAppMode.EditMap;
+            RCAppSetup.MapFile = this.Arguments[0];
+        }
     }
 
     // /// <summary>
@@ -301,32 +309,59 @@ namespace RC.App.Starter
     }
 
     /// <summary>
-    /// Command line switch for start the RC application by connecting to a multiplayer game.
+    /// Command line switch for start the RC application and join to a multiplayer game.
     /// </summary>
-    class MultiplayerConnectSwitch : CmdLineSwitch
+    class MultiplayerJoinSwitch : CmdLineSwitch
     {
         /// <summary>
         /// The signature of the command line switch.
         /// </summary>
-        public static readonly string SIGNATURE = "/connect";
+        public static readonly string SIGNATURE = "/join";
 
         /// <summary>
-        /// Constructs a MultiplayerConnectSwitch object.
+        /// Constructs a MultiplayerJoinSwitch object.
         /// </summary>
         /// <param name="args">The arguments of the switch.</param>
-        public MultiplayerConnectSwitch(string[] args) : base(args)
+        public MultiplayerJoinSwitch(string[] args) : base(args)
         {
-            if (args == null || args.Length != 2) { throw new Exception("/connect switch usage: '/connect host-name guest-name'"); }
-            if (args[0] == null || args[0].Length == 0) { throw new Exception("/connect switch usage: '/connect host-name guest-name'"); }
-            if (args[1] == null || args[1].Length == 0) { throw new Exception("/connect switch usage: '/connect host-name guest-name'"); }
+            if (args == null || args.Length != 2) { throw new Exception("/join switch usage: '/join host-name guest-name'"); }
+            if (args[0] == null || args[0].Length == 0) { throw new Exception("/join switch usage: '/join host-name guest-name'"); }
+            if (args[1] == null || args[1].Length == 0) { throw new Exception("/join switch usage: '/join host-name guest-name'"); }
         }
 
         /// <see cref="CmdLineSwitch.Execute"/>
         public override void Execute()
         {
-            RCAppSetup.Mode = RCAppMode.MultiplayerGuest;
+            RCAppSetup.Mode = RCAppMode.MultiplayerJoin;
             RCAppSetup.HostName = this.Arguments[0];
             RCAppSetup.GuestName = this.Arguments[1];
+        }
+    }
+
+    /// <summary>
+    /// Command line switch for selecting a mapfile to be loaded when starting the RC application.
+    /// </summary>
+    class SelectMapSwitch : CmdLineSwitch
+    {
+        /// <summary>
+        /// The signature of the command line switch.
+        /// </summary>
+        public static readonly string SIGNATURE = "/map";
+
+        /// <summary>
+        /// Constructs a SelectMapSwitch object.
+        /// </summary>
+        /// <param name="args">The arguments of the switch.</param>
+        public SelectMapSwitch(string[] args) : base(args)
+        {
+            if (args == null || args.Length != 1) { throw new Exception("/map switch usage: '/map mapfile'"); }
+            if (args[0] == null || args[0].Length == 0) { throw new Exception("/map switch usage: '/map mapfile'"); }
+        }
+
+        /// <see cref="CmdLineSwitch.Execute"/>
+        public override void Execute()
+        {
+            RCAppSetup.MapFile = this.Arguments[0];
         }
     }
 }

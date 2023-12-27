@@ -70,6 +70,15 @@ namespace RC.App.BizLogic.BusinessComponents.Core
             if (filename == null) { throw new ArgumentNullException("fileName"); }
 
             byte[] mapBytes = File.ReadAllBytes(filename);
+            this.OpenScenario(mapBytes);
+        }
+
+        /// <see cref="IScenarioManagerBC.OpenScenario"/>
+        public void OpenScenario(byte[] mapBytes)
+        {
+            if (this.activeScenario != null) { throw new InvalidOperationException("Another scenario is currently active!"); }
+            if (mapBytes == null) { throw new ArgumentNullException("mapBytes"); }
+
             MapHeader mapHeader = this.mapLoader.LoadMapHeader(mapBytes);
             IMapAccess map = this.mapLoader.LoadMap(this.tilesetManager.GetTileSet(mapHeader.TilesetName), mapBytes);
             this.pathfinder.Initialize(new MapWalkabilityReader(map), MAX_MOVING_ENTITY_SIZE);

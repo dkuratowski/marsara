@@ -106,10 +106,9 @@ namespace RC.App.PresLogic.Pages
         {
             if (this.gameConnection.ConnectionStatus != ConnectionStatusEnum.Offline) { throw new InvalidOperationException("The gameplay page is not offline!"); }
             
-            TraceManager.WriteAllTrace("RCGameplayPage.Connect", TraceManager.GetTraceFilterID("RC.App.BizLogic.Info"));
+            TraceManager.WriteAllTrace("RCGameplayPage.Connect", TraceManager.GetTraceFilterID("RC.App.PresLogic.Info"));
 
-            /// TODO: A scenario shall be running at this point!
-            ComponentManager.GetInterface<IMultiplayerService>().CreateNewGame("./maps/testmap4b.rcm", GameTypeEnum.Melee, GameSpeedEnum.Fastest);
+            /// Attach the scroll service to the currently opened scenario.
             ComponentManager.GetInterface<IScrollService>().AttachWindow(this.mapDisplay.PixelSize);
 
             /// Create and start the map display control.
@@ -122,7 +121,7 @@ namespace RC.App.PresLogic.Pages
         {
             if (this.gameConnection.ConnectionStatus != ConnectionStatusEnum.Online) { throw new InvalidOperationException("The gameplay page is not online!"); }
             
-            TraceManager.WriteAllTrace("RCGameplayPage.Disconnect", TraceManager.GetTraceFilterID("RC.App.BizLogic.Info"));
+            TraceManager.WriteAllTrace("RCGameplayPage.Disconnect", TraceManager.GetTraceFilterID("RC.App.PresLogic.Info"));
 
             this.commandView = null;
             this.selectionIndicatorView = null;

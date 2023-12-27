@@ -34,18 +34,30 @@ namespace RC.App.BizLogic.Services
     public interface IMultiplayerService
     {
         /// <summary>
-        /// Starts creating a new multiplayer game an announcing it on the network.
+        /// Hosts a new multiplayer game and announces it on the network.
         /// </summary>
+        /// <param name="hostName">The name of the local player who is hosting the new game.</param>
         /// <param name="mapFile">The file that contains the map of the new game.</param>
         /// <param name="gameType">The type of the game to be created.</param>
         /// <param name="gameSpeed">The speed of the game to be created.</param>
-        /// <returns>A reference to the started operation.</returns>
-        void CreateNewGame(string mapFile, GameTypeEnum gameType, GameSpeedEnum gameSpeed);
+        void HostNewGame(string hostName, string mapFile, GameTypeEnum gameType, GameSpeedEnum gameSpeed);
 
         /// <summary>
-        /// Starts leaving the multiplayer game that this peer is currently connected to.
+        /// Starts the currently hosted multiplayer game.
         /// </summary>
-        /// <returns>A reference to the started operation.</returns>
+        /// <exception cref="InvalidOperationException">If there is no hosted multiplayer game currently.</exception>
+        void StartHostedGame();
+
+        /// <summary>
+        /// Joins to an existing multiplayer game created by the given host.
+        /// </summary>
+        /// <param name="hostName">The name of the remote player who is hosting the game.</param>
+        /// <param name="guestName">The name of the local player who is joining to the game.</param>
+        void JoinToExistingGame(string hostName, string guestName);
+
+        /// <summary>
+        /// Leaves the multiplayer game that this peer is currently connected to.
+        /// </summary>
         void LeaveCurrentGame();
 
         /// <summary>

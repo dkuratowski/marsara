@@ -7,6 +7,7 @@ using RC.Common;
 using RC.Common.Diagnostics;
 using RC.Common.ComponentModel;
 using RC.App.PresLogic.Pages;
+using RC.App.BizLogic.Services;
 using System.IO;
 
 namespace RC.App.Starter
@@ -31,11 +32,11 @@ namespace RC.App.Starter
                 /// Initialize the configuration sub-system
                 if (!ConfigurationManager.IsInitialized)
                 {
-                    if (RCAppSetup.Mode == RCAppMode.Normal || RCAppSetup.Mode == RCAppMode.MultiplayerHost || RCAppSetup.Mode == RCAppMode.MultiplayerGuest)
+                    if (RCAppSetup.Mode == RCAppMode.Normal || RCAppSetup.Mode == RCAppMode.MultiplayerHost || RCAppSetup.Mode == RCAppMode.MultiplayerJoin)
                     {
                         ConfigurationManager.Initialize("RC.App.root");
                     }
-                    else if (RCAppSetup.Mode == RCAppMode.NewMap || RCAppSetup.Mode == RCAppMode.LoadMap)
+                    else if (RCAppSetup.Mode == RCAppMode.NewMap || RCAppSetup.Mode == RCAppMode.EditMap)
                     {
                         ConfigurationManager.Initialize("RC.MapEditor.root");
                     }
@@ -52,11 +53,11 @@ namespace RC.App.Starter
 
                 /// Create the UIWorkspace (TODO: make it configurable)
                 UIWorkspace workspace = null;
-                if (RCAppSetup.Mode == RCAppMode.Normal || RCAppSetup.Mode == RCAppMode.MultiplayerHost || RCAppSetup.Mode == RCAppMode.MultiplayerGuest)
+                if (RCAppSetup.Mode == RCAppMode.Normal || RCAppSetup.Mode == RCAppMode.MultiplayerHost || RCAppSetup.Mode == RCAppMode.MultiplayerJoin)
                 {
                     workspace = new UIWorkspace(new RCIntVector(1024, 768), new RCIntVector(320, 200));
                 }
-                else if (RCAppSetup.Mode == RCAppMode.NewMap || RCAppSetup.Mode == RCAppMode.LoadMap)
+                else if (RCAppSetup.Mode == RCAppMode.NewMap || RCAppSetup.Mode == RCAppMode.EditMap)
                 {
                     workspace = new UIWorkspace(new RCIntVector(1024, 768), new RCIntVector(1024, 768));
                 }
@@ -64,6 +65,9 @@ namespace RC.App.Starter
                 if (RCAppSetup.Mode == RCAppMode.Normal)
                 {
                     TraceManager.WriteAllTrace("NORMAL STARTUP...", TraceManager.GetTraceFilterID("RC.App.Info"));
+
+                    /// Load the mapfile (TODO: move this call to the RCSelectGamePage later!)
+                    ComponentManager.GetInterface<IMultiplayerService>().HostNewGame("local", RCAppSetup.MapFile, GameTypeEnum.Melee, GameSpeedEnum.Fastest);
 
                     /// Load the resource group for displaying the splash screen (TODO: make it configurable?)
                     UIResourceManager.LoadResourceGroup("RC.App.SplashScreen");
@@ -74,9 +78,19 @@ namespace RC.App.Starter
                     /// Start and run the render loop
                     root.GraphicsPlatform.RenderLoop.Start(workspace.DisplaySize);
                 }
-                else if (RCAppSetup.Mode == RCAppMode.MultiplayerHost || RCAppSetup.Mode == RCAppMode.MultiplayerGuest)
+                else if (RCAppSetup.Mode == RCAppMode.MultiplayerHost || RCAppSetup.Mode == RCAppMode.MultiplayerJoin)
                 {
                     TraceManager.WriteAllTrace("MULTIPLAYER STARTUP...", TraceManager.GetTraceFilterID("RC.App.Info"));
+
+                    /// Hosts a new or connect to an existing game depending on the current mode (TODO: move this logic to the RCSelectGamePage later!)
+                    if (RCAppSetup.Mode == RCAppMode.MultiplayerHost)
+                    {
+                        ComponentManager.GetInterface<IMultiplayerService>().HostNewGame(RCAppSetup.HostName, RCAppSetup.MapFile, GameTypeEnum.Melee, GameSpeedEnum.Fastest);
+                    }
+                    else if (RCAppSetup.Mode == RCAppMode.MultiplayerJoin)
+                    {
+                        ComponentManager.GetInterface<IMultiplayerService>().JoinToExistingGame(RCAppSetup.HostName, RCAppSetup.GuestName);
+                    }
 
                     /// Load the common resource group (TODO: make it configurable?)
                     UIResourceManager.LoadResourceGroup("RC.App.CommonResources");
@@ -109,11 +123,6 @@ namespace RC.App.Starter
                         RCAppSetup.DefaultTerrain = Console.ReadLine();
                         Console.Write("Size of the new map: ");
                         RCAppSetup.MapSize = XmlHelper.LoadIntVector(Console.ReadLine());
-                    }
-                    else if (RCAppSetup.Mode == RCAppMode.LoadMap)
-                    {
-                        Console.Write("Name of the map file to load: ");
-                        RCAppSetup.MapFile = Console.ReadLine();
                     }
 
                     TraceManager.WriteAllTrace(RCAppSetup.ToString(), TraceManager.GetTraceFilterID("RC.MapEditor.Info"));
@@ -244,7 +253,7 @@ namespace RC.App.Starter
 
             /// Create and activate the map editor page.
             RCMapEditorPage mapEditorPage = null;
-            if (RCAppSetup.Mode == RCAppMode.LoadMap)
+            if (RCAppSetup.Mode == RCAppMode.EditMap)
             {
                 mapEditorPage = new RCMapEditorPage(RCAppSetup.MapFile);
             }
@@ -256,6 +265,7 @@ namespace RC.App.Starter
                                                     RCAppSetup.DefaultTerrain,
                                                     RCAppSetup.MapSize);
             }
+            
             UIWorkspace.Instance.RegisterPage(mapEditorPage);
             mapEditorPage.Activate();
         }
@@ -265,6 +275,8 @@ namespace RC.App.Starter
         /// </summary>
         private static void StartComponents()
         {
+            bool realMultiplayer = RCAppSetup.Mode == RCAppMode.MultiplayerHost || RCAppSetup.Mode == RCAppMode.MultiplayerJoin;
+
             ComponentManager.RegisterComponents("RC.Engine.Pathfinder, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null",
                                                 "RC.Engine.Pathfinder");
 
@@ -286,7 +298,9 @@ namespace RC.App.Starter
                                                 "RC.App.BizLogic.CommandManagerBC",
                                                 "RC.App.BizLogic.FogOfWarBC",
                                                 "RC.App.BizLogic.MapWindowBC",
-                                                "RC.App.BizLogic.MultiplayerService",
+                                                "RC.App.BizLogic.LocalAreaNetworkBC",
+                                                "RC.App.BizLogic.MultiplayerHostBC",
+                                                realMultiplayer ? "RC.App.BizLogic.MultiplayerService" : "RC.App.BizLogic.FakeMultiplayerService",
                                                 "RC.App.BizLogic.CommandService",
                                                 "RC.App.BizLogic.SelectionService",
                                                 "RC.App.BizLogic.ScrollService",

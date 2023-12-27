@@ -13,9 +13,9 @@ namespace RC.App.Starter
     {
         Normal = 0,             /// Start the RC application in normal mode.
         NewMap = 1,             /// Start the map editor and create a new map file.
-        LoadMap = 2,            /// Start the map editor and load an existing map file.
-        MultiplayerHost = 3,    /// Start the RC application in multiplayer host mode.
-        MultiplayerGuest = 4,   /// Start the RC application in multiplayer guest mode.
+        EditMap = 2,            /// Start the map editor on an existing map file.
+        MultiplayerHost = 3,    /// Start the RC application and hosts a new multiplayer game.
+        MultiplayerJoin = 4,   /// Start the RC application and joins to an existing multiplayer game.
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ namespace RC.App.Starter
 
         /// <summary>
         /// Gets or sets the name of the file that the new map will be saved to in case of RCAppMode.NewMap or
-        /// the name of the file that contains the map to be loaded in case of RCAppMode.LoadMap.
+        /// the name of the file that contains the map to be loaded in case of RCAppMode.EditMap.
         /// </summary>
         public static string MapFile
         {
@@ -125,7 +125,7 @@ namespace RC.App.Starter
             {
                 return string.Format("NEW MAP: position={0} map-file={1} tileset-file={2} default-terrain={3} size={4}", positionStr, mapFile, tilesetName, defaultTerrain, mapSize);
             }
-            else if (mode == RCAppMode.LoadMap)
+            else if (mode == RCAppMode.EditMap)
             {
                 return string.Format("LOAD MAP: position={0} map-file={1} tileset-file={2}", positionStr, mapFile, tilesetName);
             }

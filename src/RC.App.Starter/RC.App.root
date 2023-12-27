@@ -8,6 +8,7 @@
     <configNodeReference>./config/RC.Engine.Pathfinder/RC.Engine.Pathfinder.node</configNodeReference>
     <configNodeReference>./config/RC.App.PresLogic/RC.App.PresLogic.node</configNodeReference>
     <configNodeReference>./config/RC.App.BizLogic/RC.App.BizLogic.node</configNodeReference>
+    <configNodeReference>./config/RC.DssServices/RC.DssServices.node</configNodeReference>
   </configNodeReferences>
 
   <configObjects>

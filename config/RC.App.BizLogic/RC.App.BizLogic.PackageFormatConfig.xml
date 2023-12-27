@@ -1,0 +1,24 @@
+<packageFormatConfig>
+
+  <packageFormat namespace="RC.App.BizLogic" name="MultiplayerGuestLogin" id="400">
+    <description>First answer of a guest in the setup stage of a multiplayer game DSS.</description>
+    <field type="STRING">The name of the guest.</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.App.BizLogic" name="MultiplayerSlotInfo" id="401">
+    <description>Slot information sent by the host to each guest about each slot (in order) in every step of the setup stage of a multiplayer game DSS.</description>
+    <field type="BYTE">The index of the slot.</field>
+    <field type="BYTE">The current state of the slot (0x00 - closed, 0x01 - opened, 0x02 - connected).</field>
+    <field type="BYTE">The index of the player connected to the slot (shall be ignored if there is no connected player).</field>
+    <field type="BYTE">The race of the player (0x00 - terran, 0x01 - zerg, 0x02 - protoss) connected to the slot (shall be ignored if there is no connected player).</field>
+    <field type="STRING">The name of the player connected to the slot (shall be ignored if there is no connected player).</field>
+    <field type="BYTE">A flag with value 0x01 if the name field shall be considered as a known value, 0x00 otherwise (shall be ignored if there is no connected player).</field>
+    <field type="INT">The ID of the StartLocation of the player connected to the slot (shall be ignored if there is no connected player).</field>
+  </packageFormat>
+
+  <packageFormat namespace="RC.App.BizLogic" name="MultiplayerGameInfo" id="402">
+    <description>Game information sent by the host to each guest after connected to the setup stage of a multiplayer game DSS.</description>
+    <field type="BYTE_ARRAY">The contents of the map file loaded by the host.</field>
+  </packageFormat>
+
+</packageFormatConfig>

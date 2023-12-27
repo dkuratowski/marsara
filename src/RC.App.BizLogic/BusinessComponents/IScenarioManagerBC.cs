@@ -35,6 +35,12 @@ namespace RC.App.BizLogic.BusinessComponents
         void OpenScenario(string filename);
 
         /// <summary>
+        /// Opens a scenario from the given byte sequence.
+        /// </summary>
+        /// <param name="mapBytes">The byte sequence to load from.</param>
+        void OpenScenario(byte[] mapBytes);
+
+        /// <summary>
         /// Saves the currently active scenario to the given file.
         /// </summary>
         /// <param name="filename">The name of the file to save.</param>

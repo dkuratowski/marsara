@@ -2,9 +2,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RC.Common\RC.Common.csproj" />
+    <ProjectReference Include="..\RC.DssServices\RC.DssServices.csproj" />
     <ProjectReference Include="..\RC.Engine.Maps\RC.Engine.Maps.csproj" />
     <ProjectReference Include="..\RC.Engine.Simulator\RC.Engine.Simulator.csproj" />
     <ProjectReference Include="..\RC.Engine.Pathfinder\RC.Engine.Pathfinder.csproj" />
+    <ProjectReference Include="..\RC.NetworkingSystem\RC.NetworkingSystem.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
